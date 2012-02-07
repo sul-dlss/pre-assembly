@@ -1,0 +1,14 @@
+Prerequisites:
+--------------
+Kakadu Software Binaries http://www.kakadusoftware.com/ - for JP2 generation
+
+Imagemagick 6.5 or higher (with libtiff, lcms2)
+	Mac users:
+	brew install imagemagick
+	
+exiftool http://www.sno.phy.queensu.ca/~phil/exiftool/
+	Mac users:
+	brew install exiftool 
+
+Perl
+
