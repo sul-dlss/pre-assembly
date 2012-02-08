@@ -47,23 +47,24 @@ module Assembly
           puts "output profile #{output_profile} invalid"
           return false       
         end
+
+        input_profile=exif['profiledescription'].nil? ? "" : exif['profiledescription'].gsub(/[^[:alnum:]]/, '') # remove all non alpha-numeric characters, so we can get to a filename
+        input_profile_file=File.join(path_to_profiles,"#{input_profile}.icc")
+
+        profile_conversion=File.exists?(input_profile_file) ? "-profile #{input_profile_file} -profile #{output_profile_file}" : ""
         
-        extract_icc="convert -quiet #{input} #{output_profile_file}"
+        #extract_icc="convert -quiet #{input} #{output_profile_file}"
         
         kdu_bin = "kdu_compress "
         options = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ORGgen_plt=yes -rate 1.5 Clevels=5 "
         path_to_profiles=File.join(Assembly::PATH_TO_GEM,'profiles')
 
         temp_tif_file="/tmp/#{UUIDTools::UUID.random_create.to_s}.tif"
-      
-        input_profile_file=File.join(path_to_profiles,"AdobeRGB1998.icc")
-      
+            
         # make temp tiff
-        tiff_command = "convert -quiet -compress none -profile #{input_profile_file} -profile #{output_profile_file} #{input} #{temp_tif_file}"
+        tiff_command = "convert -quiet -compress none #{profile_conversion} #{input} #{temp_tif_file}"
         system(tiff_command)
       
-        # get exif data for input tif file after it's been converted to the new color profile and uncompressed
-        exif=MiniExiftool.new temp_tif_file
         pixdem = exif['imagewidth'] > exif['imageheight'] ? exif['imagewidth'] : exif['imageheight']
         layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
 
