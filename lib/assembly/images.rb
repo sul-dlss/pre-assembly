@@ -14,7 +14,8 @@ module Assembly
       # Optional parameters
       # output = full path to the output JP2 file; if not supplied, will be the same filename and path as input TIF with JP2 extension
       # allow_overwrite = true or false; if true and output JP2 exists, it will overwrite; if false, it will not; defaults to false
-      
+      # output_profile = the output color space profile to use; accetable profiles are 'sRGB' and 'AdobeRGB1998'; defaults to 'sRGB'
+
       begin
         
         input = params[:input] 
@@ -25,7 +26,7 @@ module Assembly
       
         exif=MiniExiftool.new input
         unless exif['mimetype'] == 'image/tiff'
-          puts 'only TIFF input allowed'
+          puts 'input file was not TIFF'
           return false
         end
     
@@ -37,22 +38,31 @@ module Assembly
           return false
         end
       
-        profiles={:AdobeRGB1998=>'AdobeRGB1998.icc',:sRGB=>'sRGB.icc'}      
-    
+        output_profile=params[:output_profile] || 'sRGB'
+        path_to_profiles=File.join(Assembly::PATH_TO_GEM,'profiles')
+        
+        output_profile_file=File.join(path_to_profiles,"#{output_profile}.icc")
+      
+        if !File.exists?(output_profile_file)
+          puts "output profile #{output_profile} invalid"
+          return false       
+        end
+        
+        extract_icc="convert -quiet #{input} #{output_profile_file}"
+        
         kdu_bin = "kdu_compress "
         options = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ORGgen_plt=yes -rate 1.5 Clevels=5 "
         path_to_profiles=File.join(Assembly::PATH_TO_GEM,'profiles')
 
         temp_tif_file="/tmp/#{UUIDTools::UUID.random_create.to_s}.tif"
       
-        input_profile=File.join(path_to_profiles,profiles[:AdobeRGB1998])
-        output_profile=File.join(path_to_profiles,profiles[:sRGB])
+        input_profile_file=File.join(path_to_profiles,"AdobeRGB1998.icc")
       
         # make temp tiff
-        tiff_command = "convert -quiet -compress none -profile #{input_profile} -profile #{output_profile} #{input} #{temp_tif_file}"
+        tiff_command = "convert -quiet -compress none -profile #{input_profile_file} -profile #{output_profile_file} #{input} #{temp_tif_file}"
         system(tiff_command)
       
-        # get exif data
+        # get exif data for input tif file after it's been converted to the new color profile and uncompressed
         exif=MiniExiftool.new temp_tif_file
         pixdem = exif['imagewidth'] > exif['imageheight'] ? exif['imagewidth'] : exif['imageheight']
         layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1

@@ -28,9 +28,18 @@ describe Assembly::Images do
     File.exists?(output_file).should be true    
   end
 
+  it "should not create jp2 if the output profile is not valid" do
+    input_file=File.join(Assembly::PATH_TO_GEM,'spec','test_data','input','test.tif')
+    output_file=File.join(Assembly::PATH_TO_GEM,'spec','test_data','output','test.jp2')
+    File.exists?(input_file).should be true
+    File.exists?(output_file).should be false
+    Assembly::Images.create_jp2(:input=>input_file,:output=>output_file,:output_profile=>'junk').should be false
+    File.exists?(output_file).should be false
+  end
+
   it "should create jp2 if it does not exist" do
     input_file=File.join(Assembly::PATH_TO_GEM,'spec','test_data','input','test.tif')
-    output_file=File.join(Assembly::PATH_TO_GEM,'spec','test_data','output','test2.jp2')
+    output_file=File.join(Assembly::PATH_TO_GEM,'spec','test_data','output','test.jp2')
     File.exists?(input_file).should be true
     File.exists?(output_file).should be false
     Assembly::Images.create_jp2(:input=>input_file,:output=>output_file).should be true
@@ -42,7 +51,7 @@ describe Assembly::Images do
   after(:each) do
     # after each test, empty out the output test directory
     dir_path=File.join(Assembly::PATH_TO_GEM,'spec','test_data','output')
-    Dir.foreach(dir_path) {|f| fn = File.join(dir_path, f); File.delete(fn) if !File.directory?(fn)}
+    Dir.foreach(dir_path) {|f| fn = File.join(dir_path, f); File.delete(fn) if !File.directory?(fn) && File.basename(fn)!='empty.txt'}
   end
   
 end
