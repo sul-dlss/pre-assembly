@@ -1,11 +1,20 @@
-Prerequisites:
---------------
+To run tests
+-------------
 
+bundle exec rspec spec
+
+or add this alias to the your command line profile (e.g. ~/.bash_profile) and save yourself some typing:
+
+alias runspec="bundle exec rspec spec --color"
+
+
+Prerequisites
+--------------
 Kakadu Software Binaries - for JP2 generation
     http://www.kakadusoftware.com/
     Install the Kakadu demonstration applications.
 
-Imagemagick 6.5 or higher (with libtiff, lcms2)
+Imagemagick 6.5 or higher (with libtiff, lcms2, libjasper)
 	Mac users:
 	brew install imagemagick
 	

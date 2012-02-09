@@ -48,20 +48,14 @@ module Assembly
           return false       
         end
 
+        path_to_profiles=File.join(Assembly::PATH_TO_GEM,'profiles')
+
         input_profile=exif['profiledescription'].nil? ? "" : exif['profiledescription'].gsub(/[^[:alnum:]]/, '') # remove all non alpha-numeric characters, so we can get to a filename
         input_profile_file=File.join(path_to_profiles,"#{input_profile}.icc")
 
-        profile_conversion=File.exists?(input_profile_file) ? "-profile #{input_profile_file} -profile #{output_profile_file}" : ""
-        
-        #extract_icc="convert -quiet #{input} #{output_profile_file}"
-        
-        kdu_bin = "kdu_compress "
-        options = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ORGgen_plt=yes -rate 1.5 Clevels=5 "
-        path_to_profiles=File.join(Assembly::PATH_TO_GEM,'profiles')
-
-        temp_tif_file="/tmp/#{UUIDTools::UUID.random_create.to_s}.tif"
-            
         # make temp tiff
+        temp_tif_file="/tmp/#{UUIDTools::UUID.random_create.to_s}.tif"
+        profile_conversion=File.exists?(input_profile_file) ? "-profile #{input_profile_file} -profile #{output_profile_file}" : ""        
         tiff_command = "convert -quiet -compress none #{profile_conversion} #{input} #{temp_tif_file}"
         system(tiff_command)
       
@@ -69,6 +63,8 @@ module Assembly
         layers = (( Math.log(pixdem) / Math.log(2) ) - ( Math.log(96) / Math.log(2) )).ceil + 1
 
         # Start jp2 creation section
+        kdu_bin = "kdu_compress "
+        options = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ORGgen_plt=yes -rate 1.5 Clevels=5 "
         jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i #{temp_tif_file} -o #{output}"
         system(jp2_command)
       
