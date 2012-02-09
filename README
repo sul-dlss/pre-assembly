@@ -7,6 +7,9 @@ or add this alias to the your command line profile (e.g. ~/.bash_profile) and sa
 
 alias runspec="bundle exec rspec spec --color"
 
+Generate Documentation
+----------------------
+rdoc --exclude spec --main lib/assembly.rb
 
 Prerequisites
 --------------

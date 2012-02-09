@@ -3,22 +3,24 @@ require 'mini_exiftool'
 
 module Assembly
   class Images
+
+    # Create a JP2 file from a TIF file.
+    #
+    # Required paramaters:
+    # * full path to input TIF file
+    #
+    # Optional parameters (passed in via hash notation):
+    # * output = full path to the output JP2 file; if not supplied, will be the same filename and path as input TIF with JP2 extension
+    # * allow_overwrite = true or false; if true and output JP2 exists, it will overwrite; if false, it will not; defaults to false
+    # * output_profile = the output color space profile to use; accetable profiles are 'sRGB' and 'AdobeRGB1998'; defaults to 'sRGB'
+    #
+    # e.g. Assembly::Images.create_jp2('path_to_tif.tif',:output=>'path_to_jp2.jp2')
     
-    def self.create_jp2(params={})
+    def self.create_jp2(input,params={})
       
-      # parameters are passed in via a hash, e.g. Assembly::Images.create_jp2(:input=>'path_to_tif.tif')
-      
-      # Required paramaters
-      # input = full path to input TIF file
-      
-      # Optional parameters
-      # output = full path to the output JP2 file; if not supplied, will be the same filename and path as input TIF with JP2 extension
-      # allow_overwrite = true or false; if true and output JP2 exists, it will overwrite; if false, it will not; defaults to false
-      # output_profile = the output color space profile to use; accetable profiles are 'sRGB' and 'AdobeRGB1998'; defaults to 'sRGB'
 
       begin
         
-        input = params[:input] 
         unless File.exists?(input)
           puts 'input file does not exists'
           return false 
