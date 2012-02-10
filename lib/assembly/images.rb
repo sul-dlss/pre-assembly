@@ -8,10 +8,6 @@ module Assembly
 
   class Images
 
-    def initialize
-      # TODO: pass in needed parameters.
-    end
-
     # FORMATS is a constant used to identify the content type in the content meta-data file,
     # it maps actual file mime/types to format attribute values in the content metadata XML file
     # see https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values
@@ -22,6 +18,10 @@ module Assembly
       'application/tei+xml' => 'TEI','application/msword' => 'WORD','application/wordperfect' => 'WPD','application/mspowerpoint' => 'PPT','application/msexcel' => 'XLS',
       'application/x-tar' => 'TAR','application/octet-stream' => 'BINARY'
     }
+
+    def initialize
+      # TODO: pass in needed parameters.
+    end
 
     # Create a JP2 file from a TIF file.
     #

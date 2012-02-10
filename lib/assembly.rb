@@ -6,9 +6,7 @@
 # Author::    SULAIR DLSS
 # see README for prerequisites
 
-require "assembly/version"
-require "assembly/images"
-
 module Assembly
-  PATH_TO_GEM=Gem.loaded_specs['assembly'].full_gem_path
+  # TODO: replace PATH_TO_GEM usages.
+  # PATH_TO_GEM = Gem.loaded_specs['assembly'].full_gem_path
 end
