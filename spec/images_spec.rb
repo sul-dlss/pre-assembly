@@ -65,7 +65,7 @@ describe Assembly::Images do
   it "should generate valid content metadata for a single tif and associated jp2" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     generate_test_image(TEST_JP2_INPUT_FILE)
-    result=Assembly::Images.create_content_metadata(TEST_DRUID,[[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE]],"test label")
+    result=Assembly::Images.create_content_metadata(TEST_DRUID,[[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE]],:content_label=>"test label")
     result.class.should be String
     xml=Nokogiri::XML(result)
     xml.errors.size.should be 0
@@ -77,7 +77,7 @@ describe Assembly::Images do
   it "should generate valid content metadata for two sets of tifs and associated jp2s" do
     generate_test_image(TEST_TIF_INPUT_FILE)
     generate_test_image(TEST_JP2_INPUT_FILE)
-    result=Assembly::Images.create_content_metadata(TEST_DRUID,[[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE],[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE]],"test label2")
+      result=Assembly::Images.create_content_metadata(TEST_DRUID,[[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE],[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE]],:content_label=>"test label2")
     result.class.should be String
     xml=Nokogiri::XML(result)
     xml.errors.size.should be 0
@@ -87,6 +87,13 @@ describe Assembly::Images do
     xml.xpath("//label")[1].text.should == "test label2"    
   end
 
+  it "should not generate valid content metadata if not all input files exist" do
+    generate_test_image(TEST_TIF_INPUT_FILE)
+    File.exists?(TEST_TIF_INPUT_FILE).should be true
+    File.exists?(TEST_JP2_INPUT_FILE).should be false  
+    result=Assembly::Images.create_content_metadata(TEST_DRUID,[[TEST_TIF_INPUT_FILE,TEST_JP2_INPUT_FILE]],:content_label=>"test label").should be false
+  end
+  
   after(:each) do
     # after each test, empty out the input and output test directories   
     remove_files(TEST_INPUT_DIR)

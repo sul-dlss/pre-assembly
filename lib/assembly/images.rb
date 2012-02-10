@@ -102,18 +102,27 @@ module Assembly
     # Required parameters:
     # * druid = the string of the druid
     # * file_set = an array of arrays of files to generate content metadata_for
-    # * content_label = a label that will be added to the content metadata
-    # * policy = a hash of APO level policies
-    # e.g. Assembly::Images.create_content_metadata('nx288wh8889',['file1.tif','file1.jp2'],['file2.tif','file2.jp2'])
-    def self.create_content_metadata(druid,file_set,content_label="",policy={})
+    #
+    # Optional parameters (passed in via hash notation):
+    # * content_label = a label that will be added to the content metadata, defaults to blank string
+    # * publish = a hash of content types, specifying for each content type if it should be published ("yes" or "no")
+    # * preserve = a hash of content types, specifying for each content type if it should be preserved ("yes" or "no")
+    # * shelve = a hash of content types, specifying for each content type if it should be shelved ("yes" or "no")
+    # for publish, preserve, and shelve options, content types are "TIFF", "JPEG2000", "JPEG"
+    # e.g. Assembly::Images.create_content_metadata('nx288wh8889',['file1.tif','file1.jp2'],['file2.tif','file2.jp2'],:content_label=>'Collier Collection',:preserve=>{'TIFF'=>'yes',:'JPEG2000'=>'no'})
+    def self.create_content_metadata(druid,file_set,params={})
       
       content_type_description="image"
-      sequence=0
 
-      publish= policy[:publish] || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG'=> 'yes'}  # indicates if content in metadata XML file will be marked as publish
-      preserve= policy[:preserve] || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as preserve
-      shelve= policy[:shelve] || {'TIFF' => 'no', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as shelve
-    
+      publish= params[:publish] || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG'=> 'yes'}  # indicates if content in metadata XML file will be marked as publish
+      preserve= params[:preserve] || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as preserve
+      shelve= params[:shelve] || {'TIFF' => 'no', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as shelve
+      content_label=params[:content_label] || ""
+      
+      file_set.flatten.each {|file| return false if !File.exists?(file)} # check to be sure all input files exist
+
+      sequence=0
+      
       builder = Nokogiri::XML::Builder.new do |xml|
            xml.contentMetadata(:objectId=>"#{druid}",:type=>content_type_description) {
              file_set.each do |entry| # iterate over all of the input file sets
