@@ -209,6 +209,29 @@ module Assembly
       @@master_druid.next!
     end
 
-  end # Images
+  end # class Images
 
-end # Assembly
+
+  class Bundle
+
+    def initialize(manifest, expected_checksums)
+      @manifest           = manifest
+      @expected_checksums = expected_checksums
+      
+    end
+
+  end # class Bundle
+
+
+  # Maybe class ImageInfo << FileInfo
+  class FileInfo
+
+  end # class FileInfo
+
+
+  class DigitalObject
+
+  end # class DigitalObject
+
+
+end # module Assembly
