@@ -5,18 +5,17 @@ require 'Digest/sha1'
 require 'Digest/md5'
 
 
-# TODO: use the Ruby logger.
-module AssemblyLogger
-  def log(msg)
-    puts msg
-  end
-end
-
-
 module Assembly
 
+  # TODO: use the Ruby logger.
+  module Logger
+    def log(msg, level = :info)
+      puts msg
+    end
+  end
+
   class Images
-    include AssemblyLogger
+    include Assembly::Logger
 
     # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
     FORMATS = {
@@ -66,13 +65,13 @@ module Assembly
       begin
 
         unless File.exists?(input)
-          puts 'input file does not exists'
+          log 'input file does not exists'
           return false
         end
 
         exif = MiniExiftool.new input
         unless exif.mimetype == 'image/tiff'
-          puts 'input file was not TIFF'
+          log 'input file was not TIFF'
           return false
         end
 
@@ -80,7 +79,7 @@ module Assembly
         allow_overwrite = params[:allow_overwrite] || false
 
         if !allow_overwrite && File.exists?(output)
-          puts "output #{output} exists, cannot overwrite"
+          log "output #{output} exists, cannot overwrite"
           return false
         end
 
@@ -89,7 +88,7 @@ module Assembly
         output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
 
         if !File.exists?(output_profile_file)
-          puts "output profile #{output_profile} invalid"
+          log "output profile #{output_profile} invalid"
           return false
         end
 
@@ -122,7 +121,7 @@ module Assembly
         return true
 
       rescue Exception => error
-        puts "error: #{error}"
+        log "error: #{error}"
         return false
       end
 
@@ -223,7 +222,7 @@ module Assembly
 
 
   class Bundle
-    include AssemblyLogger
+    include Assembly::Logger
 
     def initialize(manifest, exp_checksums)
       @manifest      = manifest
@@ -275,13 +274,13 @@ module Assembly
 
 
   class ImageInfo
-    include AssemblyLogger
+    include Assembly::Logger
 
   end # class ImageInfo
 
 
   class DigitalObject
-    include AssemblyLogger
+    include Assembly::Logger
 
     attr_accessor :source_id, :already_processed, :druid
 
