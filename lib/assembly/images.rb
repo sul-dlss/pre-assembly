@@ -8,10 +8,9 @@ module Assembly
   
   class Images
 
-    # FORMATS is a constant used to identify the content type in the content meta-data file,
-    # it maps actual file mime/types to format attribute values in the content metadata XML file
-    # see https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values
+    # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
     FORMATS = {
+      # MIME type.               => The format attribute in the content metadata XML file.
       'image/jp2'                => 'JPEG2000',
       'image/jpeg'               => 'JPEG',
       'image/tiff'               => 'TIFF',
@@ -51,7 +50,7 @@ module Assembly
     # Optional parameters:
     #   * output          = path to the output JP2 file (default: mirrors the TIF file name)
     #   * allow_overwrite = an existing JP2 file won't be overwritten unless this is true
-    #   * output_profile  =  output color space profile to use: either sRGB (the default) or AdobeRGB1998    
+    #   * output_profile  =  output color space profile: either sRGB (the default) or AdobeRGB1998    
     def create_jp2(input, params = {})
 
       begin
@@ -85,12 +84,15 @@ module Assembly
         end
 
         path_to_profiles   = File.join(Assembly::PATH_TO_GEM,'profiles')
-        input_profile      = exif['profiledescription'].nil? ? "" : exif['profiledescription'].gsub(/[^[:alnum:]]/, '') # remove all non alpha-numeric characters, so we can get to a filename
+        # remove all non alpha-numeric characters, so we can get to a filename
+        input_profile      = exif['profiledescription'].nil? ? "" :
+                             exif['profiledescription'].gsub(/[^[:alnum:]]/, '')
         input_profile_file = File.join(path_to_profiles,"#{input_profile}.icc")
 
         # make temp tiff
         temp_tif_file      = "/tmp/#{UUIDTools::UUID.random_create.to_s}.tif"
-        profile_conversion = File.exists?(input_profile_file) ? "-profile #{input_profile_file} -profile #{output_profile_file}" : ""
+        profile_conversion = File.exists?(input_profile_file) ?
+                             "-profile #{input_profile_file} -profile #{output_profile_file}" : ""
         tiff_command       = "convert -quiet -compress none #{profile_conversion} #{input} #{temp_tif_file}"
         system(tiff_command)
 
@@ -99,7 +101,9 @@ module Assembly
 
         # Start jp2 creation section
         kdu_bin     = "kdu_compress "
-        options     = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} ORGgen_plt=yes -rate 1.5 Clevels=5 "
+        options     = " -precise -no_weights -quiet Creversible=no Cmodes=BYPASS Corder=RPCL " + 
+                      "Cblk=\\{64,64\\} Cprecincts=\\{256,256\\},\\{256,256\\},\\{128,128\\} " + 
+                      "ORGgen_plt=yes -rate 1.5 Clevels=5 "
         jp2_command = "#{kdu_bin} #{options} Clayers=#{layers.to_s} -i #{temp_tif_file} -o #{output}"
         system(jp2_command)
 
@@ -114,13 +118,13 @@ module Assembly
 
     end # create_jp2()
 
-    # Generate image content metadata files given a set of files.
+    # Generates image content XML metadata for a repository object.
     # This method only produces content metadata for images
     # and does not depend on a specific folder structure.
     #
     # Required parameters:
-    #   * druid     = the druid id as a string
-    #   * file_sets = an array of arrays of files to generate content metadata_for
+    #   * druid     = the repository object's druid id as a string
+    #   * file_sets = an array of arrays of files
     #
     # Optional parameters:
     #   * content_label = label that will be added to the content metadata (default = '')
@@ -150,13 +154,13 @@ module Assembly
 
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.contentMetadata(:objectId => "#{druid}",:type => content_type_description) {
-          file_sets.each do |entry| # iterate over all of the input file sets
+          file_sets.each do |file_set|
             sequence += 1
             resource_id = "#{druid}_#{sequence}"
             # start a new resource element
             xml.resource(:id => resource_id,:sequence => sequence,:type => content_type_description) {
               xml.label content_label
-              entry.each do |filename| # iterate over the first set of files
+              file_set.each do |filename|
                 id       = filename
                 exif     = MiniExiftool.new(filename)
                 mimetype = exif.mimetype
@@ -175,20 +179,35 @@ module Assembly
                 format  = FORMATS[mimetype.downcase]
                 cropped = "uncropped"
                 # add a new file element to the XML for this file
-                xml.file(:publish => publish[format],:format => format,:id => id,:mimetype => mimetype,:preserve => preserve[format],:shelve => shelve[format],:size => size) {
-                  xml.imageData(:height => height,:width => width)
-                  xml.attr cropped,:name => 'representation'
-                  xml.checksum sha1,:type => 'sha1'
-                  xml.checksum md5,:type => 'md5'
+                xml_file_params = {
+                  :publish  => publish[format],
+                  :format   => format,
+                  :id       => id,
+                  :mimetype => mimetype,
+                  :preserve => preserve[format],
+                  :shelve   => shelve[format],
+                  :size     => size
                 }
-              end # end loop over all specified content types for a given file in the base content directory
+                xml.file(xml_file_params) {
+                  xml.imageData(:height => height, :width => width)
+                  xml.attr cropped, :name => 'representation'
+                  xml.checksum sha1, :type => 'sha1'
+                  xml.checksum md5, :type => 'md5'
+                }
+              end # file_set.each
             }
-          end # end loop over base content directory
+          end # file_sets.each
         }
       end
       return builder.to_xml
 
     end # create_content_metadata()
+
+    # TODO: replace this method with real code.
+    @@master_druid = 'aa000aa0000'
+    def spawn_druid
+      @@master_druid.next!
+    end
 
   end # Images
 
