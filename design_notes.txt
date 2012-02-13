@@ -1,0 +1,110 @@
+Receive
+
+    - Copy the entire bundle (e.g., the hard drive contents) to a prep area on the
+      "dor/workspace" machine.
+
+    - Overview of the areas:
+
+        bundle_foo/
+
+            # A copy of the bundle as received from the external partner.
+            manifest.csv
+            md5sum_info.txt
+            image.tif
+            ...
+
+            # A place to persist image attributes and progress information.
+            bundle_info.yaml
+
+        dor/workspace/
+
+            druid/
+            druid/
+            ...
+
+Ingest
+
+    # Assemble the bundle info and initialize bundle_info, unless already present.
+    - Sanity check the bundle: basic technical and format checks.
+    - Load the bundle's manifest.
+    - Load the expected checksum metadata.
+    - Persist this info in bundle_state.
+
+    # Process the digital objects and their images.
+    For each dig_obj:
+
+        - Short-circuit if we've already processed the repo-object successfully.
+
+        - Acquire a druid.
+        - Register the object.
+        - Modify workflow metadata in DOR (optional).
+
+        For each repo-object image:
+            - Move/rename the image to the dor/workspace.
+
+            - Compute image attributes: exif, checksums, etc.
+            - Compare the checksum against the expected checksum from the data provider.
+
+            # Ideally, this step will work with or without a FileInfo object.
+            - Create JP2
+
+            - Persist image information in bundle_info.
+
+        # General XML files in dor/workspace.
+        - Generate content metadata.
+        - Generate descriptive metadata.
+        - Generate/modify workflow metadata.
+
+        - Persist information in bundle_info.
+
+Deploy
+
+    - Basic sanity checks on the bundle.
+    - Kick off the accessioning process.
+
+
+Misc notes on existing code:
+
+    Required parameters
+        tiff file name
+
+    Image attributes: computed, or supplied optionally (*)
+        exif information
+        jp2 file name (*)
+        allow overwrite (*)
+        output profile (*)
+        input profile
+
+    temp tiff file name
+        pixdem
+        layers
+
+        publish (*)
+        preserve (*)
+        shelve (*)
+        content label (*)
+        file size
+        md5 checksum
+        sha1 checksum
+        format
+
+    Sanity checks
+        tiff file exists
+        mimetype == tiff
+        jp2 file does not exist (unless overwrite requested)
+        output profile file exists
+
+        image exists
+
+    Constants
+        output profile file name
+        input profile file name
+
+        content type description
+        cropped
+
+    System calls
+        should check return values
+        need a mechanism by bypassing/mocking
+        is the generic rescue block needed or useful?
+
