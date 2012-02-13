@@ -22,6 +22,9 @@ module Assembly
       load_exp_checksums
       persist
       process_digital_objects
+      generate_content_metadata
+      generate_descriptive_metadata
+      persist
     end
 
     def sanity_check
@@ -55,6 +58,17 @@ module Assembly
 
     def process_digital_object(dobj)
       log "  - process_digital_object(#{dobj.source_id})"
+      dobj.register
+      dobj.modify_workflow
+      dobj.process_images
+    end
+
+    def generate_content_metadata
+      log "generate_content_metadata()"
+    end
+
+    def generate_descriptive_metadata
+      log "generate_descriptive_metadata()"
     end
 
   end # class Bundle

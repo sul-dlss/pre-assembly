@@ -9,6 +9,7 @@
 require 'assembly/version'
 require 'assembly/bundle'
 require 'assembly/images'
+require 'assembly/image'
 require 'assembly/image_info'
 require 'assembly/digital_object'
 
