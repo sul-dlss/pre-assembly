@@ -5,18 +5,38 @@ require 'Digest/sha1'
 require 'Digest/md5'
 
 module Assembly
-
+  
   class Images
 
     # FORMATS is a constant used to identify the content type in the content meta-data file,
     # it maps actual file mime/types to format attribute values in the content metadata XML file
     # see https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values
     FORMATS = {
-      'image/jp2' => 'JPEG2000','image/jpeg' => 'JPEG','image/tiff' => 'TIFF','image/tiff-fx' => 'TIFF','image/ief' => 'TIFF','image/gif' => 'GIF',
-      'text/plain' => 'TEXT','text/html' => 'HTML','text/csv' => 'CSV','audio/x-aiff' => 'AIFF','audio/x-mpeg' => 'MP3','audio/x-wave' => 'WAV',
-      'video/mpeg' => 'MP2','video/quicktime' => 'QUICKTIME','video/x-msvideo' => 'AVI','application/pdf' => 'PDF','application/zip' => 'ZIP','application/xml' => 'XML',
-      'application/tei+xml' => 'TEI','application/msword' => 'WORD','application/wordperfect' => 'WPD','application/mspowerpoint' => 'PPT','application/msexcel' => 'XLS',
-      'application/x-tar' => 'TAR','application/octet-stream' => 'BINARY'
+      'image/jp2'                => 'JPEG2000',
+      'image/jpeg'               => 'JPEG',
+      'image/tiff'               => 'TIFF',
+      'image/tiff-fx'            => 'TIFF',
+      'image/ief'                => 'TIFF',
+      'image/gif'                => 'GIF',
+      'text/plain'               => 'TEXT',
+      'text/html'                => 'HTML',
+      'text/csv'                 => 'CSV',
+      'audio/x-aiff'             => 'AIFF',
+      'audio/x-mpeg'             => 'MP3',
+      'audio/x-wave'             => 'WAV',
+      'video/mpeg'               => 'MP2',
+      'video/quicktime'          => 'QUICKTIME',
+      'video/x-msvideo'          => 'AVI',
+      'application/pdf'          => 'PDF',
+      'application/zip'          => 'ZIP',
+      'application/xml'          => 'XML',
+      'application/tei+xml'      => 'TEI',
+      'application/msword'       => 'WORD',
+      'application/wordperfect'  => 'WPD',
+      'application/mspowerpoint' => 'PPT',
+      'application/msexcel'      => 'XLS',
+      'application/x-tar'        => 'TAR',
+      'application/octet-stream' => 'BINARY',
     }
 
     def initialize
@@ -26,17 +46,15 @@ module Assembly
     # Create a JP2 file from a TIF file.
     #
     # Required paramaters:
-    # * full path to input TIF file
+    #   * input = path to input TIF file
     #
-    # Optional parameters (passed in via hash notation):
-    # * output = full path to the output JP2 file; if not supplied, will be the same filename and path as input TIF with JP2 extension
-    # * allow_overwrite = true or false; if true and output JP2 exists, it will overwrite; if false, it will not; defaults to false
-    # * output_profile = the output color space profile to use; accetable profiles are 'sRGB' and 'AdobeRGB1998'; defaults to 'sRGB'
-    #
-    # e.g. Assembly::Images.create_jp2('path_to_tif.tif',:output=>'path_to_jp2.jp2')
-    def create_jp2(input,params = {})
+    # Optional parameters:
+    #   * output          = path to the output JP2 file (default: mirrors the TIF file name)
+    #   * allow_overwrite = an existing JP2 file won't be overwritten unless this is true
+    #   * output_profile  =  output color space profile to use: either sRGB (the default) or AdobeRGB1998    
+    def create_jp2(input, params = {})
 
-      begin # rescue
+      begin
 
         unless File.exists?(input)
           puts 'input file does not exists'
@@ -90,44 +108,49 @@ module Assembly
         return true
 
       rescue Exception => error
-
         puts "error: #{error}"
         return false
+      end
 
-      end # rescue
+    end # create_jp2()
 
-    end # create_jp2
-
-    # Generate image content metadata files given a set of files as an array of arrays.  This method only produces content metadata for
-    # images and does not depend on a specific folder structure.
+    # Generate image content metadata files given a set of files.
+    # This method only produces content metadata for images
+    # and does not depend on a specific folder structure.
     #
     # Required parameters:
-    # * druid = the string of the druid
-    # * file_set = an array of arrays of files to generate content metadata_for
+    #   * druid     = the druid id as a string
+    #   * file_sets = an array of arrays of files to generate content metadata_for
     #
-    # Optional parameters (passed in via hash notation):
-    # * content_label = a label that will be added to the content metadata, defaults to blank string
-    # * publish = a hash of content types, specifying for each content type if it should be published ("yes" or "no")
-    # * preserve = a hash of content types, specifying for each content type if it should be preserved ("yes" or "no")
-    # * shelve = a hash of content types, specifying for each content type if it should be shelved ("yes" or "no")
-    # for publish, preserve, and shelve options, content types are "TIFF", "JPEG2000", "JPEG"
-    # e.g. Assembly::Images.create_content_metadata('nx288wh8889',['file1.tif','file1.jp2'],['file2.tif','file2.jp2'],:content_label=>'Collier Collection',:preserve=>{'TIFF'=>'yes',:'JPEG2000'=>'no'})
-    def create_content_metadata(druid,file_set,params={})
+    # Optional parameters:
+    #   * content_label = label that will be added to the content metadata (default = '')
+    #   * publish       = hash specifying content types to be published
+    #   * preserve      = ...                                 preserved
+    #   * shelve        = ...                                 shelved
+    #
+    # For example:
+    #    create_content_metadata(
+    #      'nx288wh8889',
+    #      [ ['foo.tif', 'foo.jp2'], ['bar.tif', 'bar.jp2'] ],
+    #      :content_label => 'Collier Collection',
+    #      :preserve      => { 'TIFF'=>'yes', 'JPEG2000' => 'no'},
+    #    )
+    def create_content_metadata(druid, file_sets, params={})
 
       content_type_description = "image"
 
-      publish       = params[:publish] || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as publish
-      preserve      = params[:preserve] || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as preserve
-      shelve        = params[:shelve] || {'TIFF' => 'no', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}  # indicates if content in metadata XML file will be marked as shelve
-      content_label = params[:content_label] || ""
+      publish       = params[:publish]       || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+      preserve      = params[:preserve]      || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+      shelve        = params[:shelve]        || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
+      content_label = params[:content_label] || ''
 
-      file_set.flatten.each {|file| return false if !File.exists?(file)} # check to be sure all input files exist
+      file_sets.flatten.each {|file| return false if !File.exists?(file)}
 
       sequence = 0
 
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.contentMetadata(:objectId => "#{druid}",:type => content_type_description) {
-          file_set.each do |entry| # iterate over all of the input file sets
+          file_sets.each do |entry| # iterate over all of the input file sets
             sequence += 1
             resource_id = "#{druid}_#{sequence}"
             # start a new resource element
@@ -165,8 +188,8 @@ module Assembly
       end
       return builder.to_xml
 
-    end # create_content_metadata
+    end # create_content_metadata()
 
-  end # image
+  end # Images
 
-end # assembly
+end # Assembly
