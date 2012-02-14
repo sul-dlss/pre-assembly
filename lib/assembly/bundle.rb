@@ -70,10 +70,10 @@ module Assembly
 
     def load_manifest
       super
-      manifest_rows = import(@manifest) { read_attributes_from_file }
-      manifest_rows.each do |mrow|
-        dobj = DigitalObject::new(mrow.sourceid)
-        dobj.add_image mrow.filename
+      csv_rows = import(@manifest) { read_attributes_from_file }
+      csv_rows.each do |r|
+        dobj = DigitalObject::new r.sourceid
+        dobj.add_image r.filename
         @digital_objects.push dobj
       end
     end
