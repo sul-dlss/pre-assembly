@@ -25,6 +25,20 @@ module Assembly
       log "    - register()"
     end
 
+    def __register_object
+      pid = Dor::SuriService.mint_id
+      
+      params = {
+        :object_type  => 'item',
+        :admin_policy => @apo_druid_id,
+        :source_id    => @source_id,
+        :pid          => "druid:#{druid.id}",
+        :label        => "#{@project_name}_#{druid.id}",
+        :tags         => ["Project : #{@project_name}"]
+      }
+      Dor::RegistrationService.register_object(params)
+    end
+
     def modify_workflow
       log "    - modify_workflow()"
     end
