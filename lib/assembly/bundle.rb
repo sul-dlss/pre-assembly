@@ -6,32 +6,37 @@ module Assembly
     include Assembly::Logging
     include CsvMapper
 
-    def initialize(manifest, exp_checksums)
-      @manifest        = manifest
-      @exp_checksums   = exp_checksums
+    attr_accessor :manifest, :checksum_file
+
+    def initialize()
+      @manifest        = ''
+      @checksum_file   = ''
+      @exp_checksums   = {}
       @digital_objects = []
     end
 
     def run_assembly
       check_for_required_files
-      load_manifest
       load_exp_checksums
+      load_manifest
       process_digital_objects
     end
 
     def check_for_required_files
-      # TODO: manifest file should exist.
-      #       exp_checksums files should exits.
+      # Implement in subclass.
       log "check_for_required_files()"
+    end
+
+    def load_exp_checksums
+      # Read checksums_file, using its content to populate @exp_checksums.
+      # Implement in subclass.
+      log "load_exp_checksums()"
     end
 
     def load_manifest
       # Read manifest and initialize digital objects.
+      # Implement in subclass.
       log "load_manifest()"
-    end
-
-    def load_exp_checksums
-      log "load_exp_checksums()"
     end
 
     def process_digital_objects
@@ -56,15 +61,30 @@ module Assembly
 
   class RevsBundle < Bundle
 
+    def check_for_required_files
+      [@manifest, @checksum_file].each do |f|
+        next if File.exists? f
+        abort "Cannot proceed: could not find required file: #{f}\n"
+      end
+    end
+
     def load_manifest
       super
-
       manifest_rows = import(@manifest) { read_attributes_from_file }
       manifest_rows.each do |mrow|
         dobj = DigitalObject::new(mrow.sourceid)
         dobj.add_image mrow.filename
         @digital_objects.push dobj
       end
+    end
+
+
+    def load_exp_checksums
+      super
+      checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
+      IO.read(@checksum_file).scan(checksum_regex).each { |file_name, md5|
+        @exp_checksums[file_name] = md5
+      }
     end
 
   end
