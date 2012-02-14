@@ -3,13 +3,17 @@ module Assembly
   class DigitalObject
     include Assembly::Logging
 
-    attr_accessor :source_id, :already_processed, :druid
+    attr_accessor :source_id, :already_processed, :druid, :images
 
-    def initialize(source_id)
+    def initialize(source_id = '')
       @source_id         = source_id
       @already_processed = false
       @druid             = ''
-      @images            = ['foo.tif', 'bar.tif'].map { |file_name| Image::new(file_name) }
+      @images            = []
+    end
+
+    def add_image(file_name)
+      @images.push Image::new(file_name)
     end
 
     def register
