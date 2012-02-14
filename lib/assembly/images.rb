@@ -4,14 +4,12 @@ require 'nokogiri'
 require 'Digest/sha1'
 require 'Digest/md5'
 
-
 # TODO: use the Ruby logger.
 module AssemblyLogger
   def log(msg)
     puts msg
   end
 end
-
 
 module Assembly
 

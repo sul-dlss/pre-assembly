@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Peter Mangiafico", "Renzo Sanchez-Silva","Monty Hindman","Tony Calavano"]
   s.email       = ["pmangiafico@stanford.edu"]
   s.homepage    = ""
-  s.summary     = %q{Ruby immplementation of services needed to prepare objects to be accessioned in SULAIR digital library}
+  s.summary     = %q{Ruby implementation of services needed to prepare objects to be accessioned in SULAIR digital library}
   s.description = %q{Contains classes to create symlinks, create derivative files, parse incoming CSV files to register objects, create content meta-data and perform other services needed for assembly}
 
   s.rubyforge_project = "assembly"
