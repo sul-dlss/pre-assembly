@@ -22,9 +22,6 @@ module Assembly
       load_exp_checksums
       persist
       process_digital_objects
-      generate_content_metadata
-      generate_descriptive_metadata
-      persist
     end
 
     def sanity_check
@@ -33,8 +30,8 @@ module Assembly
 
     def load_manifest
       log "load_manifest()"
-      @digital_objects = (0..5).map { |source_id| DigitalObject::new(source_id) }
-      @digital_objects[3].already_processed = true
+      @digital_objects = (0..2).map { |source_id| DigitalObject::new(source_id) }
+      @digital_objects[0].already_processed = true
     end
 
     def load_exp_checksums
@@ -48,30 +45,21 @@ module Assembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
+        msg = "  - process_digital_object(#{dobj.source_id})"
         if dobj.already_processed
-          log "  - process_digital_object(#{dobj.source_id}) [skipping]"
+          log msg + ' [SKIPPING: already processed]'
         else
-          process_digital_object dobj
+          log msg
+          dobj.register
+          dobj.modify_workflow
+          dobj.process_images
+          dobj.generate_content_metadata
+          dobj.generate_descriptive_metadata
+          dobj.persist
         end
       end
     end
 
-    def process_digital_object(dobj)
-      log "  - process_digital_object(#{dobj.source_id})"
-      dobj.register
-      dobj.modify_workflow
-      dobj.process_images
-    end
-
-    def generate_content_metadata
-      log "generate_content_metadata()"
-    end
-
-    def generate_descriptive_metadata
-      log "generate_descriptive_metadata()"
-    end
-
   end # class Bundle
-
 
 end # module Assembly
