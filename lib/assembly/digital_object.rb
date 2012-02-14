@@ -13,6 +13,11 @@ module Assembly
     end
 
     def register
+      # See SURI 2.0 confluence page for how to get a batch of druids in one call.
+      # 
+      #   curl -X POST 
+      #        http://***REMOVED***@lyberservices-dev.stanford.edu:8080
+      #        /suri2/namespaces/druid/identifiers?quantity=99
       log "    - register()"
     end
 
@@ -27,8 +32,18 @@ module Assembly
       end
     end
 
+    def generate_content_metadata
+      log "    - generate_content_metadata()"
+    end
+
+    def generate_descriptive_metadata
+      log "    - generate_descriptive_metadata()"
+    end
+
+    def persist
+      log "    - persist()"
+    end
+
   end # class DigitalObject
 
-end
-
-
+end # module Assembly
