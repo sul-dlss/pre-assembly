@@ -20,7 +20,6 @@ module Assembly
       sanity_check
       load_manifest
       load_exp_checksums
-      persist
       process_digital_objects
     end
 
@@ -36,10 +35,6 @@ module Assembly
 
     def load_exp_checksums
       log "load_exp_checksums()"
-    end
-
-    def persist
-      log "persist()"
     end
 
     def process_digital_objects

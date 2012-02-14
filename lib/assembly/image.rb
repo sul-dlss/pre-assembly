@@ -16,7 +16,6 @@ module Assembly
       compute_checksums
       compare_against_exp_checksums
       create_jp2
-      persist
     end
 
     def move_to_dor_workspace
@@ -37,10 +36,6 @@ module Assembly
 
     def create_jp2
       log "        - create_jp2()"
-    end
-
-    def persist
-      log "        - persist()"
     end
 
   end # class Image
