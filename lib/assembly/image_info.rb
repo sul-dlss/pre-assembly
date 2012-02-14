@@ -1,7 +1,7 @@
 module Assembly
 
   class ImageInfo
-    include Assembly::Logger
+    include Assembly::Logging
   end # class ImageInfo
 
 end

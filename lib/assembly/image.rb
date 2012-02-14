@@ -1,7 +1,7 @@
 module Assembly
 
   class Image
-    include Assembly::Logger
+    include Assembly::Logging
 
     attr_accessor :file_name
 

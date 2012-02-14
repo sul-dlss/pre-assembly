@@ -1,15 +1,7 @@
 module Assembly
 
-  # TODO: use the Ruby logger.
-  module Logger
-    def log(msg, level = :info)
-      puts msg
-    end
-  end
-
-
   class Bundle
-    include Assembly::Logger
+    include Assembly::Logging
 
     def initialize(manifest, exp_checksums)
       @manifest      = manifest
@@ -55,6 +47,6 @@ module Assembly
       end
     end
 
-  end # class Bundle
+  end
 
-end # module Assembly
+end

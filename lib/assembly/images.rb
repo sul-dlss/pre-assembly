@@ -8,7 +8,7 @@ require 'Digest/md5'
 module Assembly
 
   class Images
-    include Assembly::Logger
+    include Assembly::Logging
 
     # See https://consul.stanford.edu/display/chimera/DOR+file+types+and+attribute+values.
     FORMATS = {
@@ -58,13 +58,13 @@ module Assembly
       begin
 
         unless File.exists?(input)
-          log 'input file does not exists'
+          log 'input file does not exist', :error
           return false
         end
 
         exif = MiniExiftool.new input
         unless exif.mimetype == 'image/tiff'
-          log 'input file was not TIFF'
+          log 'input file was not TIFF', :error
           return false
         end
 
@@ -72,7 +72,7 @@ module Assembly
         allow_overwrite = params[:allow_overwrite] || false
 
         if !allow_overwrite && File.exists?(output)
-          log "output #{output} exists, cannot overwrite"
+          log "output #{output} exists, cannot overwrite", :error
           return false
         end
 
@@ -81,7 +81,7 @@ module Assembly
         output_profile_file = File.join(path_to_profiles,"#{output_profile}.icc")
 
         if !File.exists?(output_profile_file)
-          log "output profile #{output_profile} invalid"
+          log "output profile #{output_profile} invalid", :error
           return false
         end
 
@@ -114,7 +114,7 @@ module Assembly
         return true
 
       rescue Exception => error
-        log "error: #{error}"
+        log "error: #{error}", :error
         return false
       end
 
