@@ -1,28 +1,33 @@
+require 'csv-mapper'
+
 module Assembly
 
   class Bundle
     include Assembly::Logging
+    include CsvMapper
 
     def initialize(manifest, exp_checksums)
-      @manifest      = manifest
-      @exp_checksums = exp_checksums
+      @manifest        = manifest
+      @exp_checksums   = exp_checksums
+      @digital_objects = []
     end
 
     def run_assembly
-      sanity_check
+      check_for_required_files
       load_manifest
       load_exp_checksums
       process_digital_objects
     end
 
-    def sanity_check
-      log "sanity_check()"
+    def check_for_required_files
+      # TODO: manifest file should exist.
+      #       exp_checksums files should exits.
+      log "check_for_required_files()"
     end
 
     def load_manifest
+      # Read manifest and initialize digital objects.
       log "load_manifest()"
-      @digital_objects = (0..2).map { |source_id| DigitalObject::new(source_id) }
-      @digital_objects[0].already_processed = true
     end
 
     def load_exp_checksums
@@ -44,6 +49,21 @@ module Assembly
           dobj.generate_descriptive_metadata
           dobj.persist
         end
+      end
+    end
+
+  end
+
+  class RevsBundle < Bundle
+
+    def load_manifest
+      super
+
+      manifest_rows = import(@manifest) { read_attributes_from_file }
+      manifest_rows.each do |mrow|
+        dobj = DigitalObject::new(mrow.sourceid)
+        dobj.add_image mrow.filename
+        @digital_objects.push dobj
       end
     end
 

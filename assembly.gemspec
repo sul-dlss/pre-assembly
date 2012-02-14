@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mini_exiftool"
   s.add_dependency "uuidtools"
   s.add_dependency "nokogiri"
+  s.add_dependency "csv-mapper"
   
   s.add_development_dependency "rspec", "~> 2.6"
   
