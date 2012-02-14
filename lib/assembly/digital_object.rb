@@ -1,7 +1,7 @@
 module Assembly
 
   class DigitalObject
-    include Assembly::Logger
+    include Assembly::Logging
 
     attr_accessor :source_id, :already_processed, :druid
 
