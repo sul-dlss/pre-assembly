@@ -37,6 +37,12 @@ module Assembly
         :tags         => ["Project : #{@project_name}"]
       }
       Dor::RegistrationService.register_object(params)
+      # Returns:
+      result = {
+         :response => http_response,
+          :pid => pid
+      }
+      
     end
 
     def modify_workflow
