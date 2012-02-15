@@ -211,12 +211,6 @@ module Assembly
 
     end # create_content_metadata()
 
-    # TODO: replace this method with real code.
-    @@master_druid = 'aa000aa0000'
-    def spawn_druid
-      @@master_druid.next!
-    end
-
   end # class Images
 
 end # module Assembly
