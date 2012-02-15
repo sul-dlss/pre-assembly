@@ -16,34 +16,37 @@ Assembly preparation:
         - Register the object and acquire a druid.
         - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
         - Generate a minimal content_metadata.xml file.
-        - Create symlink in dor/workspace pointing to the object on the thumper.
         - Initialize the object's workflow in DOR, which will unleash the robots.
 
 
 Assembly robots:
 
     # ROBOT.
-    - Compute image attributes: exif and related info.
+    - Compute image attributes for TIF: exif and related info.
     - Store that info in content_metadata.xml.
-
-    # ROBOT.
-    - Compute checksums.
-    - Store that info in content_metadata.xml.
-
-    # ROBOT.
-    - Compare actual checksums against expected checksums.
 
     # ROBOT.
     - Create JP2
 
     # ROBOT.
+    - Compute image attributes for JP2: exif and related info.
+    - Store that info in content_metadata.xml.
+
+    # ROBOT.
+    - Compute checksums for both TIF and JP2.
+    - Store that info in content_metadata.xml.
+
+    # ROBOT.
+    - Compare actual checksums against expected checksums for TIF.
+
+    # ROBOT.
     - Generate descriptive metadata.
 
+    # ROBOT.
+    - Create symlink in dor/workspace pointing to the object on the thumper.
 
-Common accessioning begins in one of two ways:
-    - Automatically (triggered by the workflow state)
-    - After human approval (if the workflow specification calls for it).
 
+Common accessioning.
 
 
 
