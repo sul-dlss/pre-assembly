@@ -1,65 +1,44 @@
-Receive
+Download:
 
-    - Copy the entire bundle (e.g., the hard drive contents) to a prep area on the
-      "dor/workspace" machine.
+    - Receive the bundle of material (e.g. REVS hard drive).
+    - Copy the bundle to a prep area on the thumper staging machine.
+    - Launch the automated assembly process.
 
-    - Overview of the areas:
+Assembly preparation:
 
-        bundle_foo/
-
-            # A copy of the bundle as received from the external partner.
-            manifest.csv
-            md5sum_info.txt
-            image.tif
-            ...
-
-            # A place to persist image attributes and progress information.
-            bundle_info.yaml
-
-        dor/workspace/
-
-            druid/
-            druid/
-            ...
-
-Ingest
-
-    # Assemble the bundle info and initialize bundle_info, unless already present.
-    - Sanity check the bundle: basic technical and format checks.
     - Load the bundle's manifest.
     - Load the expected checksum metadata.
 
-    # Process the digital objects and their images.
-    For each dig_obj:
+    For each digital object:
 
-        - Short-circuit if we've already processed the repo-object successfully.
+        - Register the object and acquire a druid.
+        - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
+        - Generate a minimal content_metadata.xml file.
+        - Create symlink in dor/workspace pointing to the object on the thumper.
+        - Initialize the object's workflow in DOR, which will unleash the robots.
 
-        - Acquire a druid.
-        - Register the object.
-        - Modify workflow metadata in DOR (optional).
-					store info in properties data stream?
+Assembly robots:
 
-        For each repo-object image:
-            - Move/rename the image to the dor/workspace.
+    # ROBOT.
+    - Compute image attributes: exif and related info.
+    - Store that info in content_metadata.xml.
 
-            - Compute image attributes: exif, checksums, etc.
-            - Compare the checksum against the expected checksum from the data provider.
+    # ROBOT.
+    - Compute checksums.
+    - Store that info in content_metadata.xml.
 
-            # Ideally, this step will work with or without a FileInfo object.
-            - Create JP2
+    # ROBOT.
+    - Compare the actual checksums against the expected checksums from the data provider.
 
-        # General XML files in dor/workspace.
-        - Generate content metadata.
-        - Generate descriptive metadata.
-        - Generate/modify workflow metadata.
+    # ROBOT.
+    - Create JP2
 
-        - Persist digital object's information in bundle_info.
+    # ROBOT.
+    - Generate descriptive metadata.
 
-Deploy
 
-    - Basic sanity checks on the bundle.
-    - Kick off the accessioning process.
 
+===================================================
 
 Misc notes on existing code:
 
