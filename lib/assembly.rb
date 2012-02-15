@@ -6,8 +6,13 @@
 # Author::    SULAIR DLSS
 # see README for prerequisites
 
-require 'assembly/images'
 require 'assembly/version'
+require 'assembly/logging'
+require 'assembly/bundle'
+require 'assembly/images'
+require 'assembly/image'
+require 'assembly/image_info'
+require 'assembly/digital_object'
 
 module Assembly
   PATH_TO_GEM = File.expand_path(File.dirname(__FILE__) + '/..')
