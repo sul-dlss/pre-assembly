@@ -4,10 +4,12 @@ Download:
     - Copy the bundle to a prep area on the thumper staging machine.
     - Launch the automated assembly process.
 
+
 Assembly preparation:
 
-    - Load the bundle's manifest.
-    - Load the expected checksum metadata.
+    # Load information from the data provider.
+    - Manifest.
+    - Expected checksum metadata.
 
     For each digital object:
 
@@ -16,6 +18,7 @@ Assembly preparation:
         - Generate a minimal content_metadata.xml file.
         - Create symlink in dor/workspace pointing to the object on the thumper.
         - Initialize the object's workflow in DOR, which will unleash the robots.
+
 
 Assembly robots:
 
@@ -28,13 +31,19 @@ Assembly robots:
     - Store that info in content_metadata.xml.
 
     # ROBOT.
-    - Compare the actual checksums against the expected checksums from the data provider.
+    - Compare actual checksums against expected checksums.
 
     # ROBOT.
     - Create JP2
 
     # ROBOT.
     - Generate descriptive metadata.
+
+
+Common accessioning begins in one of two ways:
+    - Automatically (triggered by the workflow state)
+    - After human approval (if the workflow specification calls for it).
+
 
 
 
