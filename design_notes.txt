@@ -37,6 +37,7 @@ Ingest
         - Acquire a druid.
         - Register the object.
         - Modify workflow metadata in DOR (optional).
+					store info in properties data stream?
 
         For each repo-object image:
             - Move/rename the image to the dor/workspace.

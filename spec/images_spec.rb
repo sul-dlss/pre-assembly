@@ -73,6 +73,7 @@ describe Assembly::Images do
     xml = Nokogiri::XML(result)
     xml.errors.size.should be 0
     xml.xpath("//resource").length.should be 1
+    xml.xpath("//resource/file").length.should be 2
     xml.xpath("//label").length.should be 1
     xml.xpath("//label")[0].text.should == "test label"
   end
@@ -85,6 +86,7 @@ describe Assembly::Images do
     xml = Nokogiri::XML(result)
     xml.errors.size.should be 0
     xml.xpath("//resource").length.should be 2
+    xml.xpath("//resource/file").length.should be 4    
     xml.xpath("//label").length.should be 2
     xml.xpath("//label")[0].text.should == "test label2"
     xml.xpath("//label")[1].text.should == "test label2"
