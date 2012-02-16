@@ -11,7 +11,6 @@ require 'assembly/logging'
 require 'assembly/bundle'
 require 'assembly/images'
 require 'assembly/image'
-require 'assembly/image_info'
 require 'assembly/digital_object'
 
 module Assembly
