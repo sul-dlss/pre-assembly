@@ -2,9 +2,7 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-abort "Usage: #{$0} MANIFEST EXP_CHECKSUMS\n" unless ARGV.size == 2
+abort "Usage: #{$0} BUNDLE_DIR\n" unless ARGV.size == 1
 
-bundle               = Assembly::RevsBundle.new
-bundle.manifest      = ARGV[0]
-bundle.checksum_file = ARGV[1]
+bundle = Assembly::Bundle.new ARGV[0]
 bundle.run_assembly

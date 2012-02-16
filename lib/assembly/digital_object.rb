@@ -1,6 +1,7 @@
 module Assembly
 
   class DigitalObject
+
     include Assembly::Logging
 
     attr_accessor :source_id, :already_processed, :druid, :images
@@ -10,6 +11,9 @@ module Assembly
       @already_processed = false
       @druid             = ''
       @images            = []
+      @project_name      = 'REVS'              # TODO
+      @apo_druid_id      = 'druid:qv648vd4392' # TODO
+      @collection        = 'druid:nt028fd5773' # TODO
     end
 
     def add_image(file_name)
@@ -23,51 +27,31 @@ module Assembly
       #        http://***REMOVED***@lyberservices-dev.stanford.edu:8080
       #        /suri2/namespaces/druid/identifiers?quantity=99
       log "    - register()"
-    end
 
-    def __register_object
-      pid = Dor::SuriService.mint_id
-      
+      pid   = Dor::SuriService.mint_id
+      druid = Druid.new pid
       params = {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
         :source_id    => @source_id,
-        :pid          => "druid:#{druid.id}",
         :label        => "#{@project_name}_#{druid.id}",
         :tags         => ["Project : #{@project_name}"]
       }
-      Dor::RegistrationService.register_object(params)
+
+      p params
+      exit
+
+      result = Dor::RegistrationService.register_object(params)
+      p result
+      exit
       # Returns:
-      result = {
-         :response => http_response,
-          :pid => pid
-      }
+      # result = {
+      #   :response => http_response,
+      #    :pid => pid
+      # }
       
     end
 
-    def modify_workflow
-      log "    - modify_workflow()"
-    end
+  end
 
-    def process_images
-      log "    - process_images()"
-      @images.each do |img|
-        img.process_image
-      end
-    end
-
-    def generate_content_metadata
-      log "    - generate_content_metadata()"
-    end
-
-    def generate_descriptive_metadata
-      log "    - generate_descriptive_metadata()"
-    end
-
-    def persist
-      log "    - persist()"
-    end
-
-  end # class DigitalObject
-
-end # module Assembly
+end

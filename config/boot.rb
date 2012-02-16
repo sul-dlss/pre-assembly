@@ -3,7 +3,7 @@ require 'logger'
 
 # Using test as default environment, because the development
 # environment is not being fully maintained at the moment.
-environment   = ENV['ROBOT_ENVIRONMENT'] ||= 'test'
+environment   = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 assembly_root = File.expand_path(File.dirname(__FILE__) + '/..')
 log_level     = Logger::SEV_LABEL.index(ENV['ROBOT_LOG_LEVEL']) || Logger::INFO
 

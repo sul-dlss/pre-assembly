@@ -6,11 +6,16 @@ module Assembly
     include Assembly::Logging
     include CsvMapper
 
-    attr_accessor :manifest, :checksum_file
+    attr_accessor :bundle_dir, :manifest, :checksums_file
 
-    def initialize()
-      @manifest        = ''
-      @checksum_file   = ''
+    def initialize(bundle_dir, params = {})
+      @bundle_dir      = bundle_dir
+      @manifest        = params[:manifest]        || 'manifest.csv'
+      @checksums_file  = params[:check_sums_file] || 'checksums.txt'
+
+      @manifest       = File.join @bundle_dir, @manifest
+      @checksums_file = File.join @bundle_dir, @checksums_file
+
       @exp_checksums   = {}
       @digital_objects = []
     end
@@ -23,20 +28,31 @@ module Assembly
     end
 
     def check_for_required_files
-      # Implement in subclass.
       log "check_for_required_files()"
+      [@manifest, @checksums_file].each do |f|
+        next if File.exists? f
+        abort "Cannot proceed: could not find required file: #{f}\n"
+      end
     end
 
     def load_exp_checksums
       # Read checksums_file, using its content to populate @exp_checksums.
-      # Implement in subclass.
       log "load_exp_checksums()"
+      checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
+      IO.read(@checksums_file).scan(checksum_regex).each { |file_name, md5|
+        @exp_checksums[file_name] = md5
+      }
     end
 
     def load_manifest
       # Read manifest and initialize digital objects.
-      # Implement in subclass.
       log "load_manifest()"
+      csv_rows = import(@manifest) { read_attributes_from_file }
+      csv_rows.each do |r|
+        dobj = DigitalObject::new r.sourceid
+        dobj.add_image r.filename
+        @digital_objects.push dobj
+      end
     end
 
     def process_digital_objects
@@ -47,44 +63,12 @@ module Assembly
           log msg + ' [SKIPPING: already processed]'
         else
           log msg
-          dobj.register
-          dobj.modify_workflow
-          dobj.process_images
-          dobj.generate_content_metadata
-          dobj.generate_descriptive_metadata
-          dobj.persist
+          # dobj.register
+          # - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
+          # - Generate a minimal content_metadata.xml file.
+          # - Initialize the object's workflow in DOR, which will unleash the robots.
         end
       end
-    end
-
-  end
-
-  class RevsBundle < Bundle
-
-    def check_for_required_files
-      [@manifest, @checksum_file].each do |f|
-        next if File.exists? f
-        abort "Cannot proceed: could not find required file: #{f}\n"
-      end
-    end
-
-    def load_manifest
-      super
-      csv_rows = import(@manifest) { read_attributes_from_file }
-      csv_rows.each do |r|
-        dobj = DigitalObject::new r.sourceid
-        dobj.add_image r.filename
-        @digital_objects.push dobj
-      end
-    end
-
-
-    def load_exp_checksums
-      super
-      checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
-      IO.read(@checksum_file).scan(checksum_regex).each { |file_name, md5|
-        @exp_checksums[file_name] = md5
-      }
     end
 
   end
