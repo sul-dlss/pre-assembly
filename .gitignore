@@ -7,3 +7,4 @@ doc/*
 log/*
 config/certs/*
 config/environments/*
+tags
