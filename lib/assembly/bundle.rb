@@ -6,7 +6,7 @@ module Assembly
     include Assembly::Logging
     include CsvMapper
 
-    attr_accessor :bundle_dir, :manifest, :checksums_file
+    attr_accessor :bundle_dir, :manifest, :checksums_file, :cleanup
 
     def initialize(bundle_dir, params = {})
       @bundle_dir      = bundle_dir
@@ -18,6 +18,7 @@ module Assembly
 
       @exp_checksums   = {}
       @digital_objects = []
+      @cleanup         = false
     end
 
     def run_assembly
@@ -63,10 +64,13 @@ module Assembly
           log msg + ' [SKIPPING: already processed]'
         else
           log msg
-          # dobj.register
-          # - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
-          # - Generate a minimal content_metadata.xml file.
-          # - Initialize the object's workflow in DOR, which will unleash the robots.
+          dobj.register
+
+          # Initialize the object's workflow in DOR.
+          # Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
+          # Generate a skeleton content_metadata.xml file.
+
+          dobj.nuke if @cleanup
         end
       end
     end
