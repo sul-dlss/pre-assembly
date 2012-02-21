@@ -6,17 +6,16 @@ module Assembly
 
     attr_accessor :source_id, :already_processed, :druid, :images
 
-    def initialize(source_id = '')
-      @already_processed = false
-      @druid             = nil
-      @images            = []
+    def initialize(params = {})
+      required_params = [ :project_name, :apo_druid_id, :collection_druid_id, :source_id ]
+      raise ArgumentError unless required_params.all? { |k| params.has_key? k }
 
-      # TODO: modify these hard-coded, REVS-specific values.
-      @project_name      = 'revs'
-      @apo_druid_id      = 'druid:qv648vd4392'
-      @collection        = 'druid:nt028fd5773'
-      @source_id         = {  @project_name => source_id }
-      @source_id_key     = "#{@project_name}:#{source_id}"
+      @project_name        = params[:project_name]
+      @apo_druid_id        = params[:apo_druid_id]
+      @collection_druid_id = params[:collection_druid_id]
+      @source_id           = { params[:project_name] => source_id }
+      @druid               = nil
+      @images              = []
     end
 
     def add_image(file_name)

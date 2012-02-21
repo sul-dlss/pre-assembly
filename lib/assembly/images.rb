@@ -4,13 +4,6 @@ require 'nokogiri'
 require 'Digest/sha1'
 require 'Digest/md5'
 
-# TODO: use the Ruby logger.
-module AssemblyLogger
-  def log(msg)
-    puts msg
-  end
-end
-
 module Assembly
 
   class Images
@@ -45,10 +38,6 @@ module Assembly
       'application/x-tar'        => 'TAR',
       'application/octet-stream' => 'BINARY',
     }
-
-    def initialize
-      # TODO: pass in needed parameters.
-    end
 
     # Create a JP2 file from a TIF file.
     #
@@ -124,7 +113,7 @@ module Assembly
         return false
       end
 
-    end # create_jp2()
+    end
 
     # Generates image content XML metadata for a repository object.
     # This method only produces content metadata for images
@@ -207,10 +196,11 @@ module Assembly
           end # file_sets.each
         }
       end
+
       return builder.to_xml
 
-    end # create_content_metadata()
+    end
 
-  end # class Images
+  end
 
-end # module Assembly
+end

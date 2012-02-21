@@ -6,19 +6,30 @@ module Assembly
     include Assembly::Logging
     include CsvMapper
 
-    attr_accessor :bundle_dir, :manifest, :checksums_file, :cleanup
+    attr_accessor(
+      :bundle_dir,
+      :manifest,
+      :checksums_file,
+      :project_name,
+      :apo_druid_id,
+      :collection_druid_id,
+      :cleanup
+    )
 
-    def initialize(bundle_dir, params = {})
-      @bundle_dir      = bundle_dir
-      @manifest        = params[:manifest]        || 'manifest.csv'
-      @checksums_file  = params[:check_sums_file] || 'checksums.txt'
+    def initialize(params = {})
+      @bundle_dir          = params[:bundle_dir]
+      @manifest            = params[:manifest]
+      @checksums_file      = params[:check_sums_file]
+      @project_name        = params[:project_name]
+      @apo_druid_id        = params[:apo_druid_id]
+      @collection_druid_id = params[:collection_druid_id]
+      @cleanup             = params[:cleanup]
 
-      @manifest       = File.join @bundle_dir, @manifest
-      @checksums_file = File.join @bundle_dir, @checksums_file
+      @manifest       = File.join params[:bundle_dir], params[:manifest]
+      @checksums_file = File.join params[:bundle_dir], params[:checksums_file]
 
       @exp_checksums   = {}
       @digital_objects = []
-      @cleanup         = false
     end
 
     def run_assembly
@@ -50,7 +61,15 @@ module Assembly
       log "load_manifest()"
       csv_rows = import(@manifest) { read_attributes_from_file }
       csv_rows.each do |r|
-        dobj = DigitalObject::new r.sourceid
+        # TODO: modify these hard-coded, REVS-specific values.
+        params = {
+          :project_name        => 'revs',
+          :apo_druid_id        => 'druid:qv648vd4392',
+          :collection_druid_id => 'druid:nt028fd5773',
+          :source_id           => r.sourceid,
+        }
+
+        dobj = DigitalObject::new params
         dobj.add_image r.filename
         @digital_objects.push dobj
       end
@@ -59,19 +78,14 @@ module Assembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-        msg = "  - process_digital_object(#{dobj.source_id})"
-        if dobj.already_processed
-          log msg + ' [SKIPPING: already processed]'
-        else
-          log msg
-          dobj.register
+        log "  - process_digital_object(#{dobj.source_id})"
+        dobj.register
 
-          # Initialize the object's workflow in DOR.
-          # Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
-          # Generate a skeleton content_metadata.xml file.
+        # Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
+        # Initialize the object's workflow in DOR.
+        # Generate a skeleton content_metadata.xml file.
 
-          dobj.nuke if @cleanup
-        end
+        dobj.nuke if @cleanup
       end
     end
 
