@@ -14,12 +14,19 @@ Assembly preparation:
     For each digital object:
 
         - Register the object and acquire a druid.
+        - Initialize the object's workflow in DOR.
         - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
-        - Generate a minimal content_metadata.xml file.
-        - Initialize the object's workflow in DOR, which will unleash the robots.
+        - Generate a skeleton content_metadata.xml file.
 
 
 Assembly robots:
+
+    # ROBOT.
+    - Compute checksums for TIF.
+    - Store that info in content_metadata.xml.
+
+    # ROBOT.
+    - Compare actual checksums against expected checksums for TIF.
 
     # ROBOT.
     - Compute image attributes for TIF: exif and related info.
@@ -33,11 +40,8 @@ Assembly robots:
     - Store that info in content_metadata.xml.
 
     # ROBOT.
-    - Compute checksums for both TIF and JP2.
+    - Compute checksums for JP2.
     - Store that info in content_metadata.xml.
-
-    # ROBOT.
-    - Compare actual checksums against expected checksums for TIF.
 
     # ROBOT.
     - Generate descriptive metadata.
