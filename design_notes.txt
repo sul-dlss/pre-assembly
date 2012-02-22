@@ -47,14 +47,47 @@ Assembly robots:
     - Generate descriptive metadata.
 
     # ROBOT.
-    - Create symlink in dor/workspace pointing to the object on the thumper.
+    - Make REST calls to dor-services to initiate common accessioning.
+    - See https://consul.stanford.edu/display/chimera/REST+mappings+for+dor-services+gem
+        initialize_workspace
+        initiate_apo_workflow
 
 
-Common accessioning.
+==================================================
+
+Needed Git projects:
 
 
+    (1) AssemblyItem
 
-===================================================
+        # Mimic dor-services, using branch origin/feature/object-refactor.
+
+        module Dor
+
+            class AssemblyItem < Dor::Item
+                include Checksumable
+                include Exifable
+
+    (2) Assembly
+
+    
+        # Mimic common-accessioning.
+
+        module Assembly
+          
+          class Checksum < LyberCore::Robots::Robot
+
+            def initialize(opts = {})
+              super('assemblyWF', 'checksum', opts)
+            end
+
+            def process_item(work_item)
+              obj = Dor::AssemblyItem.load_instance(work_item.druid)
+              obj.checksum
+            end
+            
+
+==================================================
 
 Misc notes on existing code:
 
@@ -100,4 +133,5 @@ Misc notes on existing code:
         should check return values
         need a mechanism by bypassing/mocking
         is the generic rescue block needed or useful?
+        See the systemu gem.
 
