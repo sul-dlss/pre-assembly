@@ -13,7 +13,7 @@ module Assembly
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @collection_druid_id = params[:collection_druid_id]
-      @source_id           = { params[:project_name] => source_id }
+      @source_id           = { params[:project_name] => params[:source_id] }
       @druid               = nil
       @images              = []
     end
