@@ -27,8 +27,14 @@ module Assembly
       @staging_dir         = params[:staging_dir]
       @copy_to_staging     = params[:copy_to_staging]
       @cleanup             = params[:cleanup]
+
       @exp_checksums       = {}
       @digital_objects     = []
+
+      @file_handlers = {
+        'copy' => lambda { |f, d| File.copy f, d },
+        'move' => lambda { |f, d| File.move f, d },
+      }
     end
 
     def run_assembly
@@ -42,6 +48,10 @@ module Assembly
     def set_bundle_paths
       @manifest       = full_path_in_bundle_dir @manifest
       @checksums_file = full_path_in_bundle_dir @checksums_file
+    end
+
+    def file_handler
+      @file_handlers[@copy_to_staging ? 'copy' : 'move']
     end
 
     def full_path_in_bundle_dir(file)
@@ -79,13 +89,15 @@ module Assembly
         }
 
         dobj = DigitalObject::new params
-        dobj.add_image full_path_in_bundle_dir(r.filename)
+        dobj.add_image r.filename
         @digital_objects.push dobj
       end
     end
 
     def process_digital_objects
       log "process_digital_objects()"
+      fhandler = file_handler
+
       @digital_objects.each do |dobj|
         log "  - process_digital_object(#{dobj.source_id})"
 
@@ -94,14 +106,9 @@ module Assembly
 
         # Copy or move images to staging directory.
         dobj.images.each do |img|
-          msg = "#{img.file_name}, #{@staging_dir}"
-          if @copy_to_staging
-            log "    - copy(#{msg})"
-            File.copy img.file_name, @staging_dir
-          else
-            log "    - move(#{msg})"
-            File.move img.file_name, @staging_dir
-          end
+          src = full_path_in_bundle_dir img.file_name
+          log "    - copy-move(#{src}, #{@staging_dir})"
+          fhandler.call src, @staging_dir
         end
 
         # Generate a skeleton content_metadata.xml file.
@@ -112,10 +119,9 @@ module Assembly
         # TODO.
 
         # During development, perform cleanup steps:
-        #   - delete any objects we registered
-        #   - undo file copy/move                       # TODO?
-        dobj.nuke if @cleanup
-
+        #   - delete objects we registered
+        next unless @cleanup
+        dobj.nuke
       end
     end
 
