@@ -121,7 +121,7 @@ module Assembly
         # During development, perform cleanup steps:
         #   - delete objects we registered
         next unless @cleanup
-        dobj.nuke
+        dobj.delete_from_dor
       end
     end
 

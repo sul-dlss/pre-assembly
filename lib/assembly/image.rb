@@ -1,6 +1,7 @@
 module Assembly
 
   class Image
+
     include Assembly::Logging
 
     attr_accessor :file_name
@@ -12,5 +13,3 @@ module Assembly
   end
 
 end
-
-
