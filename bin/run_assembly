@@ -11,6 +11,8 @@ bundle = Assembly::Bundle.new(
   :project_name        => 'REVS',
   :apo_druid_id        => 'druid:qv648vd4392',
   :collection_druid_id => 'druid:nt028fd5773',
+  :staging_dir         => 'tmp',
+  :copy_to_staging     => true,
   :cleanup             => true
 )
 

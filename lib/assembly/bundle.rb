@@ -1,4 +1,5 @@
 require 'csv-mapper'
+require 'ftools'
 
 module Assembly
 
@@ -19,31 +20,39 @@ module Assembly
     def initialize(params = {})
       @bundle_dir          = params[:bundle_dir]
       @manifest            = params[:manifest]
-      @checksums_file      = params[:check_sums_file]
+      @checksums_file      = params[:checksums_file]
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @collection_druid_id = params[:collection_druid_id]
+      @staging_dir         = params[:staging_dir]
+      @copy_to_staging     = params[:copy_to_staging]
       @cleanup             = params[:cleanup]
-
-      @manifest       = File.join params[:bundle_dir], params[:manifest]
-      @checksums_file = File.join params[:bundle_dir], params[:checksums_file]
-
-      @exp_checksums   = {}
-      @digital_objects = []
+      @exp_checksums       = {}
+      @digital_objects     = []
     end
 
     def run_assembly
+      set_bundle_paths
       check_for_required_files
       load_exp_checksums
       load_manifest
       process_digital_objects
     end
 
+    def set_bundle_paths
+      @manifest       = full_path_in_bundle_dir @manifest
+      @checksums_file = full_path_in_bundle_dir @checksums_file
+    end
+
+    def full_path_in_bundle_dir(file)
+      File.join @bundle_dir, file
+    end
+
     def check_for_required_files
       log "check_for_required_files()"
-      [@manifest, @checksums_file].each do |f|
+      [@manifest, @checksums_file, @staging_dir].each do |f|
         next if File.exists? f
-        abort "Cannot proceed: could not find required file: #{f}\n"
+        abort "Cannot proceed: could not find required file or directory: #{f}\n"
       end
     end
 
@@ -61,16 +70,16 @@ module Assembly
       log "load_manifest()"
       csv_rows = import(@manifest) { read_attributes_from_file }
       csv_rows.each do |r|
-        # TODO: modify these hard-coded, REVS-specific values.
+        # TODO: pass label if present.
         params = {
-          :project_name        => 'revs',
-          :apo_druid_id        => 'druid:qv648vd4392',
-          :collection_druid_id => 'druid:nt028fd5773',
+          :project_name        => @project_name,
+          :apo_druid_id        => @apo_druid_id,
+          :collection_druid_id => @collection_druid_id,
           :source_id           => r.sourceid,
         }
 
         dobj = DigitalObject::new params
-        dobj.add_image r.filename
+        dobj.add_image full_path_in_bundle_dir(r.filename)
         @digital_objects.push dobj
       end
     end
@@ -79,13 +88,34 @@ module Assembly
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
         log "  - process_digital_object(#{dobj.source_id})"
+
+        # Register.
         dobj.register
 
-        # Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
-        # Initialize the object's workflow in DOR.
-        # Generate a skeleton content_metadata.xml file.
+        # Copy or move images to staging directory.
+        dobj.images.each do |img|
+          msg = "#{img.file_name}, #{@staging_dir}"
+          if @copy_to_staging
+            log "    - copy(#{msg})"
+            File.copy img.file_name, @staging_dir
+          else
+            log "    - move(#{msg})"
+            File.move img.file_name, @staging_dir
+          end
+        end
 
+        # Generate a skeleton content_metadata.xml file.
+        # Store expected checksums and other provider-provided metadata in that file.
+        # TODO.
+
+        # Add common assembly workflow to the object, and put the object in the first state.
+        # TODO.
+
+        # During development, perform cleanup steps:
+        #   - delete any objects we registered
+        #   - undo file copy/move                       # TODO?
         dobj.nuke if @cleanup
+
       end
     end
 

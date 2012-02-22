@@ -1,10 +1,11 @@
 *.gem
+.DS_Store
 .bundle
 Gemfile.lock
-pkg/*
-.DS_Store
-doc/*
-log/*
 config/certs/*
 config/environments/*
+doc/*
+log/*
+pkg/*
 tags
+tmp
