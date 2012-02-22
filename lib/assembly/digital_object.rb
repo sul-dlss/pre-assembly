@@ -12,6 +12,7 @@ module Assembly
       :druid,
       :pid,
       :images,
+      :content_metadata_xml,
       :uuid,
       :druid_minting_service,
       :registration_service,
@@ -29,6 +30,7 @@ module Assembly
       @druid                 = nil
       @pid                   = ''
       @images                = []
+      @content_metadata_xml  = ''
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @druid_minting_service = lambda { Dor::SuriService.mint_id }
       @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
@@ -65,6 +67,15 @@ module Assembly
     def delete_from_dor
       log "    - nuke(#{@pid})"
       @deletion_service.call @pid
+    end
+
+    def generate_content_metadata
+      log "    - generate_content_metadata()"
+      @content_metadata_xml = '<xml>'
+    end
+
+    def write_content_metadata
+      log "    - write_content_metadata()"
     end
 
   end

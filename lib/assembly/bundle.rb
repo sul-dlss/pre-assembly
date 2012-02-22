@@ -114,7 +114,8 @@ module Assembly
 
         # Generate a skeleton content_metadata.xml file.
         # Store expected checksums and other provider-provided metadata in that file.
-        # TODO.
+        dobj.generate_content_metadata
+        dobj.write_content_metadata
 
         # Add common assembly workflow to the object, and put the object in the first state.
         # TODO.
