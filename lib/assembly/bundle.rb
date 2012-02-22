@@ -105,6 +105,7 @@ module Assembly
         dobj.register
 
         # Copy or move images to staging directory.
+        # TODO: should be a method on DigitalObject.
         dobj.images.each do |img|
           src = full_path_in_bundle_dir img.file_name
           log "    - copy-move(#{src}, #{@staging_dir})"
