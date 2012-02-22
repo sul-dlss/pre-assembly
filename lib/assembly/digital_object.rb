@@ -4,11 +4,18 @@ module Assembly
 
     include Assembly::Logging
 
-    attr_accessor :source_id, :already_processed, :druid, :images
+    attr_accessor(
+      :project_name,
+      :apo_druid_id,
+      :collection_druid_id,
+      :source_id,
+      :druid,
+      :images
+    )
 
     def initialize(params = {})
-      required_params = [ :project_name, :apo_druid_id, :collection_druid_id, :source_id ]
-      raise ArgumentError unless required_params.all? { |k| params.has_key? k }
+      required = [ :project_name, :apo_druid_id, :collection_druid_id, :source_id ]
+      raise ArgumentError unless required.all? { |k| params.has_key? k }
 
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
@@ -41,7 +48,7 @@ module Assembly
       Dor::RegistrationService.register_object(params)
     end
 
-    def nuke
+    def delete_from_dor
       d = "druid:#{@druid.id}"
       log "    - nuke(#{d})"
       Dor::Config.fedora.client["objects/#{d}"].delete

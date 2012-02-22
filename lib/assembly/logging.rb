@@ -12,12 +12,14 @@ module Assembly
       :debug => Logger::DEBUG,
     }
 
+    LOG_FORMAT    = "%-6s -- %s -- %s\n"
+    TIME_FORMAT   = "%Y-%m-%d %H:%M:%S"
+
     @@log       ||= Logger.new(STDOUT)
     @@log.level   = LEVELS[:info]
-    LOG_FORMAT    = "%-6s -- %s -- %s\n"
 
     @@log.formatter = proc do |severity, datetime, progname, msg|
-      LOG_FORMAT % [severity, datetime.strftime("%Y-%m-%d %H:%M:%S"), msg]
+      LOG_FORMAT % [severity, datetime.strftime(TIME_FORMAT), msg]
     end
 
     def log(msg, severity = :info)
