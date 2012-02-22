@@ -14,9 +14,9 @@ Assembly preparation:
     For each digital object:
 
         - Register the object and acquire a druid.
-        - Initialize the object's workflow in DOR.
         - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
         - Generate a skeleton content_metadata.xml file.
+        - Initialize the object's workflow in DOR.
 
 
 Assembly robots:
