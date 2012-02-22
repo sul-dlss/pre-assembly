@@ -62,7 +62,7 @@ module Assembly
       log "check_for_required_files()"
       [@manifest, @checksums_file, @staging_dir].each do |f|
         next if File.exists? f
-        abort "Cannot proceed: could not find required file or directory: #{f}\n"
+        raise IOError, "Required file or directory not found: #{f}\n"
       end
     end
 
@@ -119,10 +119,8 @@ module Assembly
         # Add common assembly workflow to the object, and put the object in the first state.
         # TODO.
 
-        # During development, perform cleanup steps:
-        #   - delete objects we registered
-        next unless @cleanup
-        dobj.delete_from_dor
+        # During development, delete objects we registered.
+        dobj.delete_from_dor if @cleanup
       end
     end
 
