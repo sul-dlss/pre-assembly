@@ -8,6 +8,7 @@ module Assembly
       :project_name,
       :apo_druid_id,
       :collection_druid_id,
+      :label,
       :source_id,
       :druid,
       :pid,
@@ -26,6 +27,7 @@ module Assembly
       @project_name          = params[:project_name]
       @apo_druid_id          = params[:apo_druid_id]
       @collection_druid_id   = params[:collection_druid_id]
+      @label                 = params[:label]
       @source_id             = { params[:project_name] => params[:source_id] }
       @druid                 = nil
       @pid                   = ''
@@ -52,7 +54,7 @@ module Assembly
         :admin_policy => @apo_druid_id,
         :source_id    => @source_id,
         :pid          => @pid,
-        :label        => "#{@project_name}_#{@druid.id}",
+        :label        => "#{@project_name}_#{@label || @druid.id}",
         :tags         => ["Project : #{@project_name}"],
         :other_ids    => { 'uuid' => @uuid },
       }
@@ -64,8 +66,15 @@ module Assembly
       @registration_service.call registration_params
     end
 
+    def stage_images(stager)
+      @images.each do |img|
+        log "    - staging(#{img.full_path})"
+        stager.call img.full_path
+      end
+    end
+
     def delete_from_dor
-      log "    - nuke(#{@pid})"
+      log "    - delete_from_dor(#{@pid})"
       @deletion_service.call @pid
     end
 
