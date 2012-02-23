@@ -33,10 +33,13 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_xml  = ''
+
+      # TODO: initialize: set external dependencies at the bundle level?
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @druid_minting_service = lambda { Dor::SuriService.mint_id }
       @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
       @deletion_service      = lambda { |p| Dor::Config.fedora.client["objects/#{p}"].delete }
+      @druid_tree_maker      = lambda { |d| FileUtils.mkdir_p d }
     end
 
     def add_image(file_name)
@@ -67,13 +70,11 @@ module Assembly
     end
 
     def stage_images(stager, base_target_dir)
-      # TODO: stage_images: separate methods for dir creation and copy-move.
-      # TODO: stage_images: dependency injection for dir creation
       @images.each do |img|
-        target_dir = @druid.path base_target_dir
-        log "    - staging(#{img.full_path}, #{target_dir})"
-        FileUtils.mkdir_p target_dir
-        stager.call img.full_path, target_dir
+        @target_dir = @druid.path base_target_dir
+        log "    - staging(#{img.full_path}, #{@target_dir})"
+        @druid_tree_maker.call @target_dir
+        stager.call img.full_path, @target_dir
       end
     end
 
@@ -85,6 +86,7 @@ module Assembly
     def generate_content_metadata
       log "    - generate_content_metadata()"
 
+      # TODO: generate_content_metadata: XML needs mods namespace?
       # TODO: generate_content_metadata: how should these parameters be passed in?
       content_type_description = "image"
       attr_params              = ["uncropped", {:name => 'representation'}]
