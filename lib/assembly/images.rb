@@ -158,7 +158,7 @@ module Assembly
             xml.resource(:id => resource_id,:sequence => sequence,:type => content_type_description) {
               xml.label content_label
               file_set.each do |filename|
-                id       = "Image_#{sequence}"
+                id       = filename
                 exif     = MiniExiftool.new(filename)
                 mimetype = exif.mimetype
                 size     = exif.filesize.to_i
