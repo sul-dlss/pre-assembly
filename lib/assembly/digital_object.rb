@@ -33,6 +33,7 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_xml  = ''
+      @content_md_file_name  = 'content_metadata.xml'
 
       # TODO: initialize: set external dependencies at the bundle level?
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
@@ -71,10 +72,10 @@ module Assembly
 
     def stage_images(stager, base_target_dir)
       @images.each do |img|
-        @target_dir = @druid.path base_target_dir
-        log "    - staging(#{img.full_path}, #{@target_dir})"
-        @druid_tree_maker.call @target_dir
-        stager.call img.full_path, @target_dir
+        @druid_tree_dir = @druid.path base_target_dir
+        log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
+        @druid_tree_maker.call @druid_tree_dir
+        stager.call img.full_path, @druid_tree_dir
       end
     end
 
@@ -119,10 +120,13 @@ module Assembly
       @content_metadata_xml = builder.to_xml
     end
 
-    def write_content_metadata
-      # TODO write_content_metadata: implement it.
+    def write_content_metadata(file_handle=nil)
       log "    - write_content_metadata()"
-      puts @content_metadata_xml
+      unless file_handle
+        file_name   = File.join @druid_tree_dir, @content_md_file_name
+        file_handle = File.open(file_name, 'w')
+      end
+      file_handle.puts @content_metadata_xml
     end
 
   end
