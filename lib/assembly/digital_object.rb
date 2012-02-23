@@ -88,7 +88,7 @@ module Assembly
       log "    - generate_content_metadata()"
 
       # TODO: generate_content_metadata: XML needs mods namespace?
-      # TODO: generate_content_metadata: how should these parameters be passed in?
+      # TODO: generate_content_metadata: how should the needed parameters be passed in?
       content_type_description = "image"
       attr_params              = ["uncropped", {:name => 'representation'}]
       publish                  = 'no'
