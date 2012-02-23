@@ -67,9 +67,8 @@ module Assembly
     end
 
     def stage_images(stager, base_target_dir)
-      # TODO:
-      #   - separate methods for dir creation and copy-move.
-      #   - dependency injection for dir creation
+      # TODO: stage_images: separate methods for dir creation and copy-move.
+      # TODO: stage_images: dependency injection for dir creation
       @images.each do |img|
         target_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{target_dir})"
@@ -86,7 +85,7 @@ module Assembly
     def generate_content_metadata
       log "    - generate_content_metadata()"
 
-      # TODO: how should these parameters be passed in?
+      # TODO: generate_content_metadata: how should these parameters be passed in?
       content_type_description = "image"
       attr_params              = ["uncropped", {:name => 'representation'}]
       publish                  = 'no'
@@ -119,7 +118,7 @@ module Assembly
     end
 
     def write_content_metadata
-      # TODO.
+      # TODO write_content_metadata: implement it.
       log "    - write_content_metadata()"
       puts @content_metadata_xml
     end
