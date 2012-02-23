@@ -66,10 +66,15 @@ module Assembly
       @registration_service.call registration_params
     end
 
-    def stage_images(stager)
+    def stage_images(stager, base_target_dir)
+      # TODO:
+      #   - separate methods for dir creation and copy-move.
+      #   - dependency injection for dir creation
       @images.each do |img|
-        log "    - staging(#{img.full_path})"
-        stager.call img.full_path
+        target_dir = @druid.path base_target_dir
+        log "    - staging(#{img.full_path}, #{target_dir})"
+        FileUtils.mkdir_p target_dir
+        stager.call img.full_path, target_dir
       end
     end
 
