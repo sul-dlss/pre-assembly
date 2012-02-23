@@ -31,10 +31,6 @@ module Assembly
       @exp_checksums       = {}
       @digital_objects     = []
 
-      @file_handlers = {
-        'copy' => lambda { |f, d| File.copy f, d },
-        'move' => lambda { |f, d| File.move f, d },
-      }
     end
 
     def run_assembly
@@ -50,8 +46,9 @@ module Assembly
       @checksums_file = full_path_in_bundle_dir @checksums_file
     end
 
-    def file_handler
-      @file_handlers[@copy_to_staging ? 'copy' : 'move']
+    def get_stager
+      @copy_to_staging ? lambda { |f| File.copy f, @staging_dir } :
+                         lambda { |f| File.move f, @staging_dir }
     end
 
     def full_path_in_bundle_dir(file)
@@ -80,23 +77,26 @@ module Assembly
       log "load_manifest()"
       csv_rows = import(@manifest) { read_attributes_from_file }
       csv_rows.each do |r|
-        # TODO: pass label if present.
         params = {
           :project_name        => @project_name,
           :apo_druid_id        => @apo_druid_id,
           :collection_druid_id => @collection_druid_id,
           :source_id           => r.sourceid,
+          :label               => r.label,
         }
 
         dobj = DigitalObject::new params
-        dobj.add_image r.filename
+        dobj.add_image(
+          :file_name => r.filename,
+          :full_path => full_path_in_bundle_dir(r.filename)
+        )
         @digital_objects.push dobj
       end
     end
 
     def process_digital_objects
       log "process_digital_objects()"
-      fhandler = file_handler
+      stager = get_stager
 
       @digital_objects.each do |dobj|
         log "  - process_digital_object(#{dobj.source_id})"
@@ -105,12 +105,7 @@ module Assembly
         dobj.register
 
         # Copy or move images to staging directory.
-        # TODO: should be a method on DigitalObject.
-        dobj.images.each do |img|
-          src = full_path_in_bundle_dir img.file_name
-          log "    - copy-move(#{src}, #{@staging_dir})"
-          fhandler.call src, @staging_dir
-        end
+        dobj.stage_images stager
 
         # Generate a skeleton content_metadata.xml file.
         # Store expected checksums and other provider-provided metadata in that file.

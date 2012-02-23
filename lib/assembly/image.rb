@@ -4,10 +4,11 @@ module Assembly
 
     include Assembly::Logging
 
-    attr_accessor :file_name
+    attr_accessor :file_name, :full_path
 
-    def initialize(file_name)
-      @file_name = file_name
+    def initialize(params = {})
+      @file_name = params[:file_name]
+      @full_path = params[:full_path]
     end
 
   end
