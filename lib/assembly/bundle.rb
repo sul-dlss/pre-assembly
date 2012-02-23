@@ -31,6 +31,10 @@ module Assembly
       @exp_checksums       = {}
       @digital_objects     = []
 
+      @stagers = {
+        :copy => lambda { |f,d| File.copy f, d },
+        :move => lambda { |f,d| File.move f, d },
+      }
     end
 
     def run_assembly
@@ -47,8 +51,7 @@ module Assembly
     end
 
     def get_stager
-      @copy_to_staging ? lambda { |f| File.copy f, @staging_dir } :
-                         lambda { |f| File.move f, @staging_dir }
+      @stagers[@copy_to_staging ? :copy : :move]
     end
 
     def full_path_in_bundle_dir(file)
@@ -105,7 +108,7 @@ module Assembly
         dobj.register
 
         # Copy or move images to staging directory.
-        dobj.stage_images stager
+        dobj.stage_images stager, @staging_dir
 
         # Generate a skeleton content_metadata.xml file.
         # Store expected checksums and other provider-provided metadata in that file.
