@@ -80,11 +80,43 @@ module Assembly
 
     def generate_content_metadata
       log "    - generate_content_metadata()"
-      @content_metadata_xml = '<xml>'
+
+      # TODO: how should these parameters be passed in?
+      content_type_description = "image"
+      attr_params              = ["uncropped", {:name => 'representation'}]
+      publish                  = 'no'
+      preserve                 = 'yes'
+      shelve                   = 'no'
+      content_label            = 'REVS'
+
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.contentMetadata(:objectId => "#{@druid.id}",:type => content_type_description) {
+          @images.each_with_index do |img, j|
+            seq = j + 1
+            resource_id = "#{@druid.id}_#{seq}"
+            xml.resource(:id => resource_id, :sequence => seq, :type => content_type_description) {
+              xml.label content_label
+              xf_params = {
+                :id       => img.file_name,
+                :publish  => publish,
+                :preserve => preserve,
+                :shelve   => shelve,
+              }
+              xml.file(xf_params) {
+                xml.attr *attr_params
+              }
+            }
+          end
+        }
+      }
+
+      @content_metadata_xml = builder.to_xml
     end
 
     def write_content_metadata
+      # TODO.
       log "    - write_content_metadata()"
+      puts @content_metadata_xml
     end
 
   end

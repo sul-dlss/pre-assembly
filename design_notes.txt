@@ -29,7 +29,7 @@ Assembly robots:
     - Compare actual checksums against expected checksums for TIF.
 
     # ROBOT.
-    - Compute image attributes for TIF: exif and related info.
+    - Compute image attributes for TIF: exif and related info (including cropped).
     - Store that info in content_metadata.xml.
 
     # ROBOT.
@@ -42,6 +42,9 @@ Assembly robots:
     # ROBOT.
     - Compute checksums for JP2.
     - Store that info in content_metadata.xml.
+
+    # ROBOT.
+    - Generate descriptive metadata.
 
     # ROBOT.
     - Generate descriptive metadata.
