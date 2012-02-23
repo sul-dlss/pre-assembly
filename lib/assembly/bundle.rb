@@ -116,7 +116,7 @@ module Assembly
         dobj.write_content_metadata
 
         # Add common assembly workflow to the object, and put the object in the first state.
-        # TODO: process_digital_objects: workflow.
+        # TODO: process_digital_objects: set up workflow.
 
         # During development, delete objects we registered.
         dobj.delete_from_dor if @cleanup
