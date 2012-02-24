@@ -124,7 +124,6 @@ module Assembly
     #   * file_sets = an array of arrays of files
     #
     # Optional parameters:
-    #   * content_label = label that will be added to the content metadata (default = '')
     #   * publish       = hash specifying content types to be published
     #   * preserve      = ...                                 preserved
     #   * shelve        = ...                                 shelved
@@ -133,7 +132,6 @@ module Assembly
     #    create_content_metadata(
     #      'nx288wh8889',
     #      [ ['foo.tif', 'foo.jp2'], ['bar.tif', 'bar.jp2'] ],
-    #      :content_label => 'Collier Collection',
     #      :preserve      => { 'TIFF'=>'yes', 'JPEG2000' => 'no'},
     #    )
     def create_content_metadata(druid, file_sets, params={})
@@ -143,7 +141,6 @@ module Assembly
       publish       = params[:publish]       || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
       preserve      = params[:preserve]      || {'TIFF' => 'yes', 'JPEG2000' => 'yes', 'JPEG' => 'yes'}
       shelve        = params[:shelve]        || {'TIFF' => 'no',  'JPEG2000' => 'yes', 'JPEG' => 'yes'}
-      content_label = params[:content_label] || ''
 
       file_sets.flatten.each {|file| return false if !File.exists?(file)}
 
@@ -156,7 +153,7 @@ module Assembly
             resource_id = "#{druid}_#{sequence}"
             # start a new resource element
             xml.resource(:id => resource_id,:sequence => sequence,:type => content_type_description) {
-              xml.label content_label
+              xml.label "Image #{sequence}"
               file_set.each do |filename|
                 id       = filename
                 exif     = MiniExiftool.new(filename)
