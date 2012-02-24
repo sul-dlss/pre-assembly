@@ -33,10 +33,14 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_xml  = ''
+      @content_md_file_name  = 'content_metadata.xml'
+
+      # TODO: initialize: set external dependencies at the bundle level?
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @druid_minting_service = lambda { Dor::SuriService.mint_id }
       @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
       @deletion_service      = lambda { |p| Dor::Config.fedora.client["objects/#{p}"].delete }
+      @druid_tree_maker      = lambda { |d| FileUtils.mkdir_p d }
     end
 
     def add_image(file_name)
@@ -67,14 +71,11 @@ module Assembly
     end
 
     def stage_images(stager, base_target_dir)
-      # TODO:
-      #   - separate methods for dir creation and copy-move.
-      #   - dependency injection for dir creation
       @images.each do |img|
-        target_dir = @druid.path base_target_dir
-        log "    - staging(#{img.full_path}, #{target_dir})"
-        FileUtils.mkdir_p target_dir
-        stager.call img.full_path, target_dir
+        @druid_tree_dir = @druid.path base_target_dir
+        log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
+        @druid_tree_maker.call @druid_tree_dir
+        stager.call img.full_path, @druid_tree_dir
       end
     end
 
@@ -86,7 +87,8 @@ module Assembly
     def generate_content_metadata
       log "    - generate_content_metadata()"
 
-      # TODO: how should these parameters be passed in?
+      # TODO: generate_content_metadata: XML needs mods namespace?
+      # TODO: generate_content_metadata: how should the needed parameters be passed in?
       content_type_description = "image"
       attr_params              = ["uncropped", {:name => 'representation'}]
       publish                  = 'no'
@@ -118,10 +120,13 @@ module Assembly
       @content_metadata_xml = builder.to_xml
     end
 
-    def write_content_metadata
-      # TODO.
+    def write_content_metadata(file_handle=nil)
       log "    - write_content_metadata()"
-      puts @content_metadata_xml
+      unless file_handle
+        file_name   = File.join @druid_tree_dir, @content_md_file_name
+        file_handle = File.open(file_name, 'w')
+      end
+      file_handle.puts @content_metadata_xml
     end
 
   end
