@@ -14,7 +14,10 @@ module Assembly
       :project_name,
       :apo_druid_id,
       :collection_druid_id,
-      :cleanup
+      :staging_dir,
+      :copy_to_staging,
+      :cleanup,
+      :stagers
     )
 
     def initialize(params = {})
@@ -50,12 +53,12 @@ module Assembly
       @checksums_file = full_path_in_bundle_dir @checksums_file
     end
 
-    def get_stager
-      @stagers[@copy_to_staging ? :copy : :move]
-    end
-
     def full_path_in_bundle_dir(file)
       File.join @bundle_dir, file
+    end
+
+    def get_stager
+      @stagers[@copy_to_staging ? :copy : :move]
     end
 
     def check_for_required_files
