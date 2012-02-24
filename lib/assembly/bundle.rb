@@ -17,7 +17,10 @@ module Assembly
       :staging_dir,
       :copy_to_staging,
       :cleanup,
-      :stagers
+      :exp_checksums,
+      :digital_objects,
+      :stagers,
+      :required_files
     )
 
     def initialize(params = {})
@@ -38,10 +41,10 @@ module Assembly
         :copy => lambda { |f,d| File.copy f, d },
         :move => lambda { |f,d| File.move f, d },
       }
+      set_bundle_paths
     end
 
     def run_assembly
-      set_bundle_paths
       check_for_required_files
       load_exp_checksums
       load_manifest
@@ -51,6 +54,7 @@ module Assembly
     def set_bundle_paths
       @manifest       = full_path_in_bundle_dir @manifest
       @checksums_file = full_path_in_bundle_dir @checksums_file
+      @required_files = [@manifest, @checksums_file, @staging_dir]
     end
 
     def full_path_in_bundle_dir(file)
@@ -63,10 +67,15 @@ module Assembly
 
     def check_for_required_files
       log "check_for_required_files()"
-      [@manifest, @checksums_file, @staging_dir].each do |f|
-        next if File.exists? f
+      @required_files.each do |f|
+        next if file_exists f
         raise IOError, "Required file or directory not found: #{f}\n"
       end
+    end
+
+    def file_exists(file)
+      log "file_exists()"
+      File.exists? file
     end
 
     def load_exp_checksums

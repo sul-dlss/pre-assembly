@@ -6,7 +6,9 @@ describe Assembly::Bundle do
     @ps = {
       :bundle_dir      => 'spec/test_data/bundle_input',
       :manifest        => 'manifest.csv',
+      :checksums_file  => 'checksums.txt',
       :copy_to_staging => false,
+      :staging_dir     => 'tmp',
     }
     @b = Assembly::Bundle.new @ps
   end
@@ -19,7 +21,7 @@ describe Assembly::Bundle do
     @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
   end
 
-  it "gets the correct stager (copier or mover)" do
+  it "gets the correct stager" do
     @b.copy_to_staging = true
     stager = @b.get_stager
     stager.should equal @b.stagers[:copy]
@@ -27,6 +29,16 @@ describe Assembly::Bundle do
     @b.copy_to_staging = false
     stager = @b.get_stager
     stager.should equal @b.stagers[:move]
+  end
+
+  describe "check_for_required_files()" do
+    describe "does not raise exception" do
+      it "because required files exist" do
+        return_vals = @b.required_files.map { true }
+        @b.stub(:file_exists).and_return(*return_vals)
+        lambda { @b.check_for_required_files }.should_not raise_error
+      end
+    end
   end
 
 end
