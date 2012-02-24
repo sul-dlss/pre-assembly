@@ -87,21 +87,19 @@ module Assembly
     def generate_content_metadata
       log "    - generate_content_metadata()"
 
-      # TODO: generate_content_metadata: XML needs mods namespace?
-      # TODO: generate_content_metadata: how should the needed parameters be passed in?
-      content_type_description = "image"
-      attr_params              = ["uncropped", {:name => 'representation'}]
-      publish                  = 'no'
-      preserve                 = 'yes'
-      shelve                   = 'no'
-      content_label            = 'REVS'
+      # TODO: generate_content_metadata: pass in via the bundle.
+      publish  = 'no'
+      preserve = 'yes'
+      shelve   = 'no'
 
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.contentMetadata(:objectId => "#{@druid.id}",:type => content_type_description) {
+        xml.contentMetadata(:objectId => "#{@druid.id}") {
           @images.each_with_index do |img, j|
-            seq = j + 1
-            resource_id = "#{@druid.id}_#{seq}"
-            xml.resource(:id => resource_id, :sequence => seq, :type => content_type_description) {
+            seq           = j + 1
+            resource_id   = "#{@druid.id}_#{seq}"
+            content_label = "Image #{seq}"
+
+            xml.resource(:id => resource_id, :sequence => seq) {
               xml.label content_label
               xf_params = {
                 :id       => img.file_name,
@@ -109,9 +107,7 @@ module Assembly
                 :preserve => preserve,
                 :shelve   => shelve,
               }
-              xml.file(xf_params) {
-                xml.attr *attr_params
-              }
+              xml.file(xf_params)
             }
           end
         }
