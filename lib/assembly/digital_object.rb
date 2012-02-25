@@ -45,18 +45,18 @@ module Assembly
     end
 
     def add_image(file_name)
-      # TODO: initialize: spec.
+      # TODO: add_image: spec.
       @images.push Image::new(file_name)
     end
 
     def claim_druid
-      # TODO: initialize: spec.
+      # TODO: claim_druid: spec.
       @pid   = @druid_minting_service.call
       @druid = Druid.new @pid
     end
 
     def registration_params
-      # TODO: initialize: spec.
+      # TODO: registration_params: spec.
       {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
@@ -69,14 +69,14 @@ module Assembly
     end
 
     def register
-      # TODO: initialize: spec.
+      # TODO: register: spec.
       claim_druid
       log "    - register(#{@pid})"
       @registration_service.call registration_params
     end
 
     def stage_images(stager, base_target_dir)
-      # TODO: initialize: spec.
+      # TODO: stage_images: spec.
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
@@ -86,13 +86,13 @@ module Assembly
     end
 
     def delete_from_dor
-      # TODO: initialize: spec.
+      # TODO: delete_from_dor: spec.
       log "    - delete_from_dor(#{@pid})"
       @deletion_service.call @pid
     end
 
     def generate_content_metadata
-      # TODO: initialize: spec.
+      # TODO: generate_content_metadata: spec.
       # TODO: generate_content_metadata: change this to produce YAML.
       # TODO: generate_content_metadata: pass publish-shelve-preseve via the bundle.
       publish  = 'no'
@@ -126,7 +126,7 @@ module Assembly
     end
 
     def write_content_metadata(file_handle=nil)
-      # TODO: initialize: spec.
+      # TODO: write_content_metadata: spec.
       log "    - write_content_metadata()"
       unless file_handle
         file_name   = File.join @druid_tree_dir, @content_md_file_name

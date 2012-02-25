@@ -51,7 +51,7 @@ module Assembly
     end
 
     def run_assembly
-      # TODO: initialize: spec.
+      # TODO: run_assembly: spec.
       check_for_required_files
       load_exp_checksums
       load_manifest
@@ -79,7 +79,7 @@ module Assembly
     end
 
     def load_exp_checksums
-      # TODO: initialize: spec.
+      # TODO: load_exp_checksums: spec.
       # Read checksums_file, using its content to populate @exp_checksums.
       log "load_exp_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
@@ -89,7 +89,7 @@ module Assembly
     end
 
     def load_manifest
-      # TODO: initialize: spec.
+      # TODO: load_manifest: spec.
       # Read manifest and initialize digital objects.
       log "load_manifest()"
       csv_rows = import(@manifest) { read_attributes_from_file }
@@ -112,7 +112,7 @@ module Assembly
     end
 
     def process_digital_objects
-      # TODO: initialize: spec.
+      # TODO: process_digital_objects: spec.
       log "process_digital_objects()"
       stager = get_stager
 
