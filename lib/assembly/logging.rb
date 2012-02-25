@@ -15,6 +15,7 @@ module Assembly
     LOG_FORMAT    = "%-6s -- %s -- %s\n"
     TIME_FORMAT   = "%Y-%m-%d %H:%M:%S"
 
+    # TODO: Logging: set this up to write to a file.
     @@log       ||= Logger.new(STDOUT)
     @@log.level   = LEVELS[:info]
 

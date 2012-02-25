@@ -44,17 +44,18 @@ module Assembly
       set_bundle_paths
     end
 
-    def run_assembly
-      check_for_required_files
-      load_exp_checksums
-      load_manifest
-      process_digital_objects
-    end
-
     def set_bundle_paths
       @manifest       = full_path_in_bundle_dir @manifest
       @checksums_file = full_path_in_bundle_dir @checksums_file
       @required_files = [@manifest, @checksums_file, @staging_dir]
+    end
+
+    def run_assembly
+      # TODO: initialize: spec.
+      check_for_required_files
+      load_exp_checksums
+      load_manifest
+      process_digital_objects
     end
 
     def full_path_in_bundle_dir(file)
@@ -74,11 +75,11 @@ module Assembly
     end
 
     def file_exists(file)
-      log "file_exists()"
       File.exists? file
     end
 
     def load_exp_checksums
+      # TODO: initialize: spec.
       # Read checksums_file, using its content to populate @exp_checksums.
       log "load_exp_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
@@ -88,6 +89,7 @@ module Assembly
     end
 
     def load_manifest
+      # TODO: initialize: spec.
       # Read manifest and initialize digital objects.
       log "load_manifest()"
       csv_rows = import(@manifest) { read_attributes_from_file }
@@ -110,6 +112,7 @@ module Assembly
     end
 
     def process_digital_objects
+      # TODO: initialize: spec.
       log "process_digital_objects()"
       stager = get_stager
 

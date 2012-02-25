@@ -32,13 +32,20 @@ describe Assembly::Bundle do
   end
 
   describe "check_for_required_files()" do
-    describe "does not raise exception" do
-      it "because required files exist" do
-        return_vals = @b.required_files.map { true }
-        @b.stub(:file_exists).and_return(*return_vals)
-        lambda { @b.check_for_required_files }.should_not raise_error
-      end
+
+    it "does not raise exception when required files exist" do
+      return_vals = @b.required_files.map { true }
+      @b.stub(:file_exists).and_return(*return_vals)
+      lambda { @b.check_for_required_files }.should_not raise_error
     end
+
+    it "raises an exception when a required file is missing" do
+      return_vals = @b.required_files.map { true }
+      return_vals[-1] = false
+      @b.stub(:file_exists).and_return(*return_vals)
+      lambda { @b.check_for_required_files }.should raise_error
+    end
+
   end
 
 end
