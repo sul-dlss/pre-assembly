@@ -15,11 +15,15 @@ Assembly preparation:
 
         - Register the object and acquire a druid.
         - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
-        - Generate a skeleton content_metadata.xml file.
+        - Generate a content_metadata.yml.
+        - Generate a descriptive_metadata.yml to store provider-supplied information.
         - Initialize the object's workflow in DOR.
 
 
 Assembly robots:
+
+    # ROBOT.
+    - Generate content_metadata.xml from content_metadata.yml.
 
     # ROBOT.
     - Compute checksums for TIF.
@@ -44,13 +48,14 @@ Assembly robots:
     - Store that info in content_metadata.xml.
 
     # ROBOT.
-    - Generate descriptive metadata.
+    - Generate descriptive metadata from one of the source listed below. This approach
+      relieves common-accessioning of using outside sources for content metadata.
+        - descriptive_metadata.yml
+        - mdtoolkit
+        - symphony
 
     # ROBOT.
-    - Generate descriptive metadata.
-
-    # ROBOT.
-    - Make REST calls to dor-services to initiate common accessioning.
+    - Make REST calls to dor-services to initiate common-accessioning.
     - See https://consul.stanford.edu/display/chimera/REST+mappings+for+dor-services+gem
         initialize_workspace
         initiate_apo_workflow
@@ -59,7 +64,6 @@ Assembly robots:
 ==================================================
 
 Needed Git projects:
-
 
     (1) AssemblyItem
 
@@ -72,7 +76,6 @@ Needed Git projects:
                 include Exifable
 
     (2) Assembly
-
     
         # Mimic common-accessioning.
 

@@ -21,6 +21,7 @@ module Assembly
     )
 
     def initialize(params = {})
+      # TODO: initialize: spec.
       required = [ :project_name, :apo_druid_id, :collection_druid_id, :source_id ]
       raise ArgumentError unless required.all? { |k| params.has_key? k }
 
@@ -44,15 +45,18 @@ module Assembly
     end
 
     def add_image(file_name)
+      # TODO: initialize: spec.
       @images.push Image::new(file_name)
     end
 
     def claim_druid
+      # TODO: initialize: spec.
       @pid   = @druid_minting_service.call
       @druid = Druid.new @pid
     end
 
     def registration_params
+      # TODO: initialize: spec.
       {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
@@ -65,12 +69,14 @@ module Assembly
     end
 
     def register
+      # TODO: initialize: spec.
       claim_druid
       log "    - register(#{@pid})"
       @registration_service.call registration_params
     end
 
     def stage_images(stager, base_target_dir)
+      # TODO: initialize: spec.
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
@@ -80,17 +86,20 @@ module Assembly
     end
 
     def delete_from_dor
+      # TODO: initialize: spec.
       log "    - delete_from_dor(#{@pid})"
       @deletion_service.call @pid
     end
 
     def generate_content_metadata
-      log "    - generate_content_metadata()"
-
-      # TODO: generate_content_metadata: pass in via the bundle.
+      # TODO: initialize: spec.
+      # TODO: generate_content_metadata: change this to produce YAML.
+      # TODO: generate_content_metadata: pass publish-shelve-preseve via the bundle.
       publish  = 'no'
       preserve = 'yes'
       shelve   = 'no'
+
+      log "    - generate_content_metadata()"
 
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => "#{@druid.id}") {
@@ -117,6 +126,7 @@ module Assembly
     end
 
     def write_content_metadata(file_handle=nil)
+      # TODO: initialize: spec.
       log "    - write_content_metadata()"
       unless file_handle
         file_name   = File.join @druid_tree_dir, @content_md_file_name
