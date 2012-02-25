@@ -1,3 +1,12 @@
+To-do summary:
+
+    - specs
+    - YAML instead of XML during pre-assembly.
+    - workflow
+    - misc pre-assemly
+    - AssemblyItem
+    - common-assembly robots
+
 Download:
 
     - Receive the bundle of material (e.g. REVS hard drive).
