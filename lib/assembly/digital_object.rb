@@ -36,12 +36,12 @@ module Assembly
       @content_metadata_xml  = ''
       @content_md_file_name  = 'content_metadata.xml'
 
-      # TODO: initialize: set external dependencies at the bundle level?
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @druid_minting_service = lambda { Dor::SuriService.mint_id }
       @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
       @deletion_service      = lambda { |p| Dor::Config.fedora.client["objects/#{p}"].delete }
       @druid_tree_maker      = lambda { |d| FileUtils.mkdir_p d }
+      @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
     end
 
     def add_image(file_name)
@@ -112,11 +112,6 @@ module Assembly
       # in a skeleton version of content_metadata.xml file.
       # TODO: generate_content_metadata: spec.
       # TODO: generate_content_metadata: change this to produce YAML.
-      # TODO: generate_content_metadata: pass publish-shelve-preseve via the bundle.
-      publish  = 'no'
-      preserve = 'yes'
-      shelve   = 'no'
-
       log "    - generate_content_metadata()"
 
       builder = Nokogiri::XML::Builder.new { |xml|
@@ -125,16 +120,9 @@ module Assembly
             seq           = j + 1
             resource_id   = "#{@druid.id}_#{seq}"
             content_label = "Image #{seq}"
-
             xml.resource(:id => resource_id, :sequence => seq) {
               xml.label content_label
-              xf_params = {
-                :id       => img.file_name,
-                :publish  => publish,
-                :preserve => preserve,
-                :shelve   => shelve,
-              }
-              xml.file(xf_params)
+              xml.file( { :id => img.file_name }.merge @publish_attr )
             }
           end
         }
