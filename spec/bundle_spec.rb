@@ -14,7 +14,7 @@ describe Assembly::Bundle do
 
   describe "initialize() and other setup" do
 
-    it "can initialize a DigitalObject" do
+    it "can initialize a Bundle" do
       @b.should be_kind_of Assembly::Bundle
     end
 

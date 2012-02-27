@@ -21,10 +21,6 @@ module Assembly
     )
 
     def initialize(params = {})
-      # TODO: initialize: spec.
-      required = [ :project_name, :apo_druid_id, :collection_druid_id, :source_id ]
-      raise ArgumentError unless required.all? { |k| params.has_key? k }
-
       @project_name          = params[:project_name]
       @apo_druid_id          = params[:apo_druid_id]
       @collection_druid_id   = params[:collection_druid_id]
@@ -45,7 +41,6 @@ module Assembly
     end
 
     def add_image(file_name)
-      # TODO: add_image: spec.
       @images.push Image::new(file_name)
     end
 
