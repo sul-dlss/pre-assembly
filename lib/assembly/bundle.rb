@@ -96,9 +96,8 @@ module Assembly
       # TODO: load_manifest: spec.
       # Read manifest and initialize digital objects.
       log "load_manifest()"
-      csv_rows = import(@manifest) { read_attributes_from_file }
-      csv_rows.each do |r|
-        params = {
+      parse_manifest.each do |r|
+        dobj_params = {
           :project_name        => @project_name,
           :apo_druid_id        => @apo_druid_id,
           :collection_druid_id => @collection_druid_id,
@@ -106,13 +105,17 @@ module Assembly
           :label               => r.label,
         }
 
-        dobj = DigitalObject::new params
+        dobj = DigitalObject::new dobj_params
         dobj.add_image(
           :file_name => r.filename,
           :full_path => full_path_in_bundle_dir(r.filename)
         )
         @digital_objects.push dobj
       end
+    end
+
+    def parse_manifest
+      return import(@manifest) { read_attributes_from_file }
     end
 
     def process_digital_objects
