@@ -33,10 +33,8 @@ module Assembly
       @staging_dir         = params[:staging_dir]
       @copy_to_staging     = params[:copy_to_staging]
       @cleanup             = params[:cleanup]
-
       @exp_checksums       = {}
       @digital_objects     = []
-
       @stagers = {
         :copy => lambda { |f,d| File.copy f, d },
         :move => lambda { |f,d| File.move f, d },
@@ -63,7 +61,6 @@ module Assembly
     end
 
     def get_stager
-      # TODO: get_stager: return a closure containing @staging_dir.
       @stagers[@copy_to_staging ? :copy : :move]
     end
 
