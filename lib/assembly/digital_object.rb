@@ -69,13 +69,29 @@ module Assembly
     end
 
     def register
+      # Register object in Dor.
       # TODO: register: spec.
       claim_druid
       log "    - register(#{@pid})"
       @registration_service.call registration_params
     end
 
+    def assemble(stager, staging_dir)
+      log "  - assemble(#{@source_id})"
+      register
+      stage_images stager, staging_dir
+      generate_content_metadata
+      write_content_metadata
+      initialize_assembly_workflow
+    end
+
+    def initialize_assembly_workflow
+      # Add common assembly workflow to the object, and put the object in the first state.
+      # TODO: initialize_assembly_workflow: implement and spec.
+    end
+
     def stage_images(stager, base_target_dir)
+      # Copy or move images to staging directory.
       # TODO: stage_images: spec.
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
@@ -92,6 +108,8 @@ module Assembly
     end
 
     def generate_content_metadata
+      # Store expected checksums and other provider-provided metadata
+      # in a skeleton version of content_metadata.xml file.
       # TODO: generate_content_metadata: spec.
       # TODO: generate_content_metadata: change this to produce YAML.
       # TODO: generate_content_metadata: pass publish-shelve-preseve via the bundle.
