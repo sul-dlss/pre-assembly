@@ -51,7 +51,6 @@ module Assembly
     end
 
     def run_assembly
-      # TODO: run_assembly: spec.
       check_for_required_files
       load_exp_checksums
       load_manifest
@@ -79,13 +78,16 @@ module Assembly
     end
 
     def load_exp_checksums
-      # TODO: load_exp_checksums: spec.
-      # Read checksums_file, using its content to populate @exp_checksums.
+      # Read checksums_file, using its content to populate a hash of expected checksums.
       log "load_exp_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
-      IO.read(@checksums_file).scan(checksum_regex).each { |file_name, md5|
+      read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
         @exp_checksums[file_name] = md5
       }
+    end
+
+    def read_exp_checksums
+      IO.read @checksums_file
     end
 
     def load_manifest
