@@ -14,7 +14,7 @@ describe Assembly::Bundle do
 
   describe "initialize() and other setup" do
 
-    it "can be initialized" do
+    it "can initialize a DigitalObject" do
       @b.should be_kind_of Assembly::Bundle
     end
 
@@ -22,7 +22,7 @@ describe Assembly::Bundle do
       @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
     end
 
-    it "gets the correct stager" do
+    it "gets the correct stager based on the value of @copy_to_staging" do
       @b.copy_to_staging = true
       stager = @b.get_stager
       stager.should equal @b.stagers[:copy]
