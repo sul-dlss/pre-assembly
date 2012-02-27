@@ -93,7 +93,6 @@ module Assembly
     end
 
     def load_manifest
-      # TODO: load_manifest: spec.
       # Read manifest and initialize digital objects.
       log "load_manifest()"
       parse_manifest.each do |r|

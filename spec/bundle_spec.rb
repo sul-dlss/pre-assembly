@@ -11,23 +11,29 @@ describe Assembly::Bundle do
     @b = Assembly::Bundle.new @ps
   end
 
-  it "can be initialized" do
-    @b.should be_kind_of Assembly::Bundle
+
+  describe "initialize() and other setup" do
+
+    it "can be initialized" do
+      @b.should be_kind_of Assembly::Bundle
+    end
+
+    it "can set the full path to the bundle directory" do
+      @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
+    end
+
+    it "gets the correct stager" do
+      @b.copy_to_staging = true
+      stager = @b.get_stager
+      stager.should equal @b.stagers[:copy]
+
+      @b.copy_to_staging = false
+      stager = @b.get_stager
+      stager.should equal @b.stagers[:move]
+    end
+
   end
 
-  it "can set the full path to the bundle directory" do
-    @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
-  end
-
-  it "gets the correct stager" do
-    @b.copy_to_staging = true
-    stager = @b.get_stager
-    stager.should equal @b.stagers[:copy]
-
-    @b.copy_to_staging = false
-    stager = @b.get_stager
-    stager.should equal @b.stagers[:move]
-  end
 
   describe "check_for_required_files()" do
 
@@ -45,6 +51,7 @@ describe Assembly::Bundle do
     end
 
   end
+
 
   describe "load_exp_checksums()" do
 
@@ -65,6 +72,19 @@ describe Assembly::Bundle do
       @b.stub(:read_exp_checksums).and_return(checksum_string)
       @b.load_exp_checksums
       @b.exp_checksums.should == checksum_data
+    end
+
+  end
+
+
+  describe "load_manifest()" do
+
+    it "generates the correct number of digital objects" do
+      csv_params = {:sourceid => '', :label => '', :filename => ''}
+      csv_rows = (1..4).map { double('csv_row', csv_params) }
+      @b.stub(:parse_manifest).and_return(csv_rows)
+      @b.load_manifest
+      @b.digital_objects.should have(csv_rows.size).items
     end
 
   end
