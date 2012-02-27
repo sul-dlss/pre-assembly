@@ -55,6 +55,7 @@ module Assembly
       load_exp_checksums
       load_manifest
       process_digital_objects
+      delete_digital_objects if @cleanup
     end
 
     def full_path_in_bundle_dir(file)
@@ -127,17 +128,20 @@ module Assembly
         # Copy or move images to staging directory.
         dobj.stage_images stager, @staging_dir
 
-        # Generate a skeleton content_metadata.xml file.
-        # Store expected checksums and other provider-provided metadata in that file.
+        # Store expected checksums and other provider-provided metadata
+        # in a skeleton version of content_metadata.xml file.
         dobj.generate_content_metadata
         dobj.write_content_metadata
 
         # Add common assembly workflow to the object, and put the object in the first state.
         # TODO: process_digital_objects: set up workflow.
-
-        # During development, delete objects we registered.
-        dobj.delete_from_dor if @cleanup
       end
+    end
+
+    def delete_digital_objects
+      # During development, delete objects the we register.
+      log "delete_digital_objects()"
+      @digital_objects.each { |dobj| dobj.delete_from_dor }
     end
 
   end
