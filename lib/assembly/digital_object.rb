@@ -32,6 +32,7 @@ module Assembly
       @content_metadata_xml  = ''
       @content_md_file_name  = 'content_metadata.xml'
 
+      # TODO: initialize(): use methods for external calls rather than attributes.
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @druid_minting_service = lambda { Dor::SuriService.mint_id }
       @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
