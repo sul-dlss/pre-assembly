@@ -46,4 +46,27 @@ describe Assembly::Bundle do
 
   end
 
+  describe "load_exp_checksums()" do
+
+    it "empty string yields no checksums" do
+      @b.stub(:read_exp_checksums).and_return('')
+      @b.load_exp_checksums
+      @b.exp_checksums.should == {}
+    end
+
+    it "checksums are parsed correctly" do
+      checksum_data = {
+        'foo1.tif' => '4e3cd24dd79f3ec91622d9f8e5ab5afa',
+        'foo2.tif' => '7e40beb08d646044529b9138a5f1c796',
+        'foo3.tif' => 'e5263af3ebb27d4ab44f70317cb249c1',
+        'foo4.tif' => '15263af3ebb27d4ab44f74316cb249a4',
+      }
+      checksum_string = checksum_data.map { |f,c| "MD5 (#{f}) = #{c}\n" }.join ''
+      @b.stub(:read_exp_checksums).and_return(checksum_string)
+      @b.load_exp_checksums
+      @b.exp_checksums.should == checksum_data
+    end
+
+  end
+
 end
