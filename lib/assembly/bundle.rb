@@ -63,6 +63,7 @@ module Assembly
     end
 
     def get_stager
+      # TODO: get_stager: return a closure containing @staging_dir.
       @stagers[@copy_to_staging ? :copy : :move]
     end
 
@@ -115,27 +116,9 @@ module Assembly
     end
 
     def process_digital_objects
-      # TODO: process_digital_objects: spec.
       log "process_digital_objects()"
       stager = get_stager
-
-      @digital_objects.each do |dobj|
-        log "  - process_digital_object(#{dobj.source_id})"
-
-        # Register.
-        dobj.register
-
-        # Copy or move images to staging directory.
-        dobj.stage_images stager, @staging_dir
-
-        # Store expected checksums and other provider-provided metadata
-        # in a skeleton version of content_metadata.xml file.
-        dobj.generate_content_metadata
-        dobj.write_content_metadata
-
-        # Add common assembly workflow to the object, and put the object in the first state.
-        # TODO: process_digital_objects: set up workflow.
-      end
+      @digital_objects.each { |dobj| dobj.assemble(stager, @staging_dir) }
     end
 
     def delete_digital_objects
