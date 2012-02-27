@@ -1,5 +1,3 @@
-require 'assembly'
-
 describe Assembly::Image do
 
   it "can be initialized" do
