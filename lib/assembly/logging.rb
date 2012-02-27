@@ -15,12 +15,14 @@ module Assembly
     LOG_FORMAT    = "%-6s -- %s -- %s\n"
     TIME_FORMAT   = "%Y-%m-%d %H:%M:%S"
 
-    # TODO: Logging: set this up to write to a file.
-    @@log       ||= Logger.new(STDOUT)
-    @@log.level   = LEVELS[:info]
+    def self.setup(project_root, environment)
+      log_file = File.join project_root, "/log/#{environment}.log"
+      @@log       ||= Logger.new(log_file)
+      @@log.level   = LEVELS[:info]
 
-    @@log.formatter = proc do |severity, datetime, progname, msg|
-      LOG_FORMAT % [severity, datetime.strftime(TIME_FORMAT), msg]
+      @@log.formatter = proc do |severity, datetime, progname, msg|
+        LOG_FORMAT % [severity, datetime.strftime(TIME_FORMAT), msg]
+      end
     end
 
     def log(msg, severity = :info)

@@ -7,7 +7,6 @@
 # see README for prerequisites
 
 require 'assembly/version'
-require 'assembly/logging'
 
 require 'assembly/bundle'
 require 'assembly/digital_object'

@@ -1,5 +1,3 @@
-require 'assembly'
-
 describe Assembly::Bundle do
 
   before(:each) do
