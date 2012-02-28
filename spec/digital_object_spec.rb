@@ -22,4 +22,18 @@ describe Assembly::DigitalObject do
   end
 
 
+  describe "registration" do
+
+    it "can claim a druid" do
+      d = 'druid:ab123cd4567'
+      @dobj.stub(:get_druid_from_suri).and_return(d)
+      @dobj.pid.should == ''
+      @dobj.druid.should == nil
+      @dobj.claim_druid
+      @dobj.pid.should == d
+      @dobj.druid.should be_kind_of Druid
+    end
+
+  end
+
 end

@@ -36,7 +36,7 @@ module Assembly
       @registration_info     = nil
     end
 
-    def mint_druid()            Dor::SuriService.mint_id                           end
+    def get_druid_from_suri()   Dor::SuriService.mint_id                           end
     def register_in_dor(params) Dor::RegistrationService.register_object params    end
     def delete_from_dor(pid)    Dor::Config.fedora.client["objects/#{pid}"].delete end
     def druid_true_mkdir(dir)   FileUtils.mkdir_p dir                              end
@@ -56,9 +56,8 @@ module Assembly
     end
 
     def claim_druid
-      # TODO: claim_druid: spec.
       log "    - claim_druid()"
-      @pid   = mint_druid
+      @pid   = get_druid_from_suri
       @druid = Druid.new @pid
     end
 
