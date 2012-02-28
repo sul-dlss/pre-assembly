@@ -2,6 +2,10 @@ describe Assembly::DigitalObject do
 
   before(:each) do
     @ps = {
+      :apo_druid_id => 'aa123aa1234',
+      :source_id    => 'SourceIDFoo',
+      :project_name => 'ProjectBar',
+      :label        => 'LabelQuux',
     }
     @dobj = Assembly::DigitalObject.new @ps
   end
@@ -32,6 +36,22 @@ describe Assembly::DigitalObject do
       @dobj.claim_druid
       @dobj.pid.should == d
       @dobj.druid.should be_kind_of Druid
+    end
+
+    it "can generate registration parameters" do
+      @dobj.druid = Druid.new 'druid:ab123cd4567'
+      rps = @dobj.registration_params
+      rps.should             be_kind_of Hash
+      rps[:source_id].should be_kind_of Hash
+      rps[:tags].should      be_kind_of Array
+      rps[:label].should == "ProjectBar_LabelQuux"
+    end
+
+    it "can generate registration parameters, even if label attribute is false" do
+      @dobj.druid = Druid.new 'druid:ab123cd4567'
+      @dobj.label = nil
+      ps = @dobj.registration_params
+      ps[:label].should == "ProjectBar_ab123cd4567"
     end
 
   end
