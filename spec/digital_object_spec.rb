@@ -1,3 +1,6 @@
+require 'tmpdir'
+require 'fileutils'
+
 describe Assembly::DigitalObject do
 
   before(:each) do
@@ -11,13 +14,13 @@ describe Assembly::DigitalObject do
   end
 
 
-  describe "initialize() and other setup" do
+  describe "initialization and other setup" do
 
-    it "can initialize a DigitalObject" do
+    it "can initialize a digital object" do
       @dobj.should be_kind_of Assembly::DigitalObject
     end
 
-    it "can add images" do
+    it "can add images to the digital object" do
       n = 4
       (1..n).each { |i| @dobj.add_image "#{i}.tif" }
       @dobj.images.should have(n).items
@@ -70,4 +73,54 @@ describe Assembly::DigitalObject do
 
   end
 
+  describe "image staging" do
+    
+    it "should be able to stage images" do
+      # TODO: set up before(:each) and after(:each)
+      #   - create bundle
+      #   - create tmp dir
+      #   - create images
+      # TODO: set up after(:each)
+      #   - rm tmp dir
+      # TODO: handle both :copy and :move as separate tests.
+      #
+      bundle = Assembly::Bundle.new :copy_to_staging => true
+      stager = bundle.get_stager
+
+      @dobj.druid = Druid.new 'druid:ab123cd4567'
+
+      Dir.mktmpdir do |tmp_area|
+
+        (1..3).each do |i|
+          f = "image_#{i}.tif"
+          ps = {
+            :file_name => f,
+            :full_path => "#{tmp_area}/#{f}",
+          }
+          FileUtils.touch ps[:full_path]
+          @dobj.add_image ps
+        end
+
+        base_target_dir = "#{tmp_area}/target"
+        FileUtils.mkdir base_target_dir
+
+        @dobj.stage_images stager, base_target_dir
+
+        @dobj.images.each do |img|
+          staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
+          File.exists?(img.full_path).should == true
+          File.exists?(staged_img_path).should == true
+        end
+
+        # puts "--------------------------------------"
+        # puts `tree #{tmp_area}`
+        # puts "--------------------------------------"
+        # puts @dobj.druid_tree_dir
+        # puts "--------------------------------------"
+
+      end
+
+    end
+
+  end
 end

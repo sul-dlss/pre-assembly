@@ -17,7 +17,8 @@ module Assembly
       :content_md_file_name,
       :public_attr,
       :uuid,
-      :registration_info
+      :registration_info,
+      :druid_tree_dir
     )
 
     def initialize(params = {})
@@ -34,15 +35,16 @@ module Assembly
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @registration_info     = nil
+      @druid_tree_dir        = ''
     end
 
     def get_druid_from_suri()   Dor::SuriService.mint_id                           end
     def register_in_dor(params) Dor::RegistrationService.register_object params    end
     def delete_from_dor(pid)    Dor::Config.fedora.client["objects/#{pid}"].delete end
-    def druid_true_mkdir(dir)   FileUtils.mkdir_p dir                              end
+    def druid_tree_mkdir(dir)   FileUtils.mkdir_p dir                              end
 
-    def add_image(file_name)
-      @images.push Image::new(file_name)
+    def add_image(params)
+      @images.push Image::new(params)
     end
 
     def assemble(stager, staging_dir)
@@ -84,7 +86,7 @@ module Assembly
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
-        druid_true_mkdir @druid_tree_dir
+        druid_tree_mkdir @druid_tree_dir
         stager.call img.full_path, @druid_tree_dir
       end
     end
