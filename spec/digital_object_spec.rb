@@ -54,6 +54,20 @@ describe Assembly::DigitalObject do
       ps[:label].should == "ProjectBar_ab123cd4567"
     end
 
+    it "can exercise register()" do
+      @dobj.registration_info.should == nil
+      @dobj.stub(:register_in_dor).and_return(1234)
+      @dobj.register
+      @dobj.registration_info.should == 1234
+    end
+
+    it "can exercise unregister()" do
+      @dobj.registration_info = 1234
+      @dobj.stub(:delete_from_dor)
+      @dobj.unregister
+      @dobj.registration_info.should == nil
+    end
+
   end
 
 end
