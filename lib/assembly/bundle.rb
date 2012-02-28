@@ -24,9 +24,9 @@ module Assembly
     )
 
     def initialize(params = {})
-      @bundle_dir          = params[:bundle_dir]
-      @manifest            = params[:manifest]
-      @checksums_file      = params[:checksums_file]
+      @bundle_dir          = params[:bundle_dir]     || ''
+      @manifest            = params[:manifest]       || ''
+      @checksums_file      = params[:checksums_file] || ''
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @collection_druid_id = params[:collection_druid_id]
