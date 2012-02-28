@@ -112,6 +112,21 @@ module Assembly
       }
 
       @content_metadata_xml = builder.to_xml
+
+      # { "objectId"=>"fq881bq1612",
+      #   "resource"=>{
+      #     "id"=>"fq881bq1612_1", 
+      #     "sequence"=>"1",
+      #     "file"=>{
+      #       "id"=>"image1.tif", 
+      #       "publish"=>"no", 
+      #       "preserve"=>"yes", 
+      #       "shelve"=>"no"
+      #     },
+      #     "label"=>"Image 1"
+      #   }
+      # }
+
     end
 
     def write_content_metadata(file_handle=nil)
