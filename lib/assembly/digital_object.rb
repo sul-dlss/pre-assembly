@@ -62,8 +62,6 @@ module Assembly
     end
 
     def register
-      # Register object in Dor.
-      # TODO: register: spec.
       log "    - register(#{@pid})"
       @registration_info = register_in_dor(registration_params)
     end
@@ -131,9 +129,9 @@ module Assembly
     end
 
     def unregister
-      # TODO: unregister: spec
       log "  - unregister(#{@pid})"
       delete_from_dor @pid
+      @registration_info = nil
     end
 
   end
