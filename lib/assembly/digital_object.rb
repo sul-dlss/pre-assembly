@@ -16,7 +16,8 @@ module Assembly
       :content_metadata_xml,
       :content_md_file_name,
       :public_attr,
-      :uuid
+      :uuid,
+      :registration_info
     )
 
     def initialize(params = {})
@@ -32,6 +33,7 @@ module Assembly
       @content_md_file_name  = 'content_metadata.xml'
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
+      @registration_info     = nil
     end
 
     def mint_druid()            Dor::SuriService.mint_id                           end
@@ -45,6 +47,7 @@ module Assembly
 
     def assemble(stager, staging_dir)
       log "  - assemble(#{@source_id})"
+      claim_druid
       register
       stage_images stager, staging_dir
       generate_content_metadata
@@ -52,18 +55,18 @@ module Assembly
       initialize_assembly_workflow
     end
 
+    def claim_druid
+      # TODO: claim_druid: spec.
+      log "    - claim_druid()"
+      @pid   = mint_druid
+      @druid = Druid.new @pid
+    end
+
     def register
       # Register object in Dor.
       # TODO: register: spec.
-      claim_druid
       log "    - register(#{@pid})"
-      register_in_dor registration_params
-    end
-
-    def claim_druid
-      # TODO: claim_druid: spec.
-      @pid   = mint_druid
-      @druid = Druid.new @pid
+      @registration_info = register_in_dor(registration_params)
     end
 
     def registration_params

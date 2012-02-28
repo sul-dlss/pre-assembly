@@ -2,10 +2,8 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-abort "Usage: #{$0} BUNDLE_DIR\n" unless ARGV.size == 1
-
 bundle = Assembly::Bundle.new(
-  :bundle_dir          => ARGV[0],
+  :bundle_dir          => 'spec/test_data/bundle_input',
   :manifest            => 'manifest.csv',
   :checksums_file      => 'checksums.txt',
   :project_name        => 'REVS',
