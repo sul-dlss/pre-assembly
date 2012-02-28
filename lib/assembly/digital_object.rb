@@ -69,7 +69,6 @@ module Assembly
     end
 
     def registration_params
-      # TODO: registration_params: spec.
       {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
