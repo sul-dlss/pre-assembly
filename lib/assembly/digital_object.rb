@@ -82,7 +82,6 @@ module Assembly
 
     def stage_images(stager, base_target_dir)
       # Copy or move images to staging directory.
-      # TODO: stage_images: spec.
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
