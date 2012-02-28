@@ -123,7 +123,7 @@ module Assembly
     def delete_digital_objects
       # During development, delete objects the we register.
       log "delete_digital_objects()"
-      @digital_objects.each { |dobj| dobj.delete_from_dor }
+      @digital_objects.each { |dobj| dobj.unregister }
     end
 
   end

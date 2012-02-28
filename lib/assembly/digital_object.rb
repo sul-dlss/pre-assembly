@@ -14,10 +14,9 @@ module Assembly
       :pid,
       :images,
       :content_metadata_xml,
-      :uuid,
-      :druid_minting_service,
-      :registration_service,
-      :deletion_service
+      :content_md_file_name,
+      :public_attr,
+      :uuid
     )
 
     def initialize(params = {})
@@ -31,15 +30,14 @@ module Assembly
       @images                = []
       @content_metadata_xml  = ''
       @content_md_file_name  = 'content_metadata.xml'
-
-      # TODO: initialize(): use methods for external calls rather than attributes.
-      @uuid                  = UUIDTools::UUID.timestamp_create.to_s
-      @druid_minting_service = lambda { Dor::SuriService.mint_id }
-      @registration_service  = lambda { |ps| Dor::RegistrationService.register_object ps }
-      @deletion_service      = lambda { |p| Dor::Config.fedora.client["objects/#{p}"].delete }
-      @druid_tree_maker      = lambda { |d| FileUtils.mkdir_p d }
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+      @uuid                  = UUIDTools::UUID.timestamp_create.to_s
     end
+
+    def mint_druid()            Dor::SuriService.mint_id                           end
+    def register_in_dor(params) Dor::RegistrationService.register_object params    end
+    def delete_from_dor(pid)    Dor::Config.fedora.client["objects/#{pid}"].delete end
+    def druid_true_mkdir(dir)   FileUtils.mkdir_p dir                              end
 
     def add_image(file_name)
       @images.push Image::new(file_name)
@@ -59,12 +57,12 @@ module Assembly
       # TODO: register: spec.
       claim_druid
       log "    - register(#{@pid})"
-      @registration_service.call registration_params
+      register_in_dor registration_params
     end
 
     def claim_druid
       # TODO: claim_druid: spec.
-      @pid   = @druid_minting_service.call
+      @pid   = mint_druid
       @druid = Druid.new @pid
     end
 
@@ -87,7 +85,7 @@ module Assembly
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
-        @druid_tree_maker.call @druid_tree_dir
+        druid_true_mkdir @druid_tree_dir
         stager.call img.full_path, @druid_tree_dir
       end
     end
@@ -131,10 +129,10 @@ module Assembly
       # TODO: initialize_assembly_workflow: implement and spec.
     end
 
-    def delete_from_dor
-      # TODO: delete_from_dor: spec.
-      log "    - delete_from_dor(#{@pid})"
-      @deletion_service.call @pid
+    def unregister
+      # TODO: unregister: spec
+      log "  - unregister(#{@pid})"
+      delete_from_dor @pid
     end
 
   end
