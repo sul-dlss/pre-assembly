@@ -13,7 +13,7 @@ describe Assembly::DigitalObject do
     @dobj         = Assembly::DigitalObject.new @ps
     @druid        = Druid.new 'druid:ab123cd4567'
     @druid_alt    = Druid.new 'druid:ee222vv4444'
-    @publish_attr = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+    @publish_attr = { "preserve" => 'yes', "shelve" => 'no', "publish" => 'no' }
   end
 
   def add_images_to_dobj(img_dir = '/tmp')
@@ -120,43 +120,26 @@ describe Assembly::DigitalObject do
 
   describe "content metadata" do
     
-    it "should be able to generate content metadata correctly" do
+    it "should be able to generate contentMetadata correctly as YAML" do
       drid = @druid.id
-      exp  = { "contentMetadata"=> {
-        "objectId" => drid,
-        "resource" => [
-          {
-            "label"    => "Image 1",
-            "id"       => "#{drid}_1",
-            "sequence" => "1",
-            "file"     => {
-              "publish"  => "no",
-              "id"       => "image_1.tif",
-              "shelve"   => "no",
-              "preserve" => "yes"},
-            },
-          {
-            "label"    => "Image 2",
-            "id"       => "#{drid}_2",
-            "sequence" => "2",
-             "file" => {
-               "publish"  => "no",
-               "id"       => "image_2.tif",
-               "shelve"   => "no",
-               "preserve" => "yes"},
-          },
-        ],
-      }}
       @dobj.druid = @druid
       add_images_to_dobj
-      @dobj.generate_content_metadata
-      cmx = @dobj.content_metadata_xml
-      Hash.from_xml(cmx).should == exp
 
-      @dobj.generate_content_metadata_yml
-      cmy = @dobj.content_metadata_xml
-      yex = YAML::load(cmy)
-      yex.should == exp
+      exp  = { "contentMetadata"=> {
+        "objectId" => drid,
+        "resource" => (1 .. 2).map { |i|
+          {
+            "label"    => "Image #{i}",
+            "id"       => "#{drid}_#{i}",
+            "sequence" => "#{i}",
+            "file"     => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
+          }
+        }
+      }}
+
+      @dobj.generate_content_metadata
+      y = YAML::load(@dobj.content_metadata_yml)
+      y.should == exp
     end
 
   end

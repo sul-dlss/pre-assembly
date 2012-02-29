@@ -13,7 +13,7 @@ module Assembly
       :druid,
       :pid,
       :images,
-      :content_metadata_xml,
+      :content_metadata_yml,
       :content_md_file_name,
       :public_attr,
       :uuid,
@@ -30,7 +30,7 @@ module Assembly
       @druid                 = nil
       @pid                   = ''
       @images                = []
-      @content_metadata_xml  = ''
+      @content_metadata_yml  = ''
       @content_md_file_name  = 'content_metadata.xml'
       @publish_attr          = { "preserve" => 'yes', "shelve" => 'no', "publish" => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
@@ -92,31 +92,11 @@ module Assembly
 
     def generate_content_metadata
       # Store expected checksums and other provider-provided metadata
-      # in a skeleton version of content metadata.
-      log "    - generate_content_metadata()"
-      builder = Nokogiri::XML::Builder.new { |xml|
-        xml.contentMetadata(:objectId => "#{@druid.id}") {
-          @images.each_with_index do |img, j|
-            seq           = j + 1
-            resource_id   = "#{@druid.id}_#{seq}"
-            content_label = "Image #{seq}"
-            xml.resource(:id => resource_id, :sequence => seq) {
-              xml.label content_label
-              xml.file( { :id => img.file_name }.merge @publish_attr )
-            }
-          end
-        }
-      }
-      @content_metadata_xml = builder.to_xml
-    end
-
-    def generate_content_metadata_yml
-      # Store expected checksums and other provider-provided metadata
       # in a skeletal version of contentMetadata.
-      # TODO: generate_content_metadata_yml: spec.
-      # TODO: generate_content_metadata_yml: persist misc info from data provider.
+      # TODO: generate_content_metadata: use symbols in keys, not strings.
+      # TODO: generate_content_metadata: persist misc info from data provider.
       log "    - generate_content_metadata_yml()"
-      @content_metadata_xml = {
+      @content_metadata_yml = {
         "contentMetadata" => {
           "objectId" => @druid.id,
           "resource" => cm_resource,
@@ -145,7 +125,7 @@ module Assembly
         file_name   = File.join @druid_tree_dir, @content_md_file_name
         file_handle = File.open(file_name, 'w')
       end
-      file_handle.puts @content_metadata_xml
+      file_handle.puts @content_metadata_yml
     end
 
     def initialize_assembly_workflow
