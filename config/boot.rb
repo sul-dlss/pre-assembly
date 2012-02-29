@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'logger'
-require 'yaml'
+# require 'yaml'
 
 environment  = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 project_root = File.expand_path(File.dirname(__FILE__) + '/..')
