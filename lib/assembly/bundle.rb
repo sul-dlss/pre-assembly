@@ -50,7 +50,7 @@ module Assembly
 
     def run_assembly
       log ""
-      log "sun_assembly()"
+      log "run_assembly()"
       check_for_required_files
       load_exp_checksums
       load_manifest
