@@ -111,7 +111,7 @@ describe Assembly::Images do
   end
 
   def remove_files(dir)
-    Dir.foreach(dir) {|f| fn = File.join(dir, f); File.delete(fn) if !File.directory?(fn) && File.basename(fn) != 'empty.txt'}
+    Dir.foreach(dir) {|f| fn = File.join(dir, f); File.delete(fn) if !File.directory?(fn) && File.basename(fn) != '.empty'}
   end
 
   # check the existence and mime_type of the supplied file and confirm if it's jp2
