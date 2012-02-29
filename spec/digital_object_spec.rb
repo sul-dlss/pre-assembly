@@ -10,9 +10,17 @@ describe Assembly::DigitalObject do
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
     }
-    @dobj      = Assembly::DigitalObject.new @ps
-    @druid     = Druid.new 'druid:ab123cd4567'
-    @druid_alt = Druid.new 'druid:ee222vv4444'
+    @dobj         = Assembly::DigitalObject.new @ps
+    @druid        = Druid.new 'druid:ab123cd4567'
+    @druid_alt    = Druid.new 'druid:ee222vv4444'
+    @publish_attr = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+  end
+
+  def add_images_to_dobj(img_dir = '/tmp')
+    (1..2).each do |i|
+      f = "image_#{i}.tif"
+      @dobj.add_image :file_name => f, :full_path => "#{img_dir}/#{f}"
+    end
   end
 
 
@@ -78,28 +86,18 @@ describe Assembly::DigitalObject do
   describe "image staging" do
     
     it "should be able to stage images in both :move and :copy modes" do
-      tests = {
-        false => @druid,
-        true  => @druid_alt,
-      }
-      tests.each do |copy_to_staging, druid|
+      tests = { false => @druid, true  => @druid_alt }
+      tests.each do |c2s, druid|
 
-        bundle       = Assembly::Bundle.new :copy_to_staging => copy_to_staging
+        bundle       = Assembly::Bundle.new :copy_to_staging => c2s
         stager       = bundle.get_stager
         @dobj.druid  = druid
         @dobj.images = []
 
         Dir.mktmpdir do |tmp_area|
-          # Add images to the digital object.
-          (1..3).each do |i|
-            f = "image_#{i}.tif"
-            ps = {
-              :file_name => f,
-              :full_path => "#{tmp_area}/#{f}",
-            }
-            FileUtils.touch ps[:full_path]
-            @dobj.add_image ps
-          end
+          # Add images to the digital object and create the files.
+          add_images_to_dobj tmp_area
+          @dobj.images.each { |img| FileUtils.touch img.full_path }
 
           # Stage the images.
           base_target_dir = "#{tmp_area}/target"
@@ -109,10 +107,11 @@ describe Assembly::DigitalObject do
           # Check outcome.
           @dobj.images.each do |img|
             staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
-            File.exists?(img.full_path).should   == copy_to_staging
+            File.exists?(img.full_path).should   == c2s
             File.exists?(staged_img_path).should == true
           end
         end
+
       end
 
     end
@@ -121,8 +120,45 @@ describe Assembly::DigitalObject do
 
   describe "content metadata" do
     
-    it "should be able to generate content metadata" do
-      #
+    it "should be able to generate content metadata correctly" do
+      drid = @druid.id
+      exp  = { "contentMetadata"=> {
+        "objectId" => drid,
+        "resource" => [
+          {
+            "label"    => "Image 1",
+            "id"       => "#{drid}_1",
+            "sequence" => "1",
+            "file"     => {
+              "publish"  => "no",
+              "id"       => "image_1.tif",
+              "shelve"   => "no",
+              "preserve" => "yes"},
+            },
+          {
+            "label"    => "Image 2",
+            "id"       => "#{drid}_2",
+            "sequence" => "2",
+             "file" => {
+               "publish"  => "no",
+               "id"       => "image_2.tif",
+               "shelve"   => "no",
+               "preserve" => "yes"},
+          },
+        ],
+      }}
+      @dobj.druid = @druid
+      add_images_to_dobj
+      @dobj.generate_content_metadata
+      cmx = @dobj.content_metadata_xml
+      Hash.from_xml(cmx).should == exp
+    end
+
+    it "should be able to generate content metadata as YAML" do
+      @dobj.druid = @druid
+      add_images_to_dobj
+      @dobj.generate_content_metadata_yml
+      @dobj.content_metadata_xml.should be_instance_of String
     end
 
   end

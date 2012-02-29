@@ -92,12 +92,8 @@ module Assembly
 
     def generate_content_metadata
       # Store expected checksums and other provider-provided metadata
-      # in a skeleton version of content_metadata.xml file.
-      # TODO: generate_content_metadata: spec.
-      # TODO: generate_content_metadata: change this to produce YAML.
-      # TODO: generate_content_metadata: persist misc info from data provider.
+      # in a skeleton version of content metadata.
       log "    - generate_content_metadata()"
-
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => "#{@druid.id}") {
           @images.each_with_index do |img, j|
@@ -111,23 +107,16 @@ module Assembly
           end
         }
       }
-
       @content_metadata_xml = builder.to_xml
+    end
 
-      # { "objectId"=>"fq881bq1612",
-      #   "resource"=>{
-      #     "id"=>"fq881bq1612_1", 
-      #     "sequence"=>"1",
-      #     "file"=>{
-      #       "id"=>"image1.tif", 
-      #       "publish"=>"no", 
-      #       "preserve"=>"yes", 
-      #       "shelve"=>"no"
-      #     },
-      #     "label"=>"Image 1"
-      #   }
-      # }
-
+    def generate_content_metadata_yml
+      # Store expected checksums and other provider-provided metadata
+      # in a skeleton version of content_metadata.xml file.
+      # TODO: generate_content_metadata_yml: implement and spec.
+      # TODO: generate_content_metadata_yml: persist misc info from data provider.
+      log "    - generate_content_metadata_yml()"
+      @content_metadata_xml = 'YAML'
     end
 
     def write_content_metadata(file_handle=nil)
