@@ -31,7 +31,7 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_yml  = ''
-      @content_md_file_name  = 'content_metadata.xml'
+      @content_md_file_name  = 'content_metadata.yml'
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @registration_info     = nil
@@ -104,6 +104,8 @@ module Assembly
     end
 
     def cm_resource
+      # Returns a data structure representing a 'resource'
+      # node in content metadata.
       seq = 0
       @images.map { |img|
         seq += 1
@@ -117,14 +119,10 @@ module Assembly
       }
     end
 
-    def write_content_metadata(file_handle=nil)
-      # TODO: write_content_metadata: spec.
-      log "    - write_content_metadata()"
-      unless file_handle
-        file_name   = File.join @druid_tree_dir, @content_md_file_name
-        file_handle = File.open(file_name, 'w')
-      end
-      file_handle.puts @content_metadata_yml
+    def write_content_metadata()
+      file_name = File.join @druid_tree_dir, @content_md_file_name
+      log "    - write_content_metadata(#{file_name})"
+      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_yml }
     end
 
     def initialize_assembly_workflow
