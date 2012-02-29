@@ -49,6 +49,7 @@ module Assembly
     end
 
     def run_assembly
+      # TODO: run_assembly: convert bin/run_assembly to integration test.
       log ""
       log "run_assembly()"
       check_for_required_files
