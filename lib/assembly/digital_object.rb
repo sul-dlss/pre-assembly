@@ -95,6 +95,7 @@ module Assembly
       # in a skeleton version of content_metadata.xml file.
       # TODO: generate_content_metadata: spec.
       # TODO: generate_content_metadata: change this to produce YAML.
+      # TODO: generate_content_metadata: persist misc info from data provider.
       log "    - generate_content_metadata()"
 
       builder = Nokogiri::XML::Builder.new { |xml|

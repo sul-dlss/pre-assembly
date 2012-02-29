@@ -5,12 +5,14 @@ describe Assembly::DigitalObject do
 
   before(:each) do
     @ps = {
-      :apo_druid_id => 'aa123aa1234',
+      :apo_druid_id => 'qq333xx4444',
       :source_id    => 'SourceIDFoo',
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
     }
-    @dobj = Assembly::DigitalObject.new @ps
+    @dobj      = Assembly::DigitalObject.new @ps
+    @druid     = Druid.new 'druid:ab123cd4567'
+    @druid_alt = Druid.new 'druid:ee222vv4444'
   end
 
 
@@ -32,7 +34,7 @@ describe Assembly::DigitalObject do
   describe "registration" do
 
     it "can claim a druid" do
-      d = 'druid:ab123cd4567'
+      d = @druid.druid
       @dobj.stub(:get_druid_from_suri).and_return(d)
       @dobj.pid.should == ''
       @dobj.druid.should == nil
@@ -42,7 +44,7 @@ describe Assembly::DigitalObject do
     end
 
     it "can generate registration parameters" do
-      @dobj.druid = Druid.new 'druid:ab123cd4567'
+      @dobj.druid = @druid
       rps = @dobj.registration_params
       rps.should             be_kind_of Hash
       rps[:source_id].should be_kind_of Hash
@@ -51,10 +53,10 @@ describe Assembly::DigitalObject do
     end
 
     it "can generate registration parameters, even if label attribute is false" do
-      @dobj.druid = Druid.new 'druid:ab123cd4567'
+      @dobj.druid = @druid
       @dobj.label = nil
       ps = @dobj.registration_params
-      ps[:label].should == "ProjectBar_ab123cd4567"
+      ps[:label].should == "ProjectBar_#{@druid.id}"
     end
 
     it "can exercise register()" do
@@ -77,14 +79,14 @@ describe Assembly::DigitalObject do
     
     it "should be able to stage images in both :move and :copy modes" do
       tests = {
-        false => 'druid:ab123cd4567',
-        true  => 'druid:xy111zz2222',
+        false => @druid,
+        true  => @druid_alt,
       }
       tests.each do |copy_to_staging, druid|
 
         bundle       = Assembly::Bundle.new :copy_to_staging => copy_to_staging
         stager       = bundle.get_stager
-        @dobj.druid  = Druid.new druid
+        @dobj.druid  = druid
         @dobj.images = []
 
         Dir.mktmpdir do |tmp_area|
@@ -113,6 +115,14 @@ describe Assembly::DigitalObject do
         end
       end
 
+    end
+
+  end
+
+  describe "content metadata" do
+    
+    it "should be able to generate content metadata" do
+      #
     end
 
   end

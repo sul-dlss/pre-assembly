@@ -93,6 +93,7 @@ module Assembly
 
     def load_manifest
       # Read manifest and initialize digital objects.
+      # TODO: preserve misc parameters from the data provider.
       log "load_manifest()"
       parse_manifest.each do |r|
         dobj_params = {
