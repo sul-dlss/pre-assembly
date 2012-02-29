@@ -152,13 +152,11 @@ describe Assembly::DigitalObject do
       @dobj.generate_content_metadata
       cmx = @dobj.content_metadata_xml
       Hash.from_xml(cmx).should == exp
-    end
 
-    it "should be able to generate content metadata as YAML" do
-      @dobj.druid = @druid
-      add_images_to_dobj
       @dobj.generate_content_metadata_yml
-      @dobj.content_metadata_xml.should be_instance_of String
+      cmy = @dobj.content_metadata_xml
+      yex = YAML::load(cmy)
+      yex.should == exp
     end
 
   end
