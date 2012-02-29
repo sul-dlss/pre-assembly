@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'csv-mapper'
   s.add_dependency 'dor-services'
   s.add_dependency 'lyber-core'
-  s.add_dependency "active-fedora", "3.0.4"
 
   s.add_development_dependency "rspec", "~> 2.6"
 end
