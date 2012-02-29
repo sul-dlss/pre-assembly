@@ -13,7 +13,7 @@ describe Assembly::DigitalObject do
     @dobj         = Assembly::DigitalObject.new @ps
     @druid        = Druid.new 'druid:ab123cd4567'
     @druid_alt    = Druid.new 'druid:ee222vv4444'
-    @publish_attr = { "preserve" => 'yes', "shelve" => 'no', "publish" => 'no' }
+    @publish_attr = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
   end
 
   def add_images_to_dobj(img_dir = '/tmp')
@@ -125,14 +125,14 @@ describe Assembly::DigitalObject do
       @dobj.druid = @druid
       add_images_to_dobj
 
-      exp  = { "contentMetadata"=> {
-        "objectId" => drid,
-        "resource" => (1 .. 2).map { |i|
+      exp  = { :contentMetadata => {
+        :objectId => drid,
+        :resource => (1 .. 2).map { |i|
           {
-            "label"    => "Image #{i}",
-            "id"       => "#{drid}_#{i}",
-            "sequence" => "#{i}",
-            "file"     => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
+            :label    => "Image #{i}",
+            :id       => "#{drid}_#{i}",
+            :sequence => "#{i}",
+            :file     => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
           }
         }
       }}

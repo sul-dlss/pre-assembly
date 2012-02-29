@@ -32,7 +32,7 @@ module Assembly
       @images                = []
       @content_metadata_yml  = ''
       @content_md_file_name  = 'content_metadata.xml'
-      @publish_attr          = { "preserve" => 'yes', "shelve" => 'no', "publish" => 'no' }
+      @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @registration_info     = nil
       @druid_tree_dir        = ''
@@ -93,13 +93,12 @@ module Assembly
     def generate_content_metadata
       # Store expected checksums and other provider-provided metadata
       # in a skeletal version of contentMetadata.
-      # TODO: generate_content_metadata: use symbols in keys, not strings.
       # TODO: generate_content_metadata: persist misc info from data provider.
       log "    - generate_content_metadata_yml()"
       @content_metadata_yml = {
-        "contentMetadata" => {
-          "objectId" => @druid.id,
-          "resource" => cm_resource,
+        :contentMetadata => {
+          :objectId => @druid.id,
+          :resource => cm_resource,
         }
       }.to_yaml
     end
@@ -110,10 +109,10 @@ module Assembly
         seq += 1
         fh = { "id" => img.file_name }.merge @publish_attr
         {
-            "id"       => "#{@druid.id}_#{seq}",
-            "label"    => "Image #{seq}",
-            "sequence" => seq.to_s,
-            "file"     => fh,
+            :id       => "#{@druid.id}_#{seq}",
+            :label    => "Image #{seq}",
+            :sequence => seq.to_s,
+            :file     => fh,
         }
       }
     end
