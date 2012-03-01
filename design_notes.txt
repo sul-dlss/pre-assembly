@@ -1,17 +1,9 @@
-# TODO: remove lib/assembly/images.rb and associated specs.
+# TODO: determine where to store provider attributes (currently in content_metadata.yml).
+# TODO: remove assembly/images.rb (and associated specs, notes, README).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
-# TODO: update the gem description in README.
+# TODO: update the README.
 # TODO: clarify prerequisites in README.
 # TODO: rdoc documentation?
-
-To-do summary:
-
-    - specs
-    - YAML instead of XML during pre-assembly.
-    - workflow
-    - misc pre-assemly
-    - AssemblyItem
-    - common-assembly robots
 
 Download:
 
@@ -20,49 +12,49 @@ Download:
     - Launch the automated assembly process.
 
 
-Pre-assembly (assembly preparation):
+Pre-assembly:
 
     # Load information from the data provider.
-    - Manifest.
     - Expected checksum metadata.
+    - Manifest.
 
     For each digital object:
 
         - Register the object and acquire a druid.
-        - Move object to thumper staging directory (eg, dpgthumper-staging/PROJECT/DRUID_TREE).
+        - Move/copy the object to a druid tree in thumper staging directory.
         - Generate a content_metadata.yml.
-        - Generate a descriptive_metadata.yml to store provider-supplied information.
-        - Initialize the object's workflow in DOR.
+        - Initialize the object's assemblyWF in DOR.
 
 
-Common-assembly robots:
+Assembly robots:
+
+    Notes:
+        - These robots do not interact with DOR except for the workflow changes
+          provided by robot framework. Instead, all of the work occurs directly
+          in the file system (in the objects druid tree directory).
+
+        - Typically, a robot does some work and then adds more information to
+          one of the *_metadata.yml files sitting in the druid tree directory.
 
     # ROBOT.
-    - Generate content_metadata.xml from content_metadata.yml.
+    - Compute checksums for TIFs.
 
     # ROBOT.
-    - Compute checksums for TIF.
-    - Store that info in content_metadata.xml.
-
-    # ROBOT.
-    - Compare actual checksums against expected checksums for TIF.
+    - Compare actual checksums against expected checksums for TIFs.
 
     # ROBOT.
     - Compute image attributes for TIF: exif and related info (including cropped).
-    - Store that info in content_metadata.xml.
 
     # ROBOT.
     - Create JP2
 
     # ROBOT.
     - Compute image attributes for JP2: exif and related info.
-    - Store that info in content_metadata.xml.
 
     # ROBOT.
     - Compute checksums for JP2.
-    - Store that info in content_metadata.xml.
 
-    # ROBOT.
+    # ROBOT (speculative).
     - Generate descriptive metadata from one of the source listed below. This approach
       relieves common-accessioning of using outside sources for content metadata.
         - descriptive_metadata.yml
@@ -70,47 +62,16 @@ Common-assembly robots:
         - symphony
 
     # ROBOT.
+    - Generate content_metadata.xml from content_metadata.yml.
+
+    # ROBOT.
     - Make REST calls to dor-services to initiate common-accessioning.
-    - See https://consul.stanford.edu/display/chimera/REST+mappings+for+dor-services+gem
+    - See chimera/REST+mappings+for+dor-services+gem
         initialize_workspace
         initiate_apo_workflow
 
 
-==================================================
-
-Needed Git projects:
-
-    (1) AssemblyItem
-
-        # Mimic dor-services, using branch origin/feature/object-refactor.
-
-        module Dor
-
-            class AssemblyItem < Dor::Item
-                include Checksumable
-                include Exifable
-
-    (2) Assembly
-    
-        # Mimic common-accessioning.
-
-        module Assembly
-          
-          class Checksum < LyberCore::Robots::Robot
-
-            def initialize(opts = {})
-              super('assemblyWF', 'checksum', opts)
-            end
-
-            def process_item(work_item)
-              obj = Dor::AssemblyItem.load_instance(work_item.druid)
-              obj.checksum
-            end
-            
-
-==================================================
-
-Misc notes on existing code:
+Misc notes on images.rb:
 
     Required parameters
         tiff file name
@@ -157,7 +118,8 @@ Misc notes on existing code:
         See the systemu gem.
 
 
-==================================================
+Running robots:
 
-cd ROBOT_ROOT
-ROBOT_ENVIRONMENT=development bin/run_robot start assemblyWF:create-jp2 assemblyWF:foo-bar ...
+    cd ROBOT_ROOT
+    ROBOT_ENVIRONMENT=development bin/run_robot start assemblyWF:create-jp2 \
+                                                      assemblyWF:foo-bar    ...
