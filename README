@@ -24,10 +24,7 @@ Temporary hack in lyber-core
 Assembly gem
 
     This is a Ruby implementation of services needed to prepare objects to be
-    accessioned in SULAIR digital library.  It contains classes to create
-    symlinks, create derivative files, parse incoming CSV files to register
-    objects, create content meta-data and perform other services needed for
-    assembly
+    accessioned in SULAIR digital library.
 
 
 Run tests
