@@ -10,16 +10,21 @@ describe Assembly::DigitalObject do
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
     }
-    @dobj         = Assembly::DigitalObject.new @ps
-    @druid        = Druid.new 'druid:ab123cd4567'
-    @druid_alt    = Druid.new 'druid:ee222vv4444'
-    @publish_attr = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+    @dobj          = Assembly::DigitalObject.new @ps
+    @druid         = Druid.new 'druid:ab123cd4567'
+    @druid_alt     = Druid.new 'druid:ee222vv4444'
+    @publish_attr  = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+    @provider_attr = {:foo => 'FOO', :bar => 'BAR'}
   end
 
   def add_images_to_dobj(img_dir = '/tmp')
     (1..2).each do |i|
       f = "image_#{i}.tif"
-      @dobj.add_image :file_name => f, :full_path => "#{img_dir}/#{f}"
+      @dobj.add_image(
+        :file_name     => f,
+        :full_path     => "#{img_dir}/#{f}",
+        :provider_attr => @provider_attr
+      )
     end
   end
 
@@ -128,10 +133,11 @@ describe Assembly::DigitalObject do
         :objectId => drid,
         :resource => (1 .. 2).map { |i|
           {
-            :label    => "Image #{i}",
-            :id       => "#{drid}_#{i}",
-            :sequence => "#{i}",
-            :file     => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
+            :label         => "Image #{i}",
+            :id            => "#{drid}_#{i}",
+            :sequence      => "#{i}",
+            :file          => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
+            :provider_attr => @provider_attr,
           }
         }
       }}
