@@ -48,9 +48,9 @@ module Assembly
       @required_files = [@manifest, @checksums_file, @staging_dir]
     end
 
-    def run_assembly
+    def run_pre_assembly
       log ""
-      log "run_assembly()"
+      log "run_pre_assembly()"
       check_for_required_files
       load_exp_checksums
       load_manifest
