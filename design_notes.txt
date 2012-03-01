@@ -20,7 +20,7 @@ Download:
     - Launch the automated assembly process.
 
 
-Assembly preparation:
+Pre-assembly (assembly preparation):
 
     # Load information from the data provider.
     - Manifest.
@@ -35,7 +35,7 @@ Assembly preparation:
         - Initialize the object's workflow in DOR.
 
 
-Assembly robots:
+Common-assembly robots:
 
     # ROBOT.
     - Generate content_metadata.xml from content_metadata.yml.

@@ -1,3 +1,17 @@
+Notes based on planning meeting:
+
+    Maybe use Jove validation during common-assembly to compute checksums and
+    image info (height, width, etc).
+
+    Use Gould Book as a test case to guide the common-assembly development
+    work.
+
+    Ask Michael O. about idiosyncracies in the content.
+
+    Implement this functionality in a way that will allow them to be used as
+    services in the future.
+
+
 Temporary hack in lyber-core
 
     After updating lyber-core in your local environment, run this:
@@ -10,9 +24,10 @@ Temporary hack in lyber-core
 Assembly gem
 
     This is a Ruby implementation of services needed to prepare objects to be
-    accessioned in SULAIR digital library.  It contains classes to create symlinks,
-    create derivative files, parse incoming CSV files to register objects, create
-    content meta-data and perform other services needed for assembly
+    accessioned in SULAIR digital library.  It contains classes to create
+    symlinks, create derivative files, parse incoming CSV files to register
+    objects, create content meta-data and perform other services needed for
+    assembly
 
 
 Run tests
