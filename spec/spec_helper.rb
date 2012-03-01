@@ -1,3 +1,6 @@
+require 'tmpdir'
+require 'fileutils'
+
 # TODO: environment currently set to development, but should be test?
 environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 

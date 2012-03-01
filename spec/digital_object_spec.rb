@@ -1,6 +1,3 @@
-require 'tmpdir'
-require 'fileutils'
-
 describe Assembly::DigitalObject do
 
   before(:each) do
