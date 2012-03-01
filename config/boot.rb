@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'bundler/setup'
 require 'logger'
 
 environment  = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
