@@ -93,7 +93,6 @@ module Assembly
 
     def load_manifest
       # Read manifest and initialize digital objects.
-      # TODO: preserve misc parameters from the data provider.
       log "load_manifest()"
       parse_manifest.each do |r|
         dobj_params = {
@@ -103,11 +102,11 @@ module Assembly
           :source_id           => r.sourceid,
           :label               => r.label,
         }
-
         dobj = DigitalObject::new dobj_params
         dobj.add_image(
-          :file_name => r.filename,
-          :full_path => full_path_in_bundle_dir(r.filename)
+          :file_name     => r.filename,
+          :full_path     => full_path_in_bundle_dir(r.filename),
+          :provider_attr => Hash[r.each_pair.to_a]
         )
         @digital_objects.push dobj
       end

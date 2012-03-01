@@ -79,12 +79,25 @@ describe Assembly::Bundle do
 
   describe "load_manifest()" do
 
-    it "generates the correct number of digital objects" do
-      csv_params = {:sourceid => '', :label => '', :filename => ''}
-      csv_rows = (1..4).map { double('csv_row', csv_params) }
-      @b.stub(:parse_manifest).and_return(csv_rows)
+    before(:all) do
+      @syms              = [:sourceid, :label, :filename, :foo, :bar]
+      @vals              = @syms.map { |s| s.to_s.upcase }
+      @exp_provider_attr = Hash[@syms.zip @vals]
+      CsvParams          = Struct.new(*@syms)
+    end
+
+    before(:each) do
+      @csv_rows = (1..4).map { CsvParams.new(*@vals) }
+      @b.stub(:parse_manifest).and_return(@csv_rows)
       @b.load_manifest
-      @b.digital_objects.should have(csv_rows.size).items
+    end
+
+    it "generates the correct number of digital objects" do
+      @b.digital_objects.should have(@csv_rows.size).items
+    end
+
+    it "preserves the provider attributes" do
+      @b.digital_objects[0].images[0].provider_attr.should == @exp_provider_attr
     end
 
   end
