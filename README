@@ -20,7 +20,8 @@ Setting up project for local development:
 
     # Set up some stuff not stored in Git.
     mkdir doc log pkg tmp
-    scp -r lyberadmin@lyberservices-dev.stanford.edu:/home/lyberadmin/pre-assembly/config .
+    RCONF='lyberadmin@lyberservices-dev.stanford.edu:/home/lyberadmin/pre-assembly/config'
+    scp -r $RCONF/certs $RCONF/environments config
 
     # Get needed gems.
     bundle install
