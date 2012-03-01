@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'nokogiri'
   s.add_dependency 'csv-mapper'
   s.add_dependency 'dor-services'
-  s.add_dependency 'lyber-core'
+  s.add_dependency 'lyber-core', "~> 1.3.0"
 
   s.add_development_dependency "rspec", "~> 2.6"
 end
