@@ -93,7 +93,6 @@ module Assembly
     def generate_content_metadata
       # Store expected checksums and other provider-provided metadata
       # in a skeletal version of contentMetadata.
-      # TODO: generate_content_metadata: persist misc info from data provider.
       log "    - generate_content_metadata_yml()"
       @content_metadata_yml = {
         :contentMetadata => {
@@ -111,10 +110,11 @@ module Assembly
         seq += 1
         fh = { "id" => img.file_name }.merge @publish_attr
         {
-            :id       => "#{@druid.id}_#{seq}",
-            :label    => "Image #{seq}",
-            :sequence => seq.to_s,
-            :file     => fh,
+            :id            => "#{@druid.id}_#{seq}",
+            :label         => "Image #{seq}",
+            :sequence      => seq.to_s,
+            :file          => fh,
+            :provider_attr => img.provider_attr,
         }
       }
     end
