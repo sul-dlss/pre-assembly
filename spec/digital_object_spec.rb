@@ -15,6 +15,7 @@ describe Assembly::DigitalObject do
     @druid_alt     = Druid.new 'druid:ee222vv4444'
     @publish_attr  = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
     @provider_attr = {:foo => 'FOO', :bar => 'BAR'}
+    @tmp_dir_args  = [nil, 'tmp']
   end
 
   def add_images_to_dobj(img_dir = '/tmp')
@@ -99,7 +100,7 @@ describe Assembly::DigitalObject do
         @dobj.druid  = druid
         @dobj.images = []
 
-        Dir.mktmpdir do |tmp_area|
+        Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
           # Add images to the digital object and create the files.
           add_images_to_dobj tmp_area
           @dobj.images.each { |img| FileUtils.touch img.full_path }
@@ -150,7 +151,7 @@ describe Assembly::DigitalObject do
     end
 
     it "should be able to write the content_metadata YAML to a file" do
-      Dir.mktmpdir do |tmp_area|
+      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
         file_name = File.join tmp_area, @dobj.content_md_file_name
 

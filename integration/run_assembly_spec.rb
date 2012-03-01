@@ -1,3 +1,5 @@
+# TODO: implement some tests.
+
 describe "Pre-assembly integration" do
 
   before(:each) do
@@ -16,6 +18,10 @@ describe "Pre-assembly integration" do
 
   it "can run the assembly process" do
     @bundle.run_assembly
+
+    @bundle.digital_objects.each do |dobj|
+      p dobj.druid_tree_dir
+    end
   end
 
 end

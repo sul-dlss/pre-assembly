@@ -17,6 +17,9 @@ Assembly gem
 
 Run tests
 
+    # Prerequisite.
+    Create a tmp dir at the root of the project.
+
     # All tests.
     bin/run_all_tests
 

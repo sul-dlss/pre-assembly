@@ -1,3 +1,9 @@
+# TODO: remove lib/assembly/images.rb and associated specs.
+# TODO: fix lyber-core so we don't need to hack local lyber-core.
+# TODO: update the gem description in README.
+# TODO: clarify prerequisites in README.
+# TODO: rdoc documentation?
+
 To-do summary:
 
     - specs
