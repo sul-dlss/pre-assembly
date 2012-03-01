@@ -1,5 +1,4 @@
-# TODO: sort out environment issues; current set to development.
-# TODO: require spec_helper.rb explicitly rather than using .rspec file?
+# TODO: environment currently set to development, but should be test?
 environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
