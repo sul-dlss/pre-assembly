@@ -1,18 +1,17 @@
 # TODO: determine where to store provider attributes (currently in content_metadata.yml).
-# TODO: remove assembly/images.rb (and associated specs, notes, README).
+# TODO: remove assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
-# TODO: update the README.
-# TODO: clarify prerequisites in README.
+# TODO: improve the README?
 # TODO: rdoc documentation?
 
-Download:
+Receive bundle of materials (manual):
 
     - Receive the bundle of material (e.g. REVS hard drive).
     - Copy the bundle to a prep area on the thumper staging machine.
-    - Launch the automated assembly process.
+    - Launch the pre-assembly process.
 
 
-Pre-assembly:
+Pre-assembly (automated):
 
     # Load information from the data provider.
     - Expected checksum metadata.
@@ -25,101 +24,3 @@ Pre-assembly:
         - Generate a content_metadata.yml.
         - Initialize the object's assemblyWF in DOR.
 
-
-Assembly robots:
-
-    Notes:
-        - These robots do not interact with DOR except for the workflow changes
-          provided by robot framework. Instead, all of the work occurs directly
-          in the file system (in the objects druid tree directory).
-
-        - Typically, a robot does some work and then adds more information to
-          one of the *_metadata.yml files sitting in the druid tree directory.
-
-    # ROBOT.
-    - Compute checksums for TIFs.
-
-    # ROBOT.
-    - Compare actual checksums against expected checksums for TIFs.
-
-    # ROBOT.
-    - Compute image attributes for TIF: exif and related info (including cropped).
-
-    # ROBOT.
-    - Create JP2
-
-    # ROBOT.
-    - Compute image attributes for JP2: exif and related info.
-
-    # ROBOT.
-    - Compute checksums for JP2.
-
-    # ROBOT (speculative).
-    - Generate descriptive metadata from one of the source listed below. This approach
-      relieves common-accessioning of using outside sources for content metadata.
-        - descriptive_metadata.yml
-        - mdtoolkit
-        - symphony
-
-    # ROBOT.
-    - Generate content_metadata.xml from content_metadata.yml.
-
-    # ROBOT.
-    - Make REST calls to dor-services to initiate common-accessioning.
-    - See chimera/REST+mappings+for+dor-services+gem
-        initialize_workspace
-        initiate_apo_workflow
-
-
-Misc notes on images.rb:
-
-    Required parameters
-        tiff file name
-
-    Image attributes: computed, or supplied optionally (*)
-        exif information
-        jp2 file name (*)
-        allow overwrite (*)
-        output profile (*)
-        input profile
-
-    temp tiff file name
-        pixdem
-        layers
-
-        publish (*)
-        preserve (*)
-        shelve (*)
-        content label (*)
-        file size
-        md5 checksum
-        sha1 checksum
-        format
-
-    Sanity checks
-        tiff file exists
-        mimetype == tiff
-        jp2 file does not exist (unless overwrite requested)
-        output profile file exists
-
-        image exists
-
-    Constants
-        output profile file name
-        input profile file name
-
-        content type description
-        cropped
-
-    System calls
-        should check return values
-        need a mechanism by bypassing/mocking
-        is the generic rescue block needed or useful?
-        See the systemu gem.
-
-
-Running robots:
-
-    cd ROBOT_ROOT
-    ROBOT_ENVIRONMENT=development bin/run_robot start assemblyWF:create-jp2 \
-                                                      assemblyWF:foo-bar    ...
