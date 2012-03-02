@@ -1,15 +1,7 @@
-Notes based on planning meeting:
+Pre-assembly gem
 
-    Maybe use Jove validation during common-assembly to compute checksums and
-    image info (height, width, etc).
-
-    Use Gould Book as a test case to guide the common-assembly development
-    work.
-
-    Ask Michael O. about idiosyncracies in content metadata and related items.
-
-    Implement this functionality in a way that will allow them to be used as
-    services in the future.
+    This is a Ruby implementation of services needed to prepare objects to be
+    assembled and then accessioned in SULAIR digital library.
 
 
 Setting up project for local development:
@@ -35,12 +27,6 @@ Setting up project for local development:
     bin/run_all_tests 
 
 
-Assembly gem
-
-    This is a Ruby implementation of services needed to prepare objects to be
-    accessioned in SULAIR digital library.
-
-
 Running tests:
 
     # Prerequisite.
@@ -57,55 +43,3 @@ Running tests:
 Generate Documentation
 
     rdoc --exclude spec --main lib/assembly.rb
-
-
-Prerequisites
-
-    Perl 
-
-    Kakadu Software Binaries - for JP2 generation
-
-       Download and install demonstration binaries from Kakadu:
-       http://www.kakadusoftware.com/index.php?option=com_content&task=view&id=26&Itemid=22
-
-       Note: The binaries will not work with RHEL 5.x; an RPM for RHEL 5 with
-       compatible binaries comming soon.
-
-    Imagemagick 6.5 or higher
-            
-       RHEL 6: 
-
-           # yum install ImageMagick
-
-           The version of ImageMagick included with RHEL 6 has all of the
-           dependency libraries included.
-           
-       RHEL 5: (RPM to install with included binaries comming soon)
-
-           The version of ImageMagic included with RHEL 5 is too old and does
-           not have all the proper binaries included/built
-
-           Required libraries are:
-           yum install lcms lcms-devel libtiff libtiff-devel libjpeg \
-                       libjpeg-devel libpng libpng-devel
-
-           Build Imagemagick from source:
-           http://www.imagemagick.org/download/ImageMagick.tar.gz
-
-       Mac users:
-
-           brew install imagemagick
-        
-    Exiftool
-            
-       RHEL: (RPM to install comming soon)
-       Download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
-
-           tar -xf Image-ExifTool-#.##.tar.gz
-           cd Image-ExifTool-#.##
-           perl Makefile.PL
-           make test
-           sudo make install
-
-       Mac users:
-           brew install exiftool
