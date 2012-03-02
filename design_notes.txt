@@ -1,4 +1,3 @@
-# TODO: determine where to store provider attributes (currently in assembly.yml).
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
 # TODO: improve the README?
