@@ -4,7 +4,7 @@ describe "Pre-assembly integration" do
     @temp_dir = Dir.mktmpdir 'integ_test_', 'tmp'
     @file_patterns = [
       "#{@temp_dir}/**/*.tif",
-      "#{@temp_dir}/**/content_metadata.yml",
+      "#{@temp_dir}/**/assembly.yml",
     ]
     @exp_n_files = 3
     @b = Assembly::Bundle.new(

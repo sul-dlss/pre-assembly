@@ -31,7 +31,7 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_yml  = ''
-      @content_md_file_name  = 'content_metadata.yml'
+      @content_md_file_name  = 'assembly.yml'
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
       @registration_info     = nil
