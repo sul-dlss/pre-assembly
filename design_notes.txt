@@ -1,3 +1,4 @@
+# TODO: generate descriptive_metadata.xml.
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
 # TODO: improve the README?
@@ -21,5 +22,9 @@ Pre-assembly (automated):
         - Register the object and acquire a druid.
         - Move/copy the object to a druid tree in thumper staging directory.
         - Generate assembly.yml.
-        - Initialize the object's assemblyWF in DOR.
+        - Generate descriptive_metadata.xml.
+        - Initialize the object's imageAssemblyWF in DOR (a REST call).
+
+        - Later: get descriptive metadata from other souces, such as mdtoolkit
+          and symphony.
 
