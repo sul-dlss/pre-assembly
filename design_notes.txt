@@ -1,4 +1,4 @@
-# TODO: determine where to store provider attributes (currently in content_metadata.yml).
+# TODO: determine where to store provider attributes (currently in assembly.yml).
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
 # TODO: improve the README?
@@ -21,6 +21,6 @@ Pre-assembly (automated):
 
         - Register the object and acquire a druid.
         - Move/copy the object to a druid tree in thumper staging directory.
-        - Generate a content_metadata.yml.
+        - Generate assembly.yml.
         - Initialize the object's assemblyWF in DOR.
 
