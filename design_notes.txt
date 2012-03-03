@@ -1,3 +1,4 @@
+# TODO: consider book content metadata: example of book content metadata: http://goo.gl/7llUe
 # TODO: generate descriptive_metadata.xml.
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
