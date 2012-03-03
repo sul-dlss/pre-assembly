@@ -108,7 +108,7 @@ module Assembly
       seq = 0
       @images.map { |img|
         seq += 1
-        fh = { "id" => img.file_name }.merge @publish_attr
+        fh = { :id => img.file_name }.merge @publish_attr
         {
             :id            => "#{@druid.id}_#{seq}",
             :label         => "Image #{seq}",

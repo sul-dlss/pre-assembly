@@ -134,7 +134,7 @@ describe Assembly::DigitalObject do
             :label         => "Image #{i}",
             :id            => "#{drid}_#{i}",
             :sequence      => "#{i}",
-            :file          => {"id" => "image_#{i}.tif"}.merge(@publish_attr),
+            :file          => {:id => "image_#{i}.tif"}.merge(@publish_attr),
             :provider_attr => @provider_attr,
           }
         }
