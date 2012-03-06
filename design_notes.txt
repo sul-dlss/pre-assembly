@@ -1,4 +1,3 @@
-# TODO: convert assembly.yml to content_metadata.xml
 # TODO: put provider_attr and expected_checksums in descriptive_metadata.xml
 # TODO: change module name from Assembly to PreAssembly.
 # TODO: remove content_metadata code from assembly/images.rb (and associated specs).
