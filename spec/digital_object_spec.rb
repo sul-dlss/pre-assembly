@@ -127,20 +127,19 @@ describe Assembly::DigitalObject do
       @dobj.druid = @druid
       add_images_to_dobj
       @dobj.generate_content_metadata
-      @exp_xml = [
-        '<?xml version="1.0"?>',
-        '<contentMetadata objectId="ab123cd4567">',
-        '  <resource sequence="1" id="ab123cd4567_1">',
-        '    <label>Image 1</label>',
-        '    <file preserve="yes" publish="no" shelve="no" id="image_1.tif"/>',
-        '  </resource>',
-        '  <resource sequence="2" id="ab123cd4567_2">',
-        '    <label>Image 2</label>',
-        '    <file preserve="yes" publish="no" shelve="no" id="image_2.tif"/>',
-        '  </resource>',
-        '</contentMetadata>',
-        '',
-      ].join "\n"
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <contentMetadata objectId="ab123cd4567">
+          <resource sequence="1" id="ab123cd4567_1">
+            <label>Image 1</label>
+            <file preserve="yes" publish="no" shelve="no" id="image_1.tif"/>
+          </resource>
+          <resource sequence="2" id="ab123cd4567_2">
+            <label>Image 2</label>
+            <file preserve="yes" publish="no" shelve="no" id="image_2.tif"/>
+          </resource>
+        </contentMetadata>
+      END
     end
     
     it "should generate the expected xml text" do
@@ -156,6 +155,28 @@ describe Assembly::DigitalObject do
         @dobj.write_content_metadata
         File.read(file_name).should == @exp_xml
       end
+    end
+
+  end
+
+  describe "#descriptive metadata creation and writing" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      add_images_to_dobj
+      @dobj.generate_descriptive_metadata
+      @exp_xml = 'blah'
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <descriptiveMetadata objectId="ab123cd4567">
+          <provider_attr foo="FOO" id="image_1.tif" bar="BAR"/>
+          <provider_attr foo="FOO" id="image_2.tif" bar="BAR"/>
+        </descriptiveMetadata>
+      END
+    end
+    
+    it "should generate the expected xml text" do
+      @dobj.descriptive_metadata_xml.should == @exp_xml
     end
 
   end
