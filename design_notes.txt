@@ -1,11 +1,10 @@
 # TODO: convert assembly.yml to content_metadata.xml
-# TODO: put provider_attr in descriptive_metadata.xml
+# TODO: put provider_attr and expected_checksums in descriptive_metadata.xml
+# TODO: change module name from Assembly to PreAssembly.
 # TODO: remove content_metadata code from assembly/images.rb (and associated specs).
-# TODO: remove jp3 code from assembly/images.rb (and associated specs).
-# TODO: consider book content metadata: example of book content metadata: http://goo.gl/7llUe
+# TODO: remove jp2 code from assembly/images.rb (and associated specs).
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
-# TODO: improve the README?
-# TODO: rdoc documentation?
+# TODO: rdoc documentation and README.
 
 Receive bundle of materials (manual):
 

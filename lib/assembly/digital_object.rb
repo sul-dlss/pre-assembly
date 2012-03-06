@@ -14,6 +14,7 @@ module Assembly
       :pid,
       :images,
       :content_metadata_yml,
+      :content_metadata_xml,
       :content_md_file_name,
       :public_attr,
       :uuid,
@@ -31,6 +32,7 @@ module Assembly
       @pid                   = ''
       @images                = []
       @content_metadata_yml  = ''
+      @content_metadata_xml  = ''
       @content_md_file_name  = 'assembly.yml'
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
       @uuid                  = UUIDTools::UUID.timestamp_create.to_s
@@ -53,6 +55,7 @@ module Assembly
       register
       stage_images stager, staging_dir
       generate_content_metadata
+      generate_descriptive_metadata
       write_content_metadata
       initialize_assembly_workflow
     end
@@ -91,15 +94,30 @@ module Assembly
     end
 
     def generate_content_metadata
-      # Store expected checksums and other provider-provided metadata
-      # in a skeletal version of contentMetadata.
-      log "    - generate_content_metadata_yml()"
+      # Generate a skeletal version of content metadata.
+      log "    - generate_content_metadata()"
       @content_metadata_yml = {
         :contentMetadata => {
           :objectId => @druid.id,
           :resource => cm_resource,
         }
       }.to_yaml
+    end
+
+    def generate_content_metadata_xml
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.contentMetadata(:objectId => @druid.id) {
+          @images.each_with_index { |img, i|
+            seq = i + 1
+            xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
+              file_params = { :id => img.file_name }.merge @publish_attr
+              xml.label "Image #{seq}"
+              xml.file  file_params
+            }
+          }
+        }
+      }
+      @content_metadata_xml = builder.to_xml
     end
 
     def cm_resource
@@ -119,6 +137,11 @@ module Assembly
       }
     end
 
+    def generate_descriptive_metadata
+      # TODO: generate_descriptive_metadata(): to store provider_attr and exp_checksums.
+      log "    - generate_descriptive_metadata()"
+    end
+
     def write_content_metadata()
       file_name = File.join @druid_tree_dir, @content_md_file_name
       log "    - write_content_metadata(#{file_name})"
@@ -126,7 +149,7 @@ module Assembly
     end
 
     def initialize_assembly_workflow
-      # Add common assembly workflow to the object, and put the object in the first state.
+      # Add assemblyWF to the object in DOR.
       # TODO: initialize_assembly_workflow: implement and spec.
     end
 

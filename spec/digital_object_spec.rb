@@ -160,4 +160,33 @@ describe Assembly::DigitalObject do
 
   end
 
+  describe "#generate_content_metadata_xml" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      add_images_to_dobj
+      @dobj.generate_content_metadata_xml
+    end
+    
+    it "should generate the expected xml text" do
+      exp_xml = [
+        '<?xml version="1.0"?>',
+        '<contentMetadata objectId="ab123cd4567">',
+        '  <resource sequence="1" id="ab123cd4567_1">',
+        '    <label>Image 1</label>',
+        '    <file preserve="yes" publish="no" shelve="no" id="image_1.tif"/>',
+        '  </resource>',
+        '  <resource sequence="2" id="ab123cd4567_2">',
+        '    <label>Image 2</label>',
+        '    <file preserve="yes" publish="no" shelve="no" id="image_2.tif"/>',
+        '  </resource>',
+        '</contentMetadata>',
+        '',
+      ].join "\n"
+
+      @dobj.content_metadata_xml.should == exp_xml
+    end
+
+  end
+
 end
