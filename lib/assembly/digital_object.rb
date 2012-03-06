@@ -94,6 +94,7 @@ module Assembly
     end
 
     def generate_content_metadata
+      # TODO: generate_content_metadata(): add expected checksums.
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
           @images.each_with_index { |img, i|
@@ -109,8 +110,13 @@ module Assembly
       @content_metadata_xml = builder.to_xml
     end
 
+    def write_content_metadata
+      file_name = File.join @druid_tree_dir, @content_md_file_name
+      log "    - write_content_metadata_xml(#{file_name})"
+      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
+    end
+
     def generate_descriptive_metadata
-      # TODO: generate_descriptive_metadata(): to store provider_attr and exp_checksums.
       log "    - generate_descriptive_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.descriptiveMetadata(:objectId => @druid.id) {
@@ -123,18 +129,13 @@ module Assembly
       @descriptive_metadata_xml = builder.to_xml
     end
 
-    def write_content_metadata
-      file_name = File.join @druid_tree_dir, @content_md_file_name
-      log "    - write_content_metadata_xml(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
-    end
-
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
       # TODO: initialize_assembly_workflow: implement and spec.
     end
 
     def unregister
+      # Used during testing/development work to unregister objects created in -dev.
       log "  - unregister(#{@pid})"
       delete_from_dor @pid
       @registration_info = nil
