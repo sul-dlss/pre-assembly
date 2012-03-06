@@ -21,7 +21,8 @@ describe Assembly::DigitalObject do
       @dobj.add_image(
         :file_name     => f,
         :full_path     => "#{img_dir}/#{f}",
-        :provider_attr => @provider_attr
+        :provider_attr => @provider_attr,
+        :exp_md5       => "#{i}" * 4
       )
     end
   end
@@ -135,11 +136,15 @@ describe Assembly::DigitalObject do
         <contentMetadata objectId="ab123cd4567">
           <resource sequence="1" id="ab123cd4567_1">
             <label>Image 1</label>
-            <file preserve="yes" publish="no" shelve="no" id="image_1.tif"/>
+            <file preserve="yes" publish="no" shelve="no" id="image_1.tif">
+              <provider_checksum type="md5">1111</provider_checksum>
+            </file>
           </resource>
           <resource sequence="2" id="ab123cd4567_2">
             <label>Image 2</label>
-            <file preserve="yes" publish="no" shelve="no" id="image_2.tif"/>
+            <file preserve="yes" publish="no" shelve="no" id="image_2.tif">
+              <provider_checksum type="md5">2222</provider_checksum>
+            </file>
           </resource>
         </contentMetadata>
       END
@@ -163,7 +168,7 @@ describe Assembly::DigitalObject do
 
   end
 
-  describe "#descriptive metadata creation and writing" do
+  describe "descriptive metadata creation and writing" do
 
     before(:each) do
       @dobj.druid = @druid

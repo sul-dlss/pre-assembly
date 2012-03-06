@@ -97,7 +97,6 @@ module Assembly
     end
 
     def generate_content_metadata
-      # TODO: generate_content_metadata(): add expected checksums.
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
           @images.each_with_index { |img, i|
@@ -105,7 +104,9 @@ module Assembly
             xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
               file_params = { :id => img.file_name }.merge @publish_attr
               xml.label "Image #{seq}"
-              xml.file  file_params
+              xml.file(file_params) {
+                xml.provider_checksum img.exp_md5, :type => 'md5'
+              }
             }
           }
         }

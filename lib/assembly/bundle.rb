@@ -103,10 +103,12 @@ module Assembly
           :label               => r.label,
         }
         dobj = DigitalObject::new dobj_params
+        f = r.filename
         dobj.add_image(
-          :file_name     => r.filename,
-          :full_path     => full_path_in_bundle_dir(r.filename),
-          :provider_attr => Hash[r.each_pair.to_a]
+          :file_name     => f,
+          :full_path     => full_path_in_bundle_dir(f),
+          :provider_attr => Hash[r.each_pair.to_a],
+          :exp_md5       => @exp_checksums[f]
         )
         @digital_objects.push dobj
       end
