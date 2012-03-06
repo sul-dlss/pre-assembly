@@ -121,51 +121,51 @@ describe Assembly::DigitalObject do
 
   end
 
-  describe "content metadata" do
+  # describe "content metadata" do
+
+  #   before(:each) do
+  #     drid = @druid.id
+  #     @dobj.druid = @druid
+  #     add_images_to_dobj
+  #     @exp_cm = { :contentMetadata => {
+  #       :objectId => drid,
+  #       :resource => (1 .. 2).map { |i|
+  #         {
+  #           :label         => "Image #{i}",
+  #           :id            => "#{drid}_#{i}",
+  #           :sequence      => "#{i}",
+  #           :file          => {:id => "image_#{i}.tif"}.merge(@publish_attr),
+  #           :provider_attr => @provider_attr,
+  #         }
+  #       }
+  #     }}
+  #     @dobj.generate_content_metadata
+  #   end
+  #   
+  #   it "should be able to generate content_metadata correctly as YAML" do
+  #     y = YAML::load @dobj.content_metadata_yml
+  #     y.should == @exp_cm
+  #   end
+
+  #   it "should be able to write the content_metadata YAML to a file" do
+  #     Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+  #       @dobj.druid_tree_dir = tmp_area
+  #       file_name = File.join tmp_area, @dobj.content_md_file_name
+
+  #       File.exists?(file_name).should == false
+  #       @dobj.write_content_metadata
+  #       YAML::load_file(file_name).should == @exp_cm
+  #     end
+  #   end
+
+  # end
+
+  describe "content metadata creation and writing" do
 
     before(:each) do
-      drid = @druid.id
       @dobj.druid = @druid
       add_images_to_dobj
-      @exp_cm = { :contentMetadata => {
-        :objectId => drid,
-        :resource => (1 .. 2).map { |i|
-          {
-            :label         => "Image #{i}",
-            :id            => "#{drid}_#{i}",
-            :sequence      => "#{i}",
-            :file          => {:id => "image_#{i}.tif"}.merge(@publish_attr),
-            :provider_attr => @provider_attr,
-          }
-        }
-      }}
       @dobj.generate_content_metadata
-    end
-    
-    it "should be able to generate content_metadata correctly as YAML" do
-      y = YAML::load @dobj.content_metadata_yml
-      y.should == @exp_cm
-    end
-
-    it "should be able to write the content_metadata YAML to a file" do
-      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-        @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.content_md_file_name
-
-        File.exists?(file_name).should == false
-        @dobj.write_content_metadata
-        YAML::load_file(file_name).should == @exp_cm
-      end
-    end
-
-  end
-
-  describe "content metadata XML" do
-
-    before(:each) do
-      @dobj.druid = @druid
-      add_images_to_dobj
-      @dobj.generate_content_metadata_xml
       @exp_xml = [
         '<?xml version="1.0"?>',
         '<contentMetadata objectId="ab123cd4567">',
@@ -192,7 +192,7 @@ describe Assembly::DigitalObject do
         file_name = File.join tmp_area, @dobj.content_md_file_name
 
         File.exists?(file_name).should == false
-        @dobj.write_content_metadata_xml
+        @dobj.write_content_metadata
         File.read(file_name).should == @exp_xml
       end
     end
