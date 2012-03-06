@@ -26,6 +26,9 @@ describe Assembly::DigitalObject do
     end
   end
 
+  def noko_doc(x)
+    Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
+  end
 
   describe "initialization and other setup" do
 
@@ -140,10 +143,11 @@ describe Assembly::DigitalObject do
           </resource>
         </contentMetadata>
       END
+      @exp_xml = noko_doc @exp_xml
     end
     
     it "should generate the expected xml text" do
-      @dobj.content_metadata_xml.should == @exp_xml
+      noko_doc(@dobj.content_metadata_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the content_metadata XML to a file" do
@@ -153,7 +157,7 @@ describe Assembly::DigitalObject do
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
-        File.read(file_name).should == @exp_xml
+        noko_doc(File.read(file_name)).should be_equivalent_to @exp_xml
       end
     end
 
@@ -173,10 +177,11 @@ describe Assembly::DigitalObject do
           <provider_attr foo="FOO" id="image_2.tif" bar="BAR"/>
         </descriptiveMetadata>
       END
+      @exp_xml = noko_doc @exp_xml
     end
     
     it "should generate the expected xml text" do
-      @dobj.descriptive_metadata_xml.should == @exp_xml
+      noko_doc(@dobj.descriptive_metadata_xml).should be_equivalent_to @exp_xml
     end
 
   end
