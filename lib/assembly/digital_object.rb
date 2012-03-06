@@ -24,20 +24,22 @@ module Assembly
     )
 
     def initialize(params = {})
-      @project_name          = params[:project_name]
-      @apo_druid_id          = params[:apo_druid_id]
-      @collection_druid_id   = params[:collection_druid_id]
-      @label                 = params[:label]
-      @source_id             = { params[:project_name] => params[:source_id] }
-      @druid                 = nil
-      @pid                   = ''
-      @images                = []
-      @content_metadata_xml  = ''
-      @content_md_file_name  = 'content_metadata.xml'
-      @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
-      @uuid                  = UUIDTools::UUID.timestamp_create.to_s
-      @registration_info     = nil
-      @druid_tree_dir        = ''
+      @project_name             = params[:project_name]
+      @apo_druid_id             = params[:apo_druid_id]
+      @collection_druid_id      = params[:collection_druid_id]
+      @label                    = params[:label]
+      @source_id                = { params[:project_name] => params[:source_id] }
+      @druid                    = nil
+      @pid                      = ''
+      @images                   = []
+      @content_metadata_xml     = ''
+      @content_md_file_name     = 'content_metadata.xml'
+      @descriptive_metadata_xml = ''
+      @descriptive_md_file_name = 'descriptive_metadata.xml'
+      @publish_attr             = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+      @uuid                     = UUIDTools::UUID.timestamp_create.to_s
+      @registration_info        = nil
+      @druid_tree_dir           = ''
     end
 
     def get_druid_from_suri()   Dor::SuriService.mint_id                           end
@@ -58,6 +60,7 @@ module Assembly
       generate_descriptive_metadata
       write_content_metadata
       initialize_assembly_workflow
+      write_descriptive_metadata
     end
 
     def claim_druid
@@ -127,6 +130,12 @@ module Assembly
         }
       }
       @descriptive_metadata_xml = builder.to_xml
+    end
+
+    def write_descriptive_metadata
+      file_name = File.join @druid_tree_dir, @descriptive_md_file_name
+      log "    - write_descriptive_metadata_xml(#{file_name})"
+      File.open(file_name, 'w') { |fh| fh.puts @descriptive_metadata_xml }
     end
 
     def initialize_assembly_workflow

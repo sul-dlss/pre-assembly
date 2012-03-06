@@ -157,7 +157,7 @@ describe Assembly::DigitalObject do
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
-        noko_doc(File.read(file_name)).should be_equivalent_to @exp_xml
+        noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
     end
 
@@ -182,6 +182,17 @@ describe Assembly::DigitalObject do
     
     it "should generate the expected xml text" do
       noko_doc(@dobj.descriptive_metadata_xml).should be_equivalent_to @exp_xml
+    end
+
+    it "should be able to write the descriptive_metadata XML to a file" do
+      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+        @dobj.druid_tree_dir = tmp_area
+        file_name = File.join tmp_area, @dobj.descriptive_md_file_name
+
+        File.exists?(file_name).should == false
+        @dobj.write_descriptive_metadata
+        noko_doc(File.read file_name).should be_equivalent_to @exp_xml
+      end
     end
 
   end
