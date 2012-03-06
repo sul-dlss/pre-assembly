@@ -13,7 +13,7 @@ module Assembly
       :druid,
       :pid,
       :images,
-      :content_metadata_yml,
+      # :content_metadata_yml,
       :content_metadata_xml,
       :content_md_file_name,
       :public_attr,
@@ -31,7 +31,7 @@ module Assembly
       @druid                 = nil
       @pid                   = ''
       @images                = []
-      @content_metadata_yml  = ''
+      # @content_metadata_yml  = ''
       @content_metadata_xml  = ''
       @content_md_file_name  = 'assembly.yml'
       @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
@@ -93,18 +93,18 @@ module Assembly
       end
     end
 
-    def generate_content_metadata
-      # Generate a skeletal version of content metadata.
-      log "    - generate_content_metadata()"
-      @content_metadata_yml = {
-        :contentMetadata => {
-          :objectId => @druid.id,
-          :resource => cm_resource,
-        }
-      }.to_yaml
-    end
+    # def generate_content_metadata
+    #   # Generate a skeletal version of content metadata.
+    #   log "    - generate_content_metadata()"
+    #   @content_metadata_yml = {
+    #     :contentMetadata => {
+    #       :objectId => @druid.id,
+    #       :resource => cm_resource,
+    #     }
+    #   }.to_yaml
+    # end
 
-    def generate_content_metadata_xml
+    def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
           @images.each_with_index { |img, i|
@@ -120,35 +120,35 @@ module Assembly
       @content_metadata_xml = builder.to_xml
     end
 
-    def cm_resource
-      # Returns a data structure representing a 'resource'
-      # node in content metadata.
-      seq = 0
-      @images.map { |img|
-        seq += 1
-        fh = { :id => img.file_name }.merge @publish_attr
-        {
-            :id            => "#{@druid.id}_#{seq}",
-            :label         => "Image #{seq}",
-            :sequence      => seq.to_s,
-            :file          => fh,
-            :provider_attr => img.provider_attr,
-        }
-      }
-    end
+    # def cm_resource
+    #   # Returns a data structure representing a 'resource'
+    #   # node in content metadata.
+    #   seq = 0
+    #   @images.map { |img|
+    #     seq += 1
+    #     fh = { :id => img.file_name }.merge @publish_attr
+    #     {
+    #         :id            => "#{@druid.id}_#{seq}",
+    #         :label         => "Image #{seq}",
+    #         :sequence      => seq.to_s,
+    #         :file          => fh,
+    #         :provider_attr => img.provider_attr,
+    #     }
+    #   }
+    # end
 
     def generate_descriptive_metadata
       # TODO: generate_descriptive_metadata(): to store provider_attr and exp_checksums.
       log "    - generate_descriptive_metadata()"
     end
 
-    def write_content_metadata
-      file_name = File.join @druid_tree_dir, @content_md_file_name
-      log "    - write_content_metadata(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_yml }
-    end
+    # def write_content_metadata
+    #   file_name = File.join @druid_tree_dir, @content_md_file_name
+    #   log "    - write_content_metadata(#{file_name})"
+    #   File.open(file_name, 'w') { |fh| fh.puts @content_metadata_yml }
+    # end
 
-    def write_content_metadata_xml
+    def write_content_metadata
       file_name = File.join @druid_tree_dir, @content_md_file_name
       log "    - write_content_metadata_xml(#{file_name})"
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
