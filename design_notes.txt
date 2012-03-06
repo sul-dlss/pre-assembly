@@ -1,6 +1,5 @@
 # TODO: Convert descriptive_metadata.xml to proper MODS.
-# TODO: remove content_metadata code from assembly/images.rb (and associated specs).
-# TODO: remove jp2 code from assembly/images.rb (and associated specs).
+# TODO: remove assembly/images.rb (and associated specs).
 # TODO: change module name from Assembly to PreAssembly.
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
 # TODO: rdoc documentation and README.
