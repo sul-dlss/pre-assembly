@@ -16,6 +16,8 @@ module Assembly
       :content_metadata_xml,
       :content_md_file_name,
       :public_attr,
+      :descriptive_metadata_xml,
+      :descriptive_md_file_name,
       :uuid,
       :registration_info,
       :druid_tree_dir
@@ -110,6 +112,15 @@ module Assembly
     def generate_descriptive_metadata
       # TODO: generate_descriptive_metadata(): to store provider_attr and exp_checksums.
       log "    - generate_descriptive_metadata()"
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.descriptiveMetadata(:objectId => @druid.id) {
+          @images.each_with_index { |img, i|
+            prov_params = { :id => img.file_name }.merge img.provider_attr
+            xml.provider_attr prov_params
+          }
+        }
+      }
+      @descriptive_metadata_xml = builder.to_xml
     end
 
     def write_content_metadata
