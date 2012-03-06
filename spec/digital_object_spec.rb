@@ -160,16 +160,13 @@ describe Assembly::DigitalObject do
 
   end
 
-  describe "#generate_content_metadata_xml" do
+  describe "content metadata XML" do
 
     before(:each) do
       @dobj.druid = @druid
       add_images_to_dobj
       @dobj.generate_content_metadata_xml
-    end
-    
-    it "should generate the expected xml text" do
-      exp_xml = [
+      @exp_xml = [
         '<?xml version="1.0"?>',
         '<contentMetadata objectId="ab123cd4567">',
         '  <resource sequence="1" id="ab123cd4567_1">',
@@ -183,8 +180,21 @@ describe Assembly::DigitalObject do
         '</contentMetadata>',
         '',
       ].join "\n"
+    end
+    
+    it "should generate the expected xml text" do
+      @dobj.content_metadata_xml.should == @exp_xml
+    end
 
-      @dobj.content_metadata_xml.should == exp_xml
+    it "should be able to write the content_metadata XML to a file" do
+      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+        @dobj.druid_tree_dir = tmp_area
+        file_name = File.join tmp_area, @dobj.content_md_file_name
+
+        File.exists?(file_name).should == false
+        @dobj.write_content_metadata_xml
+        File.read(file_name).should == @exp_xml
+      end
     end
 
   end

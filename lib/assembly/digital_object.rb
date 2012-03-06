@@ -142,10 +142,16 @@ module Assembly
       log "    - generate_descriptive_metadata()"
     end
 
-    def write_content_metadata()
+    def write_content_metadata
       file_name = File.join @druid_tree_dir, @content_md_file_name
       log "    - write_content_metadata(#{file_name})"
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_yml }
+    end
+
+    def write_content_metadata_xml
+      file_name = File.join @druid_tree_dir, @content_md_file_name
+      log "    - write_content_metadata_xml(#{file_name})"
+      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
     def initialize_assembly_workflow
