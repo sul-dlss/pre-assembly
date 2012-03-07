@@ -150,7 +150,6 @@ module Assembly
 
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
-      # TODO: initialize_assembly_workflow: implement and spec.
     end
 
     def unregister
