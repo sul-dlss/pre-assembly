@@ -1,7 +1,7 @@
-# TODO: Modify code generating desc_metadata.xml after we have a spec for REVS MODS.
+# TODO: initialize_assembly_workflow(): implement and spec.
+# TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: change module name from Assembly to PreAssembly.
-# TODO: fix lyber-core so we don't need to hack local lyber-core.
 # TODO: rdoc documentation and README.
 
 Receive bundle of materials (manual):
