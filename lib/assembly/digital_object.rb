@@ -88,8 +88,10 @@ module Assembly
         :admin_policy => @apo_druid_id,
         :source_id    => @source_id,
         :pid          => @pid,
+        # TODO: label = just @label
         :label        => "#{@project_name}_#{@label || @druid.id}",
         :tags         => ["Project : #{@project_name}"],
+        # TODO: drop other_ids.
         :other_ids    => { 'uuid' => @uuid },
       }
     end
