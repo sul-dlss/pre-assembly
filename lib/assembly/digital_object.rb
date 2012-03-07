@@ -18,7 +18,6 @@ module Assembly
       :public_attr,
       :desc_metadata_xml,
       :desc_md_file_name,
-      :uuid,
       :registration_info,
       :druid_tree_dir
     )
@@ -45,7 +44,6 @@ module Assembly
       @desc_metadata_xml    = ''
       @desc_md_file_name    = 'desc_metadata.xml'
       @publish_attr         = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
-      @uuid                 = UUIDTools::UUID.timestamp_create.to_s
       @registration_info    = nil
       @druid_tree_dir       = ''
     end
@@ -88,11 +86,8 @@ module Assembly
         :admin_policy => @apo_druid_id,
         :source_id    => @source_id,
         :pid          => @pid,
-        # TODO: label = just @label
-        :label        => "#{@project_name}_#{@label || @druid.id}",
+        :label        => @label,
         :tags         => ["Project : #{@project_name}"],
-        # TODO: drop other_ids.
-        :other_ids    => { 'uuid' => @uuid },
       }
     end
 
