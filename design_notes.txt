@@ -1,4 +1,4 @@
-# TODO: Convert descriptive_metadata.xml to proper MODS.
+# TODO: Convert desc_metadata.xml to proper MODS.
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: change module name from Assembly to PreAssembly.
 # TODO: fix lyber-core so we don't need to hack local lyber-core.
@@ -22,7 +22,7 @@ Pre-assembly (automated):
         - Register the object and acquire a druid.
         - Move/copy the object to a druid tree in thumper staging directory.
         - Generate content_metadata.xml.
-        - Generate descriptive_metadata.xml.
+        - Generate desc_metadata.xml.
         - Initialize the object's assemblyWF in DOR (a REST call).
 
         - Later: get descriptive metadata from other souces, such as mdtoolkit

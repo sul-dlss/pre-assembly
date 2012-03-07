@@ -173,29 +173,29 @@ describe Assembly::DigitalObject do
     before(:each) do
       @dobj.druid = @druid
       add_images_to_dobj
-      @dobj.generate_descriptive_metadata
+      @dobj.generate_desc_metadata
       @exp_xml = 'blah'
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <descriptiveMetadata objectId="ab123cd4567">
+        <descMetadata objectId="ab123cd4567">
           <provider_attr foo="FOO" id="image_1.tif" bar="BAR"/>
           <provider_attr foo="FOO" id="image_2.tif" bar="BAR"/>
-        </descriptiveMetadata>
+        </descMetadata>
       END
       @exp_xml = noko_doc @exp_xml
     end
     
     it "should generate the expected xml text" do
-      noko_doc(@dobj.descriptive_metadata_xml).should be_equivalent_to @exp_xml
+      noko_doc(@dobj.desc_metadata_xml).should be_equivalent_to @exp_xml
     end
 
-    it "should be able to write the descriptive_metadata XML to a file" do
+    it "should be able to write the desc_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.descriptive_md_file_name
+        file_name = File.join tmp_area, @dobj.desc_md_file_name
 
         File.exists?(file_name).should == false
-        @dobj.write_descriptive_metadata
+        @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
     end

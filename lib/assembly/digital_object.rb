@@ -16,30 +16,30 @@ module Assembly
       :content_metadata_xml,
       :content_md_file_name,
       :public_attr,
-      :descriptive_metadata_xml,
-      :descriptive_md_file_name,
+      :desc_metadata_xml,
+      :desc_md_file_name,
       :uuid,
       :registration_info,
       :druid_tree_dir
     )
 
     def initialize(params = {})
-      @project_name             = params[:project_name]
-      @apo_druid_id             = params[:apo_druid_id]
-      @collection_druid_id      = params[:collection_druid_id]
-      @label                    = params[:label]
-      @source_id                = { params[:project_name] => params[:source_id] }
-      @druid                    = nil
-      @pid                      = ''
-      @images                   = []
-      @content_metadata_xml     = ''
-      @content_md_file_name     = 'content_metadata.xml'
-      @descriptive_metadata_xml = ''
-      @descriptive_md_file_name = 'descriptive_metadata.xml'
-      @publish_attr             = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
-      @uuid                     = UUIDTools::UUID.timestamp_create.to_s
-      @registration_info        = nil
-      @druid_tree_dir           = ''
+      @project_name         = params[:project_name]
+      @apo_druid_id         = params[:apo_druid_id]
+      @collection_druid_id  = params[:collection_druid_id]
+      @label                = params[:label]
+      @source_id            = { params[:project_name] => params[:source_id] }
+      @druid                = nil
+      @pid                  = ''
+      @images               = []
+      @content_metadata_xml = ''
+      @content_md_file_name = 'content_metadata.xml'
+      @desc_metadata_xml    = ''
+      @desc_md_file_name    = 'desc_metadata.xml'
+      @publish_attr         = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+      @uuid                 = UUIDTools::UUID.timestamp_create.to_s
+      @registration_info    = nil
+      @druid_tree_dir       = ''
     end
 
     def get_druid_from_suri()   Dor::SuriService.mint_id                           end
@@ -57,10 +57,10 @@ module Assembly
       register
       stage_images stager, staging_dir
       generate_content_metadata
-      generate_descriptive_metadata
+      generate_desc_metadata
       write_content_metadata
       initialize_assembly_workflow
-      write_descriptive_metadata
+      write_desc_metadata
     end
 
     def claim_druid
@@ -120,23 +120,23 @@ module Assembly
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
-    def generate_descriptive_metadata
-      log "    - generate_descriptive_metadata()"
+    def generate_desc_metadata
+      log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.descriptiveMetadata(:objectId => @druid.id) {
+        xml.descMetadata(:objectId => @druid.id) {
           @images.each_with_index { |img, i|
             prov_params = { :id => img.file_name }.merge img.provider_attr
             xml.provider_attr prov_params
           }
         }
       }
-      @descriptive_metadata_xml = builder.to_xml
+      @desc_metadata_xml = builder.to_xml
     end
 
-    def write_descriptive_metadata
-      file_name = File.join @druid_tree_dir, @descriptive_md_file_name
-      log "    - write_descriptive_metadata_xml(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts @descriptive_metadata_xml }
+    def write_desc_metadata
+      file_name = File.join @druid_tree_dir, @desc_md_file_name
+      log "    - write_desc_metadata_xml(#{file_name})"
+      File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
     end
 
     def initialize_assembly_workflow
