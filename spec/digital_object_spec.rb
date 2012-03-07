@@ -11,7 +11,7 @@ describe Assembly::DigitalObject do
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
     @publish_attr  = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
-    @provider_attr = {:foo => 'FOO', :bar => 'BAR'}
+    @provider_attr = {:foo => '123', :bar => '456'}
     @tmp_dir_args  = [nil, 'tmp']
   end
 
@@ -21,7 +21,7 @@ describe Assembly::DigitalObject do
       @dobj.add_image(
         :file_name     => f,
         :full_path     => "#{img_dir}/#{f}",
-        :provider_attr => @provider_attr,
+        :provider_attr => {:i => i}.merge(@provider_attr),
         :exp_md5       => "#{i}" * 4
       )
     end
@@ -174,13 +174,20 @@ describe Assembly::DigitalObject do
       @dobj.druid = @druid
       add_images_to_dobj
       @dobj.generate_desc_metadata
-      @exp_xml = 'blah'
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <descMetadata objectId="ab123cd4567">
-          <provider_attr foo="FOO" id="image_1.tif" bar="BAR"/>
-          <provider_attr foo="FOO" id="image_2.tif" bar="BAR"/>
-        </descMetadata>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd" version="3.3">
+          <identifier file_name="image_1.tif">
+            <note type="source note" ID="i">1</note>
+            <note type="source note" ID="foo">123</note>
+            <note type="source note" ID="bar">456</note>
+          </identifier>
+          <identifier file_name="image_2.tif">
+            <note type="source note" ID="i">2</note>
+            <note type="source note" ID="foo">123</note>
+            <note type="source note" ID="bar">456</note>
+          </identifier>
+        </mods>
       END
       @exp_xml = noko_doc @exp_xml
     end
