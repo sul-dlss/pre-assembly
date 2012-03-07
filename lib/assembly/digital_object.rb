@@ -23,6 +23,14 @@ module Assembly
       :druid_tree_dir
     )
 
+    MODS_XML_ATTR = {
+      'xmlns'              => "http://www.loc.gov/mods/v3",
+      'version'            => "3.3",
+      'xmlns:xsi'          => "http://www.w3.org/2001/XMLSchema-instance",
+      'xsi:schemaLocation' => "http://www.loc.gov/mods/v3 " +
+                              "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd",
+    }
+
     def initialize(params = {})
       @project_name         = params[:project_name]
       @apo_druid_id         = params[:apo_druid_id]
@@ -123,10 +131,14 @@ module Assembly
     def generate_desc_metadata
       log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.descMetadata(:objectId => @druid.id) {
+        xml.mods(MODS_XML_ATTR) {
           @images.each_with_index { |img, i|
-            prov_params = { :id => img.file_name }.merge img.provider_attr
-            xml.provider_attr prov_params
+            seq = i + 1
+            xml.identifier(:file_name => img.file_name) {
+              img.provider_attr.each { |k,v| 
+                xml.note v, :type => "source note", :ID => k
+              }
+            }
           }
         }
       }
