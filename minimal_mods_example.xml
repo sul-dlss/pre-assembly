@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mods xmlns="http://www.loc.gov/mods/v3"
+      version="3.3"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+    <identifier>druid:XXXX</identifier>
+    <note type="source note" ID="X">XXXX</note>
+    <note type="source note" ID="Y">XXXX</note>
+    <note type="source note" ID="Z">XXXX</note>
+</mods>
+
