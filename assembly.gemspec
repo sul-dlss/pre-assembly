@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
 
+  # TODO: remove uuidtools after we drop lib/assembly/images.rb.
   s.add_dependency 'mini_exiftool'
   s.add_dependency 'uuidtools'
   s.add_dependency 'nokogiri'

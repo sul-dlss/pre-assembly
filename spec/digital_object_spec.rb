@@ -64,14 +64,7 @@ describe Assembly::DigitalObject do
       rps.should             be_kind_of Hash
       rps[:source_id].should be_kind_of Hash
       rps[:tags].should      be_kind_of Array
-      rps[:label].should == "ProjectBar_LabelQuux"
-    end
-
-    it "can generate registration parameters, even if label attribute is false" do
-      @dobj.druid = @druid
-      @dobj.label = nil
-      ps = @dobj.registration_params
-      ps[:label].should == "ProjectBar_#{@druid.id}"
+      rps[:label].should == "LabelQuux"
     end
 
     it "can exercise register()" do
