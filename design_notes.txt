@@ -1,4 +1,4 @@
-# TODO: Convert desc_metadata.xml to proper MODS.
+# TODO: Modify code generating desc_metadata.xml after we have a spec for REVS MODS.
 # TODO: remove assembly/images.rb (and associated specs).
 # TODO: change module name from Assembly to PreAssembly.
 # TODO: fix lyber-core so we don't need to hack local lyber-core.

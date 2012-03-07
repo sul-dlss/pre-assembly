@@ -5,6 +5,7 @@ describe "Pre-assembly integration" do
     @file_patterns = [
       "#{@temp_dir}/**/*.tif",
       "#{@temp_dir}/**/content_metadata.xml",
+      "#{@temp_dir}/**/desc_metadata.xml",
     ]
     @exp_n_files = 3
     @b = Assembly::Bundle.new(
