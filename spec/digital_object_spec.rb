@@ -1,4 +1,4 @@
-describe Assembly::DigitalObject do
+describe PreAssembly::DigitalObject do
 
   before(:each) do
     @ps = {
@@ -7,7 +7,7 @@ describe Assembly::DigitalObject do
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
     }
-    @dobj          = Assembly::DigitalObject.new @ps
+    @dobj          = PreAssembly::DigitalObject.new @ps
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
     @publish_attr  = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
@@ -34,7 +34,7 @@ describe Assembly::DigitalObject do
   describe "initialization and other setup" do
 
     it "can initialize a digital object" do
-      @dobj.should be_kind_of Assembly::DigitalObject
+      @dobj.should be_kind_of PreAssembly::DigitalObject
     end
 
     it "can add images to the digital object" do
@@ -89,7 +89,7 @@ describe Assembly::DigitalObject do
       tests = { false => @druid, true  => @druid_alt }
       tests.each do |c2s, druid|
 
-        bundle       = Assembly::Bundle.new :copy_to_staging => c2s
+        bundle       = PreAssembly::Bundle.new :copy_to_staging => c2s
         stager       = bundle.get_stager
         @dobj.druid  = druid
         @dobj.images = []
