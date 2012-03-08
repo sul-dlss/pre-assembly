@@ -1,8 +1,8 @@
-module Assembly
+module PreAssembly
 
   class Image
 
-    include Assembly::Logging
+    include PreAssembly::Logging
 
     attr_accessor :file_name, :full_path, :provider_attr, :exp_md5
 

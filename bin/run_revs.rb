@@ -17,7 +17,7 @@ bundle_dir, staging_dir = ARGV
   help "Directory not found: #{d}" unless File.directory? d
 end
 
-b = Assembly::Bundle.new(
+b = PreAssembly::Bundle.new(
   :bundle_dir          => bundle_dir,
   :manifest            => 'manifest.csv',
   :checksums_file      => 'checksums.txt',
