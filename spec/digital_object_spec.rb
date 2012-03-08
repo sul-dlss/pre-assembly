@@ -217,8 +217,8 @@ describe PreAssembly::DigitalObject do
       END
       @exp_xml = noko_doc @exp_xml
     end
-    
-    it "!!should generate the expected xml text" do
+   
+    it "should generate the expected xml text" do
       noko_doc(@dobj.workflow_metadata_xml).should be_equivalent_to @exp_xml
     end
 
