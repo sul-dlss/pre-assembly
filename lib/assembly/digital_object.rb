@@ -148,6 +148,22 @@ module Assembly
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
     end
 
+    def generate_workflow_metadata
+      log "    - generate_workflow_metadata()"
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.workflow(:objectID => @pid, :id => "assemblyWF") {
+          ['start-assembly', 'checksum', 'checksum-compare'].each { |wf|
+            status = wf == 'start-assembly' ? 'completed' : 'waiting'
+            xml.process(:status => status, :name => wf)
+          }
+        }
+      }
+      @workflow_metadata_xml = builder.to_xml
+
+
+      # Dor::WorkflowService.create_workflow('dor', {druid}, 'assemblyWF', '<workfow....>')
+    end
+
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
     end
