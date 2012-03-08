@@ -1,3 +1,4 @@
+# TODO: add a limit_n parameter.
 # TODO: initialize_assembly_workflow(): implement and spec.
 # TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
 # TODO: remove assembly/images.rb (and associated specs).
