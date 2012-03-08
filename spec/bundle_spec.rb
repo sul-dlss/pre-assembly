@@ -1,4 +1,4 @@
-describe Assembly::Bundle do
+describe PreAssembly::Bundle do
 
   before(:each) do
     @ps = {
@@ -8,14 +8,14 @@ describe Assembly::Bundle do
       :copy_to_staging => false,
       :staging_dir     => 'tmp',
     }
-    @b = Assembly::Bundle.new @ps
+    @b = PreAssembly::Bundle.new @ps
   end
 
 
   describe "initialize() and other setup" do
 
     it "can initialize a Bundle" do
-      @b.should be_kind_of Assembly::Bundle
+      @b.should be_kind_of PreAssembly::Bundle
     end
 
     it "can set the full path to the bundle directory" do

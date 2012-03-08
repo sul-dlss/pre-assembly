@@ -1,8 +1,8 @@
-module Assembly
+module PreAssembly
 
   class DigitalObject
 
-    include Assembly::Logging
+    include PreAssembly::Logging
 
     attr_accessor(
       :project_name,

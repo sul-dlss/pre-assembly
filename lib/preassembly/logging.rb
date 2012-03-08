@@ -1,6 +1,6 @@
 require 'logger'
 
-module Assembly
+module PreAssembly
 
   module Logging
 

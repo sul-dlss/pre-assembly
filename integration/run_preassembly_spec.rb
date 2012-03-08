@@ -8,7 +8,7 @@ describe "Pre-assembly integration" do
       "#{@temp_dir}/**/desc_metadata.xml",
     ]
     @exp_n_files = 3
-    @b = Assembly::Bundle.new(
+    @b = PreAssembly::Bundle.new(
       :bundle_dir          => 'spec/test_data/bundle_input',
       :manifest            => 'manifest.csv',
       :checksums_file      => 'checksums.txt',

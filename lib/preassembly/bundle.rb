@@ -1,10 +1,10 @@
 require 'csv-mapper'
 require 'ftools'
 
-module Assembly
+module PreAssembly
 
   class Bundle
-    include Assembly::Logging
+    include PreAssembly::Logging
     include CsvMapper
 
     attr_accessor(
