@@ -18,19 +18,11 @@ Setting up project for local development:
     # Get needed gems.
     bundle install
 
-    # Temporary hack to local lyber-core.
-    cd `bundle show lyber-core`
-    rm -rf lib/xml_models/
-    cd -
-
     # Confirm that it's working.
     bin/run_all_tests 
 
 
 Running tests:
-
-    # Prerequisite.
-    Create a tmp dir at the root of the project.
 
     # All tests.
     bin/run_all_tests
