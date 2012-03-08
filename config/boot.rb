@@ -20,6 +20,6 @@ ENV_FILE = project_root + "/config/environments/#{environment}.rb"
 require ENV_FILE
 
 # Set up project logger and load the project.
-require 'assembly/logging'
-Assembly::Logging.setup project_root, environment
-require 'assembly'
+require 'preassembly/logging'
+PreAssembly::Logging.setup project_root, environment
+require 'preassembly'
