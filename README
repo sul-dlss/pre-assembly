@@ -1,4 +1,4 @@
-Pre-assembly gem
+Pre-assembly
 
     This is a Ruby implementation of services needed to prepare objects to be
     assembled and then accessioned in SULAIR digital library.

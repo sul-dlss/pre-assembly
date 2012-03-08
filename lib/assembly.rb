@@ -11,7 +11,6 @@ require 'assembly/version'
 require 'assembly/bundle'
 require 'assembly/digital_object'
 require 'assembly/image'
-require 'assembly/images'
 
 module Assembly
   PATH_TO_GEM = File.expand_path(File.dirname(__FILE__) + '/..')
