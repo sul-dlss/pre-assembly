@@ -18,6 +18,7 @@ module PreAssembly
       :public_attr,
       :desc_metadata_xml,
       :desc_md_file_name,
+      :workflow_metadata_xml,
       :registration_info,
       :druid_tree_dir
     )
@@ -31,21 +32,22 @@ module PreAssembly
     }
 
     def initialize(params = {})
-      @project_name         = params[:project_name]
-      @apo_druid_id         = params[:apo_druid_id]
-      @collection_druid_id  = params[:collection_druid_id]
-      @label                = params[:label]
-      @source_id            = { params[:project_name] => params[:source_id] }
-      @druid                = nil
-      @pid                  = ''
-      @images               = []
-      @content_metadata_xml = ''
-      @content_md_file_name = 'content_metadata.xml'
-      @desc_metadata_xml    = ''
-      @desc_md_file_name    = 'desc_metadata.xml'
-      @publish_attr         = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
-      @registration_info    = nil
-      @druid_tree_dir       = ''
+      @project_name          = params[:project_name]
+      @apo_druid_id          = params[:apo_druid_id]
+      @collection_druid_id   = params[:collection_druid_id]
+      @label                 = params[:label]
+      @source_id             = { params[:project_name] => params[:source_id] }
+      @druid                 = nil
+      @pid                   = ''
+      @images                = []
+      @content_metadata_xml  = ''
+      @content_md_file_name  = 'content_metadata.xml'
+      @desc_metadata_xml     = ''
+      @desc_md_file_name     = 'desc_metadata.xml'
+      @workflow_metadata_xml = ''
+      @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+      @registration_info     = nil
+      @druid_tree_dir        = ''
     end
 
     def get_druid_from_suri()   Dor::SuriService.mint_id                           end
@@ -149,9 +151,10 @@ module PreAssembly
     end
 
     def generate_workflow_metadata
+      # TODO: generate_workflow_metadata: factor out the contants.
       log "    - generate_workflow_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.workflow(:objectID => @pid, :id => "assemblyWF") {
+        xml.workflow(:objectId => @druid.druid, :id => "assemblyWF") {
           ['start-assembly', 'checksum', 'checksum-compare'].each { |wf|
             status = wf == 'start-assembly' ? 'completed' : 'waiting'
             xml.process(:status => status, :name => wf)
@@ -159,13 +162,12 @@ module PreAssembly
         }
       }
       @workflow_metadata_xml = builder.to_xml
-
-
-      # Dor::WorkflowService.create_workflow('dor', {druid}, 'assemblyWF', '<workfow....>')
     end
 
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
+      generate_workflow_metadata
+      # Dor::WorkflowService.create_workflow('dor', {druid}, 'assemblyWF', '<workfow....>')
     end
 
     def unregister
