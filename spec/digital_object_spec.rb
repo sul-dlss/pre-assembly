@@ -118,7 +118,7 @@ describe Assembly::DigitalObject do
 
   end
 
-  describe "content metadata creation and writing" do
+  describe "content metadata" do
 
     before(:each) do
       @dobj.druid = @druid
@@ -161,7 +161,7 @@ describe Assembly::DigitalObject do
 
   end
 
-  describe "descriptive metadata creation and writing" do
+  describe "descriptive metadata" do
 
     before(:each) do
       @dobj.druid = @druid
@@ -198,6 +198,32 @@ describe Assembly::DigitalObject do
         @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
+    end
+
+  end
+
+  describe "workflow metadata" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.generate_workflow_metadata
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <workflow objectId="druid:#{@druid.id}" id="assemblyWF">
+          <process status="completed" name="start-assembly"/>
+          <process status="waiting"   name="checksum"/>
+          <process status="waiting"   name="checksum-compare"/>
+        </workflow>
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
+    
+    it "!!should generate the expected xml text" do
+      noko_doc(@dobj.workflow_metadata_xml).should be_equivalent_to @exp_xml
+    end
+
+    it "should be able to ......" do
+      # TODO:
     end
 
   end
