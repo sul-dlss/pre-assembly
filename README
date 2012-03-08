@@ -34,4 +34,4 @@ Running tests:
 
 Generate Documentation
 
-    rdoc --exclude spec --main lib/assembly.rb
+    rdoc --exclude spec --main lib/preassembly.rb
