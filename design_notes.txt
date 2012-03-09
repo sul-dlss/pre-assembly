@@ -1,8 +1,7 @@
+# TODO: use Config constants cm_file_name and dm_file_name.
 # TODO: add a limit_n parameter.
-# TODO: initialize_assembly_workflow(): implement and spec.
 # TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
-# TODO: remove assembly/images.rb (and associated specs).
-# TODO: change module name from Assembly to PreAssembly.
+# TODO: in run_revs, change :cleanup to false when we deploy for real.
 # TODO: rdoc documentation and README.
 
 Receive bundle of materials (manual):
