@@ -1,5 +1,4 @@
 require 'tmpdir'
-require 'fileutils'
 require 'equivalent-xml'
 
 environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'

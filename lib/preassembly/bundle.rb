@@ -1,6 +1,3 @@
-require 'csv-mapper'
-require 'ftools'
-
 module PreAssembly
 
   class Bundle
@@ -36,8 +33,8 @@ module PreAssembly
       @exp_checksums       = {}
       @digital_objects     = []
       @stagers = {
-        :copy => lambda { |f,d| File.copy f, d },
-        :move => lambda { |f,d| File.move f, d },
+        :copy => lambda { |f,d| FileUtils.copy f, d },
+        :move => lambda { |f,d| FileUtils.move f, d },
       }
       set_bundle_paths
     end
