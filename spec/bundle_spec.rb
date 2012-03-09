@@ -5,7 +5,6 @@ describe PreAssembly::Bundle do
       :bundle_dir      => 'spec/test_data/bundle_input',
       :manifest        => 'manifest.csv',
       :checksums_file  => 'checksums.txt',
-      :copy_to_staging => false,
       :staging_dir     => 'tmp',
     }
     @b = PreAssembly::Bundle.new @ps
@@ -20,16 +19,6 @@ describe PreAssembly::Bundle do
 
     it "can set the full path to the bundle directory" do
       @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
-    end
-
-    it "gets the correct stager based on the value of @copy_to_staging" do
-      @b.copy_to_staging = true
-      stager = @b.get_stager
-      stager.should equal @b.stagers[:copy]
-
-      @b.copy_to_staging = false
-      stager = @b.get_stager
-      stager.should equal @b.stagers[:move]
     end
 
   end

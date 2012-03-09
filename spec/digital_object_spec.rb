@@ -85,13 +85,9 @@ describe PreAssembly::DigitalObject do
 
   describe "image staging" do
     
-    it "should be able to stage images in both :move and :copy modes" do
-      tests = { false => @druid, true  => @druid_alt }
-      tests.each do |c2s, druid|
-
-        bundle       = PreAssembly::Bundle.new :copy_to_staging => c2s
-        stager       = bundle.get_stager
-        @dobj.druid  = druid
+    it "should be able to copy images successfully" do
+        bundle       = PreAssembly::Bundle.new
+        @dobj.druid  = @druid
         @dobj.images = []
 
         Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
@@ -102,18 +98,16 @@ describe PreAssembly::DigitalObject do
           # Stage the images.
           base_target_dir = "#{tmp_area}/target"
           FileUtils.mkdir base_target_dir
-          @dobj.stage_images stager, base_target_dir
+          @dobj.stage_images bundle.stager, base_target_dir
 
           # Check outcome.
           @dobj.images.each do |img|
             staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
-            File.exists?(img.full_path).should   == c2s
+            # Both source and copy should exist.
+            File.exists?(img.full_path).should   == true
             File.exists?(staged_img_path).should == true
           end
         end
-
-      end
-
     end
 
   end

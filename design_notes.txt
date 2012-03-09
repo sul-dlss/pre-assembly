@@ -1,3 +1,4 @@
+# TODO: yaml config file when running pre-assembly
 # TODO: add a limit_n parameter.
 # TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
 # TODO: in run_revs, change :cleanup to false when we deploy for real.
@@ -19,7 +20,7 @@ Pre-assembly (automated):
     For each digital object:
 
         - Register the object and acquire a druid.
-        - Move/copy the object to a druid tree in thumper staging directory.
+        - Copy the object to a druid tree in thumper staging directory.
         - Generate content_metadata.xml.
         - Generate desc_metadata.xml.
         - Initialize the object's assemblyWF in DOR (a REST call).

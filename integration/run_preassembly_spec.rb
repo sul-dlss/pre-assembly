@@ -20,7 +20,6 @@ describe "Pre-assembly integration" do
       :apo_druid_id        => 'druid:qv648vd4392',
       :collection_druid_id => 'druid:nt028fd5773',
       :staging_dir         => @temp_dir,
-      :copy_to_staging     => true,
       :cleanup             => true
     )
   end

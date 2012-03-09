@@ -95,7 +95,7 @@ module PreAssembly
     end
 
     def stage_images(stager, base_target_dir)
-      # Copy or move images to staging directory.
+      # Copy images to staging directory.
       @images.each do |img|
         @druid_tree_dir = @druid.path base_target_dir
         log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
