@@ -206,7 +206,6 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
-      @dobj.generate_workflow_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <workflow objectId="druid:#{@druid.id}" id="assemblyWF">
@@ -219,11 +218,13 @@ describe PreAssembly::DigitalObject do
     end
    
     it "should generate the expected xml text" do
+      @dobj.generate_workflow_metadata
       noko_doc(@dobj.workflow_metadata_xml).should be_equivalent_to @exp_xml
     end
 
-    it "should be able to ......" do
-      # TODO:
+    it "should be able to exercise initialize_assembly_workflow()" do
+      @dobj.should_receive(:create_workflow_in_dor).once
+      @dobj.initialize_assembly_workflow
     end
 
   end

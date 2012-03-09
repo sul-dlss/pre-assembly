@@ -50,10 +50,11 @@ module PreAssembly
       @druid_tree_dir        = ''
     end
 
-    def get_druid_from_suri()   Dor::SuriService.mint_id                           end
-    def register_in_dor(params) Dor::RegistrationService.register_object params    end
-    def delete_from_dor(pid)    Dor::Config.fedora.client["objects/#{pid}"].delete end
-    def druid_tree_mkdir(dir)   FileUtils.mkdir_p dir                              end
+    def get_druid_from_suri()        Dor::SuriService.mint_id                           end
+    def register_in_dor(params)      Dor::RegistrationService.register_object params    end
+    def delete_from_dor(pid)         Dor::Config.fedora.client["objects/#{pid}"].delete end
+    def create_workflow_in_dor(args) Dor::WorkflowService.create_workflow(*args)        end
+    def druid_tree_mkdir(dir)        FileUtils.mkdir_p dir                              end
 
     def add_image(params)
       @images.push Image::new(params)
@@ -166,8 +167,9 @@ module PreAssembly
 
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
+      # TODO: generate_workflow_metadata: factor out the contants.
       generate_workflow_metadata
-      # Dor::WorkflowService.create_workflow('dor', {druid}, 'assemblyWF', '<workfow....>')
+      create_workflow_in_dor ['dor', @pid, 'assemblyWF', @workflow_metadata_xml]
     end
 
     def unregister
