@@ -1,5 +1,8 @@
-# Author::    SULAIR DLSS
-# see README for prerequisites
+# Author:: SULAIR DLSS.
+# See README for prerequisites.
+
+require 'csv-mapper'
+require 'fileutils'
 
 require 'preassembly/version'
 
