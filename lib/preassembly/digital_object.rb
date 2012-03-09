@@ -152,13 +152,13 @@ module PreAssembly
     end
 
     def generate_workflow_metadata
-      # TODO: generate_workflow_metadata: factor out the contants.
       log "    - generate_workflow_metadata()"
+      wf_name = Dor::Config.pre_assembly.assembly_wf
+      steps   = Dor::Config.pre_assembly.assembly_wf_steps
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.workflow(:objectId => @druid.druid, :id => "assemblyWF") {
-          ['start-assembly', 'checksum', 'checksum-compare'].each { |wf|
-            status = wf == 'start-assembly' ? 'completed' : 'waiting'
-            xml.process(:status => status, :name => wf)
+        xml.workflow(:objectId => @druid.druid, :id => wf_name) {
+          steps.each { |wf, status|
+            xml.process(:name => wf, :status => status)
           }
         }
       }
@@ -167,9 +167,9 @@ module PreAssembly
 
     def initialize_assembly_workflow
       # Add assemblyWF to the object in DOR.
-      # TODO: generate_workflow_metadata: factor out the contants.
+      wf_name = Dor::Config.pre_assembly.assembly_wf
       generate_workflow_metadata
-      create_workflow_in_dor ['dor', @pid, 'assemblyWF', @workflow_metadata_xml]
+      create_workflow_in_dor ['dor', @pid, wf_name, @workflow_metadata_xml]
     end
 
     def unregister
