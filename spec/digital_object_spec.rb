@@ -10,7 +10,7 @@ describe PreAssembly::DigitalObject do
     @dobj          = PreAssembly::DigitalObject.new @ps
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
-    @publish_attr  = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+    @publish_attr  = Dor::Config.pre_assembly.publish_attr
     @provider_attr = {:foo => '123', :bar => '456'}
     @tmp_dir_args  = [nil, 'tmp']
   end

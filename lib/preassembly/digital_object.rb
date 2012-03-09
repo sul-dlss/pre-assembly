@@ -41,11 +41,11 @@ module PreAssembly
       @pid                   = ''
       @images                = []
       @content_metadata_xml  = ''
-      @content_md_file_name  = 'content_metadata.xml'
+      @content_md_file_name  = Dor::Config.pre_assembly.cm_file_name
       @desc_metadata_xml     = ''
-      @desc_md_file_name     = 'desc_metadata.xml'
+      @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml = ''
-      @publish_attr          = { :preserve => 'yes', :shelve => 'no', :publish => 'no' }
+      @publish_attr          = Dor::Config.pre_assembly.publish_attr
       @registration_info     = nil
       @druid_tree_dir        = ''
     end
