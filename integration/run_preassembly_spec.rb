@@ -1,13 +1,17 @@
 describe "Pre-assembly integration" do
 
   before(:each) do
-    @temp_dir = Dir.mktmpdir 'integ_test_', 'tmp'
+    cmf          = Dor::Config.pre_assembly.cm_file_name
+    dmf          = Dor::Config.pre_assembly.dm_file_name
+    @temp_dir    = Dir.mktmpdir 'integ_test_', 'tmp'
+    @exp_n_files = 3
+
     @file_patterns = [
       "#{@temp_dir}/**/*.tif",
-      "#{@temp_dir}/**/content_metadata.xml",
-      "#{@temp_dir}/**/desc_metadata.xml",
+      "#{@temp_dir}/**/#{cmf}",
+      "#{@temp_dir}/**/#{dmf}",
     ]
-    @exp_n_files = 3
+
     @b = PreAssembly::Bundle.new(
       :bundle_dir          => 'spec/test_data/bundle_input',
       :manifest            => 'manifest.csv',

@@ -1,4 +1,3 @@
-# TODO: use Config constants cm_file_name and dm_file_name.
 # TODO: add a limit_n parameter.
 # TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
 # TODO: in run_revs, change :cleanup to false when we deploy for real.
