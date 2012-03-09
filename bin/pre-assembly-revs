@@ -25,7 +25,6 @@ b = PreAssembly::Bundle.new(
   :apo_druid_id        => 'druid:qv648vd4392',
   :collection_druid_id => 'druid:nt028fd5773',
   :staging_dir         => staging_dir,
-  :copy_to_staging     => true,
   :cleanup             => true
 )
 

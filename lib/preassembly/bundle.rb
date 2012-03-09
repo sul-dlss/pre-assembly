@@ -12,11 +12,10 @@ module PreAssembly
       :apo_druid_id,
       :collection_druid_id,
       :staging_dir,
-      :copy_to_staging,
       :cleanup,
       :exp_checksums,
       :digital_objects,
-      :stagers,
+      :stager,
       :required_files
     )
 
@@ -28,14 +27,10 @@ module PreAssembly
       @apo_druid_id        = params[:apo_druid_id]
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
-      @copy_to_staging     = params[:copy_to_staging]
       @cleanup             = params[:cleanup]
       @exp_checksums       = {}
       @digital_objects     = []
-      @stagers = {
-        :copy => lambda { |f,d| FileUtils.copy f, d },
-        :move => lambda { |f,d| FileUtils.move f, d },
-      }
+      @stager              = lambda { |f,d| FileUtils.copy f, d }
       set_bundle_paths
     end
 
@@ -57,10 +52,6 @@ module PreAssembly
 
     def full_path_in_bundle_dir(file)
       File.join @bundle_dir, file
-    end
-
-    def get_stager
-      @stagers[@copy_to_staging ? :copy : :move]
     end
 
     def check_for_required_files
@@ -117,8 +108,7 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
-      stager = get_stager
-      @digital_objects.each { |dobj| dobj.assemble(stager, @staging_dir) }
+      @digital_objects.each { |dobj| dobj.assemble(@stager, @staging_dir) }
     end
 
     def delete_digital_objects
