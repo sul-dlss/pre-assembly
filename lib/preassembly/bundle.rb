@@ -20,24 +20,25 @@ module PreAssembly
     )
 
     def initialize(params = {})
+      conf                 = Dor::Config.pre_assembly
       @bundle_dir          = params[:bundle_dir]     || ''
-      @manifest            = params[:manifest]       || ''
-      @checksums_file      = params[:checksums_file] || ''
+      @manifest            = params[:manifest]       || conf.manifest_file_name
+      @checksums_file      = params[:checksums_file] || conf.checksums_file_name
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
-      @exp_checksums       = {}
-      @digital_objects     = []
-      @stager              = lambda { |f,d| FileUtils.copy f, d }
-      set_bundle_paths
+      setup
     end
 
-    def set_bundle_paths
-      @manifest       = full_path_in_bundle_dir @manifest
-      @checksums_file = full_path_in_bundle_dir @checksums_file
-      @required_files = [@manifest, @checksums_file, @staging_dir]
+    def setup
+      @manifest        = full_path_in_bundle_dir @manifest
+      @checksums_file  = full_path_in_bundle_dir @checksums_file
+      @exp_checksums   = {}
+      @digital_objects = []
+      @stager          = lambda { |f,d| FileUtils.copy f, d }
+      @required_files  = [@manifest, @checksums_file, @staging_dir]
     end
 
     def run_pre_assembly
