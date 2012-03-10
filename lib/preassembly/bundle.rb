@@ -43,12 +43,21 @@ module PreAssembly
 
     def run_pre_assembly
       log ""
-      log "run_pre_assembly()"
+      log "run_pre_assembly(#{run_log_msg})"
       check_for_required_files
       load_exp_checksums
       load_manifest
       process_digital_objects
       delete_digital_objects if @cleanup
+    end
+
+    def run_log_msg
+      log_params = {
+        :bundle_dir  => @bundle_dir,
+        :staging_dir => @staging_dir,
+        :environment =>  ENV['ROBOT_ENVIRONMENT'],
+      }
+      log_msg = log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
     end
 
     def full_path_in_bundle_dir(file)
