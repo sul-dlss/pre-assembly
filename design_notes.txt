@@ -1,8 +1,8 @@
-# TODO: yaml config file when running pre-assembly
-# TODO: add a limit_n parameter.
+# TODO: deployment cap task.
 # TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
-# TODO: in run_revs, change :cleanup to false when we deploy for real.
+# TODO: revs.yaml: modify/remove params for real usage.
 # TODO: rdoc documentation and README.
+# TODO: refactor to handle DPG content.
 
 Receive bundle of materials (manual):
 

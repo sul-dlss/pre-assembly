@@ -6,5 +6,5 @@
 :collection_druid_id:  'druid:nt028fd5773'
 :staging_dir:          'tmp'
 
-# TODO: revs.yaml: set to false in real usage.
 :cleanup:              true
+:limit_n:              10
