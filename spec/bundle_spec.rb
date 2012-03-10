@@ -82,15 +82,23 @@ describe PreAssembly::Bundle do
     before(:each) do
       @csv_rows = (1..4).map { CsvParams.new(*@vals) }
       @b.stub(:parse_manifest).and_return(@csv_rows)
-      @b.load_manifest
-    end
-
-    it "generates the correct number of digital objects" do
-      @b.digital_objects.should have(@csv_rows.size).items
     end
 
     it "preserves the provider attributes" do
+      @b.load_manifest
       @b.digital_objects[0].images[0].provider_attr.should == @exp_provider_attr
+    end
+
+    it "generates the correct number of digital objects" do
+      @b.load_manifest
+      @b.digital_objects.should have(@csv_rows.size).items
+    end
+
+    it "generates the correct number of digital objects when @limit_n is set" do
+      n = @csv_rows.size - 1
+      @b.limit_n = n
+      @b.load_manifest
+      @b.digital_objects.should have(n).items
     end
 
   end

@@ -13,6 +13,7 @@ module PreAssembly
       :collection_druid_id,
       :staging_dir,
       :cleanup,
+      :limit_n,
       :exp_checksums,
       :digital_objects,
       :stager,
@@ -29,6 +30,7 @@ module PreAssembly
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
+      @limit_n             = params[:limit_n]
       setup
     end
 
@@ -93,6 +95,7 @@ module PreAssembly
       # Read manifest and initialize digital objects.
       log "load_manifest()"
       parse_manifest.each do |r|
+        # Create digital object.
         dobj_params = {
           :project_name        => @project_name,
           :apo_druid_id        => @apo_druid_id,
@@ -101,6 +104,8 @@ module PreAssembly
           :label               => r.label,
         }
         dobj = DigitalObject::new dobj_params
+
+        # Add the image to the object.
         f = r.filename
         dobj.add_image(
           :file_name     => f,
@@ -109,6 +114,9 @@ module PreAssembly
           :exp_md5       => @exp_checksums[f]
         )
         @digital_objects.push dobj
+
+        # Bail if user asked to process a limited N of objects.
+        break if @limit_n and @digital_objects.size >= @limit_n
       end
     end
 
