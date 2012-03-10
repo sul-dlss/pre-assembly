@@ -21,6 +21,10 @@ describe PreAssembly::Bundle do
       @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
     end
 
+    it "can exercise the run_log_msg" do
+      @b.run_log_msg.should be_kind_of String
+    end
+
   end
 
 

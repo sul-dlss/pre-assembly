@@ -1,31 +1,53 @@
 #! /usr/bin/env ruby
 
 require 'rubygems'
-
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-def help(msg)
-  STDERR.puts msg
-  abort "\nUsage: #{$PROGRAM_NAME} BUNDLE_DIR STAGING_DIR"
+
+REQUIRED_DIRS = [:bundle_dir, :staging_dir]
+REQUIRED_PARAMS = [
+  :bundle_dir,
+  :staging_dir,
+  :manifest,
+  :checksums_file,
+  :project_name,
+  :apo_druid_id,
+  :collection_druid_id,
+]
+
+
+def help(error_msg)
+  help_msg = <<-END.gsub(/^ {4}/, '')
+    #{error_msg}
+    
+    Usage:
+        pre-assembly YAML_CONFIG_FILE
+
+    Parameters:
+  END
+  ps = REQUIRED_PARAMS.map { |p| "    #{p}\n" }.join
+  abort help_msg + ps
 end
 
-help "Incorrect N of arguments." unless ARGV.size == 2
 
-bundle_dir, staging_dir = ARGV
+# Load YAML config file for the bundle of materials to be pre-assembled.
+help "Incorrect N of arguments." unless ARGV.size == 1
+yaml_config = ARGV.shift
+help "YAML file not found." unless File.file? yaml_config
+params = YAML.load(File.read yaml_config)
 
-[bundle_dir, staging_dir].each do |d|
-  help "Directory not found: #{d}" unless File.directory? d
+
+# Check for required parameters and directories.
+REQUIRED_PARAMS.each do |p|
+  help "Missing parameter: #{p.to_s}." unless params.has_key? p
 end
 
-b = PreAssembly::Bundle.new(
-  :bundle_dir          => bundle_dir,
-  :manifest            => 'manifest.csv',
-  :checksums_file      => 'checksums.txt',
-  :project_name        => 'REVS',
-  :apo_druid_id        => 'druid:qv648vd4392',
-  :collection_druid_id => 'druid:nt028fd5773',
-  :staging_dir         => staging_dir,
-  :cleanup             => true
-)
+REQUIRED_DIRS.each do |p|
+  d = params[p]
+  help "Directory not found: #{d}." unless File.directory? d
+end
 
+
+# Run pre-assembly.
+b = PreAssembly::Bundle.new params
 b.run_pre_assembly

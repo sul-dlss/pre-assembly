@@ -3,6 +3,7 @@
 
 require 'csv-mapper'
 require 'fileutils'
+require 'yaml'
 
 require 'preassembly/version'
 
