@@ -1,8 +1,14 @@
+# TODO: create a rev_local_dev.yaml and then make revs.yaml correct.
+# TODO: create a environments/local_dev.rb
+# TODO: does assembly run correctly if the caller's working dir is not the project root?
+# TODO: modify logging to be more useful in deployed context.
+# TODO: consider whether it would help to write out information about druids processed.
+# TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
+
 # TODO: deployment cap task.
-# TODO: modify code generating desc_metadata.xml after we have a spec for REVS MODS.
-# TODO: revs.yaml: modify/remove params for real usage.
 # TODO: rdoc documentation and README.
 # TODO: refactor to handle DPG content.
+
 
 Receive bundle of materials (manual):
 
