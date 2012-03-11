@@ -1,5 +1,5 @@
-:bundle_dir:           '/thumpers/dpgthumper-staging/Revs/source/2012_02_22'
-:staging_dir:          '/dor/assembly_test'
+:bundle_dir:           'spec/test_data/bundle_input'
+:staging_dir:          'tmp'
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
 :project_name:         'REVS'
