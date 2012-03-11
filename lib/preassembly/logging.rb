@@ -1,5 +1,3 @@
-require 'logger'
-
 module PreAssembly
 
   module Logging
