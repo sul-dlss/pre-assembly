@@ -34,3 +34,71 @@ Pre-assembly (automated):
         - Later: get descriptive metadata from other souces, such as mdtoolkit
           and symphony.
 
+
+Notes on the require flow:
+
+    bin/pre-assemble
+        
+        require rubygems
+
+        require boot
+
+            require rubygems              # Repeat.
+            require logger
+
+            Set ROBOT_ENVIRONMENT
+
+            require solrizer
+            require dor-services
+            require lyber_core
+
+            require ENV_FILE              # Just Dor::Config.
+
+            Add lib to LOAD_PATH
+
+            require preassembly/logging
+
+            require preassembly
+
+                require csv-mapper
+                require fileutils
+                require yaml
+
+                require preassembly/version
+                require preassembly/bundle
+                require preassembly/digital_object
+                require preassembly/image
+
+    spec/spec_helper.rb
+
+        require tmpdir
+        require equivalent-xml
+
+        Set ROBOT_ENVIRONMENT
+
+        require bootfile  # See above.
+
+
+    Alternative approach:
+
+        - Move boot.rb code into preassembly.rb.
+
+        - Usage in scripts (in deployed context).
+
+            # User needs to activate the appropriate rvm gemset (deployed-preassembly).
+
+            require rubygems
+            require preassembly # As a gem?
+            b.Bundle.new ...
+
+        - Usage in scripts (during local development).
+
+            require rubygems
+            require testing gems
+            require lib/preassembly.rb
+
+        - Usage in tests.
+
+            require rubygems
+            require testing gems
+            require lib/preassembly.rb

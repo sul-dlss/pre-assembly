@@ -14,12 +14,16 @@ Solrizer.logger = solr_log
 require 'dor-services'
 require 'lyber_core'
 
-# Load config for current environment.
-$LOAD_PATH.unshift(project_root + '/lib')
+# Environment.
 ENV_FILE = project_root + "/config/environments/#{environment}.rb"
 require ENV_FILE
 
-# Set up project logger and load the project.
+# Project dir in load path.
+$LOAD_PATH.unshift(project_root + '/lib')
+
+# Set up project logger.
 require 'preassembly/logging'
 PreAssembly::Logging.setup project_root, environment
+
+# Load the project.
 require 'preassembly'
