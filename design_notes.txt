@@ -1,4 +1,4 @@
-# TODO: Modify boot.rb and pre-assembly.rb to rationalize requires.
+# TODO: Modify boot.rb and pre_assembly.rb to rationalize requires.
 # TODO: deployment cap task.
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
@@ -13,7 +13,7 @@ Receive bundle of materials (manual):
 
     - Receive the bundle of material (e.g. REVS hard drive).
     - Copy the bundle to a prep area on the thumper staging machine.
-    - Launch the pre-assembly process.
+    - Launch the pre_assembly process.
 
 
 Pre-assembly (automated):
@@ -55,18 +55,18 @@ Notes on the require flow:
 
             Add lib to LOAD_PATH
 
-            require pre-assembly/logging
+            require pre_assembly/logging
 
-            require pre-assembly
+            require pre_assembly
 
                 require csv-mapper
                 require fileutils
                 require yaml
 
-                require pre-assembly/version
-                require pre-assembly/bundle
-                require pre-assembly/digital_object
-                require pre-assembly/image
+                require pre_assembly/version
+                require pre_assembly/bundle
+                require pre_assembly/digital_object
+                require pre_assembly/image
 
     spec/spec_helper.rb
 
@@ -76,28 +76,3 @@ Notes on the require flow:
         Set ROBOT_ENVIRONMENT
 
         require bootfile  # See above.
-
-
-    Alternative approach:
-
-        - Move boot.rb code into pre-assembly.rb.
-
-        - Usage in scripts (in deployed context).
-
-            # User needs to activate the appropriate rvm gemset (deployed-pre-assembly).
-
-            require rubygems
-            require pre-assembly # As a gem?
-            b.Bundle.new ...
-
-        - Usage in scripts (during local development).
-
-            require rubygems
-            require testing gems
-            require lib/pre-assembly.rb
-
-        - Usage in tests.
-
-            require rubygems
-            require testing gems
-            require lib/pre-assembly.rb

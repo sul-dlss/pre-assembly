@@ -21,7 +21,7 @@ def help(error_msg)
     #{error_msg}
     
     Usage:
-        pre-assembly YAML_CONFIG_FILE
+        pre-assemble YAML_CONFIG_FILE
 
     Parameters:
   END

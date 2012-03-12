@@ -22,8 +22,8 @@ require ENV_FILE
 $LOAD_PATH.unshift(project_root + '/lib')
 
 # Set up project logger.
-require 'pre-assembly/logging'
+require 'pre_assembly/logging'
 PreAssembly::Logging.setup project_root, environment
 
 # Load the project.
-require 'pre-assembly'
+require 'pre_assembly'
