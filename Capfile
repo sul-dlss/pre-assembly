@@ -23,12 +23,14 @@
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 require 'dlss/capistrano/robots'
 
-set :application, 'pre-assembly'
+set :application,     'pre-assembly'
+set :git_subdir,      "lyberteam/#{application}.git"
+set :rvm_ruby_string, "1.8.7@#{application}"
 
 task :dev do
   role :app, 'lyberservices-dev.stanford.edu'
-  set :bundle_without, []         # deploy all gem groups on the dev VM.
   set :deploy_env, 'development'
+  set :bundle_without, []         # Deploy all gem groups on the dev VM.
 end
 
 task :testing do
@@ -41,11 +43,10 @@ task :production do
   set :deploy_env, 'production'
 end
 
-set :sunet_id, Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-set :rvm_type, :user
-set :user, 'lyberadmin' 
-set :repository,  '/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git'
-set :local_repository, "ssh://#{sunet_id}@corn.stanford.edu#{repository}"
-set :deploy_to, "/home/#{user}/#{application}"
-
+set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
+set :rvm_type,   :user
+set :user,       'lyberadmin' 
+set :repository, "ssh://#{sunet_id}@corn.stanford.edu/afs/ir/dev/dlss/git/#{git_subdir}"
+set :deploy_to,  "/home/#{user}/#{application}"
+set :deploy_via, :copy
 set :shared_config_certs_dir, true
