@@ -44,7 +44,7 @@ end
 set :sunet_id, Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
 set :rvm_type, :user
 set :user, 'lyberadmin' 
-set :repository,  '/afs/ir/dev/dlss/git/lyberteam/common-accessioning.git'
+set :repository,  '/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git'
 set :local_repository, "ssh://#{sunet_id}@corn.stanford.edu#{repository}"
 set :deploy_to, "/home/#{user}/#{application}"
 
