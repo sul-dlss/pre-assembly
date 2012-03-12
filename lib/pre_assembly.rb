@@ -2,11 +2,11 @@ require 'csv-mapper'
 require 'fileutils'
 require 'yaml'
 
-require 'pre-assembly/version'
+require 'pre_assembly/version'
 
-require 'pre-assembly/bundle'
-require 'pre-assembly/digital_object'
-require 'pre-assembly/image'
+require 'pre_assembly/bundle'
+require 'pre_assembly/digital_object'
+require 'pre_assembly/image'
 
 
 Dor::Config.configure do
