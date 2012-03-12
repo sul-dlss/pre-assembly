@@ -14,4 +14,5 @@ end
 
 group :development do
   gem 'lyberteam-devel'
+  gem "capistrano", "2.9.0"
 end
