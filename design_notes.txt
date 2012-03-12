@@ -1,7 +1,6 @@
-# TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
-
-# TODO: Ask Willy about logging setup and require flow.
+# TODO: Modify boot.rb and preassembly.rb to rationalize requires.
 # TODO: deployment cap task.
+# TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
@@ -39,7 +38,7 @@ Notes on the require flow:
 
     bin/pre-assemble
         
-        require rubygems
+        require rubygems     # Remove this.
 
         require boot
 
