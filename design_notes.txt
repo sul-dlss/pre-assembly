@@ -1,5 +1,5 @@
+# TODO: fix publish-config
 # TODO: Modify boot.rb and pre_assembly.rb to rationalize requires.
-# TODO: deployment cap task.
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
 # TODO: reevaluate logging for use in deployed context.
