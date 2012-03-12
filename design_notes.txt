@@ -1,4 +1,3 @@
-# TODO: does pre-assembly run correctly if working dir is not the project root?
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
 # TODO: Ask Willy about logging setup and require flow.
