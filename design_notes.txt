@@ -1,4 +1,4 @@
-# TODO: Modify boot.rb and preassembly.rb to rationalize requires.
+# TODO: Modify boot.rb and pre-assembly.rb to rationalize requires.
 # TODO: deployment cap task.
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
@@ -55,18 +55,18 @@ Notes on the require flow:
 
             Add lib to LOAD_PATH
 
-            require preassembly/logging
+            require pre-assembly/logging
 
-            require preassembly
+            require pre-assembly
 
                 require csv-mapper
                 require fileutils
                 require yaml
 
-                require preassembly/version
-                require preassembly/bundle
-                require preassembly/digital_object
-                require preassembly/image
+                require pre-assembly/version
+                require pre-assembly/bundle
+                require pre-assembly/digital_object
+                require pre-assembly/image
 
     spec/spec_helper.rb
 
@@ -80,24 +80,24 @@ Notes on the require flow:
 
     Alternative approach:
 
-        - Move boot.rb code into preassembly.rb.
+        - Move boot.rb code into pre-assembly.rb.
 
         - Usage in scripts (in deployed context).
 
-            # User needs to activate the appropriate rvm gemset (deployed-preassembly).
+            # User needs to activate the appropriate rvm gemset (deployed-pre-assembly).
 
             require rubygems
-            require preassembly # As a gem?
+            require pre-assembly # As a gem?
             b.Bundle.new ...
 
         - Usage in scripts (during local development).
 
             require rubygems
             require testing gems
-            require lib/preassembly.rb
+            require lib/pre-assembly.rb
 
         - Usage in tests.
 
             require rubygems
             require testing gems
-            require lib/preassembly.rb
+            require lib/pre-assembly.rb
