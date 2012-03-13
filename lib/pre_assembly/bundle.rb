@@ -1,3 +1,5 @@
+require 'csv-mapper'
+
 module PreAssembly
 
   class Bundle

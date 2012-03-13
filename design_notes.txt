@@ -1,10 +1,13 @@
-# TODO: Modify boot.rb and pre_assembly.rb to rationalize requires.
+# TODO: in unregister() set workflow steps to error.
+# TODO: deploy; run; check Dor::WorkflowService.get_objects_for_workstep.
+
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 
+# TODO: WorkflowService should provide a way to delete a workflow.
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
 # TODO: Modify revs.yaml when we start using for real.
-# TODO: rdoc documentation and README.
+# TODO: YARD documentation.
 # TODO: refactor to handle DPG content.
 
 
@@ -31,47 +34,3 @@ Pre-assembly (automated):
 
         - Later: get descriptive metadata from other souces, such as mdtoolkit
           and symphony.
-
-
-Notes on the require flow:
-
-    bin/pre-assemble
-        
-        require rubygems     # Remove this.
-
-        require boot
-
-            require rubygems              # Repeat.
-            require logger
-
-            Set ROBOT_ENVIRONMENT
-
-            require solrizer
-            require dor-services
-            require lyber_core
-
-            require ENV_FILE              # Just Dor::Config.
-
-            Add lib to LOAD_PATH
-
-            require pre_assembly/logging
-
-            require pre_assembly
-
-                require csv-mapper
-                require fileutils
-                require yaml
-
-                require pre_assembly/version
-                require pre_assembly/bundle
-                require pre_assembly/digital_object
-                require pre_assembly/image
-
-    spec/spec_helper.rb
-
-        require tmpdir
-        require equivalent-xml
-
-        Set ROBOT_ENVIRONMENT
-
-        require bootfile  # See above.

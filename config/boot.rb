@@ -25,5 +25,11 @@ $LOAD_PATH.unshift(PRE_ASSEMBLY_ROOT + '/lib')
 require 'pre_assembly/logging'
 PreAssembly::Logging.setup PRE_ASSEMBLY_ROOT, environment
 
-# Load the project.
+# Load the project and its dependencies.
 require 'pre_assembly'
+require 'pre_assembly/bundle'
+require 'pre_assembly/digital_object'
+require 'pre_assembly/image'
+require 'pre_assembly/version'
+
+require 'fileutils'
