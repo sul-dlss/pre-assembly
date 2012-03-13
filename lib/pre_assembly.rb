@@ -22,3 +22,10 @@ Dor::Config.configure do
   end
 
 end
+
+require 'pre_assembly/bundle'
+require 'pre_assembly/digital_object'
+require 'pre_assembly/image'
+require 'pre_assembly/version'
+
+require 'fileutils'
