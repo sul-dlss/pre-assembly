@@ -1,11 +1,16 @@
-:bundle_dir:           '/home/lyberadmin/pre-assembly/integration_input'
+# For temporary use on sul-lyberservices-dev.
+:bundle_dir:           '/home/lyberadmin/pre-assembly/revs_test_run/input'
+:staging_dir:          '/home/lyberadmin/pre-assembly/revs_test_run/output'
+
+# Old tempoary values on lyberservices-dev.
 # :bundle_dir:           '/thumpers/dpgthumper-staging/Revs/source/2012_02_22'
-:staging_dir:          '/dor/assembly_test'
+# :staging_dir:          '/dor/assembly_test'
+
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
 :project_name:         'REVS'
 :apo_druid_id:         'druid:qv648vd4392'
 :collection_druid_id:  'druid:nt028fd5773'
 
-:cleanup:              true
+:cleanup:              false
 :limit_n:              10
