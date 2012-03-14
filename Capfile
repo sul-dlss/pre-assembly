@@ -22,23 +22,23 @@ set :git_subdir,      "lyberteam/#{application}.git"
 set :rvm_ruby_string, "1.8.7@#{application}"
 
 task :dev do
-  role :app, 'lyberservices-dev.stanford.edu'
+  role :app, 'sul-lyberservices-dev.stanford.edu'
   set :deploy_env, 'development'
   set :bundle_without, []         # Deploy all gem groups on the dev VM.
 end
 
 task :testing do
-  role :app, 'lyberservices-test.stanford.edu'
+  role :app, 'sul-lyberservices-test.stanford.edu'
   set :deploy_env, 'test'
 end
 
 task :production do
-  role :app, 'lyberservices-prod.stanford.edu'
+  role :app, 'sul-lyberservices-prod.stanford.edu'
   set :deploy_env, 'production'
 end
 
 set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-set :rvm_type,   :user
+# set :rvm_type,   :user
 set :user,       'lyberadmin' 
 set :repository, "ssh://#{sunet_id}@corn.stanford.edu/afs/ir/dev/dlss/git/#{git_subdir}"
 set :deploy_to,  "/home/#{user}/#{application}"
