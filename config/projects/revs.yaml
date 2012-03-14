@@ -1,4 +1,5 @@
-:bundle_dir:           '/thumpers/dpgthumper-staging/Revs/source/2012_02_22'
+:bundle_dir:           '/home/lyberadmin/pre-assembly/integration_input'
+# :bundle_dir:           '/thumpers/dpgthumper-staging/Revs/source/2012_02_22'
 :staging_dir:          '/dor/assembly_test'
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
