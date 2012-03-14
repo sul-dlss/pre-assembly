@@ -131,8 +131,8 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-        puts dobj.druid.druid if @show_progress 
         dobj.assemble(@stager, @staging_dir)
+        puts dobj.druid.druid if @show_progress 
       end
     end
 
