@@ -16,6 +16,7 @@ module PreAssembly
       :staging_dir,
       :cleanup,
       :limit_n,
+      :show_progress,
       :exp_checksums,
       :digital_objects,
       :stager,
@@ -33,6 +34,7 @@ module PreAssembly
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
       @limit_n             = params[:limit_n]
+      @show_progress       = params[:show_progress]
       setup
     end
 
@@ -128,7 +130,10 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
-      @digital_objects.each { |dobj| dobj.assemble(@stager, @staging_dir) }
+      @digital_objects.each do |dobj|
+        puts dobj.druid.druid if @show_progress 
+        dobj.assemble(@stager, @staging_dir)
+      end
     end
 
     def delete_digital_objects
