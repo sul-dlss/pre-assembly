@@ -1,7 +1,8 @@
-# TODO: in unregister() set workflow steps to error.
-# TODO: deploy; run; check Dor::WorkflowService.get_objects_for_workstep.
+# TODO: deploy check: Dor::WorkflowService.get_objects_for_workstep.
+# TODO: deploy check: for stray workflows.
 
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
+# TODO: add the REST call workstep to assembly_wf_steps.
 
 # TODO: WorkflowService should provide a way to delete a workflow.
 # TODO: reevaluate logging for use in deployed context.

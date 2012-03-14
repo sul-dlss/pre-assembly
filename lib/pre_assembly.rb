@@ -14,9 +14,12 @@ Dor::Config.configure do
     # The assembly workflow parameters.
     assembly_wf  'assemblyWF'
     assembly_wf_steps Hash[
-      'start-assembly'   => 'completed',
-      'checksum'         => 'waiting',
-      'checksum-compare' => 'waiting',
+      'start-assembly'       => 'completed',
+      'jp2-create'           => 'waiting',
+      'checksum-compute'     => 'waiting',
+      'checksum-compare'     => 'waiting',
+      'exif-collect'         => 'waiting',
+      # 'initiate-accesioning' => 'waiting',
     ]
 
   end
@@ -29,3 +32,4 @@ require 'pre_assembly/image'
 require 'pre_assembly/version'
 
 require 'fileutils'
+
