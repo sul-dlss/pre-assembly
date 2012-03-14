@@ -2,7 +2,6 @@
 # TODO: deploy check: for stray workflows.
 
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
-# TODO: add the REST call workstep to assembly_wf_steps.
 # TODO: input-profile sanity checks.
 
 # TODO: WorkflowService should provide a way to delete a workflow.

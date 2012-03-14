@@ -209,6 +209,7 @@ describe PreAssembly::DigitalObject do
           <process status="waiting"   name="checksum-compute"/>
           <process status="waiting"   name="checksum-compare"/>
           <process status="waiting"   name="exif-collect"/>
+          <process status="waiting"   name="accessioning-initiate"/>
         </workflow>
       END
       @exp_xml = noko_doc @exp_xml
