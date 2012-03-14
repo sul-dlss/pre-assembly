@@ -11,14 +11,8 @@
 #
 # Subsequent deployments:
 #
-#   # Stop robots, deploy code, start robots.
 #   $ cap dev deploy
 #
-#   # Stop robots, deploy code.
-#   $ cap dev deploy:update
-#
-#   # Start robots.
-#   $ cap dev deploy:start
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 require 'dlss/capistrano/robots'

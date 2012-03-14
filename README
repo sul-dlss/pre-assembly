@@ -1,10 +1,13 @@
-Pre-assembly
+==Pre-assembly
 
     This is a Ruby implementation of services needed to prepare objects to be
     assembled and then accessioned in SULAIR digital library.
 
+==Deployment
 
-Setting up project for local development:
+See the capfile
+
+==Setting up project for local development:
 
     # Clone project.
     git clone `whoami`@corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git
@@ -22,7 +25,14 @@ Setting up project for local development:
     bin/run_all_tests 
 
 
-Running tests:
+==Running tests:
+
+	For local testing, you need to run with ROBOT_ENVIRONMENT = local
+
+	e.g. add this to your bash profile:
+
+	export ROBOT_ENVIRONMENT="local"
+
 
     # All tests.
     bin/run_all_tests
@@ -32,6 +42,6 @@ Running tests:
     bundle exec rspec integration
 
 
-Generate Documentation
+==Generate Documentation
 
     rdoc --exclude spec --main lib/preassembly.rb
