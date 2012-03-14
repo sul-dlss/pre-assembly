@@ -14,3 +14,4 @@
 
 :cleanup:              false
 :limit_n:              10
+:show_progress:        true

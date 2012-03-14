@@ -8,3 +8,4 @@
 
 :cleanup:              true
 :limit_n:              10
+:show_progress:        true
