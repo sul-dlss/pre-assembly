@@ -74,9 +74,10 @@ describe PreAssembly::DigitalObject do
       @dobj.registration_info.should == 1234
     end
 
-    it "can exercise unregister()" do
+    it "can exercise unregister(), with external calls stubbed" do
       @dobj.registration_info = 1234
-      @dobj.stub(:delete_from_dor)
+      @dobj.stub :delete_from_dor
+      @dobj.stub :set_workflow_step_to_error
       @dobj.unregister
       @dobj.registration_info.should == nil
     end
@@ -204,8 +205,10 @@ describe PreAssembly::DigitalObject do
         <?xml version="1.0"?>
         <workflow objectId="druid:#{@druid.id}" id="assemblyWF">
           <process status="completed" name="start-assembly"/>
-          <process status="waiting"   name="checksum"/>
+          <process status="waiting"   name="jp2-create"/>
+          <process status="waiting"   name="checksum-compute"/>
           <process status="waiting"   name="checksum-compare"/>
+          <process status="waiting"   name="exif-collect"/>
         </workflow>
       END
       @exp_xml = noko_doc @exp_xml

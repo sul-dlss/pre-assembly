@@ -175,8 +175,22 @@ module PreAssembly
     def unregister
       # Used during testing/development work to unregister objects created in -dev.
       log "  - unregister(#{@pid})"
+
+      # Set all assemblyWF steps to error.
+      steps = Dor::Config.pre_assembly.assembly_wf_steps
+      steps.each { |s| set_workflow_step_to_error @pid, s }
+
+      # Delete object from Dor.
       delete_from_dor @pid
       @registration_info = nil
+    end
+
+    def set_workflow_step_to_error(pid, step)
+      wf_name = Dor::Config.pre_assembly.assembly_wf
+      msg     = 'Integration testing'
+      params  =  ['dor', pid, wf_name, step, msg]
+      resp    = Dor::WorkflowService.update_workflow_error_status *params
+      raise "update_workflow_error_status() returned false." unless resp == true
     end
 
   end
