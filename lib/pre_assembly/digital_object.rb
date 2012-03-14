@@ -142,7 +142,7 @@ module PreAssembly
 
       # Set all assemblyWF steps to error.
       steps = Dor::Config.pre_assembly.assembly_wf_steps
-      steps.each { |s| set_workflow_step_to_error @pid, s }
+      steps.each { |step, status| set_workflow_step_to_error @pid, step }
 
       # Delete object from Dor.
       delete_from_dor @pid
@@ -232,8 +232,8 @@ module PreAssembly
       steps   = Dor::Config.pre_assembly.assembly_wf_steps
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.workflow(:objectId => @druid.druid, :id => wf_name) {
-          steps.each { |wf, status|
-            xml.process(:name => wf, :status => status)
+          steps.each { |step, status|
+            xml.process(:name => step, :status => status)
           }
         }
       }
