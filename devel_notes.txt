@@ -1,15 +1,14 @@
-# TODO: deploy check: Dor::WorkflowService.get_objects_for_workstep.
-# TODO: deploy check: for stray workflows.
-
 # TODO: modify code generating desc_metadata.xml (waiting for REVS MODS spec).
 # TODO: input-profile sanity checks.
 
-# TODO: WorkflowService should provide a way to delete a workflow.
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
 # TODO: Modify revs.yaml when we start using for real.
+
 # TODO: YARD documentation.
 # TODO: refactor to handle DPG content.
+
+# TODO: WorkflowService should provide a way to delete a workflow.
 
 
 Receive bundle of materials (manual):
