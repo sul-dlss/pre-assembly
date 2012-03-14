@@ -31,6 +31,11 @@ module PreAssembly
                               "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd",
     }
 
+
+    ####
+    # Initialization.
+    ####
+
     def initialize(params = {})
       @project_name          = params[:project_name]
       @apo_druid_id          = params[:apo_druid_id]
@@ -50,15 +55,14 @@ module PreAssembly
       @druid_tree_dir        = ''
     end
 
-    def get_druid_from_suri()        Dor::SuriService.mint_id                           end
-    def register_in_dor(params)      Dor::RegistrationService.register_object params    end
-    def delete_from_dor(pid)         Dor::Config.fedora.client["objects/#{pid}"].delete end
-    def create_workflow_in_dor(args) Dor::WorkflowService.create_workflow(*args)        end
-    def druid_tree_mkdir(dir)        FileUtils.mkdir_p dir                              end
-
     def add_image(params)
       @images.push Image::new(params)
     end
+
+
+    ####
+    # The main process.
+    ####
 
     def assemble(stager, staging_dir)
       log "  - assemble(#{@source_id})"
@@ -71,6 +75,44 @@ module PreAssembly
       initialize_assembly_workflow
       write_desc_metadata
     end
+
+
+    ####
+    # External dependencies.
+    ####
+
+    def get_druid_from_suri()
+      Dor::SuriService.mint_id
+    end
+
+    def register_in_dor(params)      
+      Dor::RegistrationService.register_object params
+    end
+
+    def delete_from_dor(pid)
+      Dor::Config.fedora.client["objects/#{pid}"].delete
+    end
+
+    def create_workflow_in_dor(args)
+      Dor::WorkflowService.create_workflow(*args)
+    end
+
+    def druid_tree_mkdir(dir)
+      FileUtils.mkdir_p dir
+    end
+
+    def set_workflow_step_to_error(pid, step)
+      wf_name = Dor::Config.pre_assembly.assembly_wf
+      msg     = 'Integration testing'
+      params  =  ['dor', pid, wf_name, step, msg]
+      resp    = Dor::WorkflowService.update_workflow_error_status *params
+      raise "update_workflow_error_status() returned false." unless resp == true
+    end
+
+
+    ####
+    # Registration.
+    ####
 
     def claim_druid
       log "    - claim_druid()"
@@ -94,6 +136,24 @@ module PreAssembly
       }
     end
 
+    def unregister
+      # Used during testing/development work to unregister objects created in -dev.
+      log "  - unregister(#{@pid})"
+
+      # Set all assemblyWF steps to error.
+      steps = Dor::Config.pre_assembly.assembly_wf_steps
+      steps.each { |s| set_workflow_step_to_error @pid, s }
+
+      # Delete object from Dor.
+      delete_from_dor @pid
+      @registration_info = nil
+    end
+
+
+    ####
+    # Staging images.
+    ####
+
     def stage_images(stager, base_target_dir)
       # Copy images to staging directory.
       @images.each do |img|
@@ -103,6 +163,11 @@ module PreAssembly
         stager.call img.full_path, @druid_tree_dir
       end
     end
+
+
+    ####
+    # Content metadata.
+    ####
 
     def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
@@ -128,6 +193,11 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
+
+    ####
+    # Descriptive metadata.
+    ####
+
     def generate_desc_metadata
       log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
@@ -151,6 +221,11 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
     end
 
+
+    ####
+    # Workflow metadata.
+    ####
+
     def generate_workflow_metadata
       log "    - generate_workflow_metadata()"
       wf_name = Dor::Config.pre_assembly.assembly_wf
@@ -170,27 +245,6 @@ module PreAssembly
       wf_name = Dor::Config.pre_assembly.assembly_wf
       generate_workflow_metadata
       create_workflow_in_dor ['dor', @pid, wf_name, @workflow_metadata_xml]
-    end
-
-    def unregister
-      # Used during testing/development work to unregister objects created in -dev.
-      log "  - unregister(#{@pid})"
-
-      # Set all assemblyWF steps to error.
-      steps = Dor::Config.pre_assembly.assembly_wf_steps
-      steps.each { |s| set_workflow_step_to_error @pid, s }
-
-      # Delete object from Dor.
-      delete_from_dor @pid
-      @registration_info = nil
-    end
-
-    def set_workflow_step_to_error(pid, step)
-      wf_name = Dor::Config.pre_assembly.assembly_wf
-      msg     = 'Integration testing'
-      params  =  ['dor', pid, wf_name, step, msg]
-      resp    = Dor::WorkflowService.update_workflow_error_status *params
-      raise "update_workflow_error_status() returned false." unless resp == true
     end
 
   end
