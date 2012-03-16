@@ -169,6 +169,7 @@ module PreAssembly
     # Content metadata.
     ####
 
+    # this is customized per project
     def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
