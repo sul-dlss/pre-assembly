@@ -169,7 +169,6 @@ module PreAssembly
     # Content metadata.
     ####
 
-    # this is customized per project
     def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
@@ -194,11 +193,11 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
-
     ####
     # Descriptive metadata.
     ####
 
+    # this is customized per project
     def generate_desc_metadata
       log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
@@ -206,8 +205,34 @@ module PreAssembly
           @images.each_with_index { |img, i|
             seq = i + 1
             xml.identifier(:file_name => img.file_name) {
+              xml.typeOfResource "still image"
+              xml.genre "digital image", :authority=>"att"
+              xml.subject(:authority=>"att") {
+                xml.topic "Automobile"
+                xml.topic "History"
+              }
+              xml.location {xml.physicalLocation "Department of Special Collections, Stanford University Libraries", :type=>"repository"}
+              xml.relatedItem(:type=>"host") {
+                xml.titleInfo {
+                  xml.title "The Collier Collection of the Revs Institute for Automotive Research"
+                }
+               xml.typeOfResource :collection=>"yes"
+              }
               img.provider_attr.each { |k,v| 
-                xml.note v, :type => "source note", :ID => k
+                case k.to_s 
+                  when 'label'
+                    xml.titleInfo {xml.title v}
+                  when 'year'
+                    xml.originInfo {xml.dateCreated v}
+                  when 'format'
+                    xml.relatedItem(:type=>"original") {xml.physicalDescription {xml.form v,:authority=>"att"}}
+                  when 'sourceid'
+                    xml.identifier v, :type=>"local", :displayLabel=>"Revs ID"
+                  when 'description'
+                    xml.note v
+                  else
+                    xml.note(v, :type => "source note", :ID => k) unless v.empty?
+                end
               }
             }
           }
