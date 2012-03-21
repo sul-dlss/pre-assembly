@@ -9,13 +9,46 @@ source_ids = [
   'REVS:foo-1.0',
   'REVS:foo-2.1',
   'REVS:foo-2.2',
+  'REVS:2011-023Cham-1.0_0001',
+  'REVS:2011-023Cham-1.0_0002',
+  'REVS:2011-023Cham-1.0_0003',
+  'REVS:2011-023Cham-1.0_0004',
+  'REVS:2011-023Cham-1.0_0005',
+  'REVS:2011-023Cham-1.0_0006',
+  'REVS:2011-023Cham-1.0_0007',
+  'REVS:2011-023Cham-1.0_0008',
+  'REVS:2011-023Cham-1.0_0009',
+  'REVS:2011-023Cham-1.0_0010',  
+  'REVS:2011-023Cham-1.0_0001-test',
+  'REVS:2011-023Cham-1.0_0002-test',
+  'REVS:2011-023Cham-1.0_0003-test',
+  'REVS:2011-023Cham-1.0_0004-test',
+  'REVS:2011-023Cham-1.0_0005-test',
+  'REVS:2011-023Cham-1.0_0006-test',
+  'REVS:2011-023Cham-1.0_0007-test',
+  'REVS:2011-023Cham-1.0_0008-test',
+  'REVS:2011-023Cham-1.0_0009-test',
+  'REVS:2011-023Cham-1.0_0010-test',
+  'REVS:2011-023Cham-1.0_0001-test2',
+  'REVS:2011-023Cham-1.0_0002-test2',
+  'REVS:2011-023Cham-1.0_0003-test2',
+  'REVS:2011-023Cham-1.0_0004-test2',
+  'REVS:2011-023Cham-1.0_0005-test2',
+  'REVS:2011-023Cham-1.0_0006-test2',
+  'REVS:2011-023Cham-1.0_0007-test2',
+  'REVS:2011-023Cham-1.0_0008-test2',
+  'REVS:2011-023Cham-1.0_0009-test2',
+  'REVS:2011-023Cham-1.0_0010-test2',
 ]
 
 source_ids.each do |sid|
   druids = Dor::SearchService.query_by_id sid
   druids.each do |druid|
     puts "Deleting #{druid}."
-    dobj = Dor::Config.fedora.client["objects/#{druid}"]
-    dobj.delete
+	begin
+		dobj = Dor::Config.fedora.client["objects/#{druid}"]
+		dobj.delete
+    rescue
+	end
   end
 end
