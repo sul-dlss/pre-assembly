@@ -231,7 +231,7 @@ module PreAssembly
                   when 'description'
                     xml.note v
                   else
-                    xml.note(v, :type => "source note", :ID => k) unless v.empty?
+                    xml.note(v, :type => "source note", :ID => k) unless v.blank?
                 end
               }
             }

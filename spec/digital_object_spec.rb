@@ -166,14 +166,44 @@ describe PreAssembly::DigitalObject do
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd" version="3.3">
           <identifier file_name="image_1.tif">
+            <typeOfResource>still image</typeOfResource>
+            <genre authority="att">digital image</genre>
+            <subject authority="att">
+              <topic>Automobile</topic>
+              <topic>History</topic>
+            </subject>
+            <location>
+              <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
+            </location>
+            <relatedItem type="host">
+              <titleInfo>
+                <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+              </titleInfo>
+              <typeOfResource collection="yes"/>
+            </relatedItem>
             <note type="source note" ID="i">1</note>
-            <note type="source note" ID="foo">123</note>
             <note type="source note" ID="bar">456</note>
+            <note type="source note" ID="foo">123</note>
           </identifier>
           <identifier file_name="image_2.tif">
+            <typeOfResource>still image</typeOfResource>
+            <genre authority="att">digital image</genre>
+            <subject authority="att">
+              <topic>Automobile</topic>
+              <topic>History</topic>
+            </subject>
+            <location>
+              <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
+            </location>
+            <relatedItem type="host">
+              <titleInfo>
+                <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+              </titleInfo>
+              <typeOfResource collection="yes"/>
+            </relatedItem>
             <note type="source note" ID="i">2</note>
-            <note type="source note" ID="foo">123</note>
             <note type="source note" ID="bar">456</note>
+            <note type="source note" ID="foo">123</note>
           </identifier>
         </mods>
       END

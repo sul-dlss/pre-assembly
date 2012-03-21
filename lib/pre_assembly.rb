@@ -3,8 +3,8 @@ Dor::Config.configure do
   pre_assembly do
 
     # Default file names.
-    cm_file_name        'content_metadata.xml'
-    dm_file_name        'desc_metadata.xml'
+    cm_file_name        'contentMetadata.xml'
+    dm_file_name        'descMetadata.xml'
     manifest_file_name  'manifest.cvs'
     checksums_file_name 'checksums.txt'
 
