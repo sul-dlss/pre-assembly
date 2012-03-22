@@ -11,7 +11,7 @@ describe PreAssembly::DigitalObject do
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
     @publish_attr  = Dor::Config.pre_assembly.publish_attr
-    @provider_attr = {:foo => '123', :bar => '456'}
+    @provider_attr = {:sourceid=>'foo-1',:label=>'this is a label',:year=>'2012',:description=>'this is a description',:format=>'film',:foo => '123', :bar => '456'}
     @tmp_dir_args  = [nil, 'tmp']
   end
 
@@ -165,46 +165,37 @@ describe PreAssembly::DigitalObject do
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd" version="3.3">
-          <identifier file_name="image_1.tif">
-            <typeOfResource>still image</typeOfResource>
-            <genre authority="att">digital image</genre>
-            <subject authority="att">
-              <topic>Automobile</topic>
-              <topic>History</topic>
-            </subject>
-            <location>
-              <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
-            </location>
-            <relatedItem type="host">
-              <titleInfo>
-                <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-              </titleInfo>
-              <typeOfResource collection="yes"/>
-            </relatedItem>
-            <note type="source note" ID="i">1</note>
-            <note type="source note" ID="bar">456</note>
-            <note type="source note" ID="foo">123</note>
-          </identifier>
-          <identifier file_name="image_2.tif">
-            <typeOfResource>still image</typeOfResource>
-            <genre authority="att">digital image</genre>
-            <subject authority="att">
-              <topic>Automobile</topic>
-              <topic>History</topic>
-            </subject>
-            <location>
-              <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
-            </location>
-            <relatedItem type="host">
-              <titleInfo>
-                <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-              </titleInfo>
-              <typeOfResource collection="yes"/>
-            </relatedItem>
-            <note type="source note" ID="i">2</note>
-            <note type="source note" ID="bar">456</note>
-            <note type="source note" ID="foo">123</note>
-          </identifier>
+          <typeOfResource>still image</typeOfResource>
+          <genre authority="att">digital image</genre>
+          <subject authority="lcsh">
+            <topic>Automobile</topic>
+            <topic>History</topic>
+          </subject>
+          <location>
+            <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
+          </location>
+          <relatedItem type="host">
+            <titleInfo>
+              <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+            </titleInfo>
+            <typeOfResource collection="yes"/>
+          </relatedItem>
+          <note type="source note" ID="i">1</note>
+          <note type="source note" ID="bar">456</note>
+          <note>this is a description</note>
+          <titleInfo>
+            <title>this is a label</title>
+          </titleInfo>
+          <relatedItem type="original">
+            <physicalDescription>
+              <form authority="att">film</form>
+            </physicalDescription>
+          </relatedItem>
+          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+          <originInfo>
+            <dateCreated>2012</dateCreated>
+          </originInfo>
+          <note type="source note" ID="foo">123</note>
         </mods>
       END
       @exp_xml = noko_doc @exp_xml
