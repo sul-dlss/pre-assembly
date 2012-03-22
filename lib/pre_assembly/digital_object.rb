@@ -202,40 +202,38 @@ module PreAssembly
       log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.mods(MODS_XML_ATTR) {
-          @images.each_with_index { |img, i|
-            seq = i + 1
-            xml.identifier(:file_name => img.file_name) {
-              xml.typeOfResource "still image"
-              xml.genre "digital image", :authority=>"att"
-              xml.subject(:authority=>"lcsh") {
-                xml.topic "Automobile"
-                xml.topic "History"
-              }
-              xml.location {xml.physicalLocation "Department of Special Collections, Stanford University Libraries", :type=>"repository"}
-              xml.relatedItem(:type=>"host") {
-                xml.titleInfo {
-                  xml.title "The Collier Collection of the Revs Institute for Automotive Research"
-                }
-               xml.typeOfResource :collection=>"yes"
-              }
-              img.provider_attr.each { |k,v| 
-                case k.to_s 
-                  when 'label'
-                    xml.titleInfo {xml.title v}
-                  when 'year'
-                    xml.originInfo {xml.dateCreated v}
-                  when 'format'
-                    xml.relatedItem(:type=>"original") {xml.physicalDescription {xml.form v,:authority=>"att"}}
-                  when 'sourceid'
-                    xml.identifier v, :type=>"local", :displayLabel=>"Revs ID"
-                  when 'description'
-                    xml.note v
-                  else
-                    xml.note(v, :type => "source note", :ID => k) unless v.blank?
-                end
-              }
-            }
+          xml.typeOfResource "still image"
+          xml.genre "digital image", :authority=>"att"
+          xml.subject(:authority=>"lcsh") {
+            xml.topic "Automobile"
+            xml.topic "History"
           }
+          xml.location {xml.physicalLocation "Department of Special Collections, Stanford University Libraries", :type=>"repository"}
+          xml.relatedItem(:type=>"host") {
+            xml.titleInfo {
+              xml.title "The Collier Collection of the Revs Institute for Automotive Research"
+            }
+           xml.typeOfResource :collection=>"yes"
+          }
+          # TODO we are just taking the attributes from the first image for this object -- this is fairly arbitrary and works only if there is a single
+          #  image per object -- with multiple images per object, the MODs would probably be different anyway
+          @images.first.provider_attr.each { |k,v| 
+            case k.to_s.downcase
+              when 'label'
+                xml.titleInfo {xml.title v}
+              when 'year'
+                xml.originInfo {xml.dateCreated v}
+              when 'format'
+                xml.relatedItem(:type=>"original") {xml.physicalDescription {xml.form v,:authority=>"att"}}
+              when 'sourceid'
+                xml.identifier v, :type=>"local", :displayLabel=>"Revs ID"
+              when 'description'
+                xml.note v
+              else
+                xml.note(v, :type => "source note", :ID => k) unless v.blank?
+            end
+          }
+            
         }
       }
       @desc_metadata_xml = builder.to_xml

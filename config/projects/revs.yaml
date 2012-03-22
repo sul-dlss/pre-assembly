@@ -11,7 +11,7 @@
 :project_name:         'REVS'
 :apo_druid_id:         'druid:qv648vd4392'
 :collection_druid_id:  'druid:nt028fd5773'
-:set_druid_id:		   'druid:XXXXXXXXXXX'
+:set_druid_id:         'druid:XXXXXXXXXXX'
 
 :cleanup:              false
 :limit_n:              10
