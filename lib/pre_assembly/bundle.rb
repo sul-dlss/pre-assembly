@@ -12,6 +12,7 @@ module PreAssembly
       :checksums_file,
       :project_name,
       :apo_druid_id,
+      :set_druid_id,
       :collection_druid_id,
       :staging_dir,
       :cleanup,
@@ -30,6 +31,7 @@ module PreAssembly
       @checksums_file      = params[:checksums_file] || conf.checksums_file_name
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
+      @set_druid_id        = params[:set_druid_id]
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]

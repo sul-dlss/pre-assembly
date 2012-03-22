@@ -207,7 +207,7 @@ module PreAssembly
             xml.identifier(:file_name => img.file_name) {
               xml.typeOfResource "still image"
               xml.genre "digital image", :authority=>"att"
-              xml.subject(:authority=>"att") {
+              xml.subject(:authority=>"lcsh") {
                 xml.topic "Automobile"
                 xml.topic "History"
               }
