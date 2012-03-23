@@ -3,12 +3,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 source_ids = [
-  'revs:foo-1.0',
-  'revs:foo-2.1',
-  'revs:foo-2.2',
-  'REVS:foo-1.0',
-  'REVS:foo-2.1',
-  'REVS:foo-2.2',
   'REVS:2011-023Cham-1.0_0001',
   'REVS:2011-023Cham-1.0_0002',
   'REVS:2011-023Cham-1.0_0003',
@@ -24,12 +18,13 @@ source_ids = [
 source_ids.each do |sid|
   druids = Dor::SearchService.query_by_id sid
   druids.each do |druid|
-    puts "Deleting #{druid}."
+    puts "Updating #{druid}."
 		begin
-			dobj = Dor::Config.fedora.client["objects/#{druid}"]
-			dobj.delete
+			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'content-metadata', 'waiting'
+			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'publish', 'waiting'
+			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
 	  rescue
-			puts "an error occurred trying to delete #{druid}"
+			puts "an error occurred trying to update workflows for #{druid}"
 		end
   end
 end

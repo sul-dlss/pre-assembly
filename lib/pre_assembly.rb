@@ -9,7 +9,7 @@ Dor::Config.configure do
     checksums_file_name 'checksums.txt'
 
     # Default preserve-shelve-publish attribritutes.
-    publish_attr Hash[:preserve => 'yes', :shelve => 'no', :publish => 'no']
+    publish_attr Hash[:preserve => 'yes', :shelve => 'yes', :publish => 'yes']
 
     # The assembly workflow parameters.
     assembly_wf  'assemblyWF'
