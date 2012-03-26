@@ -8,8 +8,8 @@ Dor::Config.configure do
     manifest_file_name  'manifest.cvs'
     checksums_file_name 'checksums.txt'
 
-    # Default preserve-shelve-publish attribritutes.
-    publish_attr Hash[:preserve => 'yes', :shelve => 'yes', :publish => 'yes']
+    # Default preserve-shelve-publish attribritutes for tifs.
+    publish_attr Hash[:preserve => 'yes', :shelve => 'no', :publish => 'no']
 
     # The assembly workflow parameters.
     assembly_wf  'assemblyWF'
