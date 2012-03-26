@@ -20,7 +20,7 @@ source_ids.each do |sid|
   druids.each do |druid|
     puts "Updating #{druid}."
 		begin
-			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'content-metadata', 'waiting'
+		#	Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'content-metadata', 'waiting'
 			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'publish', 'waiting'
 			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
 	  rescue
