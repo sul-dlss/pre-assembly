@@ -6,7 +6,9 @@
 :apo_druid_id:         'druid:qv648vd4392'
 :collection_druid_id:  'druid:nt028fd5773'
 :set_druid_id:         'druid:XXXXXXXXXXX'
-
+:publish:              'no'
+:shelve:               'no'
+:preserve:             'yes'                        
 :cleanup:              true
 :limit_n:              10
 :show_progress:        true

@@ -31,5 +31,5 @@ Pre-assembly (automated):
         - Generate descMetadata.xml.
         - Initialize the object's assemblyWF in DOR (a REST call).
 
-        - Later: get descriptive metadata from other souces, such as mdtoolkit
-          and symphony.
+        - Later: get descriptive metadata from other sources, such as mdtoolkit
+          and symphony.   This should happen during common accessioning and is done by existing robots.
