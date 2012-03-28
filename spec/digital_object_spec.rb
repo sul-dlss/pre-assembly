@@ -6,11 +6,13 @@ describe PreAssembly::DigitalObject do
       :source_id    => 'SourceIDFoo',
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
+      :publish      => 'no',
+      :shelve       => 'no',
+      :preserve     => 'yes'      
     }
     @dobj          = PreAssembly::DigitalObject.new @ps
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
-    @publish_attr  = Dor::Config.pre_assembly.publish_attr
     @provider_attr = {:sourceid=>'foo-1',:label=>'this is a label',:year=>'2012',:description=>'this is a description',:format=>'film',:foo => '123', :bar => '456'}
     @tmp_dir_args  = [nil, 'tmp']
   end
@@ -171,9 +173,6 @@ describe PreAssembly::DigitalObject do
             <topic>Automobile</topic>
             <topic>History</topic>
           </subject>
-          <location>
-            <physicalLocation type="repository">Department of Special Collections, Stanford University Libraries</physicalLocation>
-          </location>
           <relatedItem type="host">
             <titleInfo>
               <title>The Collier Collection of the Revs Institute for Automotive Research</title>

@@ -19,6 +19,9 @@ module PreAssembly
       :limit_n,
       :show_progress,
       :exp_checksums,
+      :publish,
+      :shelve,
+      :preserve,
       :digital_objects,
       :stager,
       :required_files
@@ -32,6 +35,9 @@ module PreAssembly
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
+      @publish             = params[:publish] || conf.publish
+      @shelve              = params[:shelve]  || conf.shelve
+      @preserve            = params[:preserve] || conf.preserve
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
@@ -106,6 +112,9 @@ module PreAssembly
           :project_name        => @project_name,
           :apo_druid_id        => @apo_druid_id,
           :collection_druid_id => @collection_druid_id,
+          :publish             => @publish,
+          :shelve              => @shelve,
+          :preserve            => @preserve,
           :source_id           => r.sourceid,
           :label               => r.label,
         }

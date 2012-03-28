@@ -15,7 +15,7 @@ module PreAssembly
       :images,
       :content_metadata_xml,
       :content_md_file_name,
-      :public_attr,
+      :publish_attr,
       :desc_metadata_xml,
       :desc_md_file_name,
       :workflow_metadata_xml,
@@ -50,7 +50,7 @@ module PreAssembly
       @desc_metadata_xml     = ''
       @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml = ''
-      @publish_attr          = Dor::Config.pre_assembly.publish_attr
+      @publish_attr          = {:preserve=>params[:preserve],:shelve=>params[:shelve],:publish=>params[:publish]}
       @registration_info     = nil
       @druid_tree_dir        = ''
     end
@@ -208,7 +208,6 @@ module PreAssembly
             xml.topic "Automobile"
             xml.topic "History"
           }
-          xml.location {xml.physicalLocation "Department of Special Collections, Stanford University Libraries", :type=>"repository"}
           xml.relatedItem(:type=>"host") {
             xml.titleInfo {
               xml.title "The Collier Collection of the Revs Institute for Automotive Research"
@@ -216,7 +215,7 @@ module PreAssembly
            xml.typeOfResource :collection=>"yes"
           }
           # TODO we are just taking the attributes from the first image for this object -- this is fairly arbitrary and works only if there is a single
-          #  image per object -- with multiple images per object, the MODs would probably be different anyway
+          #  image per object -- but...with multiple images per object, the MODs would probably be different and more complicated anyway
           @images.first.provider_attr.each { |k,v| 
             case k.to_s.downcase
               when 'label'

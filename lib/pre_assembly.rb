@@ -5,11 +5,13 @@ Dor::Config.configure do
     # Default file names.
     cm_file_name        'contentMetadata.xml'
     dm_file_name        'descMetadata.xml'
-    manifest_file_name  'manifest.cvs'
+    manifest_file_name  'manifest.csv'
     checksums_file_name 'checksums.txt'
 
-    # Default preserve-shelve-publish attribritutes for tifs.
-    publish_attr Hash[:preserve => 'yes', :shelve => 'no', :publish => 'no']
+    # Default preserve-shelve-publish attribritutes for tifs, can be overridden in config file
+    preserve  'yes'
+    shelve    'no'
+    publish   'no'
 
     # The assembly workflow parameters.
     assembly_wf  'assemblyWF'
