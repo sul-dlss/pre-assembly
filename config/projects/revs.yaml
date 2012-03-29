@@ -8,7 +8,7 @@
 
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
-:project_name:         'REVS'
+:project_name:         'Revs'
 :apo_druid_id:         'druid:qv648vd4392'
 :set_druid_id:         'druid:nt028fd5773'
 
