@@ -7,7 +7,7 @@ module PreAssembly
     attr_accessor(
       :project_name,
       :apo_druid_id,
-      :collection_druid_id,
+      :set_druid_id,
       :label,
       :source_id,
       :druid,
@@ -39,7 +39,7 @@ module PreAssembly
     def initialize(params = {})
       @project_name          = params[:project_name]
       @apo_druid_id          = params[:apo_druid_id]
-      @collection_druid_id   = params[:collection_druid_id]
+      @set_druid_id          = params[:set_druid_id]
       @label                 = params[:label]
       @source_id             = { params[:project_name] => params[:source_id] }
       @druid                 = nil

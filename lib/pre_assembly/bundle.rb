@@ -13,7 +13,6 @@ module PreAssembly
       :project_name,
       :apo_druid_id,
       :set_druid_id,
-      :collection_druid_id,
       :staging_dir,
       :cleanup,
       :limit_n,
@@ -39,7 +38,6 @@ module PreAssembly
       @publish             = params[:publish]  || conf.publish
       @shelve              = params[:shelve]   || conf.shelve
       @preserve            = params[:preserve] || conf.preserve
-      @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
       @limit_n             = params[:limit_n]
@@ -116,14 +114,14 @@ module PreAssembly
       parse_manifest.each do |r|
         # Create digital object.
         dobj_params = {
-          :project_name        => @project_name,
-          :apo_druid_id        => @apo_druid_id,
-          :collection_druid_id => @collection_druid_id,
-          :publish             => @publish,
-          :shelve              => @shelve,
-          :preserve            => @preserve,
-          :source_id           => r.sourceid + source_id_suffix,
-          :label               => r.label,
+          :project_name => @project_name,
+          :apo_druid_id => @apo_druid_id,
+          :set_druid_id => @set_druid_id,
+          :publish      => @publish,
+          :shelve       => @shelve,
+          :preserve     => @preserve,
+          :source_id    => r.sourceid + source_id_suffix,
+          :label        => r.label,
         }
         dobj = DigitalObject::new dobj_params
 
