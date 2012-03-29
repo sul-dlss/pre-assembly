@@ -103,4 +103,17 @@ describe PreAssembly::Bundle do
 
   end
 
+  describe "source_id_suffix()" do
+    
+    it "should be empty by default" do
+      @b.source_id_suffix.should == ''
+    end
+
+    it "should look like an integer if uniqify_source_ids is true" do
+      @b.uniqify_source_ids = true
+      @b.source_id_suffix.should =~ /^_\d+$/
+    end
+
+  end
+
 end
