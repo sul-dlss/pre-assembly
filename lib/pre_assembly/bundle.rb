@@ -17,6 +17,7 @@ module PreAssembly
       :staging_dir,
       :cleanup,
       :limit_n,
+      :uniqify_source_ids,
       :show_progress,
       :exp_checksums,
       :publish,
@@ -35,13 +36,14 @@ module PreAssembly
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
-      @publish             = params[:publish] || conf.publish
-      @shelve              = params[:shelve]  || conf.shelve
+      @publish             = params[:publish]  || conf.publish
+      @shelve              = params[:shelve]   || conf.shelve
       @preserve            = params[:preserve] || conf.preserve
       @collection_druid_id = params[:collection_druid_id]
       @staging_dir         = params[:staging_dir]
       @cleanup             = params[:cleanup]
       @limit_n             = params[:limit_n]
+      @uniqify_source_ids  = params[:uniqify_source_ids]
       @show_progress       = params[:show_progress]
       setup
     end
@@ -103,6 +105,11 @@ module PreAssembly
       IO.read @checksums_file
     end
 
+    def source_id_suffix
+      # Used during development to append a timestamp to source IDs.
+      @uniqify_source_ids ? '_' + Time.now.strftime('%s') : ''
+    end
+
     def load_manifest
       # Read manifest and initialize digital objects.
       log "load_manifest()"
@@ -115,7 +122,7 @@ module PreAssembly
           :publish             => @publish,
           :shelve              => @shelve,
           :preserve            => @preserve,
-          :source_id           => r.sourceid,
+          :source_id           => r.sourceid + source_id_suffix,
           :label               => r.label,
         }
         dobj = DigitalObject::new dobj_params
