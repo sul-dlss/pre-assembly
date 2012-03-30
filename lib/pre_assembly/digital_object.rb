@@ -19,7 +19,7 @@ module PreAssembly
       :desc_metadata_xml,
       :desc_md_file_name,
       :workflow_metadata_xml,
-      :registration_info,
+      :dor_object,
       :druid_tree_dir
     )
 
@@ -51,7 +51,7 @@ module PreAssembly
       @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml = ''
       @publish_attr          = {:preserve=>params[:preserve],:shelve=>params[:shelve],:publish=>params[:publish]}
-      @registration_info     = nil
+      @dor_object            = nil
       @druid_tree_dir        = ''
     end
 
@@ -122,7 +122,7 @@ module PreAssembly
 
     def register
       log "    - register(#{@pid})"
-      @registration_info = register_in_dor(registration_params)
+      @dor_object = register_in_dor(registration_params)
     end
 
     def registration_params
@@ -146,7 +146,7 @@ module PreAssembly
 
       # Delete object from Dor.
       delete_from_dor @pid
-      @registration_info = nil
+      @dor_object = nil
     end
 
 

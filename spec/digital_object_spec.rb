@@ -70,18 +70,18 @@ describe PreAssembly::DigitalObject do
     end
 
     it "can exercise register()" do
-      @dobj.registration_info.should == nil
+      @dobj.dor_object.should == nil
       @dobj.stub(:register_in_dor).and_return(1234)
       @dobj.register
-      @dobj.registration_info.should == 1234
+      @dobj.dor_object.should == 1234
     end
 
     it "can exercise unregister(), with external calls stubbed" do
-      @dobj.registration_info = 1234
+      @dobj.dor_object = 1234
       @dobj.stub :delete_from_dor
       @dobj.stub :set_workflow_step_to_error
       @dobj.unregister
-      @dobj.registration_info.should == nil
+      @dobj.dor_object.should == nil
     end
 
   end
