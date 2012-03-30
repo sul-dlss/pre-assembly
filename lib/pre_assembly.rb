@@ -34,4 +34,4 @@ require 'pre_assembly/image'
 require 'pre_assembly/version'
 
 require 'fileutils'
-
+require 'assembly-image'

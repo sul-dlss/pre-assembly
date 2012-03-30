@@ -103,6 +103,21 @@ describe PreAssembly::Bundle do
 
   end
 
+  describe "validate_images()" do
+
+    it "should not raise errors with valid tif files" do
+      @b.load_manifest
+      lambda { @b.validate_images }.should_not raise_error
+    end
+
+    it "should raise error if an invalid tif file is present" do
+      @b.load_manifest
+      @b.digital_objects[0].images[0].full_path = @b.manifest
+      lambda { @b.validate_images }.should raise_error
+    end
+
+  end
+
   describe "source_id_suffix()" do
     
     it "should be empty by default" do
