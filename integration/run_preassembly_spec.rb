@@ -18,7 +18,7 @@ describe "Pre-assembly integration" do
       :checksums_file      => 'checksums.txt',
       :project_name        => 'REVS',
       :apo_druid_id        => 'druid:qv648vd4392',
-      :set_druid_id        => 'druid:nt028fd5773',
+      :set_druid_id        => 'druid:yt502zj0924',
       :staging_dir         => @temp_dir,
       :cleanup             => true,
       :uniqify_source_ids  => true
