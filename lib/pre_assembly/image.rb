@@ -13,6 +13,11 @@ module PreAssembly
       @exp_md5       = params[:exp_md5]
     end
 
+    def valid?
+      ai = Assembly::Image.new @full_path
+      return ai.valid?
+    end
+
   end
 
 end

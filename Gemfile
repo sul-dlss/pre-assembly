@@ -5,6 +5,7 @@ gem 'nokogiri'
 gem 'csv-mapper'
 gem 'dor-services', '>=3.3.2'
 gem 'lyber-core'
+gem "assembly-image"
 
 group :test do
   gem 'equivalent-xml'

@@ -61,6 +61,7 @@ module PreAssembly
       check_for_required_files
       load_exp_checksums
       load_manifest
+      validate_images
       process_digital_objects
       delete_digital_objects if @cleanup
     end
@@ -142,6 +143,16 @@ module PreAssembly
 
     def parse_manifest
       return import(@manifest) { read_attributes_from_file }
+    end
+
+    def validate_images
+      @digital_objects.each do |dobj|
+        dobj.images.each do |img|
+          next if img.valid?
+          msg = "Image validation failed: #{img.full_path} #{dobj.source_id.inspect}"
+          raise msg
+        end
+      end
     end
 
     def process_digital_objects
