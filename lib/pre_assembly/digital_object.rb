@@ -68,6 +68,7 @@ module PreAssembly
       log "  - assemble(#{@source_id})"
       claim_druid
       register
+      add_dor_object_to_set
       stage_images stager, staging_dir
       generate_content_metadata
       generate_desc_metadata
@@ -87,6 +88,11 @@ module PreAssembly
 
     def register_in_dor(params)      
       Dor::RegistrationService.register_object params
+    end
+
+    def add_dor_object_to_set
+      @dor_object.add_relationship *add_relationship_params
+      @dor_object.save
     end
 
     def delete_from_dor(pid)
@@ -134,6 +140,10 @@ module PreAssembly
         :label        => @label,
         :tags         => ["Project : #{@project_name}"],
       }
+    end
+
+    def add_relationship_params
+      [:is_member_of, "info:fedora/druid:#{@set_druid_id}"]
     end
 
     def unregister
