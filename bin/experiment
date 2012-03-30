@@ -1,0 +1,21 @@
+#! /usr/bin/env ruby
+
+require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
+
+
+params = {
+  :object_type  => 'item',
+  :admin_policy => 'druid:qv648vd4392',
+  :label        => 'blah', 
+  :source_id    => { 'Revs' => 'foo_' + Time.now.strftime('%s') },
+  :tags         => ["Project : Revs"],
+}
+
+dobj = Dor::RegistrationService.register_object params
+
+ret_val = dobj.add_relationship :is_member_of, "info:fedora/druid:zb871zd0767"
+
+p dobj
+p ret_val
+dobj.save
+puts dobj.datastreams['RELS-EXT'].content
