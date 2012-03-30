@@ -3,6 +3,7 @@ describe PreAssembly::DigitalObject do
   before(:each) do
     @ps = {
       :apo_druid_id => 'qq333xx4444',
+      :set_druid_id => 'mm111nn2222',
       :source_id    => 'SourceIDFoo',
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
@@ -67,6 +68,12 @@ describe PreAssembly::DigitalObject do
       rps[:source_id].should be_kind_of Hash
       rps[:tags].should      be_kind_of Array
       rps[:label].should == "LabelQuux"
+    end
+
+    it "can generate add_relationship parameters" do
+      @dobj.druid = @druid
+      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"] 
+      arps = @dobj.add_relationship_params.should == exp
     end
 
     it "can exercise register()" do
