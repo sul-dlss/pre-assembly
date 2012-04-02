@@ -33,3 +33,46 @@ Pre-assembly (automated):
 
         - Later: get descriptive metadata from other sources, such as mdtoolkit
           and symphony.   This should happen during common accessioning and is done by existing robots.
+
+
+Refactoring:
+
+    - Required parameters is less strict:
+        - checksums optional
+        - manifest optional
+        
+        - modify bin/pre-assemble
+        - modify check_for_required_files
+
+    - Generate if not provided:
+        - checksums
+        - manifest
+
+    - Steps
+
+
+        Rev  Rum  Gou
+        .              claim_druid
+             .    .    get_druid    # From subdir or barcode.
+        .              register
+        .              add_dor_object_to_set
+        .    .    .    stage_images stager, staging_dir
+        .    .    .    generate_content_metadata
+        .              generate_desc_metadata
+        .    .    .    write_content_metadata
+        .              write_desc_metadata
+        .    .    .    initialize_assembly_workflow
+
+
+Gould:
+
+    - See /thumpers/dpgthumper2-se1/Gould
+    - Each dir is a barcode.
+    - The source images are jpg.
+    - The desc metadata is in symphony.
+    - Can get druid using query_by_id(BARCODE) [see dor-services-gem].
+    - Content metadata: ask Gary about AP.
+    
+    - Misc files at root: probably ignore.
+    - Some jpg are in 00 subdir, some are not (36105115575867).
+    - Some subdirs have misc files (.zip or .md5). Ignore?

@@ -72,7 +72,7 @@ module PreAssembly
         :staging_dir => @staging_dir,
         :environment =>  ENV['ROBOT_ENVIRONMENT'],
       }
-      log_msg = log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
+      log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
     end
 
     def full_path_in_bundle_dir(file)
@@ -106,7 +106,7 @@ module PreAssembly
 
     def source_id_suffix
       # Used during development to append a timestamp to source IDs.
-      @uniqify_source_ids ? '_' + Time.now.strftime('%s') : ''
+      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
     end
 
     def load_manifest
