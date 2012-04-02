@@ -63,6 +63,10 @@ Refactoring:
         .              write_desc_metadata
         .    .    .    initialize_assembly_workflow
 
+    - Store workflow in APO, and modify pre-assembly code accordingly.
+        - no need to generate XML here.
+        - can remove assembly steps from configuration.
+        - just make service call to begin assembly.
 
 Gould:
 

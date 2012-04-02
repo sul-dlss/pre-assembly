@@ -8,7 +8,8 @@ Dor::Config.configure do
     manifest_file_name  'manifest.csv'
     checksums_file_name 'checksums.txt'
 
-    # Default preserve-shelve-publish attribritutes for tifs, can be overridden in config file
+    # Default preserve-shelve-publish attribritutes for tifs.
+    # Can be overridden in project-specific YAML file.
     preserve  'yes'
     shelve    'no'
     publish   'no'
