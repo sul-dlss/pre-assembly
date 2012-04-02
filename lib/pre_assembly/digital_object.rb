@@ -15,12 +15,12 @@ module PreAssembly
       :images,
       :content_metadata_xml,
       :content_md_file_name,
-      :publish_attr,
       :desc_metadata_xml,
       :desc_md_file_name,
       :workflow_metadata_xml,
       :dor_object,
-      :druid_tree_dir
+      :druid_tree_dir,
+      :publish_attr
     )
 
     MODS_XML_ATTR = {
@@ -50,9 +50,13 @@ module PreAssembly
       @desc_metadata_xml     = ''
       @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml = ''
-      @publish_attr          = {:preserve=>params[:preserve],:shelve=>params[:shelve],:publish=>params[:publish]}
       @dor_object            = nil
       @druid_tree_dir        = ''
+      @publish_attr          = {
+        :preserve => params[:preserve],
+        :shelve   => params[:shelve],
+        :publish  => params[:publish],
+      }
     end
 
     def add_image(params)
