@@ -73,8 +73,8 @@ module PreAssembly
       generate_content_metadata
       generate_desc_metadata
       write_content_metadata
-      initialize_assembly_workflow
       write_desc_metadata
+      initialize_assembly_workflow
     end
 
 
@@ -203,29 +203,28 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
+
     ####
     # Descriptive metadata.
     ####
 
-    # this is customized per project
     def generate_desc_metadata
+      # TODO: generate_desc_metadata(): method is current REVS-specific.
       log "    - generate_desc_metadata()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.mods(MODS_XML_ATTR) {
           xml.typeOfResource "still image"
-          xml.genre "digital image", :authority=>"att"
-          xml.subject(:authority=>"lcsh") {
+          xml.genre "digital image", :authority => "att"
+          xml.subject(:authority => "lcsh") {
             xml.topic "Automobile"
             xml.topic "History"
           }
-          xml.relatedItem(:type=>"host") {
+          xml.relatedItem(:type => "host") {
             xml.titleInfo {
               xml.title "The Collier Collection of the Revs Institute for Automotive Research"
             }
-           xml.typeOfResource :collection=>"yes"
+           xml.typeOfResource :collection => "yes"
           }
-          # TODO we are just taking the attributes from the first image for this object -- this is fairly arbitrary and works only if there is a single
-          #  image per object -- but...with multiple images per object, the MODs would probably be different and more complicated anyway
           @images.first.provider_attr.each { |k,v| 
             case k.to_s.downcase
               when 'label'
@@ -233,16 +232,17 @@ module PreAssembly
               when 'year'
                 xml.originInfo {xml.dateCreated v}
               when 'format'
-                xml.relatedItem(:type=>"original") {xml.physicalDescription {xml.form v,:authority=>"att"}}
+                xml.relatedItem(:type => "original") {
+                  xml.physicalDescription {xml.form v, :authority => "att"}
+                }
               when 'sourceid'
-                xml.identifier v, :type=>"local", :displayLabel=>"Revs ID"
+                xml.identifier v, :type => "local", :displayLabel => "Revs ID"
               when 'description'
                 xml.note v
               else
                 xml.note(v, :type => "source note", :ID => k) unless v.blank?
             end
           }
-            
         }
       }
       @desc_metadata_xml = builder.to_xml
