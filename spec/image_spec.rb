@@ -17,7 +17,7 @@ describe PreAssembly::Image do
 
   end
 
-  describe "#valid?" do
+  describe "valid?()" do
 
     it "should return true with a valid tif" do
       @ai.valid?.should == true
