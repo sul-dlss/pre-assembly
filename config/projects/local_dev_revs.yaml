@@ -1,13 +1,9 @@
-
-:bundle_dir:           'spec/test_data/bundle_input'
+:bundle_dir:           'spec/test_data/bundle_input_a'
 :staging_dir:          'tmp'
-
-
-
-
 
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
+
 :project_name:         'Revs'
 :apo_druid_id:         'druid:qv648vd4392'
 :set_druid_id:         'druid:yt502zj0924'
@@ -18,5 +14,5 @@
 
 :cleanup:              true
 :limit_n:              10
-:uniquify_source_ids:  true
-:show_progress:        true
+:uniqify_source_ids:   true
+:show_progress:        false
