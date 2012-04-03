@@ -3,7 +3,7 @@ describe PreAssembly::Image do
   before( :each ) do
     @ai = PreAssembly::Image.new(
       :file_name     => 'image1.tif',
-      :full_path     => 'spec/test_data/bundle_input/image1.tif',
+      :full_path     => 'spec/test_data/bundle_input_a/image1.tif',
       :provider_attr => {},
       :exp_md5       => '4e3cd24dd79f3ec91622d9f8e5ab5afa'
     )
@@ -24,7 +24,7 @@ describe PreAssembly::Image do
     end
 
     it "should return false with an invalid tif" do
-      @ai.full_path =  'spec/test_data/bundle_input/manifest.csv'
+      @ai.full_path =  'spec/test_data/bundle_input_a/manifest.csv'
       @ai.valid?.should == false
     end
 

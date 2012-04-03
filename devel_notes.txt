@@ -1,5 +1,3 @@
-# TODO: input-profile sanity checks.
-
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
 # TODO: Modify revs.yaml when we start using for real.

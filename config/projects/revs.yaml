@@ -1,13 +1,9 @@
-# For temporary use on sul-lyberservices-dev.
 :bundle_dir:           '/home/lyberadmin/pre-assembly/revs_test_run/input'
 :staging_dir:          '/home/lyberadmin/pre-assembly/revs_test_run/output'
 
-# Old tempoary values on lyberservices-dev.
-# :bundle_dir:           '/thumpers/dpgthumper-staging/Revs/source/2012_02_22'
-# :staging_dir:          '/dor/assembly_test'
-
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
+
 :project_name:         'Revs'
 :apo_druid_id:         'druid:qv648vd4392'
 :set_druid_id:         'druid:yt502zj0924'
@@ -18,5 +14,5 @@
 
 :cleanup:              false
 :limit_n:              10
-:uniquify_source_ids:  false
+:uniqify_source_ids:   false
 :show_progress:        true
