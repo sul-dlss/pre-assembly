@@ -18,6 +18,7 @@ module PreAssembly
       :limit_n,
       :uniqify_source_ids,
       :show_progress,
+      :steps,
       :exp_checksums,
       :publish,
       :shelve,
@@ -28,21 +29,22 @@ module PreAssembly
     )
 
     def initialize(params = {})
-      conf                 = Dor::Config.pre_assembly
-      @bundle_dir          = params[:bundle_dir]     || ''
-      @manifest            = params[:manifest]       || conf.manifest_file_name
-      @checksums_file      = params[:checksums_file] || conf.checksums_file_name
-      @project_name        = params[:project_name]
-      @apo_druid_id        = params[:apo_druid_id]
-      @set_druid_id        = params[:set_druid_id]
-      @publish             = params[:publish]  || conf.publish
-      @shelve              = params[:shelve]   || conf.shelve
-      @preserve            = params[:preserve] || conf.preserve
-      @staging_dir         = params[:staging_dir]
-      @cleanup             = params[:cleanup]
-      @limit_n             = params[:limit_n]
-      @uniqify_source_ids  = params[:uniqify_source_ids]
-      @show_progress       = params[:show_progress]
+      conf                = Dor::Config.pre_assembly
+      @bundle_dir         = params[:bundle_dir]     || ''
+      @manifest           = params[:manifest]       || conf.manifest_file_name
+      @checksums_file     = params[:checksums_file] || conf.checksums_file_name
+      @project_name       = params[:project_name]
+      @apo_druid_id       = params[:apo_druid_id]
+      @set_druid_id       = params[:set_druid_id]
+      @publish            = params[:publish]  || conf.publish
+      @shelve             = params[:shelve]   || conf.shelve
+      @preserve           = params[:preserve] || conf.preserve
+      @staging_dir        = params[:staging_dir]
+      @cleanup            = params[:cleanup]
+      @limit_n            = params[:limit_n]
+      @uniqify_source_ids = params[:uniqify_source_ids]
+      @show_progress      = params[:show_progress]
+      @steps              = params[:pre_assembly_steps]
       setup
     end
 
