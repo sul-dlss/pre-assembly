@@ -69,6 +69,7 @@ module PreAssembly
       else
         # TODO: run_pre_assembly: add missing Rumsey steps.
         check_for_required_files
+        # Do not call delete_digital_objects().
       end
     end
 
@@ -159,6 +160,7 @@ module PreAssembly
     end
 
     def validate_images
+      log "validate_images()"
       @digital_objects.each do |dobj|
         dobj.images.each do |img|
           next if img.valid?
