@@ -2,6 +2,7 @@ describe PreAssembly::Bundle do
 
   before(:each) do
     @ps = {
+      :project_style   => 'revs',
       :bundle_dir      => 'spec/test_data/bundle_input_a',
       :manifest        => 'manifest.csv',
       :checksums_file  => 'checksums.txt',
@@ -29,6 +30,14 @@ describe PreAssembly::Bundle do
 
 
   describe "check_for_required_files()" do
+
+    it "required_files() returns array with expected N of items based on project_style" do
+      exp = { :revs => 3, :rumsey => 1 }
+      exp.each do |style, n| 
+        @b.project_style = style
+        @b.required_files.should have(n).items
+      end
+    end
 
     it "does not raise exception when required files exist" do
       return_vals = @b.required_files.map { true }

@@ -17,12 +17,14 @@
 :uniqify_source_ids:   true
 :show_progress:        false
 
-:pre_assembly_steps:
-  :generate_manifest:            false
-  :generate_provider_checksums:  false
-  :acquire_druid_using:          registration
-  :add_dor_object_to_set:        true
-  :stage_files:                  true
-  :create_content_metadata:      true
-  :create_desc_metadata:         true
-  :initialize_assembly_workflow: true
+:project_style:        revs
+
+# :pre_assembly_steps:
+#   :generate_manifest:            false
+#   :generate_provider_checksums:  false
+#   :acquire_druid_using:          registration
+#   :add_dor_object_to_set:        true
+#   :stage_files:                  true
+#   :create_content_metadata:      true
+#   :create_desc_metadata:         true
+#   :initialize_assembly_workflow: true

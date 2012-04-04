@@ -18,14 +18,13 @@ module PreAssembly
       :limit_n,
       :uniqify_source_ids,
       :show_progress,
-      :steps,
+      :project_style,
       :exp_checksums,
       :publish,
       :shelve,
       :preserve,
       :digital_objects,
-      :stager,
-      :required_files
+      :stager
     )
 
     def initialize(params = {})
@@ -44,7 +43,7 @@ module PreAssembly
       @limit_n            = params[:limit_n]
       @uniqify_source_ids = params[:uniqify_source_ids]
       @show_progress      = params[:show_progress]
-      @steps              = params[:pre_assembly_steps]
+      @project_style      = params[:project_style] || :NONE
       setup
     end
 
@@ -54,25 +53,31 @@ module PreAssembly
       @exp_checksums   = {}
       @digital_objects = []
       @stager          = lambda { |f,d| FileUtils.copy f, d }
-      @required_files  = [@manifest, @checksums_file, @staging_dir]
+      @project_style   = @project_style.to_sym
     end
 
     def run_pre_assembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      check_for_required_files
-      load_exp_checksums
-      load_manifest
-      validate_images
-      process_digital_objects
-      delete_digital_objects if @cleanup
+      if @project_style == :revs
+        check_for_required_files
+        load_exp_checksums
+        load_manifest
+        validate_images
+        process_digital_objects
+        delete_digital_objects if @cleanup
+      else
+        # TODO: run_pre_assembly: add missing Rumsey steps.
+        check_for_required_files
+      end
     end
 
     def run_log_msg
       log_params = {
-        :bundle_dir  => @bundle_dir,
-        :staging_dir => @staging_dir,
-        :environment =>  ENV['ROBOT_ENVIRONMENT'],
+        :project_style => @project_style,
+        :bundle_dir    => @bundle_dir,
+        :staging_dir   => @staging_dir,
+        :environment   => ENV['ROBOT_ENVIRONMENT'],
       }
       log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
     end
@@ -83,10 +88,16 @@ module PreAssembly
 
     def check_for_required_files
       log "check_for_required_files()"
-      @required_files.each do |f|
+      required_files.each do |f|
         next if file_exists f
         raise IOError, "Required file or directory not found: #{f}\n"
       end
+    end
+
+    def required_files
+      rfs = [@staging_dir]
+      rfs.push(@manifest, @checksums_file) if @project_style == :revs
+      rfs
     end
 
     def file_exists(file)
