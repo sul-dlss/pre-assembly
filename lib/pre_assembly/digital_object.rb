@@ -63,14 +63,19 @@ module PreAssembly
 
     def assemble(stager, staging_dir)
       log "  - assemble(#{@source_id})"
+
       claim_druid
       register
       add_dor_object_to_set
+
       stage_images stager, staging_dir
+
       generate_content_metadata
-      generate_desc_metadata
       write_content_metadata
+
+      generate_desc_metadata
       write_desc_metadata
+
       initialize_assembly_workflow
     end
 
