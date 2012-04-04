@@ -1,9 +1,8 @@
-:bundle_dir:           spec/test_data/bundle_input_a
+:bundle_dir:           spec/test_data/bundle_input_b
 :staging_dir:          tmp
 
 :manifest:             manifest.csv
 :checksums_file:       checksums.txt
-:descriptive_metadata_template: mods_template.xml
 
 :project_name:         Revs
 :apo_druid_id:         druid:qv648vd4392
@@ -13,14 +12,12 @@
 :shelve:               no
 :preserve:             yes
 
-:cleanup:              true
+:cleanup:              false
 :limit_n:              10
 :uniqify_source_ids:   true
-:show_progress:        true
+:show_progress:        false
 
-
-
-:project_style:        revs
+:project_style:        rumsey
 
 # :pre_assembly_steps:
 #   :generate_manifest:            false
