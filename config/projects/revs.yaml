@@ -3,7 +3,7 @@
 
 :manifest:             'manifest.csv'
 :checksums_file:       'checksums.txt'
-:descriptive_metadata_template: '/mods_template.xml'
+:descriptive_metadata_template: 'mods_template.xml'
 
 :project_name:         'Revs'
 :apo_druid_id:         'druid:qv648vd4392'
@@ -17,3 +17,5 @@
 :limit_n:              10
 :uniqify_source_ids:   false
 :show_progress:        true
+
+:project_style:        revs
