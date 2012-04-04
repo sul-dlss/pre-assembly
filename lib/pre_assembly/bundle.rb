@@ -68,8 +68,26 @@ module PreAssembly
         delete_digital_objects if @cleanup
       else
         # TODO: run_pre_assembly: add missing Rumsey steps.
-        check_for_required_files
+
+        discover_images
+
+        # check_for_required_files
         # Do not call delete_digital_objects().
+      end
+    end
+
+    def discover_images
+      druid_subdirs = Dir["#{@bundle_dir}/*"].select { |d| File.directory? d }
+      druid_subdirs.each do |subdir|
+        druid = File.basename subdir
+        files = Dir.new(subdir).entries.reject { |e| e == '.' or e == '..'  }
+        raise "Unexpected files in druid subdirectory: #{subdir}" unless files.size == 2
+        p files
+
+        image     = File.basename Dir["#{subdir}/*.tif"].first
+        image     = "#{druid}/#{image}"
+        desc_meta = "#{druid}/descMetadata.xml"
+        p [druid, image, desc_meta]
       end
     end
 
