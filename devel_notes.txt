@@ -51,8 +51,26 @@ Refactoring:
         - checksums
         - manifest
 
-    - Steps
+        - But where should they be generated?
+            - In bundle dir?
+            - With optional cleanup step?
 
+    - parse_manifest() needs to return rows of info
+        - sourceid
+        - label
+        - filename
+
+    - different behavior wrt registration
+
+    - stage_images() needs renaming and refactoring
+        revs:   copy 1 image file to druid tree
+        rumsey: copy subdir contents to druid tree
+
+    - content_metadata: seems ok
+
+    - desc_metadata: just skip for Rumsey
+
+    - Steps
 
         Rev  Rum  Gou
 
