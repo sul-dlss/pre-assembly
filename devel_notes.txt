@@ -32,6 +32,11 @@ Pre-assembly (automated):
         - Later: get descriptive metadata from other sources, such as mdtoolkit
           and symphony.   This should happen during common accessioning and is done by existing robots.
 
+Projects to use as examples:
+
+    - SOHP
+    - Gould
+    - Rumsey [but waiting on specs from Lynn?]
 
 Refactoring:
 
