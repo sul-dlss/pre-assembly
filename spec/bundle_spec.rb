@@ -3,6 +3,7 @@ describe PreAssembly::Bundle do
   before(:each) do
     @ps = {
       :bundle_dir      => 'spec/test_data/bundle_input_a',
+      :descriptive_metadata_template      => 'mods_template.xml',
       :manifest        => 'manifest.csv',
       :checksums_file  => 'checksums.txt',
       :staging_dir     => 'tmp',

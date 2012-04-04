@@ -1,10 +1,42 @@
 describe PreAssembly::DigitalObject do
 
   before(:each) do
+    desc_metadata_xml_template=<<-END
+      <?xml version="1.0"?>
+      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+        <typeOfResource>still image</typeOfResource>
+        <genre authority="att">digital image</genre>
+        <subject authority="lcsh">
+          <topic>Automobile</topic>
+          <topic>History</topic>
+        </subject>
+        <relatedItem type="host">
+          <titleInfo>
+            <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+          </titleInfo>
+          <typeOfResource collection="yes"/>
+        </relatedItem>
+        <relatedItem type="original">
+          <physicalDescription>
+            <form authority="att">[[format]]</form>
+          </physicalDescription>
+        </relatedItem>
+        <originInfo>
+          <dateCreated>[[year]]</dateCreated>
+        </originInfo>
+        <titleInfo>
+          <title>[[label]]</title>
+        </titleInfo>
+        <note>[[description]]</note>
+        <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+      </mods>
+      END
+
     @ps = {
       :apo_druid_id => 'qq333xx4444',
       :set_druid_id => 'mm111nn2222',
       :source_id    => 'SourceIDFoo',
+      :desc_metadata_xml_template =>desc_metadata_xml_template,
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
       :publish      => 'no',

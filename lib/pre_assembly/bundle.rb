@@ -9,6 +9,8 @@ module PreAssembly
     attr_accessor(
       :bundle_dir,
       :manifest,
+      :descriptive_metadata_template,
+      :desc_metadata_xml_template,
       :checksums_file,
       :project_name,
       :apo_druid_id,
@@ -32,6 +34,7 @@ module PreAssembly
       conf                = Dor::Config.pre_assembly
       @bundle_dir         = params[:bundle_dir]     || ''
       @manifest           = params[:manifest]       || conf.manifest_file_name
+      @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
       @checksums_file     = params[:checksums_file] || conf.checksums_file_name
       @project_name       = params[:project_name]
       @apo_druid_id       = params[:apo_druid_id]
@@ -51,6 +54,8 @@ module PreAssembly
     def setup
       @manifest        = full_path_in_bundle_dir @manifest
       @checksums_file  = full_path_in_bundle_dir @checksums_file
+      @descriptive_metadata_template  = full_path_in_bundle_dir @descriptive_metadata_template
+      @desc_metadata_xml_template=File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
       @exp_checksums   = {}
       @digital_objects = []
       @stager          = lambda { |f,d| FileUtils.copy f, d }
@@ -120,6 +125,7 @@ module PreAssembly
           :project_name => @project_name,
           :apo_druid_id => @apo_druid_id,
           :set_druid_id => @set_druid_id,
+          :desc_metadata_xml_template => @desc_metadata_xml_template,
           :publish      => @publish,
           :shelve       => @shelve,
           :preserve     => @preserve,
