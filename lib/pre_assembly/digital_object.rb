@@ -213,28 +213,18 @@ module PreAssembly
     def generate_desc_metadata
       log "    - generate_desc_metadata()"
 
-      # load desc metadata template
-      mods=Nokogiri::XML(@desc_metadata_xml_template)
+      # this is a helper variable that gives you the first row in the manifest for the digital image, so you can use it to create metadata in the template
+      manifest_row=@images.first.provider_attr
       
-      # using the first image in the digital object, iterate over all the columns in the manifest
-      @images.first.provider_attr.each do |k,v| 
-        # try and find placeholder tags for the manifest column in desc metadata template
-        nodes = mods.xpath("//*[text()='[[#{k.to_s}]]']")
-        if nodes.count > 0 
-          # if matches were found, replace them with the value from the manifest
-          nodes.each {|node| node.content=v}
-        elsif !v.blank?
-          # if no match was found, and we have a value for that column, add that column to the desc metadata template as a source note
-          mods_note = Nokogiri::XML::Node.new("note", mods)   
-          mods_note.content=v
-          mods_note['type']='source note'
-          mods_note['ID']=k.to_s
-          mods.root << mods_note          
-        end
-      end
+      # run the XML through ERB to do any parsing that the template requires
+      # and then return the result into nokogiri
+      template=ERB.new(@desc_metadata_xml_template)      
+      @desc_metadata_xml=template.result(binding)
       
-      @desc_metadata_xml = mods.to_xml
-
+      # now iterate over all the columns in the manifest
+      # and replace any placeholder tags for the manifest column in the metadata template
+      manifest_row.each {|k,v| @desc_metadata_xml.gsub!("[[#{k.to_s}]]",v.to_s) }
+      
     end
 
     def write_desc_metadata
