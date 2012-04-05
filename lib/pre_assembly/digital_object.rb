@@ -66,8 +66,8 @@ module PreAssembly
 
       claim_druid
       register
-      add_dor_object_to_set
 
+      add_dor_object_to_set
       stage_images stager, staging_dir
 
       generate_content_metadata
