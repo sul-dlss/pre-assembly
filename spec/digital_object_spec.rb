@@ -25,10 +25,13 @@ describe PreAssembly::DigitalObject do
           <dateCreated>[[year]]</dateCreated>
         </originInfo>
         <titleInfo>
-          <title>[[label]]</title>
+          <title>'[[label]]' is the label!</title>
         </titleInfo>
         <note>[[description]]</note>
+        <note>ERB Test: <%=manifest_row['description']%></note>
         <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+        <note type="source note" ID="foo">[[foo]]</note>
+        <note type="source note" ID="bar">[[bar]]</note>        
       </mods>
       END
 
@@ -46,7 +49,7 @@ describe PreAssembly::DigitalObject do
     @dobj          = PreAssembly::DigitalObject.new @ps
     @druid         = Druid.new 'druid:ab123cd4567'
     @druid_alt     = Druid.new 'druid:ee222vv4444'
-    @provider_attr = {:sourceid=>'foo-1',:label=>'this is a label',:year=>'2012',:description=>'this is a description',:format=>'film',:foo => '123', :bar => '456'}
+    @provider_attr = {'sourceid'=>'foo-1','label'=>'this is a label','year'=>'2012','description'=>'this is a description','format'=>'film','foo' => '123', 'bar' => '456'}
     @tmp_dir_args  = [nil, 'tmp']
   end
 
@@ -205,7 +208,8 @@ describe PreAssembly::DigitalObject do
       @dobj.generate_desc_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd" version="3.3">
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
           <typeOfResource>still image</typeOfResource>
           <genre authority="att">digital image</genre>
           <subject authority="lcsh">
@@ -218,22 +222,22 @@ describe PreAssembly::DigitalObject do
             </titleInfo>
             <typeOfResource collection="yes"/>
           </relatedItem>
-          <note type="source note" ID="i">1</note>
-          <note type="source note" ID="bar">456</note>
-          <note>this is a description</note>
-          <titleInfo>
-            <title>this is a label</title>
-          </titleInfo>
           <relatedItem type="original">
             <physicalDescription>
               <form authority="att">film</form>
             </physicalDescription>
           </relatedItem>
-          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
           <originInfo>
             <dateCreated>2012</dateCreated>
           </originInfo>
+          <titleInfo>
+            <title>'this is a label' is the label!</title>
+          </titleInfo>
+          <note>this is a description</note>
+          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+          <note>ERB Test: this is a description</note>          
           <note type="source note" ID="foo">123</note>
+          <note type="source note" ID="bar">456</note>
         </mods>
       END
       @exp_xml = noko_doc @exp_xml
