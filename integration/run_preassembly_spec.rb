@@ -18,6 +18,7 @@ describe "Pre-assembly integration" do
     @params = YAML.load_file "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_revs.yaml"
     @params.merge! custom_params
     @params[:staging_dir] = @temp_dir
+    @params[:show_progress] = false
     @b = PreAssembly::Bundle.new @params
   end
 

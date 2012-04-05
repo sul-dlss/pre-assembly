@@ -61,7 +61,7 @@ module PreAssembly
     # The main process.
     ####
 
-    def assemble(stager, staging_dir)
+    def pre_assemble(stager, staging_dir)
       log "  - assemble(#{@source_id})"
 
       claim_druid
