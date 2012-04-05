@@ -1,16 +1,20 @@
 ==Pre-assembly
 
-    This is a Ruby implementation of services needed to prepare objects to be
-    assembled and then accessioned in SULAIR digital library.
+This is a Ruby implementation of services needed to prepare objects to be
+assembled and then accessioned in SULAIR digital library.
+
 
 ==Running
 
-1. Create yaml file in config/projects
-2. Run ./bin/pre-assemble config/projects/NAME_OF_PROJECT.yaml
+1. Create project-configuration file in config/projects.
+
+2. Run bin/pre-assemble config/projects/NAME_OF_PROJECT.yaml
+
 
 ==Deployment
 
-See the capfile
+See the capfile.
+
 
 ==Setting up project for local development:
 
@@ -30,19 +34,18 @@ See the capfile
     bin/run_all_tests 
 
 
-==Running tests:
+==Running tests
 
-	For local testing, you need to run with ROBOT_ENVIRONMENT = local
-
-	e.g. add this to your bash profile:
+For local testing, it's easiest to put this in your bash profile:
 
 	export ROBOT_ENVIRONMENT="local"
 
+Running tests:
 
     # All tests.
     bin/run_all_tests
 
-    # Unit tests and integration tests separately
+    # Unit tests and integration tests separately.
     bundle exec rspec spec
     bundle exec rspec integration
 
