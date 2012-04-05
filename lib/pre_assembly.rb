@@ -7,6 +7,7 @@ Dor::Config.configure do
     dm_file_name        'descMetadata.xml'
     manifest_file_name  'manifest.csv'
     checksums_file_name 'checksums.txt'
+    descriptive_metadata_template 'mods_template.xml'
 
     # Default preserve-shelve-publish attribritutes for tifs.
     # Can be overridden in project-specific YAML file.

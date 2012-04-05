@@ -16,21 +16,13 @@ module PreAssembly
       :content_metadata_xml,
       :content_md_file_name,
       :desc_metadata_xml,
+      :desc_metadata_xml_template,
       :desc_md_file_name,
       :workflow_metadata_xml,
       :dor_object,
       :druid_tree_dir,
       :publish_attr
     )
-
-    MODS_XML_ATTR = {
-      'xmlns'              => "http://www.loc.gov/mods/v3",
-      'version'            => "3.3",
-      'xmlns:xsi'          => "http://www.w3.org/2001/XMLSchema-instance",
-      'xsi:schemaLocation' => "http://www.loc.gov/mods/v3 " +
-                              "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd",
-    }
-
 
     ####
     # Initialization.
@@ -48,6 +40,7 @@ module PreAssembly
       @content_metadata_xml  = ''
       @content_md_file_name  = Dor::Config.pre_assembly.cm_file_name
       @desc_metadata_xml     = ''
+      @desc_metadata_xml_template = params[:desc_metadata_xml_template]
       @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml = ''
       @dor_object            = nil
@@ -218,43 +211,30 @@ module PreAssembly
     ####
 
     def generate_desc_metadata
-      # TODO: generate_desc_metadata(): method is current REVS-specific.
       log "    - generate_desc_metadata()"
-      builder = Nokogiri::XML::Builder.new { |xml|
-        xml.mods(MODS_XML_ATTR) {
-          xml.typeOfResource "still image"
-          xml.genre "digital image", :authority => "att"
-          xml.subject(:authority => "lcsh") {
-            xml.topic "Automobile"
-            xml.topic "History"
-          }
-          xml.relatedItem(:type => "host") {
-            xml.titleInfo {
-              xml.title "The Collier Collection of the Revs Institute for Automotive Research"
-            }
-           xml.typeOfResource :collection => "yes"
-          }
-          @images.first.provider_attr.each { |k,v| 
-            case k.to_s.downcase
-              when 'label'
-                xml.titleInfo {xml.title v}
-              when 'year'
-                xml.originInfo {xml.dateCreated v}
-              when 'format'
-                xml.relatedItem(:type => "original") {
-                  xml.physicalDescription {xml.form v, :authority => "att"}
-                }
-              when 'sourceid'
-                xml.identifier v, :type => "local", :displayLabel => "Revs ID"
-              when 'description'
-                xml.note v
-              else
-                xml.note(v, :type => "source note", :ID => k) unless v.blank?
-            end
-          }
-        }
-      }
-      @desc_metadata_xml = builder.to_xml
+
+      # load desc metadata template
+      mods=Nokogiri::XML(@desc_metadata_xml_template)
+      
+      # using the first image in the digital object, iterate over all the columns in the manifest
+      @images.first.provider_attr.each do |k,v| 
+        # try and find placeholder tags for the manifest column in desc metadata template
+        nodes = mods.xpath("//*[text()='[[#{k.to_s}]]']")
+        if nodes.count > 0 
+          # if matches were found, replace them with the value from the manifest
+          nodes.each {|node| node.content=v}
+        elsif !v.blank?
+          # if no match was found, and we have a value for that column, add that column to the desc metadata template as a source note
+          mods_note = Nokogiri::XML::Node.new("note", mods)   
+          mods_note.content=v
+          mods_note['type']='source note'
+          mods_note['ID']=k.to_s
+          mods.root << mods_note          
+        end
+      end
+      
+      @desc_metadata_xml = mods.to_xml
+
     end
 
     def write_desc_metadata
