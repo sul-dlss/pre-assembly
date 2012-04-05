@@ -94,6 +94,68 @@ Refactoring:
         - can remove assembly steps from configuration.
         - just make service call to begin assembly.
 
+
+    revs
+
+        - one image per digital object
+        - flat structure in bundle dir
+        - checksums file
+        - manifest file with metadata
+
+    rumsey
+
+        - subdir for each digital object
+        - one image per object
+        - object also includes a descMetadata file
+        - no checksums or manifest
+        - objects are already registered
+        - subdir is the druid
+
+    gould
+
+        - subdir/00 for each digital object
+        - multiple images per object
+        - images are jpg, not tif
+        - objects are already registered
+        - subdir is a barcode, which can be used to obtain druid
+
+    AP
+        - subdir for each digital object
+        - within that subdir, several number subdirs: 00 01 02 03 05.
+        - different image types/purposes the numbered subdirs
+        - multiple images per object
+        - multiple types: tif, jp2, and 3 types of jpg
+        - objects are already registered
+        - main subdir is the druid
+
+    Hummel
+        - Same as AP, but fewer number subdirs: 00 05.
+
+    SOHP
+        - initially, lab will provide csv manifest
+        - later, lab will provide contentMetadata, which might need some transformation
+        - objects are already registered
+        - get druid from manifest/contentMetadata?
+        - contentMetadata contains multiple resource nodes of varying types
+          - audio resources
+            - there are three types of audio resource nodes: pm, sh, sl
+            - there can be multiple resource nodes of each type
+            - 3 file nodes per audio resource: audio file; techMeta xml file; md5 text file
+          - image resources
+            - multiple image resource nodes
+            - 2 file nodes per image resource: image file; md5 text file.
+          - text resources
+            - only 1 resource per object (at least in the example provided)
+            - 2 file nodes per image resource: pdf transcript file; md5 text file.
+
+    ReidDennis
+        - three parent dirs: tif, jpeg, jp2
+        - each parent dir contains multiple images, one image per object
+        - if we can ignore the jpeg and jp2 dirs, the project is structured like Revs
+        - has a manifest
+        - we could create a checksums.txt file
+        - manifest requires some more complex templating logic
+
 Gould:
 
     - See /thumpers/dpgthumper2-se1/Gould
