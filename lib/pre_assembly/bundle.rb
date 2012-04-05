@@ -87,12 +87,12 @@ module PreAssembly
         druid = File.basename subdir
         files = Dir.new(subdir).entries.reject { |e| e == '.' or e == '..'  }
         raise "Unexpected files in druid subdirectory: #{subdir}" unless files.size == 2
-        p files
+        # p files
 
         image     = File.basename Dir["#{subdir}/*.tif"].first
         image     = "#{druid}/#{image}"
         desc_meta = "#{druid}/descMetadata.xml"
-        p [druid, image, desc_meta]
+        # p [druid, image, desc_meta]
       end
     end
 
@@ -197,7 +197,7 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-        dobj.assemble(@stager, @staging_dir)
+        dobj.pre_assemble(@stager, @staging_dir)
         puts dobj.druid.druid if @show_progress 
       end
     end

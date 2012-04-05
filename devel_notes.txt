@@ -8,29 +8,9 @@
 # TODO: WorkflowService should provide a way to delete a workflow.
 
 
-Receive bundle of materials (manual):
-
-    - Receive the bundle of material (e.g. REVS hard drive).
-    - Copy the bundle to a prep area on the thumper staging machine.
-    - Launch the pre_assembly process.
-
-
-Pre-assembly (automated):
-
-    # Load information from the data provider.
-    - Expected checksum metadata.
-    - Manifest.
-
-    For each digital object:
-
-        - Register the object and acquire a druid.
-        - Copy the object to a druid tree in thumper staging directory.
-        - Generate contentMetadata.xml.
-        - Generate descMetadata.xml.
-        - Initialize the object's assemblyWF in DOR (a REST call).
-
-        - Later: get descriptive metadata from other sources, such as mdtoolkit
-          and symphony.   This should happen during common accessioning and is done by existing robots.
+------------------------------------------------
+REFACTORING TO HANDLE DIFFERENT TYPES OF BUNDLES
+------------------------------------------------
 
 Projects to use as examples:
 
@@ -95,15 +75,15 @@ Refactoring:
         - just make service call to begin assembly.
 
 
-    revs
+Project structure and differences
 
+    revs
         - one image per digital object
         - flat structure in bundle dir
         - checksums file
         - manifest file with metadata
 
     rumsey
-
         - subdir for each digital object
         - one image per object
         - object also includes a descMetadata file
@@ -112,7 +92,6 @@ Refactoring:
         - subdir is the druid
 
     gould
-
         - subdir/00 for each digital object
         - multiple images per object
         - images are jpg, not tif
@@ -134,8 +113,9 @@ Refactoring:
     SOHP
         - initially, lab will provide csv manifest
         - later, lab will provide contentMetadata, which might need some transformation
+        - subdir for each digital object
         - objects are already registered
-        - get druid from manifest/contentMetadata?
+        - subdir is the druid
         - contentMetadata contains multiple resource nodes of varying types
           - audio resources
             - there are three types of audio resource nodes: pm, sh, sl
@@ -156,15 +136,20 @@ Refactoring:
         - we could create a checksums.txt file
         - manifest requires some more complex templating logic
 
-Gould:
-
+Gould details:
     - See /thumpers/dpgthumper2-se1/Gould
     - Each dir is a barcode.
     - The source images are jpg.
     - The desc metadata is in symphony.
     - Can get druid using query_by_id(BARCODE) [see dor-services-gem].
     - Content metadata: ask Gary about AP.
-    
     - Misc files at root: probably ignore.
     - Some jpg are in 00 subdir, some are not (36105115575867).
     - Some subdirs have misc files (.zip or .md5). Ignore?
+
+
+stage_images()
+    - change to stage()
+    - don't interate over the object's images, copying each one
+    - instead we need a new attribute: stagable_items = Array
+    - for each stagable item, use `cp -r ITEM DRUID_TREE_DIR`
