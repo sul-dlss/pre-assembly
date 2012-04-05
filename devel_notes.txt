@@ -7,73 +7,36 @@
 
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+-----------------------
+OTHER REFACTORING NOTES
+-----------------------
 
-------------------------------------------------
-REFACTORING TO HANDLE DIFFERENT TYPES OF BUNDLES
-------------------------------------------------
+Use an object (maybe an OpenStruct) to pass needed bundle params down to digital objects.
 
-Projects to use as examples:
+Consider renaming Bundle to Batch.
 
+Store workflow in APO, and modify pre-assembly code accordingly.
+  - no need to generate XML in pre-assembly.
+  - can remove assembly steps from configuration.
+  - just make service call to begin assembly.
+
+Determine how assembly robots will have to change to handle different types of
+content metadata.
+
+Set up pre-assembly and assembly under Hudson.
+
+
+-------------------
+PROJECT DIFFERENCES
+-------------------
+
+Projects to use as most pressing examples:
+
+    - Revs
     - SOHP
     - Gould
+    - ReidDennis
     - Rumsey [but waiting on specs from Lynn?]
-
-Refactoring:
-
-    - Required parameters is less strict:
-        - checksums optional
-        - manifest optional
-        
-        - modify bin/pre-assemble
-        - modify check_for_required_files
-
-    - Generate if not provided:
-        - checksums
-        - manifest
-
-        - But where should they be generated?
-            - In bundle dir?
-            - With optional cleanup step?
-
-    - parse_manifest() needs to return rows of info
-        - sourceid
-        - label
-        - filename
-
-    - different behavior wrt registration
-
-    - stage_images() needs renaming and refactoring
-        revs:   copy 1 image file to druid tree
-        rumsey: copy subdir contents to druid tree
-
-    - content_metadata: seems ok
-
-    - desc_metadata: just skip for Rumsey
-
-    - Steps
-
-        Rev  Rum  Gou
-
-             .    .    get_druid    # From subdir or barcode.
-        .              claim_druid
-        .              register
-        .              add_dor_object_to_set
-
-        .    .    .    stage_images stager, staging_dir
-
-        .    .    .    generate_content_metadata
-        .    .    .    write_content_metadata
-
-        .              generate_desc_metadata
-        .              write_desc_metadata
-
-        .    .    .    initialize_assembly_workflow
-
-    - Store workflow in APO, and modify pre-assembly code accordingly.
-        - no need to generate XML here.
-        - can remove assembly steps from configuration.
-        - just make service call to begin assembly.
-
 
 Project structure and differences
 
@@ -97,6 +60,15 @@ Project structure and differences
         - images are jpg, not tif
         - objects are already registered
         - subdir is a barcode, which can be used to obtain druid
+
+        - other details:
+          - See /thumpers/dpgthumper2-se1/Gould
+          - The desc metadata is in symphony.
+          - Can get druid using query_by_id(BARCODE) [see dor-services-gem].
+          - Content metadata: ask Gary about AP.
+          - Misc files at root: probably ignore.
+          - Some jpg are in 00 subdir, some are not (36105115575867).
+          - Some subdirs have misc files (.zip or .md5). Ignore?
 
     AP
         - subdir for each digital object
@@ -136,20 +108,67 @@ Project structure and differences
         - we could create a checksums.txt file
         - manifest requires some more complex templating logic
 
-Gould details:
-    - See /thumpers/dpgthumper2-se1/Gould
-    - Each dir is a barcode.
-    - The source images are jpg.
-    - The desc metadata is in symphony.
-    - Can get druid using query_by_id(BARCODE) [see dor-services-gem].
-    - Content metadata: ask Gary about AP.
-    - Misc files at root: probably ignore.
-    - Some jpg are in 00 subdir, some are not (36105115575867).
-    - Some subdirs have misc files (.zip or .md5). Ignore?
 
+----------------
+REFACTORING PLAN
+----------------
+
+pre-assemble script
+    - new params: project_style
+    - move the parameter checking to Bundle.setup().
+        - among params passed by script: validate_params
+        - by default, Bundle won't validate (to make testing easier)
+        - make required params sensitive to project_style
+
+obtaining the druid
+    - conditional logic
+    - revs: claim_druid() and register()
+    - other projects: get druid from subdir or barcode
+
+add_dor_object_to_set()
+    - perform if @set_druid_id is present 
 
 stage_images()
     - change to stage()
     - don't interate over the object's images, copying each one
     - instead we need a new attribute: stagable_items = Array
+        - revs     [tif]
+        - rumsey   [image, descMeta]
+        - gould    [subdir/00]
+        - ap,sohp  [subdir]
     - for each stagable item, use `cp -r ITEM DRUID_TREE_DIR`
+
+content metadata
+    - conditional logic with several styles:
+        - one image per object
+          - revs
+          - rumsey
+          - ReidDennis
+        - simple book
+          - gould
+        - book with multiple image types per page
+          - AP
+          - Hummel
+        - audio
+          - SOHP
+
+desc metadata
+    - skip for many projects
+    - if needed, use manifest and template
+
+initialize_assembly_workflow
+    - always do, unless disabled (add parameter to support this)
+
+
+------------------------------------------------
+REFACTORING TO HANDLE DIFFERENT TYPES OF BUNDLES
+------------------------------------------------
+
+Refactoring:
+
+    - parse_manifest() needs to return rows of info
+        - sourceid
+        - label
+        - filename
+
+
