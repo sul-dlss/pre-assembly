@@ -25,4 +25,7 @@
   </titleInfo>
   <note>[[description]]</note>
   <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+  <note type="source note" ID="inst_notes">[[inst_notes]]</note>
+  <note type="source note" ID="prod_notes">[[prod_notes]]</note>
+  <note type="source note" ID="has_more_metadata">[[has_more_metadata]]</note>
 </mods>
