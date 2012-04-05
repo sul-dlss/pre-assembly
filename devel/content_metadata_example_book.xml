@@ -1,0 +1,33 @@
+# From AP.
+
+<contentMetadata type="book" objectId="hp160sk3414">
+
+  <resource type="page" sequence="1" id="hp160sk3414_1">
+
+    <label>Image 1</label>
+
+    <file mimetype="image/jp2" preserve="yes" format="JPEG2000" size="2072251" shelve="yes" id="hp160sk3414_05_0001.jp2" publish="yes">
+      <imageData width="2622" height="4182"/>
+      <attr name="representation">uncropped</attr>
+      <checksum type="sha1">982f0216fd0d0755c53d6827b5c8bce6d0fa1a9e</checksum>
+      <checksum type="md5">b9918ea92eaa5f05856629ea8cb84e4b</checksum>
+    </file>
+
+    <file mimetype="image/tiff" preserve="yes" format="TIFF" size="10986148" shelve="no" id="hp160sk3414_00_0001.tif" publish="no">
+      <imageData width="2622" height="4182"/>
+      <attr name="representation">uncropped</attr>
+      <checksum type="sha1">0bb4c213fc30c01e5ce7902cc1d6bc2281285088</checksum>
+      <checksum type="md5">867dc8eb930c2d36af81a7d181efb19f</checksum>
+    </file>
+
+  </resource>
+
+  <resource type="page" sequence="2" id="hp160sk3414_2">
+    <label>Image 2</label>
+
+    ...
+  </resource>
+
+  # Etc for more pages.
+
+</contentMetadata>
