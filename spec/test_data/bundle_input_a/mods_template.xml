@@ -23,9 +23,9 @@
   <titleInfo>
     <title>[[label]]</title>
   </titleInfo>
-  <note>[[description]]</note>
+  <% if manifest_row[:description] %><note><%=manifest_row[:description]%></note><% end %>
   <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
-  <note type="source note" ID="inst_notes">[[inst_notes]]</note>
-  <note type="source note" ID="prod_notes">[[prod_notes]]</note>
-  <note type="source note" ID="has_more_metadata">[[has_more_metadata]]</note>
+  <% if manifest_row[:inst_notes] %><note type="source note" ID="inst_notes"><%=manifest_row[:inst_notes]%></note><% end %>
+  <% if manifest_row[:prod_notes] %><note type="source note" ID="prod_notes"><%=manifest_row[:prod_notes]%></note><% end %>
+  <% if manifest_row[:has_more_metadata] %><note type="source note" ID="has_more_metadata"><%=manifest_row[:has_more_metadata]%></note><% end %>
 </mods>

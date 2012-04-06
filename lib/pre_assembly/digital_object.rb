@@ -1,3 +1,5 @@
+require 'rest_client'
+
 module PreAssembly
 
   class DigitalObject
@@ -101,10 +103,6 @@ module PreAssembly
       Dor::Config.fedora.client["objects/#{pid}"].delete
     end
 
-    def create_workflow_in_dor(args)
-      Dor::WorkflowService.create_workflow(*args)
-    end
-
     def druid_tree_mkdir(dir)
       FileUtils.mkdir_p dir
     end
@@ -116,7 +114,6 @@ module PreAssembly
       resp    = Dor::WorkflowService.update_workflow_error_status *params
       raise "update_workflow_error_status() returned false." unless resp == true
     end
-
 
     ####
     # Registration.
@@ -180,7 +177,6 @@ module PreAssembly
     ####
     # Content metadata.
     ####
-
     def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
@@ -188,7 +184,7 @@ module PreAssembly
             seq = i + 1
             xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
               file_params = { :id => img.file_name }.merge @publish_attr
-              xml.label "Image #{seq}"
+              xml.label "Item #{seq}"
               xml.file(file_params) {
                 xml.provider_checksum img.exp_md5, :type => 'md5'
               }
@@ -211,6 +207,7 @@ module PreAssembly
     ####
 
     def generate_desc_metadata
+      
       log "    - generate_desc_metadata()"
 
       # this is a helper variable that gives you the first row in the manifest for the digital image, so you can use it to create metadata in the template
@@ -233,30 +230,15 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
     end
 
-
-    ####
-    # Workflow metadata.
-    ####
-
-    def generate_workflow_metadata
-      log "    - generate_workflow_metadata()"
-      wf_name = Dor::Config.pre_assembly.assembly_wf
-      steps   = Dor::Config.pre_assembly.assembly_wf_steps
-      builder = Nokogiri::XML::Builder.new { |xml|
-        xml.workflow(:objectId => @druid.druid, :id => wf_name) {
-          steps.each { |step, status|
-            xml.process(:name => step, :status => status)
-          }
-        }
-      }
-      @workflow_metadata_xml = builder.to_xml
-    end
-
     def initialize_assembly_workflow
-      # Add assemblyWF to the object in DOR.
-      wf_name = Dor::Config.pre_assembly.assembly_wf
-      generate_workflow_metadata
-      create_workflow_in_dor ['dor', @pid, wf_name, @workflow_metadata_xml]
+      # Call web service to add assemblyWF to the object in DOR.
+      url = "#{Dor::Config.dor.service_root}/dor/v1/objects/#{@pid}/apo_workflows/assemblyWF"
+      begin
+        RestClient.post url, {}      
+        true
+      rescue
+        false
+      end
     end
 
   end

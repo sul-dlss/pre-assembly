@@ -167,13 +167,13 @@ describe PreAssembly::DigitalObject do
         <?xml version="1.0"?>
         <contentMetadata objectId="ab123cd4567">
           <resource sequence="1" id="ab123cd4567_1">
-            <label>Image 1</label>
+            <label>Item 1</label>
             <file preserve="yes" publish="no" shelve="no" id="image_1.tif">
               <provider_checksum type="md5">1111</provider_checksum>
             </file>
           </resource>
           <resource sequence="2" id="ab123cd4567_2">
-            <label>Image 2</label>
+            <label>Item 2</label>
             <file preserve="yes" publish="no" shelve="no" id="image_2.tif">
               <provider_checksum type="md5">2222</provider_checksum>
             </file>
@@ -260,32 +260,15 @@ describe PreAssembly::DigitalObject do
 
   end
 
-  describe "workflow metadata" do
+  describe "initiate workflow" do
 
     before(:each) do
       @dobj.druid = @druid
-      @exp_xml = <<-END.gsub(/^ {8}/, '')
-        <?xml version="1.0"?>
-        <workflow objectId="druid:#{@druid.id}" id="assemblyWF">
-          <process status="completed" name="start-assembly"/>
-          <process status="waiting"   name="jp2-create"/>
-          <process status="waiting"   name="checksum-compute"/>
-          <process status="waiting"   name="checksum-compare"/>
-          <process status="waiting"   name="exif-collect"/>
-          <process status="waiting"   name="accessioning-initiate"/>
-        </workflow>
-      END
-      @exp_xml = noko_doc @exp_xml
-    end
-   
-    it "should generate the expected xml text" do
-      @dobj.generate_workflow_metadata
-      noko_doc(@dobj.workflow_metadata_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to exercise initialize_assembly_workflow()" do
-      @dobj.should_receive(:create_workflow_in_dor).once
-      @dobj.initialize_assembly_workflow
+      # our attempt to start workflow should fail since the Rest call will fail with a 404
+      @dobj.initialize_assembly_workflow.should == false
     end
 
   end
