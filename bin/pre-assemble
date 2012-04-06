@@ -2,32 +2,9 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-
-REQUIRED_DIRS = [:bundle_dir, :staging_dir]
-REQUIRED_PARAMS = [
-  :bundle_dir,
-  :staging_dir,
-  :manifest,
-  :checksums_file,
-  :project_name,
-  :apo_druid_id,
-  :set_druid_id,
-]
-
-
 def help(error_msg)
-  help_msg = <<-END.gsub(/^ {4}/, '')
-    #{error_msg}
-    
-    Usage:
-        pre-assemble YAML_CONFIG_FILE
-
-    Parameters:
-  END
-  ps = REQUIRED_PARAMS.map { |p| "    #{p}\n" }.join
-  abort help_msg + ps
+  abort "#{error_msg}\n\nUsage:\n    pre-assemble YAML_CONFIG_FILE\n"
 end
-
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
 help "Incorrect N of arguments." unless ARGV.size == 1
@@ -35,18 +12,10 @@ yaml_config = ARGV.shift
 help "YAML file not found." unless File.file? yaml_config
 params = YAML.load(File.read yaml_config)
 
-
-# Check for required parameters and directories.
-REQUIRED_PARAMS.each do |p|
-  help "Missing parameter: #{p.to_s}." unless params.has_key? p
-end
-
-REQUIRED_DIRS.each do |p|
-  d = params[p]
-  help "Directory not found: #{d}." unless File.directory? d
-end
-
-
 # Run pre-assembly.
-b = PreAssembly::Bundle.new params
-b.run_pre_assembly
+begin
+  b = PreAssembly::Bundle.new params
+  b.run_pre_assembly
+rescue PreAssembly::BundleUsageError => e
+  help e.message
+end
