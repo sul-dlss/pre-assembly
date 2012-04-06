@@ -215,4 +215,5 @@ DEPENDENCIES
   lyberteam-devel
   nokogiri
   rake
+  rest-client
   rspec (~> 2.6)

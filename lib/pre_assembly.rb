@@ -15,17 +15,19 @@ Dor::Config.configure do
     shelve    'no'
     publish   'no'
 
-    # The assembly workflow parameters.
-    assembly_wf  'assemblyWF'
-    assembly_wf_steps [
-      [ 'start-assembly',        'completed' ],
-      [ 'jp2-create',            'waiting'   ],
-      [ 'checksum-compute',      'waiting'   ],
-      [ 'checksum-compare',      'waiting'   ],
-      [ 'exif-collect',          'waiting'   ],
-      [ 'accessioning-initiate', 'waiting'   ],
-    ]
-
+     # The assembly workflow parameters
+     # TODO Remove these when they are no longer needed to unregister an object
+     assembly_wf  'assemblyWF'
+     assembly_wf_steps [
+       [ 'start-assembly',        'completed' ],
+       [ 'jp2-create',            'waiting'   ],
+       [ 'checksum-compute',      'waiting'   ],
+       [ 'checksum-compare',      'waiting'   ],
+       [ 'exif-collect',          'waiting'   ],
+       [ 'accessioning-initiate', 'waiting'   ],
+     ]
+    
+    
   end
 
 end
