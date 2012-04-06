@@ -25,6 +25,8 @@ module PreAssembly
       :limit_n,
       :uniqify_source_ids,
       :show_progress,
+      :validate_usage,
+      :user_params,
       :project_style,
       :exp_checksums,
       :publish,
@@ -35,12 +37,13 @@ module PreAssembly
     )
 
     def initialize(params = {})
-      validate_usage params if params[:validate_usage]
-
+      # Unpack the user-supplied parameters.
       conf                = Dor::Config.pre_assembly
+      @user_params        = params
+      @project_style      = params[:project_style].to_sym
       @bundle_dir         = params[:bundle_dir]     || ''
+      @staging_dir        = params[:staging_dir]
       @manifest           = params[:manifest]       || conf.manifest_file_name
-      @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
       @checksums_file     = params[:checksums_file] || conf.checksums_file_name
       @project_name       = params[:project_name]
       @apo_druid_id       = params[:apo_druid_id]
@@ -48,12 +51,14 @@ module PreAssembly
       @publish            = params[:publish]  || conf.publish
       @shelve             = params[:shelve]   || conf.shelve
       @preserve           = params[:preserve] || conf.preserve
-      @staging_dir        = params[:staging_dir]
       @cleanup            = params[:cleanup]
       @limit_n            = params[:limit_n]
       @uniqify_source_ids = params[:uniqify_source_ids]
       @show_progress      = params[:show_progress]
-      @project_style      = params[:project_style] || :NONE
+      @validate_usage     = params[:validate_usage]
+      @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
+
+      # Other setup work facilitated by having access to instance vars.
       setup
     end
 
@@ -65,15 +70,23 @@ module PreAssembly
       @exp_checksums   = {}
       @digital_objects = []
       @stager          = lambda { |f,d| FileUtils.copy f, d }
-      @project_style   = @project_style.to_sym
+
+      # Validate parameters supplied via user script.
+      # Unit testing often bypasses such checks.
+      validate_usage if @validate_usage
     end
 
     def required_dirs
-      [:bundle_dir, :staging_dir]
+      [@bundle_dir, @staging_dir]
     end
 
-    def required_params(project_style)
+    def required_files
+      @project_style == :style_revs ? [@manifest, @checksums_file] : []
+    end
+
+    def required_user_params
       [
+        :project_style,
         :bundle_dir,
         :staging_dir,
         :manifest,
@@ -84,24 +97,28 @@ module PreAssembly
       ]
     end
 
-    def validate_usage(params)
-      # Check for required parameters and directories.
-      project_style = params[:project_style]
-      required_params(project_style).each do |p|
-        raise BundleUsageError, "Missing parameter: #{p.to_s}." unless params.has_key? p
+    def validate_usage
+      # Check for required parameters, directories, and files.
+      required_user_params.each do |p|
+        next if @user_params.has_key? p
+        raise BundleUsageError, "Missing parameter: #{p}."
       end
 
-      required_dirs.each do |p|
-        d = params[p]
-        raise BundleUsageError, "Directory not found: #{d}." unless File.directory? d
+      required_dirs.each do |d|
+        next if dir_exists d
+        raise BundleUsageError, "Required directory not found: #{d}."
+      end
+
+      required_files.each do |f|
+        next if file_exists f
+        raise BundleUsageError, "Required file not found: #{f}."
       end
     end
 
     def run_pre_assembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      if @project_style == :revs
-        check_for_required_files
+      if @project_style == :style_revs
         load_exp_checksums
         load_manifest
         validate_images
@@ -109,10 +126,7 @@ module PreAssembly
         delete_digital_objects if @cleanup
       else
         # TODO: run_pre_assembly: add missing Rumsey steps.
-
         discover_images
-
-        # check_for_required_files
         # Do not call delete_digital_objects().
       end
     end
@@ -146,18 +160,8 @@ module PreAssembly
       File.join @bundle_dir, file
     end
 
-    def check_for_required_files
-      log "check_for_required_files()"
-      required_files.each do |f|
-        next if file_exists f
-        raise IOError, "Required file or directory not found: #{f}\n"
-      end
-    end
-
-    def required_files
-      rfs = [@staging_dir]
-      rfs.push(@manifest, @checksums_file) if @project_style == :revs
-      rfs
+    def dir_exists(dir)
+      File.directory? dir
     end
 
     def file_exists(file)

@@ -131,7 +131,7 @@ describe PreAssembly::DigitalObject do
   describe "image staging" do
     
     it "should be able to copy images successfully" do
-        bundle       = PreAssembly::Bundle.new
+        bundle       = PreAssembly::Bundle.new :project_style => :style_revs
         @dobj.druid  = @druid
         @dobj.images = []
 

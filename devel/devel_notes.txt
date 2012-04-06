@@ -115,9 +115,6 @@ REFACTORING PLAN
 
 Bundle
 
-    check_for_required_files
-        - make sensitive to project_style
-
     discover_objects
         - new method to initialize the process
         - manifest-driven or dir-crawl
