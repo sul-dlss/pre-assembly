@@ -8,6 +8,11 @@ describe PreAssembly::Bundle do
       :manifest        => 'manifest.csv',
       :checksums_file  => 'checksums.txt',
       :staging_dir     => 'tmp',
+      :object_discovery => {
+        :use_manifest => true,
+        :glob         => '*',
+        :regex        => '(?ix) .+ \.tif $',
+      },
     }
     @b = PreAssembly::Bundle.new @ps
   end
@@ -59,6 +64,13 @@ describe PreAssembly::Bundle do
 
   end
 
+  describe "discover_objects()" do
+    
+    it "should be runnable" do
+      @b.discover_objects
+    end
+
+  end
 
   describe "load_exp_checksums()" do
 

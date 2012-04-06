@@ -118,13 +118,10 @@ REFACTORING PLAN
 Bundle
 
     discover_objects
-        - new method to initialize the process
         - manifest-driven or dir-crawl
         - the purpose here is to set up minimal digital objects
-            - identify the digital objects
-            - get their druids, if already registered
-            - get their files
-            - get their items_to_stage
+            - identify the digital object's top-level container: single file or dir
+            - identify the stageable_items
         - don't handle other manifest details
             - leave that for later
             - for now, just store a list of the manifest rows
