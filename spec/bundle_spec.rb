@@ -1,27 +1,13 @@
 describe PreAssembly::Bundle do
 
-  before(:each) do
-    @ps = {
-      :project_style   => 'style_revs',
-      :bundle_dir      => 'spec/test_data/bundle_input_a',
-      :descriptive_metadata_template      => 'mods_template.xml',
-      :manifest        => 'manifest.csv',
-      :checksums_file  => 'checksums.txt',
-      :staging_dir     => 'tmp',
-      :object_discovery => {
-        :use_manifest      => true,
-        :glob              => '*',
-        :regex             => '(?ix) .+ \.tif $',
-      },
-      :manifest_cols => {
-        :object_container => 'filename',
-        :source_id        => 'sourceid',
-        :label            => 'label',
-      },
-    }
-    @b = PreAssembly::Bundle.new @ps
+  before(:all) do
+    @yaml = File.read 'config/projects/local_dev_revs.yaml'
   end
 
+  before(:each) do
+    @ps = YAML.load @yaml
+    @b  = PreAssembly::Bundle.new @ps
+  end
 
   describe "initialize() and other setup" do
 
@@ -151,7 +137,8 @@ describe PreAssembly::Bundle do
 
   describe "source_id_suffix()" do
     
-    it "should be empty by default" do
+    it "should be empty if we are not asked to make source IDs unique" do
+      @b.uniqify_source_ids = false
       @b.source_id_suffix.should == ''
     end
 
