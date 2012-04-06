@@ -117,6 +117,14 @@ REFACTORING PLAN
 
 Bundle
 
+    NEXT:
+        tests: Usage validation (might be done).
+        tests: Discovery of object containers and stageable items.
+
+        finish discover_objects()
+            - identify stageable items
+            - create minimal digital objects
+
     discover_objects
         - manifest-driven or dir-crawl
         - the purpose here is to set up minimal digital objects
