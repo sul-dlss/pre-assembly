@@ -15,6 +15,6 @@ group :test do
 end
 
 group :development do
-  gem 'lyberteam-devel'
-  gem "capistrano", "2.9.0"
+  gem 'lyberteam-devel', '0.5.3'
+  gem 'capistrano', '2.9.0'
 end
