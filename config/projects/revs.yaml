@@ -19,4 +19,4 @@
 :show_progress:        true
 :validate_usage:       true
 
-:project_style:        revs
+:project_style:        style_revs

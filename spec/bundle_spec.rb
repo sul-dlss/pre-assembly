@@ -2,7 +2,7 @@ describe PreAssembly::Bundle do
 
   before(:each) do
     @ps = {
-      :project_style   => 'revs',
+      :project_style   => 'style_revs',
       :bundle_dir      => 'spec/test_data/bundle_input_a',
       :descriptive_metadata_template      => 'mods_template.xml',
       :manifest        => 'manifest.csv',
@@ -29,28 +29,32 @@ describe PreAssembly::Bundle do
 
   end
 
-
-  describe "check_for_required_files()" do
-
-    it "required_files() returns array with expected N of items based on project_style" do
-      exp = { :revs => 3, :rumsey => 1 }
-      exp.each do |style, n| 
-        @b.project_style = style
-        @b.required_files.should have(n).items
-      end
+  describe "validate_usage()" do
+    before(:each) do
+      @b.user_params = Hash[ @b.required_user_params.map { |p| [p, ''] } ]
+      @exp_err = PreAssembly::BundleUsageError
     end
 
-    it "does not raise exception when required files exist" do
-      return_vals = @b.required_files.map { true }
-      @b.stub(:file_exists).and_return(*return_vals)
-      lambda { @b.check_for_required_files }.should_not raise_error
+    it "should not raise an exception if requirements are satisfied" do
+      @b.validate_usage
     end
 
-    it "raises an exception when a required file is missing" do
-      return_vals = @b.required_files.map { true }
-      return_vals[-1] = false
-      @b.stub(:file_exists).and_return(*return_vals)
-      lambda { @b.check_for_required_files }.should raise_error
+    it "should raise exception if a user parameter is missing" do
+      @b.user_params.delete :bundle_dir
+      exp_msg = /^Missing.+bundle_dir/
+      lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
+    end
+
+    it "should raise exception if required directory not found" do
+      @b.bundle_dir = '__foo_bundle_dir###'
+      exp_msg = /^Required directory.+#{@b.bundle_dir}/
+      lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
+    end
+
+    it "should raise exception if required file not found" do
+      @b.manifest = '__foo_manifest###'
+      exp_msg = /^Required file.+#{@b.manifest}/
+      lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
     end
 
   end

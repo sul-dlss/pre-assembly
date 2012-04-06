@@ -39,7 +39,7 @@ describe "Pre-assembly integration" do
 
     it "should run pre-assembly and produce expected files in staging dir" do
       # TODO: Rumsey integration assertions.
-      setup_bundle :bundle_dir => @rumsey_dir, :project_style => 'rumsey'
+      setup_bundle :bundle_dir => @rumsey_dir, :project_style => 'style_rumsey'
       @b.run_pre_assembly
       # @exp_file_patterns.each do |patt|
       #   fs = Dir[patt].select { |f| File.file? f }
