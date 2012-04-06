@@ -1,21 +1,22 @@
-:bundle_dir:           '/home/lyberadmin/pre-assembly/revs_test_run/input'
-:staging_dir:          '/home/lyberadmin/pre-assembly/revs_test_run/output'
+:bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
+:staging_dir:          /home/lyberadmin/pre-assembly/revs_test_run/output
 
-:manifest:             'manifest.csv'
-:checksums_file:       'checksums.txt'
-:descriptive_metadata_template: 'mods_template.xml'
+:manifest:             manifest.csv
+:checksums_file:       checksums.txt
+:descriptive_metadata_template: mods_template.xml
 
-:project_name:         'Revs'
-:apo_druid_id:         'druid:qv648vd4392'
-:set_druid_id:         'druid:yt502zj0924'
+:project_name:         Revs
+:apo_druid_id:         druid:qv648vd4392
+:set_druid_id:         druid:yt502zj0924
 
-:publish:              'no'
-:shelve:               'no'
-:preserve:             'yes'                        
+:publish:              no
+:shelve:               no
+:preserve:             yes                        
 
 :cleanup:              false
 :limit_n:              10
 :uniqify_source_ids:   false
 :show_progress:        true
+:validate_usage:       true
 
 :project_style:        revs

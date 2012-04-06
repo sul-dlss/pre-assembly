@@ -15,6 +15,8 @@
 OTHER REFACTORING NOTES
 -----------------------
 
+Convert YAML files to use string keys. Bundle should convert them to symbols.
+
 Stop passing so many params from bundle down to digital objects
     - define a class method in Bundle that returns an OpenStruct
     - it will contain all Bundle-level parameters needed by digital objects
@@ -110,13 +112,6 @@ Project structure and differences
 ----------------
 REFACTORING PLAN
 ----------------
-
-pre-assemble script
-    - new params: project_style
-    - move the parameter checking to Bundle.setup().
-        - among params passed by script: validate_params
-        - by default, Bundle won't validate (to make testing easier)
-        - make required params sensitive to project_style
 
 Bundle
 

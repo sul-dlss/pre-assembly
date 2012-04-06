@@ -2,6 +2,11 @@ require 'csv-mapper'
 
 module PreAssembly
 
+  class BundleUsageError < StandardError
+    # Exception class used to pass usage error messages back to
+    # users of the bin/pre-assemble script.
+  end
+
   class Bundle
     include PreAssembly::Logging
     include CsvMapper
@@ -30,6 +35,8 @@ module PreAssembly
     )
 
     def initialize(params = {})
+      validate_usage params if params[:validate_usage]
+
       conf                = Dor::Config.pre_assembly
       @bundle_dir         = params[:bundle_dir]     || ''
       @manifest           = params[:manifest]       || conf.manifest_file_name
@@ -59,6 +66,35 @@ module PreAssembly
       @digital_objects = []
       @stager          = lambda { |f,d| FileUtils.copy f, d }
       @project_style   = @project_style.to_sym
+    end
+
+    def required_dirs
+      [:bundle_dir, :staging_dir]
+    end
+
+    def required_params(project_style)
+      [
+        :bundle_dir,
+        :staging_dir,
+        :manifest,
+        :checksums_file,
+        :project_name,
+        :apo_druid_id,
+        :set_druid_id,
+      ]
+    end
+
+    def validate_usage(params)
+      # Check for required parameters and directories.
+      project_style = params[:project_style]
+      required_params(project_style).each do |p|
+        raise BundleUsageError, "Missing parameter: #{p.to_s}." unless params.has_key? p
+      end
+
+      required_dirs.each do |p|
+        d = params[p]
+        raise BundleUsageError, "Directory not found: #{d}." unless File.directory? d
+      end
     end
 
     def run_pre_assembly
