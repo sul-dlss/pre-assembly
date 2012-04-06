@@ -9,9 +9,14 @@ describe PreAssembly::Bundle do
       :checksums_file  => 'checksums.txt',
       :staging_dir     => 'tmp',
       :object_discovery => {
-        :use_manifest => true,
-        :glob         => '*',
-        :regex        => '(?ix) .+ \.tif $',
+        :use_manifest      => true,
+        :glob              => '*',
+        :regex             => '(?ix) .+ \.tif $',
+      },
+      :manifest_cols => {
+        :object_container => 'filename',
+        :source_id        => 'sourceid',
+        :label            => 'label',
       },
     }
     @b = PreAssembly::Bundle.new @ps
@@ -107,7 +112,7 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       @csv_rows = (1..4).map { CsvParams.new(*@vals) }
-      @b.stub(:parse_manifest).and_return(@csv_rows)
+      @b.stub(:manifest_rows).and_return(@csv_rows)
     end
 
     it "preserves the provider attributes" do

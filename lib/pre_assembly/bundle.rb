@@ -34,6 +34,7 @@ module PreAssembly
       :preserve,
       :digital_objects,
       :object_discovery,
+      :manifest_cols,
       :stager
     )
 
@@ -63,6 +64,7 @@ module PreAssembly
       @show_progress      = params[:show_progress]
       @validate_usage     = params[:validate_usage]
       @object_discovery   = params[:object_discovery]
+      @manifest_cols      = params[:manifest_cols]
 
       @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
 
@@ -73,11 +75,13 @@ module PreAssembly
     def setup
       @manifest        = full_path_in_bundle_dir @manifest
       @checksums_file  = full_path_in_bundle_dir @checksums_file
-      @descriptive_metadata_template  = full_path_in_bundle_dir @descriptive_metadata_template
-      @desc_metadata_xml_template=File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
       @exp_checksums   = {}
       @digital_objects = []
+      @manifest_rows   = nil
       @stager          = lambda { |f,d| FileUtils.copy f, d }
+
+      @descriptive_metadata_template = full_path_in_bundle_dir @descriptive_metadata_template
+      @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
 
       # Validate parameters supplied via user script.
       # Unit testing often bypasses such checks.
@@ -165,6 +169,9 @@ module PreAssembly
 
     def discover_objects
       return object_containers
+
+      # Bail if user asked to process a limited N of objects.
+      # break if @limit_n and @digital_objects.size >= @limit_n
     end
 
     def object_containers
@@ -179,7 +186,8 @@ module PreAssembly
     end
 
     def object_containers_via_manifest
-      return ['blah', 123]
+      col_name = @manifest_cols[:object_container]
+      return manifest_rows.map { |r| r.send col_name }
     end
 
     def object_containers_via_crawl
@@ -234,7 +242,7 @@ module PreAssembly
     def load_manifest
       # Read manifest and initialize digital objects.
       log "load_manifest()"
-      parse_manifest.each do |r|
+      manifest_rows.each do |r|
         # Create digital object.
         dobj_params = {
           :project_name => @project_name,
@@ -264,8 +272,8 @@ module PreAssembly
       end
     end
 
-    def parse_manifest
-      return import(@manifest) { read_attributes_from_file }
+    def manifest_rows
+      @manifest_rows ||= import(@manifest) { read_attributes_from_file }
     end
 
     def validate_images

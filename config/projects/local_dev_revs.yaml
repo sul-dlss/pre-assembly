@@ -22,11 +22,16 @@
 :project_style:        style_revs
 
 :object_discovery:
-  :use_manifest: true
-  :glob:         nil
-  :regex:        nil
+  :use_manifest:      true
+  :glob:              nil
+  :regex:             nil
 
 :stageable_discovery:
   :use_container: true
   :glob:          nil
   :regex:         nil
+
+:manifest_cols:
+  :object_container: filename
+  :source_id:        sourceid
+  :label:            label
