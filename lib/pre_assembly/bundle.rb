@@ -33,8 +33,14 @@ module PreAssembly
       :shelve,
       :preserve,
       :digital_objects,
+      :object_discovery,
       :stager
     )
+
+
+    ####
+    # Initialization.
+    ####
 
     def initialize(params = {})
       # Unpack the user-supplied parameters.
@@ -56,6 +62,8 @@ module PreAssembly
       @uniqify_source_ids = params[:uniqify_source_ids]
       @show_progress      = params[:show_progress]
       @validate_usage     = params[:validate_usage]
+      @object_discovery   = params[:object_discovery]
+
       @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
 
       # Other setup work facilitated by having access to instance vars.
@@ -75,6 +83,11 @@ module PreAssembly
       # Unit testing often bypasses such checks.
       validate_usage if @validate_usage
     end
+
+
+    ####
+    # Usage validation.
+    ####
 
     def required_dirs
       [@bundle_dir, @staging_dir]
@@ -115,6 +128,11 @@ module PreAssembly
       end
     end
 
+
+    ####
+    # The main process.
+    ####
+
     def run_pre_assembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
@@ -126,23 +144,7 @@ module PreAssembly
         delete_digital_objects if @cleanup
       else
         # TODO: run_pre_assembly: add missing Rumsey steps.
-        discover_images
         # Do not call delete_digital_objects().
-      end
-    end
-
-    def discover_images
-      druid_subdirs = Dir["#{@bundle_dir}/*"].select { |d| File.directory? d }
-      druid_subdirs.each do |subdir|
-        druid = File.basename subdir
-        files = Dir.new(subdir).entries.reject { |e| e == '.' or e == '..'  }
-        raise "Unexpected files in druid subdirectory: #{subdir}" unless files.size == 2
-        # p files
-
-        image     = File.basename Dir["#{subdir}/*.tif"].first
-        image     = "#{druid}/#{image}"
-        desc_meta = "#{druid}/descMetadata.xml"
-        # p [druid, image, desc_meta]
       end
     end
 
@@ -153,8 +155,51 @@ module PreAssembly
         :staging_dir   => @staging_dir,
         :environment   => ENV['ROBOT_ENVIRONMENT'],
       }
-      log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
+      return log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
     end
+
+
+    ####
+    # Discovery of object containers and stageable items.
+    ####
+
+    def discover_objects
+      return object_containers
+    end
+
+    def object_containers
+      # Every object must reside in a single container -- a file or a directory.
+      # Those containers are specified in a manifest or discovered through a
+      # pattern-based crawl of the bundle_dir.
+      if @object_discovery[:use_manifest]
+        return object_containers_via_manifest
+      else
+        return object_containers_via_crawl
+      end
+    end
+
+    def object_containers_via_manifest
+      return ['blah', 123]
+    end
+
+    def object_containers_via_crawl
+      containers = []
+      regex = Regexp.new @object_discovery[:regex]
+      object_glob_contents.each do |item|
+        rel_path = item[@bundle_dir.size + 1 .. -1]
+        containers.push rel_path if rel_path =~ regex
+      end
+      return containers
+    end
+
+    def object_glob_contents
+      return Dir[ File.join @bundle_dir, @object_discovery[:glob] ]
+    end
+
+
+    ####
+    # Other stuff....
+    ####
 
     def full_path_in_bundle_dir(file)
       File.join @bundle_dir, file
