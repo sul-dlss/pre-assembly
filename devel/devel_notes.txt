@@ -1,3 +1,7 @@
+# TODO: Modify assembly robots to handle different types of content metadata.
+# TODO: Set up pre-assembly under Hudson.
+# TODO: Set up assembly under Hudson.
+
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
 # TODO: Modify revs.yaml when we start using for real.
@@ -6,11 +10,10 @@
 
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+
 -----------------------
 OTHER REFACTORING NOTES
 -----------------------
-
-Consider renaming Bundle to Batch.
 
 Stop passing so many params from bundle down to digital objects
     - define a class method in Bundle that returns an OpenStruct
@@ -18,13 +21,6 @@ Stop passing so many params from bundle down to digital objects
 
         bconf         = Bundle.config
         @apo_druid_id = bconf.apo_druid_id
-
-Determine how assembly robots will have to change to handle different types of
-content metadata.
-
-Set up pre-assembly under Hudson.
-
-Set up assembly under Hudson.
 
 
 -------------------
