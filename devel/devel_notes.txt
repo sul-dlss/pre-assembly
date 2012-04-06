@@ -17,6 +17,8 @@ OTHER REFACTORING NOTES
 
 Convert YAML files to use string keys. Bundle should convert them to symbols.
 
+Refactor desc_meta var naming.
+
 Stop passing so many params from bundle down to digital objects
     - define a class method in Bundle that returns an OpenStruct
     - it will contain all Bundle-level parameters needed by digital objects
