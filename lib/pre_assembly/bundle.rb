@@ -206,20 +206,8 @@ module PreAssembly
 
 
     ####
-    # Other stuff....
+    # Checksums.
     ####
-
-    def full_path_in_bundle_dir(file)
-      File.join @bundle_dir, file
-    end
-
-    def dir_exists(dir)
-      File.directory? dir
-    end
-
-    def file_exists(file)
-      File.exists? file
-    end
 
     def load_exp_checksums
       # Read checksums_file, using its content to populate a hash of expected checksums.
@@ -234,9 +222,13 @@ module PreAssembly
       IO.read @checksums_file
     end
 
-    def source_id_suffix
-      # Used during development to append a timestamp to source IDs.
-      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
+
+    ####
+    # Manifest.
+    ####
+
+    def manifest_rows
+      @manifest_rows ||= import(@manifest) { read_attributes_from_file }
     end
 
     def load_manifest
@@ -272,9 +264,10 @@ module PreAssembly
       end
     end
 
-    def manifest_rows
-      @manifest_rows ||= import(@manifest) { read_attributes_from_file }
-    end
+
+    ####
+    # Digital object processing.
+    ####
 
     def validate_images
       log "validate_images()"
@@ -299,6 +292,28 @@ module PreAssembly
       # During development, delete objects the we register.
       log "delete_digital_objects()"
       @digital_objects.each { |dobj| dobj.unregister }
+    end
+
+
+    ####
+    # Misc utilities.
+    ####
+
+    def full_path_in_bundle_dir(file)
+      File.join @bundle_dir, file
+    end
+
+    def dir_exists(dir)
+      File.directory? dir
+    end
+
+    def file_exists(file)
+      File.exists? file
+    end
+
+    def source_id_suffix
+      # Used during development to append a timestamp to source IDs.
+      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
     end
 
   end
