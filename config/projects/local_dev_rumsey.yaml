@@ -29,4 +29,9 @@
 :stageable_discovery:
   :use_container: false
   :glob:          '*'
-  :regex:         '.'
+  :regex:         ''
+
+:manifest_cols:
+  :object_container: filename
+  :source_id:        sourceid
+  :label:            label
