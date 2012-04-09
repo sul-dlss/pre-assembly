@@ -168,10 +168,16 @@ module PreAssembly
     ####
 
     def discover_objects
-      return object_containers
+      containers = pruned_containers(object_containers)
+      return containers
 
-      # Bail if user asked to process a limited N of objects.
-      # break if @limit_n and @digital_objects.size >= @limit_n
+      #  - identify stageable items
+      #  - create minimal digital objects
+    end
+
+    def pruned_containers(containers)
+      j = @limit_n ? @limit_n - 1 : -1
+      containers[0 .. j]
     end
 
     def object_containers

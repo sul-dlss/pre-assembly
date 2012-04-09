@@ -117,19 +117,9 @@ REFACTORING PLAN
 
 Bundle
 
-    NEXT:
-        finish discover_objects()
-            - identify stageable items
-            - create minimal digital objects
-
-    discover_objects
-        - manifest-driven or dir-crawl
-        - the purpose here is to set up minimal digital objects
-            - identify the digital object's top-level container: single file or dir
-            - identify the stageable_items
-        - don't handle other manifest details
-            - leave that for later
-            - for now, just store a list of the manifest rows
+    finish discover_objects()
+        - identify stageable items
+        - create minimal digital objects
 
     load_checksums
         - iterate over all files of all digital objects
