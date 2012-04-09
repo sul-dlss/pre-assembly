@@ -34,6 +34,7 @@ module PreAssembly
       :preserve,
       :digital_objects,
       :object_discovery,
+      :stageable_discovery,
       :manifest_cols,
       :stager
     )
@@ -45,26 +46,27 @@ module PreAssembly
 
     def initialize(params = {})
       # Unpack the user-supplied parameters.
-      conf                = Dor::Config.pre_assembly
-      @user_params        = params
-      @project_style      = params[:project_style].to_sym
-      @bundle_dir         = params[:bundle_dir]     || ''
-      @staging_dir        = params[:staging_dir]
-      @manifest           = params[:manifest]       || conf.manifest_file_name
-      @checksums_file     = params[:checksums_file] || conf.checksums_file_name
-      @project_name       = params[:project_name]
-      @apo_druid_id       = params[:apo_druid_id]
-      @set_druid_id       = params[:set_druid_id]
-      @publish            = params[:publish]  || conf.publish
-      @shelve             = params[:shelve]   || conf.shelve
-      @preserve           = params[:preserve] || conf.preserve
-      @cleanup            = params[:cleanup]
-      @limit_n            = params[:limit_n]
-      @uniqify_source_ids = params[:uniqify_source_ids]
-      @show_progress      = params[:show_progress]
-      @validate_usage     = params[:validate_usage]
-      @object_discovery   = params[:object_discovery]
-      @manifest_cols      = params[:manifest_cols]
+      conf                 = Dor::Config.pre_assembly
+      @user_params         = params
+      @project_style       = params[:project_style].to_sym
+      @bundle_dir          = params[:bundle_dir]     || ''
+      @staging_dir         = params[:staging_dir]
+      @manifest            = params[:manifest]       || conf.manifest_file_name
+      @checksums_file      = params[:checksums_file] || conf.checksums_file_name
+      @project_name        = params[:project_name]
+      @apo_druid_id        = params[:apo_druid_id]
+      @set_druid_id        = params[:set_druid_id]
+      @publish             = params[:publish]  || conf.publish
+      @shelve              = params[:shelve]   || conf.shelve
+      @preserve            = params[:preserve] || conf.preserve
+      @cleanup             = params[:cleanup]
+      @limit_n             = params[:limit_n]
+      @uniqify_source_ids  = params[:uniqify_source_ids]
+      @show_progress       = params[:show_progress]
+      @validate_usage      = params[:validate_usage]
+      @object_discovery    = params[:object_discovery]
+      @stageable_discovery = params[:stageable_discovery]
+      @manifest_cols       = params[:manifest_cols]
 
       @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
 
@@ -168,11 +170,18 @@ module PreAssembly
     ####
 
     def discover_objects
-      containers = pruned_containers(object_containers)
-      return containers
+      pruned_containers(object_containers).each do |container|
+        # Identify stageable items.
+        if @stageable_discovery[:use_container]
+          stageable = [container]
+        else
+          root      = File.join(@bundle_dir, container)
+          stageable = discover_items_via_crawl root, @stageable_discovery
+        end
+        # p({ :container => container, :stageable => stageable })
 
-      #  - identify stageable items
-      #  - create minimal digital objects
+        # Create minimal digital objects.
+      end
     end
 
     def pruned_containers(containers)
@@ -181,36 +190,39 @@ module PreAssembly
     end
 
     def object_containers
-      # Every object must reside in a single container -- a file or a directory.
+      # Every object must reside in a single container, either a file or a directory.
       # Those containers are either (a) specified in a manifest or (b) discovered 
       # through a pattern-based crawl of the bundle_dir.
       if @object_discovery[:use_manifest]
-        return object_containers_via_manifest
+        return discover_containers_via_manifest
       else
-        return object_containers_via_crawl
+        return discover_items_via_crawl @bundle_dir, @object_discovery
       end
     end
 
-    def object_containers_via_manifest
+    def discover_containers_via_manifest
+      # Discover object containers from a manifest.
+      # The manifest column to use is provided by the user.
       col_name = @manifest_cols[:object_container]
       return manifest_rows.map { |r| r.send col_name }
     end
 
-    def object_containers_via_crawl
-      # User supplies two config parameters to drive the container-discovery crawl:
-      #   - A glob pattern (a relative pattern within the bundle_dir).
-      #   - A regex to filter out unwanted items returned from that glob.
-      containers = []
-      regex = Regexp.new @object_discovery[:regex]
-      object_discovery_glob_results.each do |item|
-        p = rel_path_in_bundle_dir item
-        containers.push p if p =~ regex
-      end
-      return containers
+    def discover_items_via_crawl(root, discovery_info)
+      # A method to discover object containers or stageable items.
+      # Takes a root path (e.g, bundle_dir) and a discovery data structure.
+      # The latter drives the two-stage discovery process:
+      #   - A glob pattern to obtain a list of dirs and/or files.
+      #   - A regex to filter that list.
+      glob  = discovery_info[:glob]
+      regex = Regexp.new discovery_info[:regex]
+      return discovery_glob_results(root, glob).select { |item| item =~ regex }
     end
 
-    def object_discovery_glob_results
-      return Dir.glob( File.join @bundle_dir, @object_discovery[:glob] )
+    def discovery_glob_results(root, glob_pattern)
+      # Takes a root path and a glob() pattern.
+      # Returns the items found, after stripping off the root path.
+      g = File.join root, glob_pattern
+      return Dir.glob(g).map { |i| relative_path(root, i) }
     end
 
 
@@ -317,10 +329,12 @@ module PreAssembly
       File.join @bundle_dir, rel_path
     end
 
-    def rel_path_in_bundle_dir(path)
-      # Take a path to an item in the bundle_dir: BUNDLE_DIR/foo/bar.txt.
-      # Returns the relative path: foo/bar.txt.
-      path[@bundle_dir.size + 1 .. -1]
+    def relative_path(base, path)
+      # Takes a base and a path. Return the portion of the path after the base:
+      #   base     BLAH/BLAH
+      #   path     BLAH/BLAH/foo/bar.txt
+      #   returns            foo/bar.txt
+      path[base.size + 1 .. -1]
     end
 
     def dir_exists(dir)
