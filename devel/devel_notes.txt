@@ -118,8 +118,6 @@ REFACTORING PLAN
 Bundle
 
     NEXT:
-        tests: Discovery of object containers and stageable items.
-
         finish discover_objects()
             - identify stageable items
             - create minimal digital objects

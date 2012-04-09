@@ -176,8 +176,8 @@ module PreAssembly
 
     def object_containers
       # Every object must reside in a single container -- a file or a directory.
-      # Those containers are specified in a manifest or discovered through a
-      # pattern-based crawl of the bundle_dir.
+      # Those containers are either (a) specified in a manifest or (b) discovered 
+      # through a pattern-based crawl of the bundle_dir.
       if @object_discovery[:use_manifest]
         return object_containers_via_manifest
       else
@@ -191,17 +191,20 @@ module PreAssembly
     end
 
     def object_containers_via_crawl
+      # User supplies two config parameters to drive the container-discovery crawl:
+      #   - A glob pattern (a relative pattern within the bundle_dir).
+      #   - A regex to filter out unwanted items returned from that glob.
       containers = []
       regex = Regexp.new @object_discovery[:regex]
-      object_glob_contents.each do |item|
-        rel_path = item[@bundle_dir.size + 1 .. -1]
-        containers.push rel_path if rel_path =~ regex
+      object_discovery_glob_results.each do |item|
+        p = rel_path_in_bundle_dir item
+        containers.push p if p =~ regex
       end
       return containers
     end
 
-    def object_glob_contents
-      return Dir[ File.join @bundle_dir, @object_discovery[:glob] ]
+    def object_discovery_glob_results
+      return Dir.glob( File.join @bundle_dir, @object_discovery[:glob] )
     end
 
 
@@ -299,8 +302,19 @@ module PreAssembly
     # Misc utilities.
     ####
 
-    def full_path_in_bundle_dir(file)
-      File.join @bundle_dir, file
+    def source_id_suffix
+      # Used during development to append a timestamp to source IDs.
+      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
+    end
+
+    def full_path_in_bundle_dir(rel_path)
+      File.join @bundle_dir, rel_path
+    end
+
+    def rel_path_in_bundle_dir(path)
+      # Take a path to an item in the bundle_dir: BUNDLE_DIR/foo/bar.txt.
+      # Returns the relative path: foo/bar.txt.
+      path[@bundle_dir.size + 1 .. -1]
     end
 
     def dir_exists(dir)
@@ -309,11 +323,6 @@ module PreAssembly
 
     def file_exists(file)
       File.exists? file
-    end
-
-    def source_id_suffix
-      # Used during development to append a timestamp to source IDs.
-      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
     end
 
   end
