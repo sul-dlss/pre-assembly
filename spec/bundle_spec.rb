@@ -1,15 +1,22 @@
 describe PreAssembly::Bundle do
 
   before(:all) do
-    @yaml = File.read 'config/projects/local_dev_revs.yaml'
+    @yaml = {
+      :yaml_revs   => File.read('config/projects/local_dev_revs.yaml'),
+      :yaml_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
+    }
   end
 
-  before(:each) do
-    @ps = YAML.load @yaml
+  def bundle_setup(project_style)
+    @ps = YAML.load @yaml[project_style]
     @b  = PreAssembly::Bundle.new @ps
   end
 
   describe "initialize() and other setup" do
+
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
 
     it "can initialize a Bundle" do
       @b.should be_kind_of PreAssembly::Bundle
@@ -24,6 +31,7 @@ describe PreAssembly::Bundle do
   describe "validate_usage()" do
 
     before(:each) do
+      bundle_setup :yaml_revs
       @b.user_params = Hash[ @b.required_user_params.map { |p| [p, ''] } ]
       @exp_err = PreAssembly::BundleUsageError
     end
@@ -65,6 +73,15 @@ describe PreAssembly::Bundle do
 
   describe "object discovery" do
     
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
+
+    it "discover_objects()" do
+      bundle_setup :yaml_rumsey
+      @b.discover_objects
+    end
+
     it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
       items = [0,11,22,33,44,55,66,77]
       @b.limit_n = nil
@@ -75,8 +92,8 @@ describe PreAssembly::Bundle do
 
     it "object_containers() should dispatch the correct method" do
       exp = {
-        :object_containers_via_manifest => true,
-        :object_containers_via_crawl    => false,
+        :discover_containers_via_manifest => true,
+        :discover_items_via_crawl    => false,
       }
       exp.each do |meth, use_man|
         @b.object_discovery[:use_manifest] = use_man
@@ -86,39 +103,41 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "object_containers_via_manifest() should return expected information" do
+    it "discover_containers_via_manifest() should return expected information" do
       col_name = :col_foo
       vals     = [123, 456, 789]
       rows     = vals.map { |v| double('row', col_name => v) }
       @b.manifest_cols[:object_container] = col_name
       @b.stub(:manifest_rows).and_return rows
-      @b.object_containers_via_manifest.should == vals
+      @b.discover_containers_via_manifest.should == vals
     end
 
-    it "object_containers_via_crawl() should return expected information" do
+    it "discover_items_via_crawl() should return expected information" do
       items = [
         'abc.txt', 'def.txt', 'ghi.txt',
         '123.tif', '456.tif', '456.TIF',
       ]
-      items_in_bundle = items.map { |i| @b.full_path_in_bundle_dir i }
-      @b.stub(:object_discovery_glob_results).and_return items_in_bundle
+      @b.stub(:discovery_glob_results).and_return items
       # No regex filtering.
       @b.object_discovery[:regex] = ''
-      @b.object_containers_via_crawl.should == items
+      @b.discover_items_via_crawl(@bundle_dir, @b.object_discovery).should == items
       # Only tif files.
       @b.object_discovery[:regex] = '(?i)\.tif$'
-      @b.object_containers_via_crawl.should == items[3..-1]
+      @b.discover_items_via_crawl(@bundle_dir, @b.object_discovery).should == items[3..-1]
     end
 
-    it "object_discovery_glob_results() should return expected information" do
-      exp = [1,2,3].map { |n| "#{@b.bundle_dir}/image#{n}.tif" }
-      @b.object_discovery[:glob] = '*.tif'
-      @b.object_discovery_glob_results.should == exp
+    it "discovery_glob_results() should return expected information" do
+      exp = [1,2,3].map { |n| "image#{n}.tif" }
+      @b.discovery_glob_results(@b.bundle_dir, '*.tif').should == exp
     end
 
   end
 
   describe "load_exp_checksums()" do
+
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
 
     it "empty string yields no checksums" do
       @b.stub(:read_exp_checksums).and_return('')
@@ -152,6 +171,7 @@ describe PreAssembly::Bundle do
     end
 
     before(:each) do
+      bundle_setup :yaml_revs
       @csv_rows = (1..4).map { CsvParams.new(*@vals) }
       @b.stub(:manifest_rows).and_return(@csv_rows)
     end
@@ -177,6 +197,10 @@ describe PreAssembly::Bundle do
 
   describe "validate_images()" do
 
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
+
     it "should not raise errors with valid tif files" do
       @b.load_manifest
       lambda { @b.validate_images }.should_not raise_error
@@ -192,6 +216,10 @@ describe PreAssembly::Bundle do
 
   describe "source_id_suffix()" do
     
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
+
     it "should be empty if we are not asked to make source IDs unique" do
       @b.uniqify_source_ids = false
       @b.source_id_suffix.should == ''
@@ -207,6 +235,7 @@ describe PreAssembly::Bundle do
   describe "file and directory utilities" do
 
     before(:each) do
+      bundle_setup :yaml_revs
       @relative = 'abc/def.jpg'
       @full     = "#{@b.bundle_dir}/#{@relative}"
     end
@@ -215,8 +244,8 @@ describe PreAssembly::Bundle do
       @b.full_path_in_bundle_dir(@relative).should == @full
     end
 
-    it "rel_path_in_bundle_dir() should return expected value" do
-      @b.rel_path_in_bundle_dir(@full).should == @relative
+    it "relative_path() should return expected value" do
+      @b.relative_path(@b.bundle_dir, @full).should == @relative
     end
 
   end

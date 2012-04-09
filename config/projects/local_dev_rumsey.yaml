@@ -24,14 +24,14 @@
 :object_discovery:
   :use_manifest: false
   :glob:         '*'
-  :regex:        '(?ix) .+ \.tif $'
+  :regex:        '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
 
 :stageable_discovery:
   :use_container: false
   :glob:          '*'
-  :regex:         ''
+  :regex:         '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $ '
 
 :manifest_cols:
-  :object_container: filename
-  :source_id:        sourceid
-  :label:            label
+  :object_container: nil
+  :source_id:        nil
+  :label:            nil

@@ -32,6 +32,6 @@
   :regex:         nil
 
 :manifest_cols:
-  :object_container: nil
-  :source_id:        nil
-  :label:            nil
+  :object_container: filename
+  :source_id:        sourceid
+  :label:            label
