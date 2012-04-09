@@ -73,6 +73,19 @@ describe PreAssembly::Bundle do
       @b.discover_objects
     end
 
+    it "object_containers() should dispatch the correct method" do
+      exp = {
+        :object_containers_via_manifest => true,
+        :object_containers_via_crawl    => false,
+      }
+      exp.each do |meth, use_man|
+        @b.object_discovery[:use_manifest] = use_man
+        @b.stub meth
+        @b.should_receive(meth).exactly(1).times
+        @b.discover_objects
+      end
+    end
+
   end
 
   describe "load_exp_checksums()" do
