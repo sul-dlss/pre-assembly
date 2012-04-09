@@ -65,6 +65,14 @@ describe PreAssembly::Bundle do
 
   describe "object discovery" do
     
+    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
+      items = [0,11,22,33,44,55,66,77]
+      @b.limit_n = nil
+      @b.pruned_containers(items).should == items
+      @b.limit_n = 3
+      @b.pruned_containers(items).should == items[0..2]
+    end
+
     it "object_containers() should dispatch the correct method" do
       exp = {
         :object_containers_via_manifest => true,
@@ -72,7 +80,7 @@ describe PreAssembly::Bundle do
       }
       exp.each do |meth, use_man|
         @b.object_discovery[:use_manifest] = use_man
-        @b.stub meth
+        @b.stub(meth).and_return []
         @b.should_receive(meth).exactly(1).times
         @b.discover_objects
       end
