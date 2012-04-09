@@ -15,10 +15,6 @@ describe PreAssembly::Bundle do
       @b.should be_kind_of PreAssembly::Bundle
     end
 
-    it "can set the full path to the bundle directory" do
-      @b.full_path_in_bundle_dir('foo.txt').should be_kind_of String
-    end
-
     it "can exercise the run_log_msg" do
       @b.run_log_msg.should be_kind_of String
     end
@@ -67,12 +63,8 @@ describe PreAssembly::Bundle do
 
   end
 
-  describe "discover_objects()" do
+  describe "object discovery" do
     
-    it "should be runnable" do
-      @b.discover_objects
-    end
-
     it "object_containers() should dispatch the correct method" do
       exp = {
         :object_containers_via_manifest => true,
@@ -84,6 +76,36 @@ describe PreAssembly::Bundle do
         @b.should_receive(meth).exactly(1).times
         @b.discover_objects
       end
+    end
+
+    it "object_containers_via_manifest() should return expected information" do
+      col_name = :col_foo
+      vals     = [123, 456, 789]
+      rows     = vals.map { |v| double('row', col_name => v) }
+      @b.manifest_cols[:object_container] = col_name
+      @b.stub(:manifest_rows).and_return rows
+      @b.object_containers_via_manifest.should == vals
+    end
+
+    it "object_containers_via_crawl() should return expected information" do
+      items = [
+        'abc.txt', 'def.txt', 'ghi.txt',
+        '123.tif', '456.tif', '456.TIF',
+      ]
+      items_in_bundle = items.map { |i| @b.full_path_in_bundle_dir i }
+      @b.stub(:object_discovery_glob_results).and_return items_in_bundle
+      # No regex filtering.
+      @b.object_discovery[:regex] = ''
+      @b.object_containers_via_crawl.should == items
+      # Only tif files.
+      @b.object_discovery[:regex] = '(?i)\.tif$'
+      @b.object_containers_via_crawl.should == items[3..-1]
+    end
+
+    it "object_discovery_glob_results() should return expected information" do
+      exp = [1,2,3].map { |n| "#{@b.bundle_dir}/image#{n}.tif" }
+      @b.object_discovery[:glob] = '*.tif'
+      @b.object_discovery_glob_results.should == exp
     end
 
   end
@@ -170,6 +192,23 @@ describe PreAssembly::Bundle do
     it "should look like an integer if uniqify_source_ids is true" do
       @b.uniqify_source_ids = true
       @b.source_id_suffix.should =~ /^_\d+$/
+    end
+
+  end
+
+  describe "file and directory utilities" do
+
+    before(:each) do
+      @relative = 'abc/def.jpg'
+      @full     = "#{@b.bundle_dir}/#{@relative}"
+    end
+
+    it "full_path_in_bundle_dir() should return expected value" do
+      @b.full_path_in_bundle_dir(@relative).should == @full
+    end
+
+    it "rel_path_in_bundle_dir() should return expected value" do
+      @b.rel_path_in_bundle_dir(@full).should == @relative
     end
 
   end
