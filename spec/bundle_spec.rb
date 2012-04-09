@@ -26,9 +26,21 @@ describe PreAssembly::Bundle do
   end
 
   describe "validate_usage()" do
+
     before(:each) do
       @b.user_params = Hash[ @b.required_user_params.map { |p| [p, ''] } ]
       @exp_err = PreAssembly::BundleUsageError
+    end
+
+    it "N of required files should vary by project type" do
+      n_exp = {
+        :style_revs   => 2,
+        :style_rumsey => 0,
+      }
+      n_exp.each do |style, n| 
+        @b.project_style = style
+        @b.required_files.should have(n).items
+      end
     end
 
     it "should not raise an exception if requirements are satisfied" do

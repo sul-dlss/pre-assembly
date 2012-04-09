@@ -118,7 +118,6 @@ REFACTORING PLAN
 Bundle
 
     NEXT:
-        tests: Usage validation (might be done).
         tests: Discovery of object containers and stageable items.
 
         finish discover_objects()
