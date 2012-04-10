@@ -170,19 +170,29 @@ module PreAssembly
     ####
 
     def discover_objects
+      # Discovers the digital object containers and the stageable items within them.
+      # For each container, creates a new Digitalobject.
+      use_cont = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |container|
-        stageable = stageable_items_for container
-        # Create minimal digital objects.
+        # Assemble needed params. If using the container as the stageable item,
+        # the DigitalObject container is just the bundle_dir.
+        cont  = use_cont ? @bundle_dir : full_path_in_bundle_dir(container)
+        items = stageable_items_for(container)
+        # Create new DigitalObject.
+        dobj  = DigitalObject::new(:container => cont, :stageable_items => items)
+        @digital_objects.push dobj
       end
     end
 
     def pruned_containers(containers)
+      # If user configured pre-assembly to process a limited N of objects,
+      # return the requested number.
       j = @limit_n ? @limit_n - 1 : -1
       containers[0 .. j]
     end
 
     def object_containers
-      # Every object must reside in a single container, either a file or a directory.
+      # Every object must reside in a single container: either a file or a directory.
       # Those containers are either (a) specified in a manifest or (b) discovered 
       # through a pattern-based crawl of the bundle_dir.
       if @object_discovery[:use_manifest]
