@@ -118,7 +118,6 @@ REFACTORING PLAN
 Bundle
 
     finish discover_objects()
-        - identify stageable items
         - create minimal digital objects
 
     load_checksums

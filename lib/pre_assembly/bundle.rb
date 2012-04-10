@@ -171,15 +171,7 @@ module PreAssembly
 
     def discover_objects
       pruned_containers(object_containers).each do |container|
-        # Identify stageable items.
-        if @stageable_discovery[:use_container]
-          stageable = [container]
-        else
-          root      = File.join(@bundle_dir, container)
-          stageable = discover_items_via_crawl root, @stageable_discovery
-        end
-        # p({ :container => container, :stageable => stageable })
-
+        stageable = stageable_items_for container
         # Create minimal digital objects.
       end
     end
@@ -202,7 +194,9 @@ module PreAssembly
 
     def discover_containers_via_manifest
       # Discover object containers from a manifest.
-      # The manifest column to use is provided by the user.
+      # The relative path to the container is supplied in one of the
+      # manifest columns. The column name to use is configured by the
+      # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
       return manifest_rows.map { |r| r.send col_name }
     end
@@ -223,6 +217,12 @@ module PreAssembly
       # Returns the items found, after stripping off the root path.
       g = File.join root, glob_pattern
       return Dir.glob(g).map { |i| relative_path(root, i) }
+    end
+
+    def stageable_items_for(container)
+      return [container] if @stageable_discovery[:use_container]
+      root = File.join(@bundle_dir, container)
+      return discover_items_via_crawl(root, @stageable_discovery)
     end
 
 

@@ -78,6 +78,8 @@ describe PreAssembly::Bundle do
     end
 
     it "discover_objects()" do
+      bundle_setup :yaml_revs
+      @b.discover_objects
       bundle_setup :yaml_rumsey
       @b.discover_objects
     end
@@ -93,7 +95,7 @@ describe PreAssembly::Bundle do
     it "object_containers() should dispatch the correct method" do
       exp = {
         :discover_containers_via_manifest => true,
-        :discover_items_via_crawl    => false,
+        :discover_items_via_crawl         => false,
       }
       exp.each do |meth, use_man|
         @b.object_discovery[:use_manifest] = use_man
@@ -104,11 +106,11 @@ describe PreAssembly::Bundle do
     end
 
     it "discover_containers_via_manifest() should return expected information" do
-      col_name = :col_foo
-      vals     = [123, 456, 789]
-      rows     = vals.map { |v| double('row', col_name => v) }
+      col_name  = :col_foo
+      vals      = [123, 456, 789]
+      fake_rows = vals.map { |v| double('row', col_name => v) }
       @b.manifest_cols[:object_container] = col_name
-      @b.stub(:manifest_rows).and_return rows
+      @b.stub(:manifest_rows).and_return fake_rows
       @b.discover_containers_via_manifest.should == vals
     end
 
@@ -129,6 +131,18 @@ describe PreAssembly::Bundle do
     it "discovery_glob_results() should return expected information" do
       exp = [1,2,3].map { |n| "image#{n}.tif" }
       @b.discovery_glob_results(@b.bundle_dir, '*.tif').should == exp
+    end
+
+    it "stageable_items_for() should return [container] if use_container is true" do
+      container = 'foo.tif'
+      @b.stageable_discovery[:use_container] = true
+      @b.stageable_items_for(container).should == [container] 
+    end
+
+    it "stageable_items_for() should return expected crawl results" do
+      bundle_setup :yaml_rumsey
+      exp = ['2874009.tif', 'descMetadata.xml']
+      @b.stageable_items_for('cb837cp4412').should == exp
     end
 
   end
