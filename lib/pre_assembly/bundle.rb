@@ -418,3 +418,31 @@ module PreAssembly
   end
 
 end
+
+
+__END__
+
+bundle_dir = BD
+
+containers
+  BD/dirA
+  BD/dirB
+
+files
+  BD/dirA/1.tif
+  BD/dirA/1.xml
+  BD/dirA/foo/2.txt
+
+  etc for dirB
+
+
+bundle_dir = BD
+
+containers
+  BD/1.tif
+  BD/2.tif
+
+files
+  BD/1.tif
+  
+  etc for 2.tif
