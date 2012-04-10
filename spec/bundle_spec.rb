@@ -206,12 +206,12 @@ describe PreAssembly::Bundle do
   describe "load_checksums()" do
 
     before(:each) do
-      bundle_setup :yaml_revs
-      # @b.discover_objects
+      bundle_setup :yaml_rumsey
+      @b.discover_objects
     end
 
     it "zzzzz" do
-      # @b.load_checksums
+      @b.load_checksums
     end
 
   end
@@ -308,8 +308,8 @@ describe PreAssembly::Bundle do
       @full     = "#{@b.bundle_dir}/#{@relative}"
     end
 
-    it "full_path_in_bundle_dir() should return expected value" do
-      @b.full_path_in_bundle_dir(@relative).should == @full
+    it "path_in_bundle() should return expected value" do
+      @b.path_in_bundle(@relative).should == @full
     end
 
     it "relative_path() should return expected value" do
