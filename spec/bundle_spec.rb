@@ -120,17 +120,18 @@ describe PreAssembly::Bundle do
         @b.object_discovery[:use_manifest] = use_man
         @b.stub(meth).and_return []
         @b.should_receive(meth).exactly(1).times
-        @b.discover_objects
+        @b.object_containers
       end
     end
 
     it "discover_containers_via_manifest() should return expected information" do
       col_name  = :col_foo
-      vals      = [123, 456, 789]
+      vals      = %w(123.tif 456.tif 789.tif)
+      exp       = vals.map { |v| "#{@b.bundle_dir}/#{v}" }
       fake_rows = vals.map { |v| double('row', col_name => v) }
       @b.manifest_cols[:object_container] = col_name
       @b.stub(:manifest_rows).and_return fake_rows
-      @b.discover_containers_via_manifest.should == vals
+      @b.discover_containers_via_manifest.should == exp
     end
 
     it "discover_items_via_crawl() should return expected information" do
@@ -138,18 +139,19 @@ describe PreAssembly::Bundle do
         'abc.txt', 'def.txt', 'ghi.txt',
         '123.tif', '456.tif', '456.TIF',
       ]
-      @b.stub(:discovery_glob_results).and_return items
+      items = items.map { |i| "#{@b.bundle_dir}/#{i}" }
+      @b.stub(:dir_glob).and_return items
       # No regex filtering.
       @b.object_discovery[:regex] = ''
-      @b.discover_items_via_crawl(@bundle_dir, @b.object_discovery).should == items
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items
       # Only tif files.
       @b.object_discovery[:regex] = '(?i)\.tif$'
-      @b.discover_items_via_crawl(@bundle_dir, @b.object_discovery).should == items[3..-1]
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1]
     end
 
-    it "discovery_glob_results() should return expected information" do
-      exp = [1,2,3].map { |n| "image#{n}.tif" }
-      @b.discovery_glob_results(@b.bundle_dir, '*.tif').should == exp
+    it "dir_glob() should return expected information" do
+      exp = [1,2,3].map { |n| "#{@b.bundle_dir}/image#{n}.tif" }
+      @b.dir_glob("#{@b.bundle_dir}/*.tif").should == exp
     end
 
     it "stageable_items_for() should return [container] if use_container is true" do
@@ -160,15 +162,44 @@ describe PreAssembly::Bundle do
 
     it "stageable_items_for() should return expected crawl results" do
       bundle_setup :yaml_rumsey
-      exp = ['2874009.tif', 'descMetadata.xml']
-      @b.stageable_items_for('cb837cp4412').should == exp
+      container = "#{@b.bundle_dir}/cb837cp4412"
+      exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
+      @b.stageable_items_for(container).should == exp
     end
 
-    it "discover_all_files() should work" do
-      bundle_setup :yaml_revs
-      @b.discover_objects
-      # @b.discover_all_files "#{@b.bundle_dir}/cb837cp4412", [1,2,3]
+  end
+
+  
+  describe "discover_all_files()" do
+
+    before(:each) do
+      bundle_setup :yaml_rumsey
+      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
+      fs = %w(
+        cb837cp4412/2874009.tif
+        cb837cp4412/descMetadata.xml
+        cm057cr1745/2874008.tif
+        cm057cr1745/descMetadata.xml
+        cp898cs9946/2874018.tif
+        cp898cs9946/descMetadata.xml
+      )
+      @files = fs.map { |f| "#{@b.bundle_dir}/#{f}" }
+      @dirs  = ds.map { |d| "#{@b.bundle_dir}/#{d}" }
     end
+
+    it "should find files within directories" do
+      @b.discover_all_files(@dirs).should == @files
+    end
+
+    it "should find files within directories, recursively" do
+      @b.discover_all_files(@dirs).should == @files
+    end
+
+    it "should returns same arguments if given only files" do
+      fs = @files[0..1]
+      @b.discover_all_files(fs).should == fs
+    end
+
   end
 
 
@@ -176,11 +207,11 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       bundle_setup :yaml_revs
-      @b.discover_objects
+      # @b.discover_objects
     end
 
     it "zzzzz" do
-      @b.load_checksums
+      # @b.load_checksums
     end
 
   end
@@ -311,7 +342,8 @@ describe PreAssembly::Bundle do
       }
       exp.each do |project_style, files|
         bundle_setup project_style
-        @b.find_files_recursively(@b.bundle_dir).should == files
+        exp_files = files.map { |f| "#{@b.bundle_dir}/#{f}" }
+        @b.find_files_recursively(@b.bundle_dir).sort.should == exp_files
       end
     end
 

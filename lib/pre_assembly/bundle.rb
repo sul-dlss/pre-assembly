@@ -180,13 +180,18 @@ module PreAssembly
         # the DigitalObject container is just the bundle_dir.
         container  = use_c ? @bundle_dir : full_path_in_bundle_dir(c)
         stageables = stageable_items_for(c)
-        files      = discover_all_files(container, stageables)
+        files      = discover_all_files(stageables)
         # Create the object.
         params = {
           :container       => container,
           :stageable_items => stageables,
           :files           => files
         }
+
+        # puts container
+        # stageables.each { |s| puts "  s  = #{s}" }
+        # files.each      { |f| puts "  FF = #{f}" }
+
         dobj = DigitalObject::new params
         @digital_objects.push dobj
       end
@@ -216,7 +221,7 @@ module PreAssembly
       # manifest columns. The column name to use is configured by the
       # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
-      return manifest_rows.map { |r| r.send col_name }
+      return manifest_rows.map { |r| full_path_in_bundle_dir r.send(col_name) }
     end
 
     def discover_items_via_crawl(root, discovery_info)
@@ -225,33 +230,27 @@ module PreAssembly
       # The latter drives the two-stage discovery process:
       #   - A glob pattern to obtain a list of dirs and/or files.
       #   - A regex to filter that list.
-      glob  = discovery_info[:glob]
-      regex = Regexp.new discovery_info[:regex]
-      return discovery_glob_results(root, glob).select { |item| item =~ regex }
-    end
-
-    def discovery_glob_results(root, glob_pattern)
-      # Takes a root path and a glob() pattern.
-      # Returns the items found, after stripping off the root path.
-      g = File.join root, glob_pattern
-      return Dir.glob(g).map { |i| relative_path(root, i) }
+      glob    = discovery_info[:glob]
+      regex   = Regexp.new discovery_info[:regex]
+      pattern = File.join root, glob
+      items   = []
+      dir_glob(pattern).each do |item|
+        rel_path = relative_path root, item
+        items.push(item) if rel_path =~ regex
+      end
+      return items
     end
 
     def stageable_items_for(container)
       return [container] if @stageable_discovery[:use_container]
-      root = File.join(@bundle_dir, container)
-      return discover_items_via_crawl(root, @stageable_discovery)
+      return discover_items_via_crawl(container, @stageable_discovery)
     end
 
-    def discover_all_files(container, stageable_items)
+    def discover_all_files(stageable_items)
       # Returns a list of all of the object's files.
-      files = []
-      stageable_items.each do |item|
-        path = File.join container, item
-        fs   = find_files_recursively path
-        files.push *fs
-      end
-      return files
+      # This list differs from stageable_items only when some
+      # of the stageable_items are directories.
+      return stageable_items.map { |i| find_files_recursively i }.flatten
     end
 
 
@@ -384,13 +383,15 @@ module PreAssembly
       File.exists? file
     end
 
-    def find_files_recursively(base_path)
+    def dir_glob(pattern)
+      return Dir.glob pattern
+    end
+
+    def find_files_recursively(path)
       # Takes a path to a file or dir. Returns all files (but not dirs) 
-      # contained in the path, recursively. The returned files are expressed
-      # relative to the base path.
-      patterns = [base_path, "#{base_path}/**/*"]
-      files = Dir.glob(patterns).reject { |f| File.directory? f }
-      return files.map { |f| relative_path base_path, f }
+      # contained in the path, recursively.
+      patterns = [path, "#{path}/**/*"]
+      return Dir.glob(patterns).reject { |f| File.directory? f }
     end
 
 
