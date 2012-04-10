@@ -180,13 +180,14 @@ module PreAssembly
         # the DigitalObject container is just the bundle_dir.
         container  = use_c ? @bundle_dir : full_path_in_bundle_dir(c)
         stageables = stageable_items_for(c)
-        files      = discover_files(container, stageables)
-
-        dobj  = DigitalObject::new(
+        files      = discover_all_files(container, stageables)
+        # Create the object.
+        params = {
           :container       => container,
           :stageable_items => stageables,
           :files           => files
-        )
+        }
+        dobj = DigitalObject::new params
         @digital_objects.push dobj
       end
     end
@@ -240,6 +241,17 @@ module PreAssembly
       return [container] if @stageable_discovery[:use_container]
       root = File.join(@bundle_dir, container)
       return discover_items_via_crawl(root, @stageable_discovery)
+    end
+
+    def discover_all_files(container, stageable_items)
+      # Returns a list of all of the object's files.
+      files = []
+      stageable_items.each do |item|
+        path = File.join container, item
+        fs   = find_files_recursively path
+        files.push *fs
+      end
+      return files
     end
 
 
@@ -372,22 +384,13 @@ module PreAssembly
       File.exists? file
     end
 
-    def find_files_recursively(path)
+    def find_files_recursively(base_path)
       # Takes a path to a file or dir. Returns all files (but not dirs) 
-      # contained in the path, recursively.
-      patterns = [path, "#{path}/**/*"]
+      # contained in the path, recursively. The returned files are expressed
+      # relative to the base path.
+      patterns = [base_path, "#{base_path}/**/*"]
       files = Dir.glob(patterns).reject { |f| File.directory? f }
-      return files.map { |f| relative_path path, f }
-    end
-
-    def discover_files(container, stageable_items)
-      files = []
-      stageable_items.each do |item|
-        path = File.join container, item
-        fs   = find_files_recursively path
-        files.push *fs
-      end
-      return files
+      return files.map { |f| relative_path base_path, f }
     end
 
 

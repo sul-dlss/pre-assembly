@@ -164,6 +164,11 @@ describe PreAssembly::Bundle do
       @b.stageable_items_for('cb837cp4412').should == exp
     end
 
+    it "discover_all_files() should work" do
+      bundle_setup :yaml_revs
+      @b.discover_objects
+      # @b.discover_all_files "#{@b.bundle_dir}/cb837cp4412", [1,2,3]
+    end
   end
 
 
@@ -286,17 +291,28 @@ describe PreAssembly::Bundle do
     end
 
     it "find_files_recursively() should return expected information" do
-      exp = [
-        "checksums.txt", 
-        "image1.tif", 
-        "image2.tif", 
-        "image3.tif", 
-        "manifest.csv", 
-        "mods_template.xml",
-      ]
-      @b.find_files_recursively(@b.bundle_dir).should == exp
-      bundle_setup :yaml_rumsey
-      @b.find_files_recursively(@b.bundle_dir).should == exp
+      exp = {
+        :yaml_revs => [
+          "checksums.txt", 
+          "image1.tif", 
+          "image2.tif", 
+          "image3.tif", 
+          "manifest.csv", 
+          "mods_template.xml",
+        ],
+        :yaml_rumsey => [
+          "cb837cp4412/2874009.tif",
+          "cb837cp4412/descMetadata.xml",
+          "cm057cr1745/2874008.tif",
+          "cm057cr1745/descMetadata.xml",
+          "cp898cs9946/2874018.tif",
+          "cp898cs9946/descMetadata.xml",
+        ],
+      }
+      exp.each do |project_style, files|
+        bundle_setup project_style
+        @b.find_files_recursively(@b.bundle_dir).should == files
+      end
     end
 
   end
