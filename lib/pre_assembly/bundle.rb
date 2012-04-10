@@ -77,14 +77,14 @@ module PreAssembly
     end
 
     def setup
-      @manifest        = full_path_in_bundle_dir @manifest
-      @checksums_file  = full_path_in_bundle_dir @checksums_file
+      @manifest        = path_in_bundle @manifest
+      @checksums_file  = path_in_bundle @checksums_file
       @exp_checksums   = {}
       @digital_objects = []
       @manifest_rows   = nil
       @stager          = lambda { |f,d| FileUtils.copy f, d }
 
-      @descriptive_metadata_template = full_path_in_bundle_dir @descriptive_metadata_template
+      @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
       @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
 
       # Validate parameters supplied via user script.
@@ -178,7 +178,7 @@ module PreAssembly
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
         # the DigitalObject container is just the bundle_dir.
-        container  = use_c ? @bundle_dir : full_path_in_bundle_dir(c)
+        container  = use_c ? @bundle_dir : path_in_bundle(c)
         stageables = stageable_items_for(c)
         files      = discover_all_files(stageables)
         # Create the object.
@@ -221,7 +221,7 @@ module PreAssembly
       # manifest columns. The column name to use is configured by the
       # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
-      return manifest_rows.map { |r| full_path_in_bundle_dir r.send(col_name) }
+      return manifest_rows.map { |r| path_in_bundle r.send(col_name) }
     end
 
     def discover_items_via_crawl(root, discovery_info)
@@ -317,7 +317,7 @@ module PreAssembly
         f = r.filename
         dobj.add_image(
           :file_name     => f,
-          :full_path     => full_path_in_bundle_dir(f),
+          :full_path     => path_in_bundle(f),
           :provider_attr => Hash[r.each_pair.to_a],
           :exp_md5       => @exp_checksums[f]
         )
@@ -363,7 +363,7 @@ module PreAssembly
     # File and directory utilities.
     ####
 
-    def full_path_in_bundle_dir(rel_path)
+    def path_in_bundle(rel_path)
       File.join @bundle_dir, rel_path
     end
 
