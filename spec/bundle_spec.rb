@@ -12,6 +12,7 @@ describe PreAssembly::Bundle do
     @b  = PreAssembly::Bundle.new @ps
   end
 
+
   describe "initialize() and other setup" do
 
     before(:each) do
@@ -27,6 +28,7 @@ describe PreAssembly::Bundle do
     end
 
   end
+
 
   describe "validate_usage()" do
 
@@ -70,6 +72,7 @@ describe PreAssembly::Bundle do
     end
 
   end
+
 
   describe "object discovery" do
     
@@ -163,6 +166,21 @@ describe PreAssembly::Bundle do
 
   end
 
+
+  describe "load_checksums()" do
+
+    before(:each) do
+      bundle_setup :yaml_revs
+      @b.discover_objects
+    end
+
+    it "zzzzz" do
+      @b.load_checksums
+    end
+
+  end
+
+
   describe "load_exp_checksums()" do
 
     before(:each) do
@@ -225,6 +243,7 @@ describe PreAssembly::Bundle do
 
   end
 
+
   describe "validate_images()" do
 
     before(:each) do
@@ -244,23 +263,6 @@ describe PreAssembly::Bundle do
 
   end
 
-  describe "source_id_suffix()" do
-    
-    before(:each) do
-      bundle_setup :yaml_revs
-    end
-
-    it "should be empty if we are not asked to make source IDs unique" do
-      @b.uniqify_source_ids = false
-      @b.source_id_suffix.should == ''
-    end
-
-    it "should look like an integer if uniqify_source_ids is true" do
-      @b.uniqify_source_ids = true
-      @b.source_id_suffix.should =~ /^_\d+$/
-    end
-
-  end
 
   describe "file and directory utilities" do
 
@@ -278,6 +280,64 @@ describe PreAssembly::Bundle do
       @b.relative_path(@b.bundle_dir, @full).should == @relative
     end
 
+    it "should be able to exercise file-dir existence methods" do
+      @b.file_exists(@b.manifest).should == true
+      @b.dir_exists(@b.bundle_dir).should == true
+    end
+
+    it "find_files_recursively() should return expected information" do
+      exp = [
+        "checksums.txt", 
+        "image1.tif", 
+        "image2.tif", 
+        "image3.tif", 
+        "manifest.csv", 
+        "mods_template.xml",
+      ]
+      @b.find_files_recursively(@b.bundle_dir).should == exp
+      bundle_setup :yaml_rumsey
+      @b.find_files_recursively(@b.bundle_dir).should == exp
+    end
+
+  end
+
+
+  describe "misc utilities" do
+
+    before(:each) do
+      bundle_setup :yaml_revs
+    end
+
+    it "source_id_suffix() should be empty if not making unique source IDs" do
+      @b.uniqify_source_ids = false
+      @b.source_id_suffix.should == ''
+    end
+
+    it "source_id_suffix() should look like an integer if making unique source IDs" do
+      @b.uniqify_source_ids = true
+      @b.source_id_suffix.should =~ /^_\d+$/
+    end
+
+    it "symbolize_keys() should handle various data structures correctly" do
+      tests = [
+        [ {}, {} ],
+        [ [], [] ],
+        [ [1,2], [1,2] ],
+        [ 123, 123 ],
+        [
+          { :foo => 123, 'bar' => 456 },
+          { :foo => 123, :bar  => 456 } 
+        ],
+        [
+          { :foo => [1,2,3], 'bar' => { 'x' => 99, 'y' => { 'AA' => 22, 'BB' => 33 } } },
+          { :foo => [1,2,3], :bar  => { :x  => 99, :y  => { :AA  => 22, :BB  => 33 } } },
+        ],
+
+      ]
+      tests.each do |input, exp|
+        PreAssembly::Bundle.symbolize_keys(input).should == exp
+      end
+    end
   end
 
 end

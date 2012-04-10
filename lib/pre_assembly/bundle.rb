@@ -46,7 +46,9 @@ module PreAssembly
 
     def initialize(params = {})
       # Unpack the user-supplied parameters.
-      conf                 = Dor::Config.pre_assembly
+      conf   = Dor::Config.pre_assembly
+      params = Bundle.symbolize_keys params
+
       @user_params         = params
       @project_style       = params[:project_style].to_sym
       @bundle_dir          = params[:bundle_dir]     || ''
@@ -171,15 +173,20 @@ module PreAssembly
 
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
-      # For each container, creates a new Digitalobject.
-      use_cont = @stageable_discovery[:use_container]
-      pruned_containers(object_containers).each do |container|
-        # Assemble needed params. If using the container as the stageable item,
+      # For each container, create a new Digitalobject.
+      use_c = @stageable_discovery[:use_container]
+      pruned_containers(object_containers).each do |c|
+        # If using the container as the stageable item,
         # the DigitalObject container is just the bundle_dir.
-        cont  = use_cont ? @bundle_dir : full_path_in_bundle_dir(container)
-        items = stageable_items_for(container)
-        # Create new DigitalObject.
-        dobj  = DigitalObject::new(:container => cont, :stageable_items => items)
+        container  = use_c ? @bundle_dir : full_path_in_bundle_dir(c)
+        stageables = stageable_items_for(c)
+        files      = discover_files(container, stageables)
+
+        dobj  = DigitalObject::new(
+          :container       => container,
+          :stageable_items => stageables,
+          :files           => files
+        )
         @digital_objects.push dobj
       end
     end
@@ -239,6 +246,21 @@ module PreAssembly
     ####
     # Checksums.
     ####
+
+    # load_checksums
+    #     - iterate over all files of all digital objects
+    #         get_checksum(dobj, file)
+    #             - load checksum from the provider supplied materials, or compute
+    #             - return the checksum
+    #         attach checksum to the file
+
+    def load_checksums
+      @digital_objects.each do |dobj|
+        dobj.files.each do |file|
+          # puts file
+        end
+      end
+    end
 
     def load_exp_checksums
       # Read checksums_file, using its content to populate a hash of expected checksums.
@@ -327,13 +349,8 @@ module PreAssembly
 
 
     ####
-    # Misc utilities.
+    # File and directory utilities.
     ####
-
-    def source_id_suffix
-      # Used during development to append a timestamp to source IDs.
-      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
-    end
 
     def full_path_in_bundle_dir(rel_path)
       File.join @bundle_dir, rel_path
@@ -353,6 +370,46 @@ module PreAssembly
 
     def file_exists(file)
       File.exists? file
+    end
+
+    def find_files_recursively(path)
+      # Takes a path to a file or dir. Returns all files (but not dirs) 
+      # contained in the path, recursively.
+      patterns = [path, "#{path}/**/*"]
+      files = Dir.glob(patterns).reject { |f| File.directory? f }
+      return files.map { |f| relative_path path, f }
+    end
+
+    def discover_files(container, stageable_items)
+      files = []
+      stageable_items.each do |item|
+        path = File.join container, item
+        fs   = find_files_recursively path
+        files.push *fs
+      end
+      return files
+    end
+
+
+    ####
+    # Misc utilities.
+    ####
+
+    def source_id_suffix
+      # Used during development to append a timestamp to source IDs.
+      @uniqify_source_ids ? Time.now.strftime('_%s') : ''
+    end
+
+    def self.symbolize_keys(h)
+      # Takes a data structure and recursively converts all hash keys
+      # from strings to symbols.
+      if h.instance_of? Hash
+        h.inject({}) { |hh,(k,v)| hh[k.to_sym] = symbolize_keys(v); hh }
+      elsif h.instance_of? Array
+        h.map { |v| symbolize_keys(v) }
+      else
+        h
+      end
     end
 
   end
