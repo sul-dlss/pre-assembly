@@ -117,9 +117,6 @@ REFACTORING PLAN
 
 Bundle
 
-    finish discover_objects()
-        - create minimal digital objects
-
     load_checksums
         - iterate over all files of all digital objects
             get_checksum(dobj, file)

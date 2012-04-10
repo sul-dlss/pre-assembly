@@ -77,11 +77,27 @@ describe PreAssembly::Bundle do
       bundle_setup :yaml_revs
     end
 
-    it "discover_objects()" do
-      bundle_setup :yaml_revs
-      @b.discover_objects
-      bundle_setup :yaml_rumsey
-      @b.discover_objects
+    it "discover_objects() should make correct N of digital objects and stageable items" do
+      exp = {
+        :yaml_revs   => [1,1,1],
+        :yaml_rumsey => [2,2,2],
+      }
+      exp.each do |project_style, n_stageables|
+        bundle_setup project_style
+        @b.discover_objects
+        dobjs = @b.digital_objects
+
+        # Corrent N of items.
+        dobjs.should have(n_stageables.size).items
+        dobjs.map { |dobj| dobj.stageable_items.size }.should == n_stageables
+        
+        # Correct handling of digital object container.
+        if @b.stageable_discovery[:use_container]
+          dobjs[0].container.should == @b.bundle_dir
+        else
+          dobjs[0].container.should_not == @b.bundle_dir
+        end
+      end
     end
 
     it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do

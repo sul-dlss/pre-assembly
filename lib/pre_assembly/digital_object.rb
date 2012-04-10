@@ -5,6 +5,8 @@ module PreAssembly
     include PreAssembly::Logging
 
     attr_accessor(
+      :container,
+      :stageable_items,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -29,23 +31,25 @@ module PreAssembly
     ####
 
     def initialize(params = {})
-      @project_name          = params[:project_name]
-      @apo_druid_id          = params[:apo_druid_id]
-      @set_druid_id          = params[:set_druid_id]
-      @label                 = params[:label]
-      @source_id             = { params[:project_name] => params[:source_id] }
-      @druid                 = nil
-      @pid                   = ''
-      @images                = []
-      @content_metadata_xml  = ''
-      @content_md_file_name  = Dor::Config.pre_assembly.cm_file_name
-      @desc_metadata_xml     = ''
+      @container                  = params[:container]
+      @stageable_items            = params[:stageable_items]
+      @project_name               = params[:project_name]
+      @apo_druid_id               = params[:apo_druid_id]
+      @set_druid_id               = params[:set_druid_id]
+      @label                      = params[:label]
+      @source_id                  = { params[:project_name] => params[:source_id] }
+      @druid                      = nil
+      @pid                        = ''
+      @images                     = []
+      @content_metadata_xml       = ''
+      @content_md_file_name       = Dor::Config.pre_assembly.cm_file_name
+      @desc_metadata_xml          = ''
       @desc_metadata_xml_template = params[:desc_metadata_xml_template]
-      @desc_md_file_name     = Dor::Config.pre_assembly.dm_file_name
-      @workflow_metadata_xml = ''
-      @dor_object            = nil
-      @druid_tree_dir        = ''
-      @publish_attr          = {
+      @desc_md_file_name          = Dor::Config.pre_assembly.dm_file_name
+      @workflow_metadata_xml      = ''
+      @dor_object                 = nil
+      @druid_tree_dir             = ''
+      @publish_attr               = {
         :preserve => params[:preserve],
         :shelve   => params[:shelve],
         :publish  => params[:publish],
