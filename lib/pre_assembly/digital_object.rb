@@ -7,7 +7,7 @@ module PreAssembly
     attr_accessor(
       :container,
       :stageable_items,
-      :files,
+      :object_files,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -35,7 +35,7 @@ module PreAssembly
     def initialize(params = {})
       @container                  = params[:container]
       @stageable_items            = params[:stageable_items]
-      @files                      = params[:files]
+      @object_files               = params[:object_files]
       @project_name               = params[:project_name]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]

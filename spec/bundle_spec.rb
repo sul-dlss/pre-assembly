@@ -91,7 +91,7 @@ describe PreAssembly::Bundle do
         dobjs.should have(n_dobj).items
         dobjs.each do |dobj|
           dobj.stageable_items.size.should == n_stag
-          dobj.files.size.should == n_file
+          dobj.object_files.size.should == n_file
         end
       end
     end
@@ -215,12 +215,12 @@ describe PreAssembly::Bundle do
       @b.stageable_items_for(container).should == exp
     end
 
-    it "should be able to exercise all_files()" do
+    it "should be able to exercise all_object_files()" do
       bundle_setup :style_revs
       fake_files = [[1,2], [3,4], [5,6]]
-      fake_dobjs = fake_files.map { |fs| double('dobj', :files => fs) }
+      fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
       @b.digital_objects = fake_dobjs
-      @b.all_files.should == fake_files.flatten
+      @b.all_object_files.should == fake_files.flatten
     end
 
   end
