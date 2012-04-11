@@ -117,17 +117,7 @@ REFACTORING PLAN
 
 Bundle
 
-    validate_files
-        - iterate over all files of all digital objects
-            - if an image type: validate it using assembly-image
-            - otherwise: skip it
-            - more validation can be added later
-
     process_manifest
-        - skip if project doesn't have a manifest
-        - set dobj attributes needed to round out object registration
-            label
-            source_id
 
     process_digital_objects
         - no change
