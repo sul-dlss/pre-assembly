@@ -185,14 +185,9 @@ module PreAssembly
         params = {
           :container       => container,
           :stageable_items => stageables,
-          :files           => files
+          :files           => files.map { |f| ObjectFile.new :path => f }
         }
-
-        # puts container
-        # stageables.each { |s| puts "  s  = #{s}" }
-        # files.each      { |f| puts "  FF = #{f}" }
-
-        dobj = DigitalObject::new params
+        dobj = DigitalObject.new params
         @digital_objects.push dobj
       end
     end
