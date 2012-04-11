@@ -185,7 +185,7 @@ module PreAssembly
         params = {
           :container       => container,
           :stageable_items => stageables,
-          :files           => files.map { |f| ObjectFile.new :path => f }
+          :object_files    => files.map { |f| ObjectFile.new :path => f }
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
@@ -248,10 +248,10 @@ module PreAssembly
       return stageable_items.map { |i| find_files_recursively i }.flatten
     end
 
-    def all_files
-      # A convenience method to return all files for all digital objects.
+    def all_object_files
+      # A convenience method to return all ObjectFiles for all digital objects.
       # Also used for stubbing during testing.
-      @digital_objects.map { |dobj| dobj.files }.flatten
+      @digital_objects.map { |dobj| dobj.object_files }.flatten
     end
 
 
@@ -259,15 +259,13 @@ module PreAssembly
     # Checksums.
     ####
 
-    # load_checksums
-    #     - iterate over all files of all digital objects
-    #         get_checksum(dobj, file)
-    #             - load checksum from the provider supplied materials, or compute
-    #             - return the checksum
-    #         attach checksum to the file
+    # get_checksum(dobj, file)
+    #     - load checksum from the provider supplied materials, or compute
+    #     - return the checksum
+    # attach checksum to the file
 
     def load_checksums
-      all_files.each do |file|
+      all_object_files.each do |file|
         # puts file
       end
     end
@@ -418,31 +416,3 @@ module PreAssembly
   end
 
 end
-
-
-__END__
-
-bundle_dir = BD
-
-containers
-  BD/dirA
-  BD/dirB
-
-files
-  BD/dirA/1.tif
-  BD/dirA/1.xml
-  BD/dirA/foo/2.txt
-
-  etc for dirB
-
-
-bundle_dir = BD
-
-containers
-  BD/1.tif
-  BD/2.tif
-
-files
-  BD/1.tif
-  
-  etc for 2.tif
