@@ -5,6 +5,7 @@ describe PreAssembly::Bundle do
       :style_revs   => File.read('config/projects/local_dev_revs.yaml'),
       :style_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
     }
+    @md5_regex = /^[0-9a-f]{32}$/
   end
 
   def bundle_setup(project_style)
@@ -229,13 +230,26 @@ describe PreAssembly::Bundle do
 
   describe "load_checksums()" do
 
-    before(:each) do
-      bundle_setup :style_rumsey
-      @b.discover_objects
+    it "should call load_provider_checksums if the checksums file is present" do
+      bundle_setup :style_revs
+      @b.should_receive(:all_object_files).and_return []
+      @b.should_receive(:load_provider_checksums)
+      @b.load_checksums
     end
 
-    it "###should ..." do
+    it "should call not call load_provider_checksums when no checksums file is present" do
+      bundle_setup :style_rumsey
+      @b.should_receive(:all_object_files).and_return []
+      @b.should_not_receive(:load_provider_checksums)
       @b.load_checksums
+    end
+
+    it "should load checksums and attach them to the ObjectFiles" do
+      bundle_setup :style_rumsey
+      @b.discover_objects
+      @b.all_object_files.each { |f| f.checksum.should == nil }
+      @b.load_checksums
+      @b.all_object_files.each { |f| f.checksum.should =~ @md5_regex }
     end
 
   end
@@ -258,7 +272,7 @@ describe PreAssembly::Bundle do
     end
 
     it "retrieve_checksum() should compute checksum when checksum is not available" do
-      @b.provider_checksums = {}          # No provider checksums present.
+      @b.provider_checksums = {}
       @b.should_receive :compute_checksum
       @b.retrieve_checksum @file_path
     end
@@ -266,7 +280,7 @@ describe PreAssembly::Bundle do
     it "compute_checksum() should return an md5 checksum" do
       c = @b.compute_checksum @file_path
       c.should be_kind_of String
-      c.should =~ /^[0-9a-f]{32}$/
+      c.should =~ @md5_regex
     end
 
   end
