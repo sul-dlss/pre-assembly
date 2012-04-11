@@ -7,6 +7,7 @@ gem 'dor-services', '>=3.3.2'
 gem 'lyber-core'
 gem 'assembly-image'
 gem 'rest-client'
+gem 'rake'
 
 group :test do
   gem 'equivalent-xml'
