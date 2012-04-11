@@ -395,7 +395,7 @@ module PreAssembly
     def delete_digital_objects
       # During development, delete objects the we register.
       log "delete_digital_objects()"
-      @digital_objects.each { |dobj| dobj.unregister }
+      @digital_objects.each { |dobj| dobj.unregister if dobj.reg_by_pre_assembly }
     end
 
 
