@@ -14,19 +14,14 @@ Refactoring on the multi-project branch
 
 Bundle
 
-    Stop passing so many params from bundle down to digital objects
-        - define a class method in Bundle that returns an OpenStruct
-        - it will contain all Bundle-level parameters needed by digital objects
-
-            bconf         = Bundle.config
-            @apo_druid_id = bconf.apo_druid_id
-
-    process_digital_objects
-        - no change
+    Pass all bundle-level params to the digital objects
+        - maybe use an OpenStruct
+        - confirm that I've passed everything to the digital objects
 
     delete_digital_objects
-        - only if @cleanup
-        - only if pre-assembly registered the objects
+        - tests for reg_by_pre_assembly
+
+    comment out the revs-centric code
 
 DigitalObject
 
@@ -35,7 +30,7 @@ DigitalObject
         - revs:
             claim_druid()
             register()
-            set attribute: @registered_by_pre_assembly
+            set attribute: @reg_by_pre_assembly
         - other projects:
             get druid from subdir or barcode
 

@@ -9,6 +9,7 @@ module PreAssembly
       :stageable_items,
       :object_files,
       :manifest_attr,
+      :reg_by_pre_assembly,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -38,6 +39,7 @@ module PreAssembly
       @stageable_items            = params[:stageable_items]
       @object_files               = params[:object_files]
       @manifest_attr              = params[:manifest_attr]
+      @reg_by_pre_assembly        = false
       @project_name               = params[:project_name]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]
