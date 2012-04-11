@@ -259,14 +259,10 @@ module PreAssembly
     # Checksums.
     ####
 
-    # get_checksum(dobj, file)
-    #     - load checksum from the provider supplied materials, or compute
-    #     - return the checksum
-    # attach checksum to the file
-
     def load_checksums
       all_object_files.each do |file|
-        # puts file
+        # load checksum from the provider supplied materials, or compute
+        # attach checksum to the file
       end
     end
 
