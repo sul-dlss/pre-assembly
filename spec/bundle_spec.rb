@@ -316,6 +316,42 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "manifest_rows()" do
+
+    it "should load the manifest CSV only once" do
+      bundle_setup :style_revs
+      # Stub out a method that reads the manifest CSV.
+      fake_data = [0, 11, 222, 3333]
+      meth_name = :load_manifest_rows_from_csv
+      @b.stub(meth_name).and_return fake_data
+      # Our stubbed method should be called only once, even though
+      # we call manifest_rows() multiple times.
+      @b.should_receive(meth_name).once
+      3.times { @b.manifest_rows.should == fake_data }
+    end
+
+    it "should return empty array for bundles that do not use a manifest" do
+      bundle_setup :style_rumsey
+      @b.manifest_rows.should == []
+    end
+
+  end
+
+  ####################
+
+  describe "process_manifest()" do
+
+    before(:each) do
+      bundle_setup :style_revs
+    end
+
+    it "...." do
+    end
+
+  end
+
+  ####################
+
   describe "load_manifest()" do
 
     before(:all) do

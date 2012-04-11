@@ -296,14 +296,25 @@ module PreAssembly
     ####
 
     def manifest_rows
-      @manifest_rows ||= import(@manifest) { read_attributes_from_file }
+      # On first call, loads the manifest data (does not reload on subsequent calls).
+      # If bundles is not using a manifest, just loads and returns emtpy array.
+      return @manifest_rows if @manifest_rows
+      @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
     end
 
-    # process_manifest
-    #     - skip if project doesn't have a manifest
-    #     - set dobj attributes needed to round out object registration
-    #         label
-    #         source_id
+    def load_manifest_rows_from_csv
+      # Wrap the functionality provided by csv-mapper.
+      return import(@manifest) { read_attributes_from_file }
+    end
+
+    def process_manifest
+      # Do nothing if the bundle doesn't have a manifest.
+      return unless @manifest
+
+      # set dobj attributes needed to round out object registration
+      #   label
+      #   source_id
+    end
 
     def load_manifest
       # Read manifest and initialize digital objects.
