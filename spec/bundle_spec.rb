@@ -341,11 +341,31 @@ describe PreAssembly::Bundle do
 
   describe "process_manifest()" do
 
-    before(:each) do
-      bundle_setup :style_revs
+    it "should do nothing for bundles that do not use a manifest" do
+      bundle_setup :style_rumsey
+      @b.discover_objects
+      @b.should_not_receive :manifest_rows
+      @b.process_manifest
     end
 
-    it "...." do
+    it "should augment the digital objects with additional information" do
+      bundle_setup :style_revs
+      # Discover the objects: we should find some.
+      @b.discover_objects
+      @b.digital_objects.should have(3).items
+      # Before processing manifest: various attributes should be nil.
+      @b.digital_objects.each do |dobj|
+        dobj.label.should         == nil
+        dobj.source_id.should     == nil
+        dobj.manifest_attr.should == nil
+      end
+      # And now those attributes should have content.
+      @b.process_manifest
+      @b.digital_objects.each do |dobj|
+        dobj.label.should be_kind_of         String
+        dobj.source_id.should be_kind_of     String
+        dobj.manifest_attr.should be_kind_of Hash
+      end
     end
 
   end
