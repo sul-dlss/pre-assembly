@@ -17,6 +17,8 @@ OTHER REFACTORING NOTES
 
 Refactor desc_meta var naming.
 
+Add log() calls to various new methods.
+
 Stop passing so many params from bundle down to digital objects
     - define a class method in Bundle that returns an OpenStruct
     - it will contain all Bundle-level parameters needed by digital objects
@@ -114,8 +116,6 @@ REFACTORING PLAN
 ----------------
 
 Bundle
-
-    load_checksums
 
     validate_files
         - iterate over all files of all digital objects

@@ -28,7 +28,7 @@ module PreAssembly
       :validate_usage,
       :user_params,
       :project_style,
-      :exp_checksums,
+      :provider_checksums,
       :publish,
       :shelve,
       :preserve,
@@ -53,8 +53,8 @@ module PreAssembly
       @project_style       = params[:project_style].to_sym
       @bundle_dir          = params[:bundle_dir]     || ''
       @staging_dir         = params[:staging_dir]
-      @manifest            = params[:manifest]       || conf.manifest_file_name
-      @checksums_file      = params[:checksums_file] || conf.checksums_file_name
+      @manifest            = params[:manifest]
+      @checksums_file      = params[:checksums_file]
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
@@ -77,12 +77,12 @@ module PreAssembly
     end
 
     def setup
-      @manifest        = path_in_bundle @manifest
-      @checksums_file  = path_in_bundle @checksums_file
-      @exp_checksums   = {}
-      @digital_objects = []
-      @manifest_rows   = nil
-      @stager          = lambda { |f,d| FileUtils.copy f, d }
+      @manifest           = path_in_bundle @manifest       unless @checksums_file.nil?
+      @checksums_file     = path_in_bundle @checksums_file unless @checksums_file.nil?
+      @provider_checksums = {}
+      @digital_objects    = []
+      @manifest_rows      = nil
+      @stager             = lambda { |f,d| FileUtils.copy f, d }
 
       @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
       @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
@@ -145,7 +145,7 @@ module PreAssembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       if @project_style == :style_revs
-        load_exp_checksums
+        load_provider_checksums
         load_manifest
         validate_images
         process_digital_objects
@@ -260,25 +260,36 @@ module PreAssembly
     ####
 
     def load_checksums
+      load_provider_checksums if @checksums_file
       all_object_files.each do |file|
-        # load checksum from the provider supplied materials, or compute
-        # attach checksum to the file
+        # file.checksum = retrieve_checksum(file.path)
       end
     end
 
-    def load_exp_checksums
+    def load_provider_checksums
       # Read checksums_file, using its content to populate a hash of expected checksums.
-      log "load_exp_checksums()"
+      log "load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
-        @exp_checksums[file_name] = md5
+        @provider_checksums[file_name] = md5
       }
     end
 
     def read_exp_checksums
+      # Read checksums file. Wrapped in a method for unit testing.
       IO.read @checksums_file
     end
 
+    def retrieve_checksum(file_path)
+      # Takes an ObjectFile.path. Returns md5 checksum, which either (a) comes
+      # from a provider-supplied checksums file, or (b) is computed here.
+      @provider_checksums[file_path] ||= compute_checksum(file_path)
+    end
+
+    def compute_checksum(file_path)
+      return Checksum::Tools.new({}, :md5).digest_file(file_path)
+    end
+      
 
     ####
     # Manifest.
@@ -312,7 +323,7 @@ module PreAssembly
           :file_name     => f,
           :full_path     => path_in_bundle(f),
           :provider_attr => Hash[r.each_pair.to_a],
-          :exp_md5       => @exp_checksums[f]
+          :exp_md5       => @provider_checksums[f]
         )
         @digital_objects.push dobj
 
