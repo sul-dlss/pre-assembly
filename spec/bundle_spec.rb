@@ -2,8 +2,8 @@ describe PreAssembly::Bundle do
 
   before(:all) do
     @yaml = {
-      :yaml_revs   => File.read('config/projects/local_dev_revs.yaml'),
-      :yaml_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
+      :style_revs   => File.read('config/projects/local_dev_revs.yaml'),
+      :style_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
     }
   end
 
@@ -17,7 +17,7 @@ describe PreAssembly::Bundle do
   describe "initialize() and other setup" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
     end
 
     it "can initialize a Bundle" do
@@ -35,7 +35,7 @@ describe PreAssembly::Bundle do
   describe "validate_usage()" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
       @b.user_params = Hash[ @b.required_user_params.map { |p| [p, ''] } ]
       @exp_err = PreAssembly::BundleUsageError
     end
@@ -77,33 +77,78 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "object discovery" do
+  describe "object discovery: discover_objects()" do
     
-    before(:each) do
-      bundle_setup :yaml_revs
-    end
-
-    it "discover_objects() should make correct N of digital objects and stageable items" do
-      exp = {
-        :yaml_revs   => [1,1,1],
-        :yaml_rumsey => [2,2,2],
-      }
-      exp.each do |project_style, n_stageables|
+    it "discover_objects() should file the correct N objects, stageables, and files" do
+      tests = [
+        [ :style_revs,   3, 1, 1 ],
+        [ :style_rumsey, 3, 2, 2 ],
+      ]
+      tests.each do |project_style, n_dobj, n_stag, n_file|
         bundle_setup project_style
         @b.discover_objects
         dobjs = @b.digital_objects
-
-        # Corrent N of items.
-        dobjs.should have(n_stageables.size).items
-        dobjs.map { |dobj| dobj.stageable_items.size }.should == n_stageables
-        
-        # Correct handling of digital object container.
-        if @b.stageable_discovery[:use_container]
-          dobjs[0].container.should == @b.bundle_dir
-        else
-          dobjs[0].container.should_not == @b.bundle_dir
+        dobjs.should have(n_dobj).items
+        dobjs.each do |dobj|
+          dobj.stageable_items.size.should == n_stag
+          dobj.files.size.should == n_file
         end
       end
+    end
+
+    it "discover_objects() should handle containers correctly" do
+      # Project that uses containers as stageables.
+      bundle_setup :style_revs
+      @b.discover_objects
+      @b.digital_objects[0].container.should == @b.bundle_dir
+      # Project that does not.
+      bundle_setup :style_rumsey
+      @b.discover_objects
+      @b.digital_objects[0].container.should_not == @b.bundle_dir
+    end
+
+  end
+
+  ####################
+  
+  describe "object discovery: discover_all_files()" do
+
+    before(:each) do
+      bundle_setup :style_rumsey
+      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
+      fs = %w(
+        cb837cp4412/2874009.tif
+        cb837cp4412/descMetadata.xml
+        cm057cr1745/2874008.tif
+        cm057cr1745/descMetadata.xml
+        cp898cs9946/2874018.tif
+        cp898cs9946/descMetadata.xml
+      )
+      @files = fs.map { |f| @b.path_in_bundle f }
+      @dirs  = ds.map { |d| @b.path_in_bundle d }
+    end
+
+    it "should find files within directories" do
+      @b.discover_all_files(@dirs).should == @files
+    end
+
+    it "should find files within directories, recursively" do
+      @b.discover_all_files(@dirs).should == @files
+    end
+
+    it "should returns same arguments if given only files" do
+      fs = @files[0..1]
+      @b.discover_all_files(fs).should == fs
+    end
+
+  end
+  
+  ####################
+
+  describe "object discovery: other" do
+    
+    before(:each) do
+      bundle_setup :style_revs
     end
 
     it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
@@ -164,14 +209,14 @@ describe PreAssembly::Bundle do
     end
 
     it "stageable_items_for() should return expected crawl results" do
-      bundle_setup :yaml_rumsey
+      bundle_setup :style_rumsey
       container = @b.path_in_bundle "cb837cp4412"
       exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
       @b.stageable_items_for(container).should == exp
     end
 
     it "should be able to exercise all_files()" do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
       fake_files = [[1,2], [3,4], [5,6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :files => fs) }
       @b.digital_objects = fake_dobjs
@@ -181,45 +226,11 @@ describe PreAssembly::Bundle do
   end
 
   ####################
-  
-  describe "discover_all_files()" do
-
-    before(:each) do
-      bundle_setup :yaml_rumsey
-      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
-      fs = %w(
-        cb837cp4412/2874009.tif
-        cb837cp4412/descMetadata.xml
-        cm057cr1745/2874008.tif
-        cm057cr1745/descMetadata.xml
-        cp898cs9946/2874018.tif
-        cp898cs9946/descMetadata.xml
-      )
-      @files = fs.map { |f| @b.path_in_bundle f }
-      @dirs  = ds.map { |d| @b.path_in_bundle d }
-    end
-
-    it "should find files within directories" do
-      @b.discover_all_files(@dirs).should == @files
-    end
-
-    it "should find files within directories, recursively" do
-      @b.discover_all_files(@dirs).should == @files
-    end
-
-    it "should returns same arguments if given only files" do
-      fs = @files[0..1]
-      @b.discover_all_files(fs).should == fs
-    end
-
-  end
-
-  ####################
 
   describe "load_checksums()" do
 
     before(:each) do
-      bundle_setup :yaml_rumsey
+      bundle_setup :style_rumsey
       @b.discover_objects
     end
 
@@ -234,7 +245,7 @@ describe PreAssembly::Bundle do
   describe "load_exp_checksums()" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
     end
 
     it "empty string yields no checksums" do
@@ -270,7 +281,7 @@ describe PreAssembly::Bundle do
     end
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
       @csv_rows = (1..4).map { CsvParams.new(*@vals) }
       @b.stub(:manifest_rows).and_return(@csv_rows)
     end
@@ -299,7 +310,7 @@ describe PreAssembly::Bundle do
   describe "validate_images()" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
     end
 
     it "should not raise errors with valid tif files" do
@@ -320,7 +331,7 @@ describe PreAssembly::Bundle do
   describe "file and directory utilities" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
       @relative = 'abc/def.jpg'
       @full     = @b.path_in_bundle @relative
     end
@@ -340,7 +351,7 @@ describe PreAssembly::Bundle do
 
     it "find_files_recursively() should return expected information" do
       exp = {
-        :yaml_revs => [
+        :style_revs => [
           "checksums.txt", 
           "image1.tif", 
           "image2.tif", 
@@ -348,7 +359,7 @@ describe PreAssembly::Bundle do
           "manifest.csv", 
           "mods_template.xml",
         ],
-        :yaml_rumsey => [
+        :style_rumsey => [
           "cb837cp4412/2874009.tif",
           "cb837cp4412/descMetadata.xml",
           "cm057cr1745/2874008.tif",
@@ -371,7 +382,7 @@ describe PreAssembly::Bundle do
   describe "misc utilities" do
 
     before(:each) do
-      bundle_setup :yaml_revs
+      bundle_setup :style_revs
     end
 
     it "source_id_suffix() should be empty if not making unique source IDs" do
