@@ -116,11 +116,6 @@ REFACTORING PLAN
 Bundle
 
     load_checksums
-        - iterate over all files of all digital objects
-            get_checksum(dobj, file)
-                - load checksum from the provider supplied materials, or compute
-                - return the checksum
-            attach checksum to the file
 
     validate_files
         - iterate over all files of all digital objects
