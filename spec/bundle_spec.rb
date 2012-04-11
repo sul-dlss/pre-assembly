@@ -170,6 +170,14 @@ describe PreAssembly::Bundle do
       @b.stageable_items_for(container).should == exp
     end
 
+    it "should be able to exercise all_files()" do
+      bundle_setup :yaml_revs
+      fake_files = [[1,2], [3,4], [5,6]]
+      fake_dobjs = fake_files.map { |fs| double('dobj', :files => fs) }
+      @b.digital_objects = fake_dobjs
+      @b.all_files.should == fake_files.flatten
+    end
+
   end
 
   ####################

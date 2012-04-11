@@ -253,6 +253,12 @@ module PreAssembly
       return stageable_items.map { |i| find_files_recursively i }.flatten
     end
 
+    def all_files
+      # A convenience method to return all files for all digital objects.
+      # Also used for stubbing during testing.
+      @digital_objects.map { |dobj| dobj.files }.flatten
+    end
+
 
     ####
     # Checksums.
@@ -266,10 +272,8 @@ module PreAssembly
     #         attach checksum to the file
 
     def load_checksums
-      @digital_objects.each do |dobj|
-        dobj.files.each do |file|
-          # puts file
-        end
+      all_files.each do |file|
+        # puts file
       end
     end
 
