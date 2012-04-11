@@ -308,12 +308,16 @@ module PreAssembly
     end
 
     def process_manifest
-      # Do nothing if the bundle doesn't have a manifest.
-      return unless @manifest
-
-      # set dobj attributes needed to round out object registration
-      #   label
-      #   source_id
+      # For bundles using a manifest, adds the manifest info to the digital objects.
+      # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
+      return unless @object_discovery[:use_manifest]
+      mrows = manifest_rows  # Convenience variable, and used for testing.
+      @digital_objects.each_with_index do |dobj, i|
+        r                  = mrows[i]
+        dobj.label         = r.label
+        dobj.source_id     = r.sourceid + source_id_suffix
+        dobj.manifest_attr = Hash[r.each_pair.to_a]
+      end
     end
 
     def load_manifest

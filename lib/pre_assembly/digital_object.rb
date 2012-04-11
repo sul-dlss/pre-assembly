@@ -8,6 +8,7 @@ module PreAssembly
       :container,
       :stageable_items,
       :object_files,
+      :manifest_attr,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -36,11 +37,12 @@ module PreAssembly
       @container                  = params[:container]
       @stageable_items            = params[:stageable_items]
       @object_files               = params[:object_files]
+      @manifest_attr              = params[:manifest_attr]
       @project_name               = params[:project_name]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]
       @label                      = params[:label]
-      @source_id                  = { params[:project_name] => params[:source_id] }
+      @source_id                  = params[:source_id]
       @druid                      = nil
       @pid                        = ''
       @images                     = []
@@ -144,7 +146,7 @@ module PreAssembly
       {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
-        :source_id    => @source_id,
+        :source_id    => { @project_name => @source_id },
         :pid          => @pid,
         :label        => @label,
         :tags         => ["Project : #{@project_name}"],
