@@ -4,10 +4,11 @@ module PreAssembly
 
     include PreAssembly::Logging
 
-    attr_accessor :path
+    attr_accessor :path, :checksum
 
     def initialize(params = {})
-      @path = params[:path]
+      @path     = params[:path]
+      @checksum = params[:checksum]
     end
 
   end

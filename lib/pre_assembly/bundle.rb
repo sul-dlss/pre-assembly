@@ -262,7 +262,7 @@ module PreAssembly
     def load_checksums
       load_provider_checksums if @checksums_file
       all_object_files.each do |file|
-        # file.checksum = retrieve_checksum(file.path)
+        file.checksum = retrieve_checksum(file.path)
       end
     end
 
