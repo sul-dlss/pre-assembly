@@ -281,13 +281,13 @@ module PreAssembly
     end
 
     def retrieve_checksum(file_path)
-      # Takes an ObjectFile.path. Returns md5 checksum, which either (a) comes
+      # Takes a path to a file. Returns md5 checksum, which either (a) comes
       # from a provider-supplied checksums file, or (b) is computed here.
       @provider_checksums[file_path] ||= compute_checksum(file_path)
     end
 
     def compute_checksum(file_path)
-      return Checksum::Tools.new({}, :md5).digest_file(file_path)
+      return Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5]
     end
       
 

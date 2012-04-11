@@ -263,11 +263,10 @@ describe PreAssembly::Bundle do
       @b.retrieve_checksum @file_path
     end
 
-    it "compute_checksum() should return a hash with an md5 checksum" do
+    it "compute_checksum() should return an md5 checksum" do
       c = @b.compute_checksum @file_path
-      c.should be_kind_of Hash
-      c.first.first.should == @checksum_type
-      c.first.last.should =~ /^[0-9a-f]{32}$/
+      c.should be_kind_of String
+      c.should =~ /^[0-9a-f]{32}$/
     end
 
   end
