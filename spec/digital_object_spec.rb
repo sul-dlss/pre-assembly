@@ -69,6 +69,8 @@ describe PreAssembly::DigitalObject do
     Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
   end
 
+  ####################
+
   describe "initialization and other setup" do
 
     it "can initialize a digital object" do
@@ -83,6 +85,7 @@ describe PreAssembly::DigitalObject do
 
   end
 
+  ####################
 
   describe "registration" do
 
@@ -128,6 +131,8 @@ describe PreAssembly::DigitalObject do
 
   end
 
+  ####################
+
   describe "image staging" do
     
     it "should be able to copy images successfully" do
@@ -156,6 +161,8 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
 
   describe "content metadata" do
 
@@ -199,6 +206,8 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
 
   describe "descriptive metadata" do
 
@@ -259,6 +268,8 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
 
   describe "workflow metadata" do
 
