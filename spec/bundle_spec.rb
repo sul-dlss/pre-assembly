@@ -12,6 +12,7 @@ describe PreAssembly::Bundle do
     @b  = PreAssembly::Bundle.new @ps
   end
 
+  ####################
 
   describe "initialize() and other setup" do
 
@@ -29,6 +30,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "validate_usage()" do
 
@@ -73,6 +75,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "object discovery" do
     
@@ -127,7 +130,7 @@ describe PreAssembly::Bundle do
     it "discover_containers_via_manifest() should return expected information" do
       col_name  = :col_foo
       vals      = %w(123.tif 456.tif 789.tif)
-      exp       = vals.map { |v| "#{@b.bundle_dir}/#{v}" }
+      exp       = vals.map { |v| @b.path_in_bundle v }
       fake_rows = vals.map { |v| double('row', col_name => v) }
       @b.manifest_cols[:object_container] = col_name
       @b.stub(:manifest_rows).and_return fake_rows
@@ -139,7 +142,7 @@ describe PreAssembly::Bundle do
         'abc.txt', 'def.txt', 'ghi.txt',
         '123.tif', '456.tif', '456.TIF',
       ]
-      items = items.map { |i| "#{@b.bundle_dir}/#{i}" }
+      items = items.map { |i| @b.path_in_bundle i }
       @b.stub(:dir_glob).and_return items
       # No regex filtering.
       @b.object_discovery[:regex] = ''
@@ -150,8 +153,8 @@ describe PreAssembly::Bundle do
     end
 
     it "dir_glob() should return expected information" do
-      exp = [1,2,3].map { |n| "#{@b.bundle_dir}/image#{n}.tif" }
-      @b.dir_glob("#{@b.bundle_dir}/*.tif").should == exp
+      exp = [1,2,3].map { |n| @b.path_in_bundle "image#{n}.tif" }
+      @b.dir_glob(@b.path_in_bundle "*.tif").should == exp
     end
 
     it "stageable_items_for() should return [container] if use_container is true" do
@@ -162,13 +165,14 @@ describe PreAssembly::Bundle do
 
     it "stageable_items_for() should return expected crawl results" do
       bundle_setup :yaml_rumsey
-      container = "#{@b.bundle_dir}/cb837cp4412"
+      container = @b.path_in_bundle "cb837cp4412"
       exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
       @b.stageable_items_for(container).should == exp
     end
 
   end
 
+  ####################
   
   describe "discover_all_files()" do
 
@@ -183,8 +187,8 @@ describe PreAssembly::Bundle do
         cp898cs9946/2874018.tif
         cp898cs9946/descMetadata.xml
       )
-      @files = fs.map { |f| "#{@b.bundle_dir}/#{f}" }
-      @dirs  = ds.map { |d| "#{@b.bundle_dir}/#{d}" }
+      @files = fs.map { |f| @b.path_in_bundle f }
+      @dirs  = ds.map { |d| @b.path_in_bundle d }
     end
 
     it "should find files within directories" do
@@ -202,6 +206,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "load_checksums()" do
 
@@ -216,6 +221,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "load_exp_checksums()" do
 
@@ -244,6 +250,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "load_manifest()" do
 
@@ -279,6 +286,7 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "validate_images()" do
 
@@ -299,13 +307,14 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
 
   describe "file and directory utilities" do
 
     before(:each) do
       bundle_setup :yaml_revs
       @relative = 'abc/def.jpg'
-      @full     = "#{@b.bundle_dir}/#{@relative}"
+      @full     = @b.path_in_bundle @relative
     end
 
     it "path_in_bundle() should return expected value" do
@@ -342,13 +351,14 @@ describe PreAssembly::Bundle do
       }
       exp.each do |project_style, files|
         bundle_setup project_style
-        exp_files = files.map { |f| "#{@b.bundle_dir}/#{f}" }
+        exp_files = files.map { |f| @b.path_in_bundle f }
         @b.find_files_recursively(@b.bundle_dir).sort.should == exp_files
       end
     end
 
   end
 
+  ####################
 
   describe "misc utilities" do
 
