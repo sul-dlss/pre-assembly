@@ -190,7 +190,7 @@ describe PreAssembly::Bundle do
       items = items.map { |i| @b.path_in_bundle i }
       @b.stub(:dir_glob).and_return items
       # No regex filtering.
-      @b.object_discovery[:regex] = ''
+      @b.object_discovery = { :regex => '', :glob => '' }
       @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items
       # Only tif files.
       @b.object_discovery[:regex] = '(?i)\.tif$'
@@ -234,7 +234,7 @@ describe PreAssembly::Bundle do
       @b.discover_objects
     end
 
-    it "zzzzz" do
+    it "###should ..." do
       @b.load_checksums
     end
 
@@ -242,7 +242,39 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "load_exp_checksums()" do
+  describe "retrieving and computing checksums" do
+  
+    before(:each) do
+      bundle_setup :style_revs
+      @file_path = @b.path_in_bundle 'image1.tif'
+      @checksum_type = :md5
+    end
+
+    it "retrieve_checksum() should return provider checksum when it is available" do
+      fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
+      @b.provider_checksums = { @file_path => fake_md5 }
+      @b.should_not_receive :compute_checksum
+      @b.retrieve_checksum(@file_path).should == fake_md5
+    end
+
+    it "retrieve_checksum() should compute checksum when checksum is not available" do
+      @b.provider_checksums = {}          # No provider checksums present.
+      @b.should_receive :compute_checksum
+      @b.retrieve_checksum @file_path
+    end
+
+    it "compute_checksum() should return a hash with an md5 checksum" do
+      c = @b.compute_checksum @file_path
+      c.should be_kind_of Hash
+      c.first.first.should == @checksum_type
+      c.first.last.should =~ /^[0-9a-f]{32}$/
+    end
+
+  end
+
+  ####################
+
+  describe "load_provider_checksums()" do
 
     before(:each) do
       bundle_setup :style_revs
@@ -250,8 +282,8 @@ describe PreAssembly::Bundle do
 
     it "empty string yields no checksums" do
       @b.stub(:read_exp_checksums).and_return('')
-      @b.load_exp_checksums
-      @b.exp_checksums.should == {}
+      @b.load_provider_checksums
+      @b.provider_checksums.should == {}
     end
 
     it "checksums are parsed correctly" do
@@ -263,8 +295,8 @@ describe PreAssembly::Bundle do
       }
       checksum_string = checksum_data.map { |f,c| "MD5 (#{f}) = #{c}\n" }.join ''
       @b.stub(:read_exp_checksums).and_return(checksum_string)
-      @b.load_exp_checksums
-      @b.exp_checksums.should == checksum_data
+      @b.load_provider_checksums
+      @b.provider_checksums.should == checksum_data
     end
 
   end

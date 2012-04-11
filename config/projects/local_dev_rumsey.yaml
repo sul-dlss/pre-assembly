@@ -1,8 +1,8 @@
 bundle_dir:           spec/test_data/bundle_input_b
 staging_dir:          tmp
 
-manifest:             manifest.csv
-checksums_file:       checksums.txt
+manifest:             ~
+checksums_file:       ~
 descriptive_metadata_template: mods_template.xml
 
 project_name:         Revs
@@ -32,6 +32,6 @@ stageable_discovery:
   regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $ '
 
 manifest_cols:
-  object_container:   nil
-  source_id:          nil
-  label:              nil
+  object_container:   ~
+  source_id:          ~
+  label:              ~

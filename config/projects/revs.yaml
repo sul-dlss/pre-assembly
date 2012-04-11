@@ -23,13 +23,13 @@ project_style:        style_revs
 
 object_discovery:
   use_manifest:       true
-  glob:               nil
-  regex:              nil
+  glob:               ~
+  regex:              ~
 
 stageable_discovery:
   use_container:      true
-  glob:               nil
-  regex:              nil
+  glob:               ~
+  regex:              ~
 
 manifest_cols:
   object_container:   filename

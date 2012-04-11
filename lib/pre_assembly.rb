@@ -38,3 +38,4 @@ require 'pre_assembly/version'
 
 require 'fileutils'
 require 'assembly-image'
+require 'checksum-tools'
