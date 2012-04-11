@@ -299,6 +299,12 @@ module PreAssembly
       @manifest_rows ||= import(@manifest) { read_attributes_from_file }
     end
 
+    # process_manifest
+    #     - skip if project doesn't have a manifest
+    #     - set dobj attributes needed to round out object registration
+    #         label
+    #         source_id
+
     def load_manifest
       # Read manifest and initialize digital objects.
       log "load_manifest()"
@@ -336,6 +342,21 @@ module PreAssembly
     ####
     # Digital object processing.
     ####
+
+    def validate_files
+      tally = Hash.new(0)           # A tally to facilitate testing.
+      all_object_files.each do |f|
+        if not f.image?
+          tally[:skipped] += 1
+        elsif f.valid_image?
+          tally[:valid] += 1
+        else
+          msg = "File validation failed: #{f.path}"
+          raise msg
+        end
+      end
+      return tally
+    end
 
     def validate_images
       log "validate_images()"

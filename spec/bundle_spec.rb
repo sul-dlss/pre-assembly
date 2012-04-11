@@ -352,6 +352,32 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "validate_files()" do
+
+    before(:each) do
+      bundle_setup :style_rumsey
+    end
+
+    it "should return expected tally if all images are valid" do
+      @b.discover_objects
+      @b.validate_files.should == { :valid => 3, :skipped => 3 }
+    end
+
+    it "should raise exception if one of the object files is an invalid image" do
+      # Create a double that will simulate an invalid image.
+      img_params = {:image? => true, :valid_image? => false, :path => 'bad/image.tif'}
+      bad_image = double 'bad_image', img_params
+      # Stub out all_object_files() to return that image.
+      @b.stub(:all_object_files).and_return [ bad_image ]
+      # Check for expected excption.
+      exp_msg = /^File validation failed/
+      lambda { @b.validate_files }.should raise_error(exp_msg)
+    end
+
+  end
+
+  ####################
+
   describe "validate_images()" do
 
     before(:each) do
