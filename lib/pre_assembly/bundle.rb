@@ -155,15 +155,28 @@ module PreAssembly
     ####
 
     def run_pre_assembly
+      # TODO: run_pre_assembly: allow non-Revs projects to run.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       if @project_style == :style_revs
+
+        # Old Revs-centric steps.
         load_provider_checksums
         load_manifest
         validate_images
         process_digital_objects
+        return
+
+        # New steps.
+        discover_objects
+        load_checksums
+        process_manifest
+        validate_files
+        process_digital_objects
+        return
+
       else
-        # TODO: run_pre_assembly: add missing Rumsey steps.
+        # Not ready for prime-time.
       end
     end
 
@@ -255,7 +268,7 @@ module PreAssembly
     end
 
     def discover_all_files(stageable_items)
-      # Returns a list of all of the object's files.
+      # Returns a list of the files for a digital object.
       # This list differs from stageable_items only when some
       # of the stageable_items are directories.
       return stageable_items.map { |i| find_files_recursively i }.flatten
@@ -308,18 +321,6 @@ module PreAssembly
     # Manifest.
     ####
 
-    def manifest_rows
-      # On first call, loads the manifest data (does not reload on subsequent calls).
-      # If bundles is not using a manifest, just loads and returns emtpy array.
-      return @manifest_rows if @manifest_rows
-      @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
-    end
-
-    def load_manifest_rows_from_csv
-      # Wrap the functionality provided by csv-mapper.
-      return import(@manifest) { read_attributes_from_file }
-    end
-
     def process_manifest
       # For bundles using a manifest, adds the manifest info to the digital objects.
       # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
@@ -331,6 +332,18 @@ module PreAssembly
         dobj.source_id     = r.sourceid + source_id_suffix
         dobj.manifest_attr = Hash[r.each_pair.to_a]
       end
+    end
+
+    def manifest_rows
+      # On first call, loads the manifest data (does not reload on subsequent calls).
+      # If bundles is not using a manifest, just loads and returns emtpy array.
+      return @manifest_rows if @manifest_rows
+      @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
+    end
+
+    def load_manifest_rows_from_csv
+      # Wrap the functionality provided by csv-mapper.
+      return import(@manifest) { read_attributes_from_file }
     end
 
     def load_manifest

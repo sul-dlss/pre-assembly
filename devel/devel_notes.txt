@@ -14,10 +14,8 @@ Refactoring on the multi-project branch
 
 Bundle
 
-    decommission the revs-centric code
-        - determine whether this can be done yet
-        - use new Bundle code for all project types
-        - write integration tests for revs and rumsey
+    Use new code to run style_revs.
+        - determine whether this can be done yet: see DigitalObject.refactoring_notes
 
 DigitalObject
 
@@ -70,7 +68,18 @@ DigitalObject
         - remove assembly steps from configuration.
         - always do, unless disabled (add parameter to support this)
 
-other
+Bundle
+
+    Try to run a style_rumsey project
+        - write integration tests for revs and rumsey
+
+Decommission the old revs-centric code
+    - comment out in Bundle and DigitalObject
+    - test; commit
+    - then delete
+    - test
+
+Other
     - Refactor desc_meta var naming.
     - Add log() calls to various new methods.
 
