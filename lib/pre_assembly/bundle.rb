@@ -160,18 +160,18 @@ module PreAssembly
       log "run_pre_assembly(#{run_log_msg})"
       if @project_style == :style_revs
 
-        # Old Revs-centric steps.
-        load_provider_checksums
-        load_manifest
-        validate_images
-        process_digital_objects
-        return
-
         # New steps.
         discover_objects
         load_checksums
         process_manifest
         validate_files
+        process_digital_objects
+        return
+
+        # Old Revs-centric steps. Will delete soon.
+        load_provider_checksums
+        load_manifest
+        validate_images
         process_digital_objects
         return
 
@@ -210,7 +210,7 @@ module PreAssembly
         params = {
           :container       => container,
           :stageable_items => stageables,
-          :object_files    => files.map { |f| ObjectFile.new :path => f },
+          :object_files    => files.map { |f| new_object_file(f) },
           :bundle_attr     => bundle_attr,
         }
         dobj = DigitalObject.new params
@@ -278,6 +278,13 @@ module PreAssembly
       # A convenience method to return all ObjectFiles for all digital objects.
       # Also used for stubbing during testing.
       @digital_objects.map { |dobj| dobj.object_files }.flatten
+    end
+
+    def new_object_file(file_path)
+      return ObjectFile.new(
+        :path          => file_path,
+        :relative_path => relative_path(@bundle_dir, file_path)
+      )
     end
 
 
