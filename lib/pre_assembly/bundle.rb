@@ -1,4 +1,5 @@
 require 'csv-mapper'
+require 'ostruct'
 
 module PreAssembly
 
@@ -92,6 +93,20 @@ module PreAssembly
       validate_usage if @validate_usage
     end
 
+    def attr_for_digital_objects
+      # Returns a simple object containing bundle-level information that
+      # will need to be passed down to DigitalObjects as they are created.
+      a = OpenStruct.new
+      a.project_name               = @project_name
+      a.apo_druid_id               = @apo_druid_id
+      a.set_druid_id               = @set_druid_id
+      a.publish                    = @publish
+      a.shelve                     = @shelve
+      a.preserve                   = @preserve
+      a.desc_metadata_xml_template = @desc_metadata_xml_template
+      return a
+    end
+
 
     ####
     # Usage validation.
@@ -174,7 +189,8 @@ module PreAssembly
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
       # For each container, create a new Digitalobject.
-      use_c = @stageable_discovery[:use_container]
+      bundle_attr = attr_for_digital_objects
+      use_c       = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
         # the DigitalObject container is just the bundle_dir.
@@ -185,7 +201,8 @@ module PreAssembly
         params = {
           :container       => container,
           :stageable_items => stageables,
-          :object_files    => files.map { |f| ObjectFile.new :path => f }
+          :object_files    => files.map { |f| ObjectFile.new :path => f },
+          :bundle_attr     => bundle_attr,
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
