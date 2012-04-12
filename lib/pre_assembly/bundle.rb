@@ -159,26 +159,20 @@ module PreAssembly
       # TODO: run_pre_assembly: allow non-Revs projects to run.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      if @project_style == :style_revs
+      # New steps.
+      discover_objects
+      load_checksums
+      process_manifest
+      validate_files
+      process_digital_objects
+      return
 
-        # New steps.
-        discover_objects
-        load_checksums
-        process_manifest
-        validate_files
-        process_digital_objects
-        return
-
-        # Old Revs-centric steps. Will delete soon.
-        load_provider_checksums
-        load_manifest
-        validate_images
-        process_digital_objects
-        return
-
-      else
-        # Not ready for prime-time.
-      end
+      # Old Revs-centric steps. Will delete soon.
+      load_provider_checksums
+      load_manifest
+      validate_images
+      process_digital_objects
+      return
     end
 
     def run_log_msg

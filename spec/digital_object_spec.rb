@@ -89,13 +89,16 @@ describe PreAssembly::DigitalObject do
 
   describe "registration" do
 
-    it "can claim a druid" do
-      d = @druid.druid
-      @dobj.stub(:get_druid_from_suri).and_return(d)
-      @dobj.pid.should == ''
+    it "should be able to exercise determine_druid() and get_pid_from_container" do
+      # Setup.
+      dru = 'aa111bb2222'
+      @dobj.project_style = :style_rumsey
+      @dobj.container     = "foo/bar/#{dru}"
+      # Before and after assertions.
+      @dobj.pid.should   == ''
       @dobj.druid.should == nil
-      @dobj.claim_druid
-      @dobj.pid.should == d
+      @dobj.determine_druid
+      @dobj.pid.should   == "druid:#{dru}"
       @dobj.druid.should be_kind_of Druid
     end
 
@@ -114,9 +117,16 @@ describe PreAssembly::DigitalObject do
       arps = @dobj.add_relationship_params.should == exp
     end
 
+    it "register() should do nothing if should_register is false" do
+      @dobj.stub(:should_register).and_return(false)
+      @dobj.should_not_receive :register_in_dor
+      @dobj.register
+    end
+
     it "can exercise register()" do
-      @dobj.dor_object.should == nil
+      @dobj.stub(:should_register).and_return(true)
       @dobj.stub(:register_in_dor).and_return(1234)
+      @dobj.dor_object.should == nil
       @dobj.register
       @dobj.dor_object.should == 1234
     end

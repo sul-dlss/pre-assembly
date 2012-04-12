@@ -11,6 +11,8 @@ module PreAssembly
       :manifest_attr,
       :bundle_attr,
       :project_name,
+      :project_style,
+      :get_pid_dispatch,
       :apo_druid_id,
       :set_druid_id,
       :label,
@@ -41,6 +43,7 @@ module PreAssembly
       @manifest_attr              = params[:manifest_attr]
       @bundle_attr                = params[:bundle_attr]
       @project_name               = params[:project_name]
+      @project_style              = params[:project_style]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]
       @label                      = params[:label]
@@ -61,6 +64,10 @@ module PreAssembly
         :shelve   => params[:shelve],
         :publish  => params[:publish],
       }
+      @get_pid_dispatch = {
+        :style_revs   => method(:get_pid_from_suri),
+        :style_rumsey => method(:get_pid_from_container),
+      }
     end
 
     def add_image(params)
@@ -77,8 +84,10 @@ module PreAssembly
 
       bridge_transition
 
-      claim_druid
+      determine_druid
       register
+
+      return unless @project_style == :style_revs
 
       add_dor_object_to_set
       stage_images stager, staging_dir
@@ -97,7 +106,7 @@ module PreAssembly
     # External dependencies.
     ####
 
-    def get_druid_from_suri()
+    def get_pid_from_suri()
       Dor::SuriService.mint_id
     end
 
@@ -132,22 +141,29 @@ module PreAssembly
 
 
     ####
+    # Project-specific dispatching.
+    ####
+
+    def should_register
+      return @project_style == :style_revs
+    end
+
+
+    ####
     # Registration.
     ####
 
-    # revs:
-    #   claim_druid()
-    #   register()
-    # other projects:
-    #   get druid from subdir or barcode
-
-    def claim_druid
-      log "    - claim_druid()"
-      @pid   = get_druid_from_suri
+    def determine_druid
+      @pid   = @get_pid_dispatch[@project_style].call
       @druid = Druid.new @pid
     end
 
+    def get_pid_from_container
+      return "druid:#{File.basename @container}" 
+    end
+
     def register
+      return unless should_register
       log "    - register(#{@pid})"
       @dor_object = register_in_dor(registration_params)
     end
@@ -280,19 +296,22 @@ module PreAssembly
 
     def bridge_transition
       # A method allowing the new Bundle code to work correctly with
-      # the old DigitalObject code. Will remove as DigitalObject is
-      # refactored.
+      # the old DigitalObject code. Will move/remove as DigitalObject
+      # is refactored.
       b = @bundle_attr
       return unless b.class == OpenStruct
-      @apo_druid_id               = b.apo_druid_id
-      @desc_metadata_xml_template = b.desc_metadata_xml_template
+
+      @project_style              = b.project_style
       @project_name               = b.project_name
+      @apo_druid_id               = b.apo_druid_id
       @set_druid_id               = b.set_druid_id
+      @desc_metadata_xml_template = b.desc_metadata_xml_template
       @publish_attr               = {
         :preserve => b.preserve,
         :shelve   => b.shelve,
         :publish  => b.publish,
       }
+
       @object_files.each do |f|
         next unless f.path =~ /\.tif$/
         add_image(
@@ -302,6 +321,7 @@ module PreAssembly
           :provider_attr => @manifest_attr
         )
       end
+
     end
 
   end
