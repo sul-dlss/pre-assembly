@@ -32,7 +32,9 @@ describe PreAssembly::Bundle do
     it "attr_for_digital_objects() should return an OpenStruct" do
       a = @b.attr_for_digital_objects
       a.should be_kind_of OpenStruct
-      a.project_name.should == @b.project_name # Check one value.
+      # Check a couple values.
+      a.project_style.should == @b.project_style
+      a.project_name.should  == @b.project_name
     end
 
   end

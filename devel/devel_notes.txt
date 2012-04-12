@@ -12,61 +12,52 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-DigitalObject
+obtaining the druid
 
-    obtaining the druid
-        - conditional logic
-        - revs:
-            claim_druid()
-            register()
-            set attribute: @reg_by_pre_assembly
-        - other projects:
-            get druid from subdir or barcode
+add_dor_object_to_set()
+    - perform if @set_druid_id is present 
 
-    add_dor_object_to_set()
-        - perform if @set_druid_id is present 
+stage()
+    - replaces stage_images()
+    - don't iterate over the object's images, copying each one
+    - instead we need a new attribute: stagable_items = Array
+        - revs     [tif]
+        - rumsey   [image, descMeta]
+        - gould    [subdir/00]
+        - ap,sohp  [subdir]
+    - for each stagable item, use FileUtils.cp_r(SRC, DST)
+    - call druid_tree_mkdir() only once, at beginning
 
-    stage()
-        - replaces stage_images()
-        - don't iterate over the object's images, copying each one
-        - instead we need a new attribute: stagable_items = Array
-            - revs     [tif]
-            - rumsey   [image, descMeta]
-            - gould    [subdir/00]
-            - ap,sohp  [subdir]
-        - for each stagable item, use FileUtils.cp_r(SRC, DST)
-        - call druid_tree_mkdir() only once, at beginning
+content metadata
+    - conditional logic with several styles:
+        - one image per object
+          - revs
+          - rumsey
+          - ReidDennis
+        - simple book
+          - gould
+        - book with multiple image types per page
+          - AP
+          - Hummel
+        - audio
+          - SOHP
 
-    content metadata
-        - conditional logic with several styles:
-            - one image per object
-              - revs
-              - rumsey
-              - ReidDennis
-            - simple book
-              - gould
-            - book with multiple image types per page
-              - AP
-              - Hummel
-            - audio
-              - SOHP
+Merge with master.
 
-    desc metadata
-        - skip for many projects
-        - if needed, use manifest and template
-            revs
-            ReidDennis
+desc metadata
+    - skip for many projects
+    - if needed, use manifest and template
+        revs
+        ReidDennis
 
-    initialize_assembly_workflow
-        - Store workflow in APO.
-        - just make service call to begin assembly; no need to generate XML.
-        - remove assembly steps from configuration.
-        - always do, unless disabled (add parameter to support this)
+initialize_assembly_workflow
+    - Store workflow in APO.
+    - just make service call to begin assembly; no need to generate XML.
+    - remove assembly steps from configuration.
+    - always do, unless disabled (add parameter to support this)
 
 Try to run a style_rumsey project
     - write integration tests for revs and rumsey
-
-Merge with master.
 
 Decommission the old revs-centric code
     - first comment out in Bundle and DigitalObject; then delete

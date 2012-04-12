@@ -94,7 +94,8 @@ module PreAssembly
     def attr_for_digital_objects
       # Returns a simple object containing bundle-level information that
       # will need to be passed down to DigitalObjects as they are created.
-      a = OpenStruct.new
+      a                            = OpenStruct.new
+      a.project_style              = @project_style
       a.project_name               = @project_name
       a.apo_druid_id               = @apo_druid_id
       a.set_druid_id               = @set_druid_id
