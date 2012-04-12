@@ -273,3 +273,43 @@ module PreAssembly
   end
 
 end
+
+def refactoring_notes
+  # OK: same in old code and new code.
+  content_md_file_name  = "contentMetadata.xml"
+  content_metadata_xml  = ""
+  desc_md_file_name     = "descMetadata.xml"
+  desc_metadata_xml     = ""
+  dor_object            = nil
+  druid                 = nil
+  druid_tree_dir        = ""
+  label                 = "Avus 1937">
+  pid                   = ""
+  source_id             = "foo-1.0_1334191131"
+  workflow_metadata_xml = ""
+
+  # If  @bundle_attr is an OpenStruct:
+  #   - unpack its content into attibutes listed below
+  #   - set a flag to drive other behavior
+  bundle_attr                = nil
+  apo_druid_id               = "druid:qv648vd4392"
+  desc_metadata_xml_template = "<xml ...>"
+  project_name               = "Revs"
+  set_druid_id               = "druid:yt502zj0924"
+  publish_attr               = {:publish=>"no", :shelve=>"no", :preserve=>true}
+
+  # Under the new code, @images is empty. But several methods depend on it:
+  #   stage_images()
+  #   generate_content_metadata()
+  #   generate_desc_metadata()
+  #
+  # Need to use files() or stageable_items() to fill @images.
+  images = ["STUFF"]
+
+  # New attributes not currently used in DigitalObject.
+  container       = "spec/test_data/bundle_input_a"
+  manifest_attr   = {:STUFF => "STUFF"}
+  object_files    = ["STUFF"]
+  stageable_items = ["spec/test_data/bundle_input_a/image1.tif"]
+end
+
