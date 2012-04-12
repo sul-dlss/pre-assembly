@@ -35,8 +35,7 @@ module PreAssembly
       :digital_objects,
       :object_discovery,
       :stageable_discovery,
-      :manifest_cols,
-      :stager
+      :manifest_cols
     )
 
 
@@ -81,7 +80,6 @@ module PreAssembly
       @provider_checksums = {}
       @digital_objects    = []
       @manifest_rows      = nil
-      @stager             = lambda { |f,d| FileUtils.copy f, d }
 
       @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
       @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
@@ -102,6 +100,8 @@ module PreAssembly
       a.publish                    = @publish
       a.shelve                     = @shelve
       a.preserve                   = @preserve
+      a.bundle_dir                 = @bundle_dir
+      a.staging_dir                = @staging_dir
       a.desc_metadata_xml_template = @desc_metadata_xml_template
       return a
     end
@@ -415,7 +415,7 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-        dobj.pre_assemble(@stager, @staging_dir)
+        dobj.pre_assemble
         puts dobj.druid.druid if @show_progress 
       end
     end
