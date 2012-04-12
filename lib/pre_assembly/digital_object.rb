@@ -115,6 +115,7 @@ module PreAssembly
     end
 
     def add_dor_object_to_set
+      return unless @set_druid_id
       @dor_object.add_relationship *add_relationship_params
       @dor_object.save
     end

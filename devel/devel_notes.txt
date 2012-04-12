@@ -12,9 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-add_dor_object_to_set()
-    - perform if @set_druid_id is present 
-
 stage()
     - replaces stage_images()
     - don't iterate over the object's images, copying each one
