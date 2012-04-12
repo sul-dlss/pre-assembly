@@ -75,6 +75,8 @@ module PreAssembly
     def pre_assemble(stager, staging_dir)
       log "  - assemble(#{@source_id})"
 
+      bridge_transition
+
       claim_druid
       register
 
@@ -270,46 +272,71 @@ module PreAssembly
       create_workflow_in_dor ['dor', @pid, wf_name, @workflow_metadata_xml]
     end
 
+    def bridge_transition
+      # A method allowing the new Bundle code to work correctly with
+      # the old DigitalObject code. Will remove as DigitalObject is
+      # refactored.
+      b = @bundle_attr
+      return unless b.class == OpenStruct
+      @apo_druid_id               = b.apo_druid_id
+      @desc_metadata_xml_template = b.desc_metadata_xml_template
+      @project_name               = b.project_name
+      @set_druid_id               = b.set_druid_id
+      @publish_attr               = {
+        :preserve => b.preserve,
+        :shelve   => b.shelve,
+        :publish  => b.publish,
+      }
+      @object_files.each do |f|
+        next unless f.path =~ /\.tif$/
+        add_image(
+          :file_name     => f.relative_path,
+          :full_path     => f.path,
+          :exp_md5       => f.checksum,
+          :provider_attr => @manifest_attr
+        )
+      end
+    end
+
   end
 
 end
 
-def refactoring_notes
-  # OK: same in old code and new code.
-  content_md_file_name  = "contentMetadata.xml"
-  content_metadata_xml  = ""
-  desc_md_file_name     = "descMetadata.xml"
-  desc_metadata_xml     = ""
-  dor_object            = nil
-  druid                 = nil
-  druid_tree_dir        = ""
-  label                 = "Avus 1937">
-  pid                   = ""
-  source_id             = "foo-1.0_1334191131"
-  workflow_metadata_xml = ""
 
-  # If  @bundle_attr is an OpenStruct:
-  #   - unpack its content into attibutes listed below
-  #   - set a flag to drive other behavior
-  bundle_attr                = nil
-  apo_druid_id               = "druid:qv648vd4392"
-  desc_metadata_xml_template = "<xml ...>"
-  project_name               = "Revs"
-  set_druid_id               = "druid:yt502zj0924"
-  publish_attr               = {:publish=>"no", :shelve=>"no", :preserve=>true}
+__END__
 
-  # Under the new code, @images is empty. But several methods depend on it:
-  #   stage_images()
-  #   generate_content_metadata()
-  #   generate_desc_metadata()
-  #
-  # Need to use files() or stageable_items() to fill @images.
-  images = ["STUFF"]
+Refactoring notes on bridge_transition()
 
-  # New attributes not currently used in DigitalObject.
-  container       = "spec/test_data/bundle_input_a"
-  manifest_attr   = {:STUFF => "STUFF"}
-  object_files    = ["STUFF"]
-  stageable_items = ["spec/test_data/bundle_input_a/image1.tif"]
-end
+# OK: same in old code and new code.
+content_md_file_name  = "contentMetadata.xml"
+content_metadata_xml  = ""
+desc_md_file_name     = "descMetadata.xml"
+desc_metadata_xml     = ""
+dor_object            = nil
+druid                 = nil
+druid_tree_dir        = ""
+label                 = "Avus 1937">
+pid                   = ""
+source_id             = "foo-1.0_1334191131"
+workflow_metadata_xml = ""
 
+# If @bundle_attr is an OpenStruct, unpack its content into DigitalObject instance vars.
+bundle_attr                = nil
+apo_druid_id               = "druid:qv648vd4392"
+desc_metadata_xml_template = "<xml ...>"
+project_name               = "Revs"
+set_druid_id               = "druid:yt502zj0924"
+publish_attr               = {:publish=>"no", :shelve=>"no", :preserve=>true}
+
+# Call add_image() for each ObjectFile that looks like a tif.
+# Needed because several methods depend on @images:
+#   stage_images()
+#   generate_content_metadata()
+#   generate_desc_metadata()
+images = ["STUFF"]
+
+# New attributes not currently used in DigitalObject.
+container       = "spec/test_data/bundle_input_a"
+manifest_attr   = {:STUFF => "STUFF"}
+object_files    = ["STUFF"]
+stageable_items = ["spec/test_data/bundle_input_a/image1.tif"]

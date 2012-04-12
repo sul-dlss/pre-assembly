@@ -12,11 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Bundle
-
-    Use new code to run style_revs.
-        - determine whether this can be done yet: see DigitalObject.refactoring_notes
-
 DigitalObject
 
     obtaining the druid
@@ -68,16 +63,13 @@ DigitalObject
         - remove assembly steps from configuration.
         - always do, unless disabled (add parameter to support this)
 
-Bundle
+Try to run a style_rumsey project
+    - write integration tests for revs and rumsey
 
-    Try to run a style_rumsey project
-        - write integration tests for revs and rumsey
+Merge with master.
 
 Decommission the old revs-centric code
-    - comment out in Bundle and DigitalObject
-    - test; commit
-    - then delete
-    - test
+    - first comment out in Bundle and DigitalObject; then delete
 
 Other
     - Refactor desc_meta var naming.

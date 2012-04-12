@@ -25,5 +25,10 @@ $LOAD_PATH.unshift(PRE_ASSEMBLY_ROOT + '/lib')
 require 'pre_assembly/logging'
 PreAssembly::Logging.setup PRE_ASSEMBLY_ROOT, environment
 
+# Development dependencies.
+if ['local', 'development'].include? environment
+  require 'awesome_print'
+end
+
 # Load the project and its dependencies.
 require 'pre_assembly'

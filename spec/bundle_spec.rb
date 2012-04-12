@@ -240,6 +240,15 @@ describe PreAssembly::Bundle do
       @b.all_object_files.should == fake_files.flatten
     end
 
+    it "new_object_file() should return an ObjectFile with expected path values" do
+      bundle_setup :style_revs
+      rel_path = "image1.tif"
+      path     = @b.path_in_bundle rel_path
+      ofile    = @b.new_object_file path
+      ofile.path.should          == path
+      ofile.relative_path.should == rel_path
+    end
+
   end
 
   ####################
