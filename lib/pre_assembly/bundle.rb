@@ -75,7 +75,7 @@ module PreAssembly
     end
 
     def setup
-      @manifest           = path_in_bundle @manifest       unless @checksums_file.nil?
+      @manifest           = path_in_bundle @manifest       unless @manifest.nil?
       @checksums_file     = path_in_bundle @checksums_file unless @checksums_file.nil?
       @provider_checksums = {}
       @digital_objects    = []
@@ -330,8 +330,8 @@ module PreAssembly
       mrows = manifest_rows  # Convenience variable, and used for testing.
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
-        dobj.label         = r.label
-        dobj.source_id     = r.sourceid + source_id_suffix
+        dobj.label         = r.send(@manifest_cols[:label])
+        dobj.source_id     = r.send(@manifest_cols[:source_id]) + source_id_suffix
         dobj.manifest_attr = Hash[r.each_pair.to_a]
       end
     end
