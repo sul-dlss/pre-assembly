@@ -135,6 +135,12 @@ module PreAssembly
     # Registration.
     ####
 
+    # revs:
+    #   claim_druid()
+    #   register()
+    # other projects:
+    #   get druid from subdir or barcode
+
     def claim_druid
       log "    - claim_druid()"
       @pid   = get_druid_from_suri
