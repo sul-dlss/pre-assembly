@@ -12,7 +12,7 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-obtaining the druid
+obtaining the druid.
 
 add_dor_object_to_set()
     - perform if @set_druid_id is present 
