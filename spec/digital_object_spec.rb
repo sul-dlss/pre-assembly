@@ -139,6 +139,14 @@ describe PreAssembly::DigitalObject do
       @dobj.dor_object.should == nil
     end
 
+    it "add_dor_object_to_set() should do nothing when @set_druid_id is false" do
+      fake = double('dor_object', :add_relationship => 11, :save => 22)
+      @dobj.dor_object = fake
+      @dobj.set_druid_id = nil
+      fake.should_not_receive :add_relationship
+      @dobj.add_dor_object_to_set
+    end
+
   end
 
   ####################
