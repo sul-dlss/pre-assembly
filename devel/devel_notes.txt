@@ -12,30 +12,11 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-stage()
-    - replaces stage_images()
-    - don't iterate over the object's images, copying each one
-    - instead we need a new attribute: stagable_items = Array
-        - revs     [tif]
-        - rumsey   [image, descMeta]
-        - gould    [subdir/00]
-        - ap,sohp  [subdir]
-    - for each stagable item, use FileUtils.cp_r(SRC, DST)
-    - call druid_tree_mkdir() only once, at beginning
-
-content metadata
-    - conditional logic with several styles:
-        - one image per object
-          - revs
-          - rumsey
-          - ReidDennis
-        - simple book
-          - gould
-        - book with multiple image types per page
-          - AP
-          - Hummel
-        - audio
-          - SOHP
+content metadata: conditional logic with several styles:
+  - one image per object: revs rumsey ReidDennis
+  - simple book: gould
+  - book with multiple image types per page: AP Hummel
+  - audio: SOHP
 
 Merge with master.
 

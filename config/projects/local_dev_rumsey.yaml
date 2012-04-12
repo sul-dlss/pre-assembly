@@ -7,7 +7,7 @@ descriptive_metadata_template: mods_template.xml
 
 project_name:         Revs
 apo_druid_id:         druid:qv648vd4392
-set_druid_id:         druid:yt502zj0924
+set_druid_id:         ~
 
 publish:              no
 shelve:               no

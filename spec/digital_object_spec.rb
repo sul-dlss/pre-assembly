@@ -151,32 +151,57 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "image staging" do
+  describe "file staging" do
     
-    it "should be able to copy images successfully" do
-        bundle       = PreAssembly::Bundle.new :project_style => :style_revs
-        @dobj.druid  = @druid
-        @dobj.images = []
+    it "should be able to copy stageable items successfully" do
+        bundle      = PreAssembly::Bundle.new :project_style => :style_revs
+        @dobj.druid = @druid
 
         Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-          # Add images to the digital object and create the files.
-          add_images_to_dobj tmp_area
-          @dobj.images.each { |img| FileUtils.touch img.full_path }
+          # Add some stageable items to the digital object, and
+          # create those files.
+          files                 = [1,2,3].map { |n| "image#{n}.tif" }
+          @dobj.bundle_dir      = tmp_area
+          @dobj.staging_dir     = "#{tmp_area}/target"
+          @dobj.stageable_items = files.map { |f| "#{tmp_area}/#{f}" }
+          @dobj.stageable_items.each { |si| FileUtils.touch si }
 
-          # Stage the images.
-          base_target_dir = "#{tmp_area}/target"
-          FileUtils.mkdir base_target_dir
-          @dobj.stage_images bundle.stager, base_target_dir
+          # Stage the files.
+          FileUtils.mkdir @dobj.staging_dir
+          @dobj.stage_files
 
-          # Check outcome.
-          @dobj.images.each do |img|
-            staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
-            # Both source and copy should exist.
-            File.exists?(img.full_path).should   == true
-            File.exists?(staged_img_path).should == true
+          # Check outcome: both source and copy should exist.
+          files.each_with_index do |f, i|
+            src = @dobj.stageable_items[i]
+            cpy = File.join @dobj.druid_tree_dir, f
+            File.exists?(src).should == true
+            File.exists?(cpy).should == true
           end
         end
     end
+
+    # it "should be able to copy images successfully" do
+    #     bundle       = PreAssembly::Bundle.new :project_style => :style_revs
+    #     @dobj.druid  = @druid
+    #     @dobj.images = []
+    #     Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+    #       # Add images to the digital object and create the files.
+    #       add_images_to_dobj tmp_area
+    #       @dobj.images.each { |img| FileUtils.touch img.full_path }
+    #       # Stage the images.
+    #       base_target_dir = "#{tmp_area}/target"
+    #       FileUtils.mkdir base_target_dir
+    #       @dobj.stage_images bundle.stager, base_target_dir
+    #       # Check outcome.
+    #       @dobj.images.each do |img|
+    #         staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
+    #         # Both source and copy should exist.
+    #         File.exists?(img.full_path).should   == true
+    #         File.exists?(staged_img_path).should == true
+    #       end
+    #       puts `tree #{tmp_area}`
+    #     end
+    # end
 
   end
 

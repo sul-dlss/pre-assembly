@@ -15,6 +15,8 @@ module PreAssembly
       :get_pid_dispatch,
       :apo_druid_id,
       :set_druid_id,
+      :bundle_dir,
+      :staging_dir,
       :label,
       :source_id,
       :druid,
@@ -28,6 +30,7 @@ module PreAssembly
       :workflow_metadata_xml,
       :dor_object,
       :druid_tree_dir,
+      :stager,
       :publish_attr
     )
 
@@ -46,6 +49,8 @@ module PreAssembly
       @project_style              = params[:project_style]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]
+      @bundle_dir                 = params[:bundle_dir]
+      @staging_dir                = params[:staging_dir]
       @label                      = params[:label]
       @source_id                  = params[:source_id]
       @druid                      = nil
@@ -59,6 +64,7 @@ module PreAssembly
       @workflow_metadata_xml      = ''
       @dor_object                 = nil
       @druid_tree_dir             = ''
+      @stager                     = lambda { |f,d| FileUtils.cp_r f, d }
       @publish_attr               = {
         :preserve => params[:preserve],
         :shelve   => params[:shelve],
@@ -79,7 +85,7 @@ module PreAssembly
     # The main process.
     ####
 
-    def pre_assemble(stager, staging_dir)
+    def pre_assemble
       log "  - assemble(#{@source_id})"
 
       bridge_transition
@@ -87,10 +93,11 @@ module PreAssembly
       determine_druid
       register
 
-      return unless @project_style == :style_revs
-
       add_dor_object_to_set
-      stage_images stager, staging_dir
+
+      stage_files
+
+      return unless @project_style == :style_revs
 
       generate_content_metadata
       write_content_metadata
@@ -202,15 +209,26 @@ module PreAssembly
     # Staging images.
     ####
 
-    def stage_images(stager, base_target_dir)
-      # Copy images to staging directory.
-      @images.each do |img|
-        @druid_tree_dir = @druid.path base_target_dir
-        log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
-        druid_tree_mkdir @druid_tree_dir
-        stager.call img.full_path, @druid_tree_dir
+    def stage_files
+      # Create the druid tree within the staging directory,
+      # and then copy-recursive all stageable items to that area.
+      @druid_tree_dir = @druid.path(@staging_dir)
+      druid_tree_mkdir @druid_tree_dir
+      @stageable_items.each do |si_path|
+        log "    - staging(#{si_path}, #{@druid_tree_dir})"
+        @stager.call si_path, @druid_tree_dir
       end
     end
+
+    # def stage_images(stager, base_target_dir)
+    #   # Copy images to staging directory.
+    #   @images.each do |img|
+    #     @druid_tree_dir = @druid.path base_target_dir
+    #     log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
+    #     druid_tree_mkdir @druid_tree_dir
+    #     stager.call img.full_path, @druid_tree_dir
+    #   end
+    # end
 
 
     ####
@@ -306,6 +324,8 @@ module PreAssembly
       @project_name               = b.project_name
       @apo_druid_id               = b.apo_druid_id
       @set_druid_id               = b.set_druid_id
+      @bundle_dir                 = b.bundle_dir
+      @staging_dir                = b.staging_dir
       @desc_metadata_xml_template = b.desc_metadata_xml_template
       @publish_attr               = {
         :preserve => b.preserve,
