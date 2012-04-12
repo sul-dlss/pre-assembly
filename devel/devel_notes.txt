@@ -14,9 +14,6 @@ Refactoring on the multi-project branch
 
 Bundle
 
-    delete_digital_objects
-        - tests for reg_by_pre_assembly
-
     decommission the revs-centric code
         - determine whether this can be done yet
         - use new Bundle code for all project types

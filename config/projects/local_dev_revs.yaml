@@ -13,7 +13,6 @@ publish:              no
 shelve:               no
 preserve:             yes
 
-cleanup:              true
 limit_n:              10
 uniqify_source_ids:   true
 show_progress:        true

@@ -22,7 +22,6 @@ module PreAssembly
       :apo_druid_id,
       :set_druid_id,
       :staging_dir,
-      :cleanup,
       :limit_n,
       :uniqify_source_ids,
       :show_progress,
@@ -62,7 +61,6 @@ module PreAssembly
       @publish             = params[:publish]  || conf.publish
       @shelve              = params[:shelve]   || conf.shelve
       @preserve            = params[:preserve] || conf.preserve
-      @cleanup             = params[:cleanup]
       @limit_n             = params[:limit_n]
       @uniqify_source_ids  = params[:uniqify_source_ids]
       @show_progress       = params[:show_progress]
@@ -164,10 +162,8 @@ module PreAssembly
         load_manifest
         validate_images
         process_digital_objects
-        delete_digital_objects if @cleanup
       else
         # TODO: run_pre_assembly: add missing Rumsey steps.
-        # Do not call delete_digital_objects().
       end
     end
 
@@ -407,12 +403,6 @@ module PreAssembly
         dobj.pre_assemble(@stager, @staging_dir)
         puts dobj.druid.druid if @show_progress 
       end
-    end
-
-    def delete_digital_objects
-      # During development, delete objects the we register.
-      log "delete_digital_objects()"
-      @digital_objects.each { |dobj| dobj.unregister if dobj.reg_by_pre_assembly }
     end
 
 
