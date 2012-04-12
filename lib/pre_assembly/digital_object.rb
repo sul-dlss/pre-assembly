@@ -242,7 +242,7 @@ module PreAssembly
             seq = i + 1
             xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
               file_params = { :id => img.file_name }.merge @publish_attr
-              xml.label "Image #{seq}"
+              xml.label "Item #{seq}"
               xml.file(file_params) {
                 xml.provider_checksum img.exp_md5, :type => 'md5'
               }

@@ -217,13 +217,13 @@ describe PreAssembly::DigitalObject do
         <?xml version="1.0"?>
         <contentMetadata objectId="ab123cd4567">
           <resource sequence="1" id="ab123cd4567_1">
-            <label>Image 1</label>
+            <label>Item 1</label>
             <file preserve="yes" publish="no" shelve="no" id="image_1.tif">
               <provider_checksum type="md5">1111</provider_checksum>
             </file>
           </resource>
           <resource sequence="2" id="ab123cd4567_2">
-            <label>Image 2</label>
+            <label>Item 2</label>
             <file preserve="yes" publish="no" shelve="no" id="image_2.tif">
               <provider_checksum type="md5">2222</provider_checksum>
             </file>
