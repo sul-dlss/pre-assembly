@@ -14,14 +14,13 @@ Refactoring on the multi-project branch
 
 Bundle
 
-    Pass all bundle-level params to the digital objects
-        - maybe use an OpenStruct
-        - confirm that I've passed everything to the digital objects
-
     delete_digital_objects
         - tests for reg_by_pre_assembly
 
-    comment out the revs-centric code
+    decommission the revs-centric code
+        - determine whether this can be done yet
+        - use new Bundle code for all project types
+        - write integration tests for revs and rumsey
 
 DigitalObject
 
