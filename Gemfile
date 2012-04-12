@@ -17,4 +17,5 @@ end
 group :development do
   gem 'lyberteam-devel'
   gem 'capistrano', '2.9.0'
+  gem 'awesome_print'
 end

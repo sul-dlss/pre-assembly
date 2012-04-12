@@ -45,6 +45,7 @@ GEM
       uuidtools
     assembly-objectfile (1.0.1)
       mini_exiftool
+    awesome_print (1.0.2)
     bagit (0.2.0)
       validatable (~> 1.6)
     builder (3.0.0)
@@ -214,6 +215,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image
+  awesome_print
   capistrano (= 2.9.0)
   checksum-tools
   csv-mapper
