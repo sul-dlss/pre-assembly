@@ -174,7 +174,8 @@ module PreAssembly
       validate_files
       process_digital_objects
       delete_digital_objects
-      return
+      pids = @digital_objects.map { |dobj| dobj.pid }
+      return pids
 
       # Old Revs-centric steps. Will delete soon.
       load_provider_checksums

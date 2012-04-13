@@ -26,14 +26,16 @@ Publish-shelve-preseve
     - remove global defaults from pre_assembly.rb
 
 Other
+    - add: require 'erb'
     - Refactor desc_meta var naming.
     - Add log() calls to various new methods.
     - General review.
-    - ReidDennis is using Revs APO in dev.
+    - ReidDennis and Rumsey are using Revs APOs in dev.
     - Generalize project style to be a hash of attributes:
         content_structure:   simple_image|simple_book
         uses_manifest:       true|false
         should_register:     true|false
+    - change should_register() to use the new params rather than :style_revs.
 
 content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis

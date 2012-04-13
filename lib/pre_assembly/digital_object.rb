@@ -92,7 +92,7 @@ module PreAssembly
     ####
 
     def pre_assemble
-      log "  - assemble(#{@source_id})"
+      log "  - pre_assemble(#{@source_id}) started"
       bridge_transition
       determine_druid
       register
@@ -103,6 +103,7 @@ module PreAssembly
       generate_desc_metadata
       write_desc_metadata
       initialize_assembly_workflow
+      log "  - pre_assemble(#{@pid}) finished"
     end
 
 
