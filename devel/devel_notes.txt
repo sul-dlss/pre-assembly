@@ -12,8 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Set init_assembly_wf = true in local_dev_*.yaml.
-
 Decommission the old revs-centric code
     - first comment out in Bundle and DigitalObject; then delete
 
@@ -22,6 +20,7 @@ Publish-shelve-preseve
     - remove global defaults from pre_assembly.rb
 
 Other
+    - Set init_assembly_wf = true in local_dev_*.yaml.
     - add: require 'erb'
     - Refactor desc_meta var naming.
     - Add log() calls to various new methods.

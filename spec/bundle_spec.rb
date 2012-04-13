@@ -409,41 +409,41 @@ describe PreAssembly::Bundle do
 
   end
 
-  ####################
-
-  describe "load_manifest()" do
-
-    before(:all) do
-      @syms              = [:sourceid, :label, :filename, :foo, :bar]
-      @vals              = @syms.map { |s| s.to_s.upcase }
-      @exp_provider_attr = Hash[@syms.zip @vals]
-      CsvParams          = Struct.new(*@syms)
-    end
-
-    before(:each) do
-      bundle_setup :style_revs
-      @csv_rows = (1..4).map { CsvParams.new(*@vals) }
-      @b.stub(:manifest_rows).and_return(@csv_rows)
-    end
-
-    it "preserves the provider attributes" do
-      @b.load_manifest
-      @b.digital_objects[0].images[0].provider_attr.should == @exp_provider_attr
-    end
-
-    it "generates the correct number of digital objects" do
-      @b.load_manifest
-      @b.digital_objects.should have(@csv_rows.size).items
-    end
-
-    it "generates the correct number of digital objects when @limit_n is set" do
-      n = @csv_rows.size - 1
-      @b.limit_n = n
-      @b.load_manifest
-      @b.digital_objects.should have(n).items
-    end
-
-  end
+#   ####################
+# 
+#   describe "load_manifest()" do
+# 
+#     before(:all) do
+#       @syms              = [:sourceid, :label, :filename, :foo, :bar]
+#       @vals              = @syms.map { |s| s.to_s.upcase }
+#       @exp_provider_attr = Hash[@syms.zip @vals]
+#       CsvParams          = Struct.new(*@syms)
+#     end
+# 
+#     before(:each) do
+#       bundle_setup :style_revs
+#       @csv_rows = (1..4).map { CsvParams.new(*@vals) }
+#       @b.stub(:manifest_rows).and_return(@csv_rows)
+#     end
+# 
+#     it "preserves the provider attributes" do
+#       @b.load_manifest
+#       @b.digital_objects[0].images[0].provider_attr.should == @exp_provider_attr
+#     end
+# 
+#     it "generates the correct number of digital objects" do
+#       @b.load_manifest
+#       @b.digital_objects.should have(@csv_rows.size).items
+#     end
+# 
+#     it "generates the correct number of digital objects when @limit_n is set" do
+#       n = @csv_rows.size - 1
+#       @b.limit_n = n
+#       @b.load_manifest
+#       @b.digital_objects.should have(n).items
+#     end
+# 
+#   end
 
   ####################
 
@@ -494,26 +494,26 @@ describe PreAssembly::Bundle do
 
   end
 
-  ####################
-
-  describe "validate_images()" do
-
-    before(:each) do
-      bundle_setup :style_revs
-    end
-
-    it "should not raise errors with valid tif files" do
-      @b.load_manifest
-      lambda { @b.validate_images }.should_not raise_error
-    end
-
-    it "should raise error if an invalid tif file is present" do
-      @b.load_manifest
-      @b.digital_objects[0].images[0].full_path = @b.manifest
-      lambda { @b.validate_images }.should raise_error
-    end
-
-  end
+#   ####################
+# 
+#   describe "validate_images()" do
+# 
+#     before(:each) do
+#       bundle_setup :style_revs
+#     end
+# 
+#     it "should not raise errors with valid tif files" do
+#       @b.load_manifest
+#       lambda { @b.validate_images }.should_not raise_error
+#     end
+# 
+#     it "should raise error if an invalid tif file is present" do
+#       @b.load_manifest
+#       @b.digital_objects[0].images[0].full_path = @b.manifest
+#       lambda { @b.validate_images }.should raise_error
+#     end
+# 
+#   end
 
   ####################
 
