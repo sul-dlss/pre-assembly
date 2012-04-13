@@ -1,20 +1,20 @@
-bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
-staging_dir:          /home/lyberadmin/pre-assembly/revs_test_run/output
+bundle_dir:           spec/test_data/bundle_input_c
+staging_dir:          tmp
 
 manifest:             manifest.csv
 checksums_file:       checksums.txt
 descriptive_metadata_template: mods_template.xml
 
-project_name:         Revs
+project_name:         ReidDennis
 apo_druid_id:         druid:qv648vd4392
-set_druid_id:         druid:yt502zj0924
+set_druid_id:         ~
 
 publish:              no
 shelve:               no
 preserve:             yes
 
-limit_n:              10
-uniqify_source_ids:   false
+limit_n:              1
+uniqify_source_ids:   true
 show_progress:        true
 validate_usage:       true
 
@@ -31,7 +31,8 @@ stageable_discovery:
   regex:              ~
 
 manifest_cols:
-  object_container:   filename
-  source_id:          sourceid
-  label:              label
+  object_container:   file_name
+  source_id:          stanford_file_id
+  label:              title1
 
+content_exclusion:    ~

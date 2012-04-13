@@ -1,22 +1,38 @@
-:bundle_dir:           spec/test_data/bundle_input_b
-:staging_dir:          tmp
+bundle_dir:           spec/test_data/bundle_input_b
+staging_dir:          tmp
 
-:manifest:             manifest.csv
-:checksums_file:       checksums.txt
-:descriptive_metadata_template: mods_template.xml
+manifest:             ~
+checksums_file:       ~
+descriptive_metadata_template: mods_template.xml
 
-:project_name:         Revs
-:apo_druid_id:         druid:qv648vd4392
-:set_druid_id:         druid:yt502zj0924
+project_name:         Revs
+apo_druid_id:         druid:qv648vd4392
+set_druid_id:         ~
 
-:publish:              no
-:shelve:               no
-:preserve:             yes
+publish:              no
+shelve:               no
+preserve:             yes
 
-:cleanup:              false
-:limit_n:              10
-:uniqify_source_ids:   true
-:show_progress:        false
-:validate_usage:       true
+limit_n:              10
+uniqify_source_ids:   true
+show_progress:        false
+validate_usage:       true
 
-:project_style:        style_rumsey
+project_style:        style_rumsey
+
+object_discovery:
+  use_manifest:       false
+  glob:               '*'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
+
+stageable_discovery:
+  use_container:      false
+  glob:               '*'
+  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
+
+manifest_cols:
+  object_container:   ~
+  source_id:          ~
+  label:              ~
+
+content_exclusion:    '(?ix) descMetadata\.xml $'
