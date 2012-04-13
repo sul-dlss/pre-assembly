@@ -31,7 +31,7 @@ describe PreAssembly::DigitalObject do
         <note>ERB Test: <%=manifest_row['description']%></note>
         <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
         <note type="source note" ID="foo">[[foo]]</note>
-        <note type="source note" ID="bar">[[bar]]</note>        
+        <note type="source note" ID="bar">[[bar]]</note>
       </mods>
       END
 
@@ -44,7 +44,7 @@ describe PreAssembly::DigitalObject do
       :label        => 'LabelQuux',
       :publish      => 'no',
       :shelve       => 'no',
-      :preserve     => 'yes'      
+      :preserve     => 'yes'
     }
     @dobj          = PreAssembly::DigitalObject.new @ps
     @druid         = Druid.new 'druid:ab123cd4567'
@@ -126,7 +126,7 @@ describe PreAssembly::DigitalObject do
 
     it "can generate add_relationship parameters" do
       @dobj.druid = @druid
-      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"] 
+      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"]
       arps = @dobj.add_relationship_params.should == exp
     end
 
@@ -165,7 +165,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "file staging" do
-    
+
     it "should be able to copy stageable items successfully" do
         bundle      = PreAssembly::Bundle.new :project_style => :style_revs
         @dobj.druid = @druid
@@ -245,7 +245,7 @@ describe PreAssembly::DigitalObject do
       END
       @exp_xml = noko_doc @exp_xml
     end
-    
+
     it "content_object_files() should filter @object_files correctly" do
       # Some fake object_files.
       n = 10
@@ -315,14 +315,14 @@ describe PreAssembly::DigitalObject do
           </titleInfo>
           <note>this is a description</note>
           <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
-          <note>ERB Test: this is a description</note>          
+          <note>ERB Test: this is a description</note>
           <note type="source note" ID="foo">123</note>
           <note type="source note" ID="bar">456</note>
         </mods>
       END
       @exp_xml = noko_doc @exp_xml
     end
-    
+
     it "should generate the expected xml text" do
       noko_doc(@dobj.desc_metadata_xml).should be_equivalent_to @exp_xml
     end
@@ -359,7 +359,7 @@ describe PreAssembly::DigitalObject do
       END
       @exp_xml = noko_doc @exp_xml
     end
-   
+
     it "should generate the expected xml text" do
       @dobj.generate_workflow_metadata
       noko_doc(@dobj.workflow_metadata_xml).should be_equivalent_to @exp_xml

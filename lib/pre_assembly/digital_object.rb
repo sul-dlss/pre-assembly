@@ -117,7 +117,7 @@ module PreAssembly
       Dor::SuriService.mint_id
     end
 
-    def register_in_dor(params)      
+    def register_in_dor(params)
       Dor::RegistrationService.register_object params
     end
 
@@ -167,7 +167,7 @@ module PreAssembly
     end
 
     def get_pid_from_container
-      return "druid:#{File.basename @container}" 
+      return "druid:#{File.basename @container}"
     end
 
     def register
@@ -273,16 +273,16 @@ module PreAssembly
 
       # this is a helper variable that gives you the first row in the manifest for the digital image, so you can use it to create metadata in the template
       manifest_row=@images.first.provider_attr
-      
+
       # run the XML through ERB to do any parsing that the template requires
       # and then return the result into nokogiri
-      template=ERB.new(@desc_metadata_xml_template)      
+      template=ERB.new(@desc_metadata_xml_template)
       @desc_metadata_xml=template.result(binding)
-      
+
       # now iterate over all the columns in the manifest
       # and replace any placeholder tags for the manifest column in the metadata template
       manifest_row.each {|k,v| @desc_metadata_xml.gsub!("[[#{k.to_s}]]",v.to_s) }
-      
+
     end
 
     def write_desc_metadata

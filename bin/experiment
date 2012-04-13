@@ -8,7 +8,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 params = {
   :object_type  => 'item',
   :admin_policy => 'druid:qv648vd4392',
-  :label        => 'blah', 
+  :label        => 'blah',
   :source_id    => { 'Revs' => 'foo_' + Time.now.strftime('%s') },
   :tags         => ["Project : Revs"],
 }

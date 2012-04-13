@@ -54,7 +54,7 @@ describe PreAssembly::Bundle do
         :style_revs   => 2,
         :style_rumsey => 0,
       }
-      n_exp.each do |style, n| 
+      n_exp.each do |style, n|
         @b.project_style = style
         @b.required_files.should have(n).items
       end
@@ -87,7 +87,7 @@ describe PreAssembly::Bundle do
   ####################
 
   describe "object discovery: discover_objects()" do
-    
+
     it "discover_objects() should file the correct N objects, stageables, and files" do
       tests = [
         [ :style_revs,   3, 1, 1 ],
@@ -129,7 +129,7 @@ describe PreAssembly::Bundle do
   end
 
   ####################
-  
+
   describe "object discovery: discover_all_files()" do
 
     before(:each) do
@@ -161,11 +161,11 @@ describe PreAssembly::Bundle do
     end
 
   end
-  
+
   ####################
 
   describe "object discovery: other" do
-    
+
     before(:each) do
       bundle_setup :style_revs
     end
@@ -224,7 +224,7 @@ describe PreAssembly::Bundle do
     it "stageable_items_for() should return [container] if use_container is true" do
       container = 'foo.tif'
       @b.stageable_discovery[:use_container] = true
-      @b.stageable_items_for(container).should == [container] 
+      @b.stageable_items_for(container).should == [container]
     end
 
     it "stageable_items_for() should return expected crawl results" do
@@ -296,7 +296,7 @@ describe PreAssembly::Bundle do
   ####################
 
   describe "retrieving and computing checksums" do
-  
+
     before(:each) do
       bundle_setup :style_revs
       @file_path = @b.path_in_bundle 'image1.tif'
@@ -518,11 +518,11 @@ describe PreAssembly::Bundle do
     it "find_files_recursively() should return expected information" do
       exp = {
         :style_revs => [
-          "checksums.txt", 
-          "image1.tif", 
-          "image2.tif", 
-          "image3.tif", 
-          "manifest.csv", 
+          "checksums.txt",
+          "image1.tif",
+          "image2.tif",
+          "image3.tif",
+          "manifest.csv",
           "mods_template.xml",
         ],
         :style_rumsey => [
@@ -569,7 +569,7 @@ describe PreAssembly::Bundle do
         [ 123, 123 ],
         [
           { :foo => 123, 'bar' => 456 },
-          { :foo => 123, :bar  => 456 } 
+          { :foo => 123, :bar  => 456 }
         ],
         [
           { :foo => [1,2,3], 'bar' => { 'x' => 99, 'y' => { 'AA' => 22, 'BB' => 33 } } },
