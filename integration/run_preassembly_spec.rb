@@ -1,51 +1,56 @@
 describe "Pre-assembly integration" do
 
-  before(:each) do
-    cmf          = Dor::Config.pre_assembly.cm_file_name
-    dmf          = Dor::Config.pre_assembly.dm_file_name
-    @temp_dir    = Dir.mktmpdir 'integ_test_', 'tmp'
-    @exp_n_files = 3
-    @rumsey_dir  = 'spec/test_data/bundle_input_b'
+  def setup_bundle(project_style)
+    # Load the project's YAML config file.
+    proj      = project_style.to_s.sub /^style_/, ''
+    yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
+    yaml      = YAML.load_file yaml_file
+    @params   = PreAssembly::Bundle.symbolize_keys yaml
+    
+    # Create a temp dir to serve as the staging area.
+    @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'
 
-    @exp_file_patterns = [
-      "#{@temp_dir}/**/*.tif",
-      "#{@temp_dir}/**/#{cmf}",
-      "#{@temp_dir}/**/#{dmf}",
+    # Override some params.
+    @params[:staging_dir]   = @temp_dir
+    @params[:show_progress] = false
+
+    # Create the bundle.
+    @b = PreAssembly::Bundle.new @params
+
+    # Set values needed for assertions.
+    conf         = Dor::Config.pre_assembly
+    dru_tree     = "#{@temp_dir}/??/???/??/????"
+    @exp_n_files = 3
+    @exp_files   = [
+      "#{dru_tree}/*.tif",
+      "#{dru_tree}/#{conf.cm_file_name}",
+      "#{dru_tree}/#{conf.dm_file_name}",
     ]
   end
 
-  def setup_bundle(custom_params = {})
-    yaml = YAML.load_file "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_revs.yaml"
-    @params = PreAssembly::Bundle.symbolize_keys yaml
-    @params.merge! custom_params
-    @params[:staging_dir]    = @temp_dir
-    @params[:show_progress]  = false
-    @b = PreAssembly::Bundle.new @params
+  def check_for_expected_files
+    @exp_files.each do |glob_pattern|
+      fs = Dir[glob_pattern].select { |f| File.file? f }
+      fs.size.should == @exp_n_files
+    end
   end
 
   describe "Revs-style project" do
 
-    it "should run pre-assembly and produce expected files in staging dir" do
-      setup_bundle
+    it "should produce expected files in staging dir" do
+      setup_bundle :style_revs
       @b.run_pre_assembly
-      @exp_file_patterns.each do |patt|
-        fs = Dir[patt].select { |f| File.file? f }
-        fs.size.should == @exp_n_files
-      end
+      check_for_expected_files
     end
 
   end
 
   describe "Rumsey-style project" do
 
-    it "should ........" do
-      # TODO: Rumsey integration assertions.
-      setup_bundle :bundle_dir => @rumsey_dir, :project_style => 'style_rumsey'
-      # @b.run_pre_assembly
-      # @exp_file_patterns.each do |patt|
-      #   fs = Dir[patt].select { |f| File.file? f }
-      #   fs.size.should == @exp_n_files
-      # end
+    it "should produce expected files in staging dir" do
+      setup_bundle :style_rumsey
+      @b.run_pre_assembly
+      check_for_expected_files
     end
 
   end
