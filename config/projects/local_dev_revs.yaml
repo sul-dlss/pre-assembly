@@ -34,3 +34,5 @@ manifest_cols:
   object_container:   filename
   source_id:          sourceid
   label:              label
+
+content_exclusion:    ~

@@ -28,9 +28,11 @@ object_discovery:
 stageable_discovery:
   use_container:      false
   glob:               '*'
-  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $ '
+  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
 
 manifest_cols:
   object_container:   ~
   source_id:          ~
   label:              ~
+
+content_exclusion:    '(?ix) descMetadata\.xml $'
