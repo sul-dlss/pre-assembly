@@ -343,7 +343,7 @@ module PreAssembly
         r                  = mrows[i]
         dobj.label         = r.send(@manifest_cols[:label])
         dobj.source_id     = r.send(@manifest_cols[:source_id]) + source_id_suffix
-        dobj.manifest_attr = Hash[r.each_pair.to_a]
+        dobj.manifest_row  = Hash[r.each_pair.to_a]
       end
     end
 

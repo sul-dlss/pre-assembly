@@ -284,8 +284,7 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
-      add_images_to_dobj
-      @dobj.generate_desc_metadata
+      @dobj.manifest_row = @provider_attr
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <?xml version="1.0"?>
@@ -323,11 +322,18 @@ describe PreAssembly::DigitalObject do
       @exp_xml = noko_doc @exp_xml
     end
 
-    it "should generate the expected xml text" do
+    it "generate_desc_metadata() should do nothing if there is no template" do
+      @dobj.desc_metadata_xml_template = nil
+      @dobj.generate_desc_metadata.should == false
+    end
+
+    it "generate_desc_metadata() should generate the expected xml text" do
+      @dobj.generate_desc_metadata.should == true
       noko_doc(@dobj.desc_metadata_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the desc_metadata XML to a file" do
+      @dobj.generate_desc_metadata.should == true
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
         file_name = File.join tmp_area, @dobj.desc_md_file_name
