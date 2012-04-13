@@ -53,6 +53,19 @@ describe PreAssembly::DigitalObject do
     @tmp_dir_args  = [nil, 'tmp']
   end
 
+  def add_object_files
+    @dobj.object_files = []
+    (1..2).each do |i|
+      f = "image_#{i}.tif"
+      @dobj.object_files.push PreAssembly::ObjectFile.new(
+        :path                 => "#{@bundle_dir}/#{f}",
+        :relative_path        => f,
+        :exclude_from_content => false,
+        :checksum             => "#{i}" * 4
+      )
+    end
+  end
+
   def add_images_to_dobj(img_dir = '/tmp')
     (1..2).each do |i|
       f = "image_#{i}.tif"
@@ -211,7 +224,7 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
-      add_images_to_dobj
+      add_object_files
       @dobj.generate_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
@@ -233,6 +246,21 @@ describe PreAssembly::DigitalObject do
       @exp_xml = noko_doc @exp_xml
     end
     
+    it "content_object_files() should filter @object_files correctly" do
+      # Some fake object_files.
+      n = 10
+      @dobj.object_files = (1 .. n).map do
+        f = OpenStruct.new
+        f.exclude_from_content = false
+        f
+      end
+      # All of them are included in content.
+      @dobj.content_object_files.size.should == n
+      # Now exclude some.
+      (0 ... n / 2).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      @dobj.content_object_files.size.should == n / 2
+    end
+
     it "should generate the expected xml text" do
       noko_doc(@dobj.content_metadata_xml).should be_equivalent_to @exp_xml
     end

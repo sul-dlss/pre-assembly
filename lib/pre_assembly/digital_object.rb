@@ -97,10 +97,10 @@ module PreAssembly
 
       stage_files
 
-      return unless @project_style == :style_revs
-
       generate_content_metadata
       write_content_metadata
+
+      return unless @project_style == :style_revs
 
       generate_desc_metadata
       write_desc_metadata
@@ -235,16 +235,20 @@ module PreAssembly
     # Content metadata.
     ####
 
+    def content_object_files
+      @object_files.reject { |ofile| ofile.exclude_from_content }
+    end
+
     def generate_content_metadata
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
-          @images.each_with_index { |img, i|
+          content_object_files.each_with_index { |ofile, i|
             seq = i + 1
             xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
-              file_params = { :id => img.file_name }.merge @publish_attr
+              file_params = { :id => ofile.relative_path }.merge @publish_attr
               xml.label "Item #{seq}"
               xml.file(file_params) {
-                xml.provider_checksum img.exp_md5, :type => 'md5'
+                xml.provider_checksum ofile.checksum, :type => 'md5'
               }
             }
           }
