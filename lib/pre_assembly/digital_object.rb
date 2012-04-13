@@ -10,7 +10,7 @@ module PreAssembly
       :container,
       :stageable_items,
       :object_files,
-      :manifest_attr,
+      :manifest_row,
       :bundle_attr,
       :project_name,
       :project_style,
@@ -45,7 +45,7 @@ module PreAssembly
       @container                  = params[:container]
       @stageable_items            = params[:stageable_items]
       @object_files               = params[:object_files]
-      @manifest_attr              = params[:manifest_attr]
+      @manifest_row               = params[:manifest_row]
       @bundle_attr                = params[:bundle_attr]
       @project_name               = params[:project_name]
       @project_style              = params[:project_style]
@@ -266,21 +266,24 @@ module PreAssembly
     ####
 
     def generate_desc_metadata
-      
+      # Do nothing for bundles that don't suppy a template.
+      # Return a value to facilitate testing.
+      return false unless @desc_metadata_xml_template
       log "    - generate_desc_metadata()"
 
-      # this is a helper variable that gives you the first row in the manifest for the digital image, so you can use it to create metadata in the template
-      manifest_row=@images.first.provider_attr
+      # Run the XML through ERB. Note that the template uses the
+      # variable name `manifest_row`, so we set it here.
+      manifest_row       = @manifest_row
+      template           = ERB.new(@desc_metadata_xml_template)
+      @desc_metadata_xml = template.result(binding)
 
-      # run the XML through ERB to do any parsing that the template requires
-      # and then return the result into nokogiri
-      template=ERB.new(@desc_metadata_xml_template)
-      @desc_metadata_xml=template.result(binding)
-
-      # now iterate over all the columns in the manifest
-      # and replace any placeholder tags for the manifest column in the metadata template
-      manifest_row.each {|k,v| @desc_metadata_xml.gsub!("[[#{k.to_s}]]",v.to_s) }
-
+      # The @manifest_row is a hash, with column names as the key.
+      # In the template, users can specific placeholders inside
+      # double brackets: "blah [[column_name]] blah".
+      # Here we replace those placeholders with the corresponding value
+      # from the manifest row.
+      @manifest_row.each { |k,v| @desc_metadata_xml.gsub! "[[#{k}]]", v.to_s }
+      return true
     end
 
     def write_desc_metadata
@@ -326,7 +329,7 @@ module PreAssembly
           :file_name     => f.relative_path,
           :full_path     => f.path,
           :exp_md5       => f.checksum,
-          :provider_attr => @manifest_attr
+          :provider_attr => @manifest_row
         )
       end
 
@@ -371,6 +374,6 @@ images = ["STUFF"]
 
 # New attributes not currently used in DigitalObject.
 container       = "spec/test_data/bundle_input_a"
-manifest_attr   = {:STUFF => "STUFF"}
+manifest_row   = {:STUFF => "STUFF"}
 object_files    = ["STUFF"]
 stageable_items = ["spec/test_data/bundle_input_a/image1.tif"]

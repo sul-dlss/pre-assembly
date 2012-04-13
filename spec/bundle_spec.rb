@@ -394,16 +394,16 @@ describe PreAssembly::Bundle do
       @b.digital_objects.should have(3).items
       # Before processing manifest: various attributes should be nil.
       @b.digital_objects.each do |dobj|
-        dobj.label.should         == nil
-        dobj.source_id.should     == nil
-        dobj.manifest_attr.should == nil
+        dobj.label.should        == nil
+        dobj.source_id.should    == nil
+        dobj.manifest_row.should == nil
       end
       # And now those attributes should have content.
       @b.process_manifest
       @b.digital_objects.each do |dobj|
-        dobj.label.should be_kind_of         String
-        dobj.source_id.should be_kind_of     String
-        dobj.manifest_attr.should be_kind_of Hash
+        dobj.label.should be_kind_of        String
+        dobj.source_id.should be_kind_of    String
+        dobj.manifest_row.should be_kind_of Hash
       end
     end
 

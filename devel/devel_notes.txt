@@ -12,12 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-desc metadata
-    - skip for many projects
-    - if needed, use manifest and template
-        revs
-        ReidDennis
-
 initialize_assembly_workflow
     - Store workflow in APO.
     - just make service call to begin assembly; no need to generate XML.
