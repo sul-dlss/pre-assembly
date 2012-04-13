@@ -12,10 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Try to run other projects (rumsey and ReidDennis)
-    - write integration tests
-    - add assertion to query Dor to check for existing of object?
-
 Set init_assembly_wf = true in local_dev_*.yaml.
 
 Decommission the old revs-centric code
@@ -35,7 +31,9 @@ Other
         content_structure:   simple_image|simple_book
         uses_manifest:       true|false
         should_register:     true|false
-    - change should_register() to use the new params rather than :style_revs.
+    - change should_register()
+        - use new style params rather than :style_revs.
+        - modify integration test (see @already_regis)
 
 content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis
