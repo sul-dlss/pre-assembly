@@ -4,13 +4,19 @@ module PreAssembly
 
     include PreAssembly::Logging
 
-    attr_accessor :path, :relative_path, :checksum
+    attr_accessor(
+      :path,
+      :relative_path,
+      :checksum,
+      :exclude_from_content
+    )
 
     def initialize(params = {})
-      @path          = params[:path]
-      @relative_path = params[:relative_path]
-      @checksum      = params[:checksum]
-      @ao_file       = nil
+      @path                 = params[:path]
+      @relative_path        = params[:relative_path]
+      @checksum             = params[:checksum]
+      @exclude_from_content = params[:exclude_from_content]
+      @ao_file              = nil
     end
 
     def assembly_object_file

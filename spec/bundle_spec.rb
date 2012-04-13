@@ -251,6 +251,18 @@ describe PreAssembly::Bundle do
       ofile.relative_path.should == rel_path
     end
 
+    it "exclude_from_content() should " do
+      tests = {
+        "image1.tif"       => false,
+        "descMetadata.xml" => true,
+      }
+      bundle_setup :style_rumsey
+      tests.each do |f, exp|
+        path = @b.path_in_bundle f
+        @b.exclude_from_content(path).should == exp
+      end
+    end
+
   end
 
   ####################

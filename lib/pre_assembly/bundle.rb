@@ -35,7 +35,8 @@ module PreAssembly
       :digital_objects,
       :object_discovery,
       :stageable_discovery,
-      :manifest_cols
+      :manifest_cols,
+      :content_exclusion
     )
 
 
@@ -67,6 +68,7 @@ module PreAssembly
       @object_discovery    = params[:object_discovery]
       @stageable_discovery = params[:stageable_discovery]
       @manifest_cols       = params[:manifest_cols]
+      @content_exclusion   = params[:content_exclusion]
 
       @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
 
@@ -80,6 +82,7 @@ module PreAssembly
       @provider_checksums = {}
       @digital_objects    = []
       @manifest_rows      = nil
+      @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
 
       @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
       @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
@@ -277,9 +280,17 @@ module PreAssembly
 
     def new_object_file(file_path)
       return ObjectFile.new(
-        :path          => file_path,
-        :relative_path => relative_path(@bundle_dir, file_path)
+        :path                 => file_path,
+        :relative_path        => relative_path(@bundle_dir, file_path),
+        :exclude_from_content => exclude_from_content(file_path)
       )
+    end
+
+    def exclude_from_content(file_path)
+      # If user supplied a content exclusion regex pattern, see
+      # whether it matches the current file path.
+      return false unless @content_exclusion
+      return file_path =~ @content_exclusion ? true : false
     end
 
 
