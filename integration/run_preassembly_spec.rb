@@ -1,5 +1,30 @@
 describe "Pre-assembly integration" do
 
+  # The integration tests.
+  it "Revs" do
+    run_integration_tests 'revs'
+  end
+
+  it "Rumsey" do
+    run_integration_tests 'rumsey'
+  end
+
+  it "ReidDennis" do
+    run_integration_tests 'reid_dennis'
+  end
+
+  def run_integration_tests(proj)
+    # Setup the bundle for a project and run pre-assembly.
+    setup_bundle proj
+    @pids = @b.run_pre_assembly
+    determine_staged_druid_trees
+
+    # Run checks.
+    check_n_of_objects
+    check_for_expected_files
+    check_dor_objects
+  end
+
   def setup_bundle(proj)
     # Load the project's YAML config file.
     yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
@@ -17,57 +42,41 @@ describe "Pre-assembly integration" do
     @b = PreAssembly::Bundle.new @params
 
     # Set values needed for assertions.
-    conf       = Dor::Config.pre_assembly
-    dru_tree   = "#{@temp_dir}/??/???/??/????"
-    @n_objects = 3
-    @exp_files = ['*.tif', conf.cm_file_name, conf.dm_file_name]
+    conf           = Dor::Config.pre_assembly
+    @n_objects     = 3
+    @exp_files     = ['*.tif', conf.cm_file_name, conf.dm_file_name]
+    @already_regis = proj == 'rumsey'
+  end
+
+  def determine_staged_druid_trees
+    # Determine the druid tree paths in the staging directory.
+    @druid_trees = @pids.map { |pid| Druid.new(pid).path(@temp_dir) }
+  end
+
+  def check_n_of_objects
+    # Did we get the expected N of staged objects?
+    @pids.size.should == @n_objects
   end
 
   def check_for_expected_files
-    # Get pids of the process objects and determine the druid tree paths
-    # in the staging directory.
-    pids        = @b.run_pre_assembly
-    druid_trees = pids.map { |pid| Druid.new(pid).path(@temp_dir) }
-
-    # Did we get the expect N of staged objects?
-    druid_trees.size.should == @n_objects
-
     # Make sure the files were staged as we expected.
-    druid_trees.each do |dt|
+    @druid_trees.each do |dt|
       @exp_files.each do |ef|
         glob = File.join dt, ef
         fs   = Dir[glob]
         fs.size.should == 1
       end
     end
-
   end
 
-  describe "Revs" do
-
-    it "should produce expected files in staging dir" do
-      setup_bundle 'revs'
-      check_for_expected_files
+  def check_dor_objects
+    # Make sure we can get the object from Dor.
+    # Skip test for projects not registered by pre-assembly.
+    return if @already_regis
+    @pids.each do |pid|
+      item = Dor::Item.find pid
+      item.should be_kind_of Dor::Item
     end
-
-  end
-
-  describe "Rumsey" do
-
-    it "should produce expected files in staging dir" do
-      setup_bundle 'rumsey'
-      check_for_expected_files
-    end
-
-  end
-
-  describe "ReidDennis" do
-
-    it "should produce expected files in staging dir" do
-      setup_bundle 'reid_dennis'
-      check_for_expected_files
-    end
-
   end
 
 end
