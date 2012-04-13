@@ -29,5 +29,5 @@ describe PreAssembly::Image do
     end
 
   end
-  
+
 end

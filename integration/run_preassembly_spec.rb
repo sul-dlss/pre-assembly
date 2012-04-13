@@ -5,7 +5,7 @@ describe "Pre-assembly integration" do
     dmf          = Dor::Config.pre_assembly.dm_file_name
     @temp_dir    = Dir.mktmpdir 'integ_test_', 'tmp'
     @exp_n_files = 3
-    @rumsey_dir  = 'spec/test_data/bundle_input_b' 
+    @rumsey_dir  = 'spec/test_data/bundle_input_b'
 
     @exp_file_patterns = [
       "#{@temp_dir}/**/*.tif",

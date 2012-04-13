@@ -225,7 +225,7 @@ module PreAssembly
 
     def object_containers
       # Every object must reside in a single container: either a file or a directory.
-      # Those containers are either (a) specified in a manifest or (b) discovered 
+      # Those containers are either (a) specified in a manifest or (b) discovered
       # through a pattern-based crawl of the bundle_dir.
       if @object_discovery[:use_manifest]
         return discover_containers_via_manifest
@@ -328,7 +328,7 @@ module PreAssembly
     def compute_checksum(file_path)
       return Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5]
     end
-      
+
 
     ####
     # Manifest.
@@ -427,7 +427,7 @@ module PreAssembly
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
         dobj.pre_assemble
-        puts dobj.druid.druid if @show_progress 
+        puts dobj.druid.druid if @show_progress
       end
     end
 
@@ -461,7 +461,7 @@ module PreAssembly
     end
 
     def find_files_recursively(path)
-      # Takes a path to a file or dir. Returns all files (but not dirs) 
+      # Takes a path to a file or dir. Returns all files (but not dirs)
       # contained in the path, recursively.
       patterns = [path, "#{path}/**/*"]
       return Dir.glob(patterns).reject { |f| File.directory? f }
