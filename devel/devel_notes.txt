@@ -12,13 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Merge with master. Conflict occurred here:
-    config/projects/revs.yaml
-    spec/digital_object_spec.rb
-    Gemfile
-    Gemfile.lock
-    lib/pre_assembly/digital_object.rb
-
 desc metadata
     - skip for many projects
     - if needed, use manifest and template
