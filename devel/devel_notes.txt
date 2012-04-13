@@ -12,12 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-content metadata: conditional logic with several styles:
-  - one image per object: revs rumsey ReidDennis
-  - simple book: gould
-  - book with multiple image types per page: AP Hummel
-  - audio: SOHP
-
 Merge with master.
 
 desc metadata
@@ -32,8 +26,8 @@ initialize_assembly_workflow
     - remove assembly steps from configuration.
     - always do, unless disabled (add parameter to support this)
 
-Try to run a style_rumsey project
-    - write integration tests for revs and rumsey
+Try to run other projects (rumsey and ReidDennis)
+    - write integration tests
 
 Decommission the old revs-centric code
     - first comment out in Bundle and DigitalObject; then delete
@@ -41,6 +35,17 @@ Decommission the old revs-centric code
 Other
     - Refactor desc_meta var naming.
     - Add log() calls to various new methods.
+    - General review.
+    - Generalize project style to be a hash of attributes:
+        content_structure:   simple_image|simple_book
+        uses_manifest:       true|false
+
+content metadata refactoring:
+  - Currently handles simple-image: revs rumsey ReidDennis
+  - Needed:
+      - simple book: gould
+      - simple book with multiple image types per page: AP Hummel
+      - audio: SOHP
 
 
 -------------------
