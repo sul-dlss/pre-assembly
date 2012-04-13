@@ -14,6 +14,7 @@ module PreAssembly
       :bundle_attr,
       :project_name,
       :project_style,
+      :init_assembly_wf,
       :get_pid_dispatch,
       :apo_druid_id,
       :set_druid_id,
@@ -49,6 +50,7 @@ module PreAssembly
       @bundle_attr                = params[:bundle_attr]
       @project_name               = params[:project_name]
       @project_style              = params[:project_style]
+      @init_assembly_wf           = params[:init_assembly_wf]
       @apo_druid_id               = params[:apo_druid_id]
       @set_druid_id               = params[:set_druid_id]
       @bundle_dir                 = params[:bundle_dir]
@@ -89,24 +91,15 @@ module PreAssembly
 
     def pre_assemble
       log "  - assemble(#{@source_id})"
-
       bridge_transition
-
       determine_druid
       register
-
       add_dor_object_to_set
-
       stage_files
-
       generate_content_metadata
       write_content_metadata
-
-      return unless @project_style == :style_revs
-
       generate_desc_metadata
       write_desc_metadata
-
       initialize_assembly_workflow
     end
 
@@ -292,16 +285,27 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
     end
 
+
+    ####
+    # Initialize the assembly workflow.
+    ####
+
     def initialize_assembly_workflow
       # Call web service to add assemblyWF to the object in DOR.
-      url = "#{Dor::Config.dor.service_root}/dor/v1/objects/#{@pid}/apo_workflows/assemblyWF"
-      begin
-        RestClient.post url, {}      
-        true
-      rescue
-        false
-      end
+      return unless @init_assembly_wf
+      url = assembly_workflow_url
+      RestClient.post url, {}
     end
+
+    def assembly_workflow_url
+      "#{Dor::Config.dor.service_root}/dor/v1/objects/#{@pid}/apo_workflows/assemblyWF"
+    end
+
+
+
+    ####
+    # Temporary stuff.
+    ####
 
     def bridge_transition
       # A method allowing the new Bundle code to work correctly with
@@ -311,6 +315,7 @@ module PreAssembly
       return unless b.class == OpenStruct
 
       @project_style              = b.project_style
+      @init_assembly_wf           = b.init_assembly_wf
       @project_name               = b.project_name
       @apo_druid_id               = b.apo_druid_id
       @set_druid_id               = b.set_druid_id

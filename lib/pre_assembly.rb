@@ -26,8 +26,6 @@ Dor::Config.configure do
        [ 'exif-collect',          'waiting'   ],
        [ 'accessioning-initiate', 'waiting'   ],
      ]
-    
-    
   end
 
 end
