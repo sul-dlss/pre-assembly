@@ -473,6 +473,29 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "delete_digital_objects()" do
+
+    before(:each) do
+      bundle_setup :style_revs
+      @b.digital_objects = []
+    end
+
+    it "should do nothing if @cleanup == false" do
+      @b.cleanup = false
+      @b.digital_objects.should_not_receive :each
+      @b.delete_digital_objects
+    end
+
+    it "should do something if @cleanup == true" do
+      @b.cleanup = true
+      @b.digital_objects.should_receive :each
+      @b.delete_digital_objects
+    end
+
+  end
+
+  ####################
+
   describe "validate_images()" do
 
     before(:each) do

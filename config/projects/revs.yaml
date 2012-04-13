@@ -15,6 +15,7 @@ preserve:             yes
 
 limit_n:              10
 uniqify_source_ids:   false
+cleanup:              false
 show_progress:        true
 validate_usage:       true
 

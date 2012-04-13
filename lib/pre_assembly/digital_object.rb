@@ -8,6 +8,7 @@ module PreAssembly
 
     attr_accessor(
       :container,
+      :reg_by_pre_assembly,
       :stageable_items,
       :object_files,
       :manifest_row,
@@ -57,6 +58,7 @@ module PreAssembly
       @staging_dir                = params[:staging_dir]
       @label                      = params[:label]
       @source_id                  = params[:source_id]
+      @reg_by_pre_assembly        = false
       @druid                      = nil
       @pid                        = ''
       @images                     = []
@@ -163,7 +165,8 @@ module PreAssembly
     def register
       return unless should_register
       log "    - register(#{@pid})"
-      @dor_object = register_in_dor(registration_params)
+      @dor_object          = register_in_dor(registration_params)
+      @reg_by_pre_assembly = true
     end
 
     def registration_params
@@ -183,6 +186,9 @@ module PreAssembly
 
     def unregister
       # Used during testing/development work to unregister objects created in -dev.
+      # Do not run unless the object was registered by pre-assembly.
+      return unless @reg_by_pre_assembly
+
       log "  - unregister(#{@pid})"
 
       # Set all assemblyWF steps to error.
@@ -191,7 +197,8 @@ module PreAssembly
 
       # Delete object from Dor.
       delete_from_dor @pid
-      @dor_object = nil
+      @dor_object          = nil
+      @reg_by_pre_assembly = false
     end
 
 

@@ -22,6 +22,7 @@ module PreAssembly
       :project_name,
       :apo_druid_id,
       :set_druid_id,
+      :cleanup,
       :staging_dir,
       :limit_n,
       :uniqify_source_ids,
@@ -59,6 +60,7 @@ module PreAssembly
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
+      @cleanup             = params[:cleanup]
       @publish             = params[:publish]  || conf.publish
       @shelve              = params[:shelve]   || conf.shelve
       @preserve            = params[:preserve] || conf.preserve
@@ -171,6 +173,7 @@ module PreAssembly
       process_manifest
       validate_files
       process_digital_objects
+      delete_digital_objects
       return
 
       # Old Revs-centric steps. Will delete soon.
@@ -178,6 +181,7 @@ module PreAssembly
       load_manifest
       validate_images
       process_digital_objects
+      delete_digital_objects
       return
     end
 
@@ -432,6 +436,13 @@ module PreAssembly
         dobj.pre_assemble
         puts dobj.druid.druid if @show_progress
       end
+    end
+
+    def delete_digital_objects
+      # During development, delete objects that we register.
+      log "delete_digital_objects()"
+      return unless @cleanup
+      @digital_objects.each { |dobj| dobj.unregister }
     end
 
 
