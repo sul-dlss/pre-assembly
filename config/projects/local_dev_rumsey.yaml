@@ -16,7 +16,7 @@ preserve:             yes
 limit_n:              10
 uniqify_source_ids:   true
 cleanup:              true
-show_progress:        false
+show_progress:        true
 validate_usage:       true
 
 init_assembly_wf:     false
