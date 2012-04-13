@@ -1,30 +1,56 @@
 # TODO: Modify assembly robots to handle different types of content metadata.
 # TODO: Set up pre-assembly under Hudson.
 # TODO: Set up assembly under Hudson.
-
 # TODO: reevaluate logging for use in deployed context.
 # TODO: consider whether to persist information about druids processed.
 # TODO: Modify revs.yaml when we start using for real.
-
 # TODO: YARD documentation.
-
 # TODO: WorkflowService should provide a way to delete a workflow.
 
 
------------------------
-OTHER REFACTORING NOTES
------------------------
+---------------------------------------
+Refactoring on the multi-project branch
+---------------------------------------
 
-Convert YAML files to use string keys. Bundle should convert them to symbols.
+Merge with master. Conflict occurred here:
+    config/projects/revs.yaml
+    spec/digital_object_spec.rb
+    Gemfile
+    Gemfile.lock
+    lib/pre_assembly/digital_object.rb
 
-Refactor desc_meta var naming.
+desc metadata
+    - skip for many projects
+    - if needed, use manifest and template
+        revs
+        ReidDennis
 
-Stop passing so many params from bundle down to digital objects
-    - define a class method in Bundle that returns an OpenStruct
-    - it will contain all Bundle-level parameters needed by digital objects
+initialize_assembly_workflow
+    - Store workflow in APO.
+    - just make service call to begin assembly; no need to generate XML.
+    - remove assembly steps from configuration.
+    - always do, unless disabled (add parameter to support this)
 
-        bconf         = Bundle.config
-        @apo_druid_id = bconf.apo_druid_id
+Try to run other projects (rumsey and ReidDennis)
+    - write integration tests
+
+Decommission the old revs-centric code
+    - first comment out in Bundle and DigitalObject; then delete
+
+Other
+    - Refactor desc_meta var naming.
+    - Add log() calls to various new methods.
+    - General review.
+    - Generalize project style to be a hash of attributes:
+        content_structure:   simple_image|simple_book
+        uses_manifest:       true|false
+
+content metadata refactoring:
+  - Currently handles simple-image: revs rumsey ReidDennis
+  - Needed:
+      - simple book: gould
+      - simple book with multiple image types per page: AP Hummel
+      - audio: SOHP
 
 
 -------------------
@@ -109,98 +135,3 @@ Project structure and differences
         - has a manifest
         - we could create a checksums.txt file
         - manifest requires some more complex templating logic
-
-
-----------------
-REFACTORING PLAN
-----------------
-
-Bundle
-
-    discover_objects
-        - new method to initialize the process
-        - manifest-driven or dir-crawl
-        - the purpose here is to set up minimal digital objects
-            - identify the digital objects
-            - get their druids, if already registered
-            - get their files
-            - get their items_to_stage
-        - don't handle other manifest details
-            - leave that for later
-            - for now, just store a list of the manifest rows
-
-    load_checksums
-        - iterate over all files of all digital objects
-            get_checksum(dobj, file)
-                - load checksum from the provider supplied materials, or compute
-                - return the checksum
-            attach checksum to the file
-
-    validate_files
-        - iterate over all files of all digital objects
-            - if an image type: validate it using assembly-image
-            - otherwise: skip it
-            - more validation can be added later
-
-    process_manifest
-        - skip if project doesn't have a manifest
-        - set dobj attributes needed to round out object registration
-            label
-            source_id
-
-    process_digital_objects
-        - no change
-
-    delete_digital_objects
-        - only if @cleanup
-        - only if pre-assembly registered the objects
-
-
-obtaining the druid
-    - conditional logic
-    - revs:
-        claim_druid()
-        register()
-        set attribute: @registered_by_pre_assembly
-    - other projects:
-        get druid from subdir or barcode
-
-add_dor_object_to_set()
-    - perform if @set_druid_id is present 
-
-stage()
-    - replaces stage_images()
-    - don't iterate over the object's images, copying each one
-    - instead we need a new attribute: stagable_items = Array
-        - revs     [tif]
-        - rumsey   [image, descMeta]
-        - gould    [subdir/00]
-        - ap,sohp  [subdir]
-    - for each stagable item, use FileUtils.cp_r(SRC, DST)
-    - call druid_tree_mkdir() only once, at beginning
-
-content metadata
-    - conditional logic with several styles:
-        - one image per object
-          - revs
-          - rumsey
-          - ReidDennis
-        - simple book
-          - gould
-        - book with multiple image types per page
-          - AP
-          - Hummel
-        - audio
-          - SOHP
-
-desc metadata
-    - skip for many projects
-    - if needed, use manifest and template
-        revs
-        ReidDennis
-
-initialize_assembly_workflow
-    - Store workflow in APO.
-    - just make service call to begin assembly; no need to generate XML.
-    - remove assembly steps from configuration.
-    - always do, unless disabled (add parameter to support this)

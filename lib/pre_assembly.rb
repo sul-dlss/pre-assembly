@@ -35,7 +35,9 @@ end
 require 'pre_assembly/bundle'
 require 'pre_assembly/digital_object'
 require 'pre_assembly/image'
+require 'pre_assembly/object_file'
 require 'pre_assembly/version'
 
 require 'fileutils'
 require 'assembly-image'
+require 'checksum-tools'
