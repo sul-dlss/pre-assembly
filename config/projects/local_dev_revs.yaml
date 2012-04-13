@@ -18,6 +18,8 @@ uniqify_source_ids:   true
 show_progress:        true
 validate_usage:       true
 
+init_assembly_wf:     false
+
 project_style:        style_revs
 
 object_discovery:

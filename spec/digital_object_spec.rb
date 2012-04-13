@@ -47,7 +47,8 @@ describe PreAssembly::DigitalObject do
       :preserve     => 'yes'
     }
     @dobj          = PreAssembly::DigitalObject.new @ps
-    @druid         = Druid.new 'druid:ab123cd4567'
+    @pid           = 'druid:ab123cd4567'
+    @druid         = Druid.new @pid
     @druid_alt     = Druid.new 'druid:ee222vv4444'
     @provider_attr = {'sourceid'=>'foo-1','label'=>'this is a label','year'=>'2012','description'=>'this is a description','format'=>'film','foo' => '123', 'bar' => '456'}
     @tmp_dir_args  = [nil, 'tmp']
@@ -348,15 +349,19 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "initiate workflow" do
+  describe "initiate assembly workflow" do
 
-    before(:each) do
-      @dobj.druid = @druid
+    it "initialize_assembly_workflow() should do nothing if init_assembly_wf is false" do
+      @dobj.init_assembly_wf = false
+      @dobj.should_not_receive :assembly_workflow_url
+      @dobj.initialize_assembly_workflow
     end
 
-    it "should be able to exercise initialize_assembly_workflow()" do
-      # our attempt to start workflow should fail since the Rest call will fail with a 404
-      @dobj.initialize_assembly_workflow.should == false
+    it "assembly_workflow_url() should return expected value" do
+      @dobj.pid = @pid
+      url = @dobj.assembly_workflow_url
+      url.should =~ /^http.+assemblyWF$/
+      url.include?(@pid).should == true
     end
 
   end

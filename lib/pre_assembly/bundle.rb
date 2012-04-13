@@ -17,6 +17,7 @@ module PreAssembly
       :manifest,
       :descriptive_metadata_template,
       :desc_metadata_xml_template,
+      :init_assembly_wf,
       :checksums_file,
       :project_name,
       :apo_druid_id,
@@ -69,6 +70,7 @@ module PreAssembly
       @stageable_discovery = params[:stageable_discovery]
       @manifest_cols       = params[:manifest_cols]
       @content_exclusion   = params[:content_exclusion]
+      @init_assembly_wf    = params[:init_assembly_wf]
 
       @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
 
@@ -106,6 +108,7 @@ module PreAssembly
       a.bundle_dir                 = @bundle_dir
       a.staging_dir                = @staging_dir
       a.desc_metadata_xml_template = @desc_metadata_xml_template
+      a.init_assembly_wf           = @init_assembly_wf
       return a
     end
 
