@@ -145,14 +145,6 @@ describe PreAssembly::DigitalObject do
       @dobj.dor_object.should == 1234
     end
 
-    it "can exercise unregister(), with external calls stubbed" do
-      @dobj.dor_object = 1234
-      @dobj.stub :delete_from_dor
-      @dobj.stub :set_workflow_step_to_error
-      @dobj.unregister
-      @dobj.dor_object.should == nil
-    end
-
     it "add_dor_object_to_set() should do nothing when @set_druid_id is false" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
@@ -162,6 +154,32 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
+
+  describe "unregister()" do
+
+    before(:each) do
+      @dobj.dor_object = 1234
+      @dobj.stub :delete_from_dor
+      @dobj.stub :set_workflow_step_to_error
+    end
+
+    it "should do nothing unless the digitial object was registered by pre-assembly" do
+      @dobj.should_not_receive :delete_from_dor
+      @dobj.reg_by_pre_assembly = false
+      @dobj.unregister
+    end
+
+    it "can exercise unregister(), with external calls stubbed" do
+      @dobj.reg_by_pre_assembly = true
+      @dobj.unregister
+      @dobj.dor_object.should == nil
+      @dobj.reg_by_pre_assembly.should == false
+    end
+
+  end
+
 
   ####################
 

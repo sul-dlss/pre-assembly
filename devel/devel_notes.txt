@@ -12,9 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-restore unregister() functionality
-    - only unregister items that were registered by pre-assembly
-
 Try to run other projects (rumsey and ReidDennis)
     - write integration tests
 
