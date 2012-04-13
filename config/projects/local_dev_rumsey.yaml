@@ -19,7 +19,7 @@ cleanup:              true
 show_progress:        false
 validate_usage:       true
 
-init_assembly_wf:     true
+init_assembly_wf:     false
 
 project_style:        style_rumsey
 

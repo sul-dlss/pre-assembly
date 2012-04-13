@@ -13,13 +13,13 @@ publish:              no
 shelve:               no
 preserve:             yes
 
-limit_n:              1
+limit_n:              10
 uniqify_source_ids:   true
 cleanup:              true
 show_progress:        true
 validate_usage:       true
 
-init_assembly_wf:     true
+init_assembly_wf:     false
 
 project_style:        style_revs
 
