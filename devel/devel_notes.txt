@@ -27,6 +27,7 @@ Other
     - Generalize project style to be a hash of attributes:
         content_structure:   simple_image|simple_book
         uses_manifest:       true|false
+        should_register:     true|false
 
 content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis
@@ -37,7 +38,7 @@ content metadata refactoring:
 
 
 -------------------
-PROJECT DIFFERENCES
+Project Differences
 -------------------
 
 Projects to use as most pressing examples:
