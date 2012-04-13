@@ -67,17 +67,17 @@ describe PreAssembly::DigitalObject do
     end
   end
 
-  def add_images_to_dobj(img_dir = '/tmp')
-    (1..2).each do |i|
-      f = "image_#{i}.tif"
-      @dobj.add_image(
-        :file_name     => f,
-        :full_path     => "#{img_dir}/#{f}",
-        :provider_attr => {:i => i}.merge(@provider_attr),
-        :exp_md5       => "#{i}" * 4
-      )
-    end
-  end
+  # def add_images_to_dobj(img_dir = '/tmp')
+  #   (1..2).each do |i|
+  #     f = "image_#{i}.tif"
+  #     @dobj.add_image(
+  #       :file_name     => f,
+  #       :full_path     => "#{img_dir}/#{f}",
+  #       :provider_attr => {:i => i}.merge(@provider_attr),
+  #       :exp_md5       => "#{i}" * 4
+  #     )
+  #   end
+  # end
 
   def noko_doc(x)
     Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
@@ -91,11 +91,11 @@ describe PreAssembly::DigitalObject do
       @dobj.should be_kind_of PreAssembly::DigitalObject
     end
 
-    it "can add images to the digital object" do
-      n = 4
-      (1..n).each { |i| @dobj.add_image "#{i}.tif" }
-      @dobj.images.should have(n).items
-    end
+    # it "can add images to the digital object" do
+    #   n = 4
+    #   (1..n).each { |i| @dobj.add_image "#{i}.tif" }
+    #   @dobj.images.should have(n).items
+    # end
 
   end
 
