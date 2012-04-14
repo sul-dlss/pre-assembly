@@ -29,13 +29,13 @@ describe PreAssembly::Bundle do
       @b.run_log_msg.should be_kind_of String
     end
 
-    it "attr_for_digital_objects() should return an OpenStruct" do
-      a = @b.attr_for_digital_objects
-      a.should be_kind_of OpenStruct
-      # Check a couple values.
-      a.project_style.should == @b.project_style
-      a.project_name.should  == @b.project_name
-    end
+    # it "attr_for_digital_objects() should return an OpenStruct" do
+    #   a = @b.attr_for_digital_objects
+    #   a.should be_kind_of OpenStruct
+    #   # Check a couple values.
+    #   a.project_style.should == @b.project_style
+    #   a.project_name.should  == @b.project_name
+    # end
 
   end
 
@@ -117,14 +117,14 @@ describe PreAssembly::Bundle do
       @b.digital_objects[0].container.size.should > @b.bundle_dir.size
     end
 
-    it "discover_objects() should all have the same bundle_attr" do
-      bundle_setup :style_revs
-      @b.discover_objects
-      exp = @b.digital_objects[0].bundle_attr
-      @b.digital_objects.each do |dobj|
-        dobj.bundle_attr.should equal(exp)  # Checking object identity.
-      end
-    end
+    # it "discover_objects() should all have the same bundle_attr" do
+    #   bundle_setup :style_revs
+    #   @b.discover_objects
+    #   exp = @b.digital_objects[0].bundle_attr
+    #   @b.digital_objects.each do |dobj|
+    #     dobj.bundle_attr.should equal(exp)  # Checking object identity.
+    #   end
+    # end
 
   end
 

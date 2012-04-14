@@ -80,27 +80,6 @@ module PreAssembly
       }
     end
 
-    def bridge_transition
-      # A method allowing the new Bundle code to work correctly with
-      # the old DigitalObject code. Will move/remove as DigitalObject
-      # is refactored.
-      b = @bundle_attr
-      return unless b.class == OpenStruct
-      @project_style              = b.project_style
-      @init_assembly_wf           = b.init_assembly_wf
-      @project_name               = b.project_name
-      @apo_druid_id               = b.apo_druid_id
-      @set_druid_id               = b.set_druid_id
-      @bundle_dir                 = b.bundle_dir
-      @staging_dir                = b.staging_dir
-      @desc_metadata_xml_template = b.desc_metadata_xml_template
-      @publish_attr               = {
-        :preserve => b.preserve,
-        :shelve   => b.shelve,
-        :publish  => b.publish,
-      }
-    end
-
 
     ####
     # The main process.
@@ -108,7 +87,6 @@ module PreAssembly
 
     def pre_assemble
       log "  - pre_assemble(#{@source_id}) started"
-      bridge_transition
       determine_druid
       register
       add_dor_object_to_set
