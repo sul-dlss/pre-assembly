@@ -18,8 +18,6 @@ Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb
 
-Add: require 'erb'
-
 Refactor desc_meta var naming.
 
 General review.
