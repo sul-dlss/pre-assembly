@@ -12,9 +12,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Decommission the old revs-centric code
-    - first comment out in Bundle and DigitalObject; then delete
-
 Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb
