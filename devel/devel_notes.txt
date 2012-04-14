@@ -14,8 +14,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Remove bridge_transition()
-
 Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb
@@ -23,8 +21,6 @@ Publish-shelve-preseve
 Add: require 'erb'
 
 Refactor desc_meta var naming.
-
-Pass in bundle instead of OpenStruct.
 
 General review.
 

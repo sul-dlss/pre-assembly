@@ -46,12 +46,12 @@ describe PreAssembly::DigitalObject do
       :shelve       => 'no',
       :preserve     => 'yes'
     }
-    @dobj          = PreAssembly::DigitalObject.new @ps
-    @pid           = 'druid:ab123cd4567'
-    @druid         = Druid.new @pid
-    @druid_alt     = Druid.new 'druid:ee222vv4444'
-    @provider_attr = {'sourceid'=>'foo-1','label'=>'this is a label','year'=>'2012','description'=>'this is a description','format'=>'film','foo' => '123', 'bar' => '456'}
-    @tmp_dir_args  = [nil, 'tmp']
+    @dobj              = PreAssembly::DigitalObject.new @ps
+    @pid               = 'druid:ab123cd4567'
+    @druid             = Druid.new @pid
+    @druid_alt         = Druid.new 'druid:ee222vv4444'
+    @dobj.manifest_row = {'sourceid'=>'foo-1','label'=>'this is a label','year'=>'2012','description'=>'this is a description','format'=>'film','foo' => '123', 'bar' => '456'}
+    @tmp_dir_args      = [nil, 'tmp']
   end
 
   def add_object_files
@@ -262,7 +262,6 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
-      @dobj.manifest_row = @provider_attr
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <?xml version="1.0"?>
