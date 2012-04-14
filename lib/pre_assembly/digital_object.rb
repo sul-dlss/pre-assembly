@@ -25,7 +25,6 @@ module PreAssembly
       :source_id,
       :druid,
       :pid,
-      # :images,
       :content_metadata_xml,
       :content_md_file_name,
       :desc_metadata_xml,
@@ -61,7 +60,6 @@ module PreAssembly
       @reg_by_pre_assembly        = false
       @druid                      = nil
       @pid                        = ''
-      # @images                     = []
       @content_metadata_xml       = ''
       @content_md_file_name       = Dor::Config.pre_assembly.cm_file_name
       @desc_metadata_xml          = ''
@@ -88,7 +86,6 @@ module PreAssembly
       # is refactored.
       b = @bundle_attr
       return unless b.class == OpenStruct
-
       @project_style              = b.project_style
       @init_assembly_wf           = b.init_assembly_wf
       @project_name               = b.project_name
@@ -102,22 +99,7 @@ module PreAssembly
         :shelve   => b.shelve,
         :publish  => b.publish,
       }
-
-      # @object_files.each do |f|
-      #   next unless f.path =~ /\.tif$/
-      #   add_image(
-      #     :file_name     => f.relative_path,
-      #     :full_path     => f.path,
-      #     :exp_md5       => f.checksum,
-      #     :provider_attr => @manifest_row
-      #   )
-      # end
-
     end
-
-    # def add_image(params)
-    #   @images.push Image::new(params)
-    # end
 
 
     ####
@@ -250,16 +232,6 @@ module PreAssembly
         @stager.call si_path, @druid_tree_dir
       end
     end
-
-    # def stage_images(stager, base_target_dir)
-    #   # Copy images to staging directory.
-    #   @images.each do |img|
-    #     @druid_tree_dir = @druid.path base_target_dir
-    #     log "    - staging(#{img.full_path}, #{@druid_tree_dir})"
-    #     druid_tree_mkdir @druid_tree_dir
-    #     stager.call img.full_path, @druid_tree_dir
-    #   end
-    # end
 
 
     ####

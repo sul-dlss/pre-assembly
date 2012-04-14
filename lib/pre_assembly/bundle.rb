@@ -4,8 +4,8 @@ require 'ostruct'
 module PreAssembly
 
   class BundleUsageError < StandardError
-    # Exception class used to pass usage error messages back to
-    # users of the bin/pre-assemble script.
+    # An exception class used to pass usage error messages
+    # back to users of the bin/pre-assemble script.
   end
 
   class Bundle
@@ -164,10 +164,8 @@ module PreAssembly
     ####
 
     def run_pre_assembly
-      # TODO: run_pre_assembly: allow non-Revs projects to run.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      # New steps.
       discover_objects
       load_checksums
       process_manifest
@@ -176,14 +174,6 @@ module PreAssembly
       delete_digital_objects
       pids = @digital_objects.map { |dobj| dobj.pid }
       return pids
-
-      # Old Revs-centric steps. Will delete soon.
-      # load_provider_checksums
-      # load_manifest
-      # validate_images
-      # process_digital_objects
-      # delete_digital_objects
-      # return
     end
 
     def run_log_msg
@@ -367,39 +357,6 @@ module PreAssembly
       return import(@manifest) { read_attributes_from_file }
     end
 
-    # def load_manifest
-    #   # Read manifest and initialize digital objects.
-    #   log "load_manifest()"
-    #   manifest_rows.each do |r|
-    #     # Create digital object.
-    #     dobj_params = {
-    #       :project_name => @project_name,
-    #       :apo_druid_id => @apo_druid_id,
-    #       :set_druid_id => @set_druid_id,
-    #       :desc_metadata_xml_template => @desc_metadata_xml_template,
-    #       :publish      => @publish,
-    #       :shelve       => @shelve,
-    #       :preserve     => @preserve,
-    #       :source_id    => r.sourceid + source_id_suffix,
-    #       :label        => r.label,
-    #     }
-    #     dobj = DigitalObject::new dobj_params
-
-    #     # Add the image to the object.
-    #     f = r.filename
-    #     dobj.add_image(
-    #       :file_name     => f,
-    #       :full_path     => path_in_bundle(f),
-    #       :provider_attr => Hash[r.each_pair.to_a],
-    #       :exp_md5       => @provider_checksums[f]
-    #     )
-    #     @digital_objects.push dobj
-
-    #     # Bail if user asked to process a limited N of objects.
-    #     break if @limit_n and @digital_objects.size >= @limit_n
-    #   end
-    # end
-
 
     ####
     # Digital object processing.
@@ -419,17 +376,6 @@ module PreAssembly
       end
       return tally
     end
-
-    # def validate_images
-    #   log "validate_images()"
-    #   @digital_objects.each do |dobj|
-    #     dobj.images.each do |img|
-    #       next if img.valid?
-    #       msg = "Image validation failed: #{img.full_path} #{dobj.source_id.inspect}"
-    #       raise msg
-    #     end
-    #   end
-    # end
 
     def process_digital_objects
       log "process_digital_objects()"
