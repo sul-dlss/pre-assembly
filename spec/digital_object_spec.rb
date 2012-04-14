@@ -67,18 +67,6 @@ describe PreAssembly::DigitalObject do
     end
   end
 
-  # def add_images_to_dobj(img_dir = '/tmp')
-  #   (1..2).each do |i|
-  #     f = "image_#{i}.tif"
-  #     @dobj.add_image(
-  #       :file_name     => f,
-  #       :full_path     => "#{img_dir}/#{f}",
-  #       :provider_attr => {:i => i}.merge(@provider_attr),
-  #       :exp_md5       => "#{i}" * 4
-  #     )
-  #   end
-  # end
-
   def noko_doc(x)
     Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
   end
@@ -90,12 +78,6 @@ describe PreAssembly::DigitalObject do
     it "can initialize a digital object" do
       @dobj.should be_kind_of PreAssembly::DigitalObject
     end
-
-    # it "can add images to the digital object" do
-    #   n = 4
-    #   (1..n).each { |i| @dobj.add_image "#{i}.tif" }
-    #   @dobj.images.should have(n).items
-    # end
 
   end
 
@@ -211,29 +193,6 @@ describe PreAssembly::DigitalObject do
           end
         end
     end
-
-    # it "should be able to copy images successfully" do
-    #     bundle       = PreAssembly::Bundle.new :project_style => :style_revs
-    #     @dobj.druid  = @druid
-    #     @dobj.images = []
-    #     Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-    #       # Add images to the digital object and create the files.
-    #       add_images_to_dobj tmp_area
-    #       @dobj.images.each { |img| FileUtils.touch img.full_path }
-    #       # Stage the images.
-    #       base_target_dir = "#{tmp_area}/target"
-    #       FileUtils.mkdir base_target_dir
-    #       @dobj.stage_images bundle.stager, base_target_dir
-    #       # Check outcome.
-    #       @dobj.images.each do |img|
-    #         staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
-    #         # Both source and copy should exist.
-    #         File.exists?(img.full_path).should   == true
-    #         File.exists?(staged_img_path).should == true
-    #       end
-    #       puts `tree #{tmp_area}`
-    #     end
-    # end
 
   end
 
