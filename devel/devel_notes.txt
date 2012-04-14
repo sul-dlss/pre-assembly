@@ -14,24 +14,26 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
+Wrap descMeta methods in one method, conditional on @desc_meta_template.
+
+Tests for load_desc_meta_template().
+
 Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb
 
-Refactor desc_meta var naming.
-
 General review.
-
-Add log() calls to various new methods.
 
 Generalize project style to be a hash of attributes:
     content_structure:   simple_image|simple_book
     uses_manifest:       true|false
     should_register:     true|false
 
-change should_register()
+Change should_register()
     - use new style params rather than :style_revs.
     - modify integration test (see @already_regis)
+
+Add log() calls to various new methods.
 
 content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis

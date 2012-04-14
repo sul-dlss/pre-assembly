@@ -27,7 +27,7 @@ module PreAssembly
       :content_metadata_xml,
       :content_md_file_name,
       :desc_metadata_xml,
-      :desc_metadata_xml_template,
+      :desc_meta_template,
       :desc_md_file_name,
       :workflow_metadata_xml,
       :dor_object,
@@ -61,7 +61,7 @@ module PreAssembly
       @content_metadata_xml       = ''
       @content_md_file_name       = Dor::Config.pre_assembly.cm_file_name
       @desc_metadata_xml          = ''
-      @desc_metadata_xml_template = params[:desc_metadata_xml_template]
+      @desc_meta_template = params[:desc_meta_template]
       @desc_md_file_name          = Dor::Config.pre_assembly.dm_file_name
       @workflow_metadata_xml      = ''
       @dor_object                 = nil
@@ -251,13 +251,13 @@ module PreAssembly
     def generate_desc_metadata
       # Do nothing for bundles that don't suppy a template.
       # Return a value to facilitate testing.
-      return false unless @desc_metadata_xml_template
+      return false unless @desc_meta_template
       log "    - generate_desc_metadata()"
 
       # Run the XML through ERB. Note that the template uses the
       # variable name `manifest_row`, so we set it here.
       manifest_row       = @manifest_row
-      template           = ERB.new(@desc_metadata_xml_template)
+      template           = ERB.new(@desc_meta_template)
       @desc_metadata_xml = template.result(binding)
 
       # The @manifest_row is a hash, with column names as the key.
@@ -270,6 +270,7 @@ module PreAssembly
     end
 
     def write_desc_metadata
+      return false unless @desc_meta_template
       file_name = File.join @druid_tree_dir, @desc_md_file_name
       log "    - write_desc_metadata_xml(#{file_name})"
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
