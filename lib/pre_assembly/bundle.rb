@@ -14,8 +14,7 @@ module PreAssembly
     attr_accessor(
       :bundle_dir,
       :manifest,
-      :descriptive_metadata_template,
-      :desc_metadata_xml_template,
+      :desc_meta_template,
       :init_assembly_wf,
       :checksums_file,
       :project_name,
@@ -72,29 +71,32 @@ module PreAssembly
       @manifest_cols       = params[:manifest_cols]
       @content_exclusion   = params[:content_exclusion]
       @init_assembly_wf    = params[:init_assembly_wf]
-
-      @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
+      @desc_meta_template  = params[:desc_meta_template]
 
       # Other setup work facilitated by having access to instance vars.
       setup
     end
 
     def setup
-      @manifest           = path_in_bundle @manifest       unless @manifest.nil?
-      @checksums_file     = path_in_bundle @checksums_file unless @checksums_file.nil?
+      @manifest           = path_in_bundle @manifest           unless @manifest.nil?
+      @checksums_file     = path_in_bundle @checksums_file     unless @checksums_file.nil?
+      @desc_meta_template = path_in_bundle @desc_meta_template unless @desc_meta_template.nil?
       @provider_checksums = {}
       @digital_objects    = []
       @manifest_rows      = nil
       @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
-
-      @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
-      @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
+      @desc_meta_template = load_desc_meta_template
 
       # Validate parameters supplied via user script.
       # Unit testing often bypasses such checks.
       validate_usage if @validate_usage
     end
 
+
+    def load_desc_meta_template
+      return nil unless @desc_meta_template and file_exists(@desc_meta_template)
+      return IO.read(@desc_meta_template)
+    end
 
     ####
     # Usage validation.
@@ -184,20 +186,20 @@ module PreAssembly
         files      = discover_all_files(stageables)
         # Create the object.
         params = {
-          :container                  => container,
-          :stageable_items            => stageables,
-          :object_files               => files.map { |f| new_object_file(f) },
-          :project_style              => @project_style,
-          :project_name               => @project_name,
-          :apo_druid_id               => @apo_druid_id,
-          :set_druid_id               => @set_druid_id,
-          :publish                    => @publish,
-          :shelve                     => @shelve,
-          :preserve                   => @preserve,
-          :bundle_dir                 => @bundle_dir,
-          :staging_dir                => @staging_dir,
-          :desc_metadata_xml_template => @desc_metadata_xml_template,
-          :init_assembly_wf           => @init_assembly_wf,
+          :container          => container,
+          :stageable_items    => stageables,
+          :object_files       => files.map { |f| new_object_file(f) },
+          :project_style      => @project_style,
+          :project_name       => @project_name,
+          :apo_druid_id       => @apo_druid_id,
+          :set_druid_id       => @set_druid_id,
+          :publish            => @publish,
+          :shelve             => @shelve,
+          :preserve           => @preserve,
+          :bundle_dir         => @bundle_dir,
+          :staging_dir        => @staging_dir,
+          :desc_meta_template => @desc_meta_template,
+          :init_assembly_wf   => @init_assembly_wf,
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj

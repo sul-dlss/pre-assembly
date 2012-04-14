@@ -3,7 +3,7 @@ staging_dir:          tmp
 
 manifest:             manifest.csv
 checksums_file:       checksums.txt
-descriptive_metadata_template: mods_template.xml
+desc_meta_template:   mods_template.xml
 
 project_name:         ReidDennis
 apo_druid_id:         druid:qv648vd4392

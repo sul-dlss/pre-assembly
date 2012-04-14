@@ -1,7 +1,7 @@
 describe PreAssembly::DigitalObject do
 
   before(:each) do
-    desc_metadata_xml_template=<<-END
+    desc_meta_template=<<-END
       <?xml version="1.0"?>
       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
         <typeOfResource>still image</typeOfResource>
@@ -39,7 +39,7 @@ describe PreAssembly::DigitalObject do
       :apo_druid_id => 'qq333xx4444',
       :set_druid_id => 'mm111nn2222',
       :source_id    => 'SourceIDFoo',
-      :desc_metadata_xml_template =>desc_metadata_xml_template,
+      :desc_meta_template =>desc_meta_template,
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
       :publish      => 'no',
@@ -168,7 +168,6 @@ describe PreAssembly::DigitalObject do
   describe "file staging" do
 
     it "should be able to copy stageable items successfully" do
-        bundle      = PreAssembly::Bundle.new :project_style => :style_revs
         @dobj.druid = @druid
 
         Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
@@ -300,7 +299,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "generate_desc_metadata() should do nothing if there is no template" do
-      @dobj.desc_metadata_xml_template = nil
+      @dobj.desc_meta_template = nil
       @dobj.generate_desc_metadata.should == false
     end
 
