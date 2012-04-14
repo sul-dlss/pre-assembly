@@ -1,3 +1,5 @@
+# TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
+# TODO: ReidDennis and Rumsey are using Revs APOs in dev.
 # TODO: Modify assembly robots to handle different types of content metadata.
 # TODO: Set up pre-assembly under Hudson.
 # TODO: Set up assembly under Hudson.
@@ -12,24 +14,30 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
+Remove bridge_transition()
+
 Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb
 
-Other
-    - Set init_assembly_wf = true in local_dev_*.yaml.
-    - add: require 'erb'
-    - Refactor desc_meta var naming.
-    - Add log() calls to various new methods.
-    - General review.
-    - ReidDennis and Rumsey are using Revs APOs in dev.
-    - Generalize project style to be a hash of attributes:
-        content_structure:   simple_image|simple_book
-        uses_manifest:       true|false
-        should_register:     true|false
-    - change should_register()
-        - use new style params rather than :style_revs.
-        - modify integration test (see @already_regis)
+Add: require 'erb'
+
+Refactor desc_meta var naming.
+
+Pass in bundle instead of OpenStruct.
+
+General review.
+
+Add log() calls to various new methods.
+
+Generalize project style to be a hash of attributes:
+    content_structure:   simple_image|simple_book
+    uses_manifest:       true|false
+    should_register:     true|false
+
+change should_register()
+    - use new style params rather than :style_revs.
+    - modify integration test (see @already_regis)
 
 content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis
