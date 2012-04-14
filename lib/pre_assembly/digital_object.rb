@@ -12,7 +12,6 @@ module PreAssembly
       :stageable_items,
       :object_files,
       :manifest_row,
-      :bundle_attr,
       :project_name,
       :project_style,
       :init_assembly_wf,
@@ -47,7 +46,6 @@ module PreAssembly
       @stageable_items            = params[:stageable_items]
       @object_files               = params[:object_files]
       @manifest_row               = params[:manifest_row]
-      @bundle_attr                = params[:bundle_attr]
       @project_name               = params[:project_name]
       @project_style              = params[:project_style]
       @init_assembly_wf           = params[:init_assembly_wf]

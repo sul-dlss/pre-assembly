@@ -117,15 +117,6 @@ describe PreAssembly::Bundle do
       @b.digital_objects[0].container.size.should > @b.bundle_dir.size
     end
 
-    # it "discover_objects() should all have the same bundle_attr" do
-    #   bundle_setup :style_revs
-    #   @b.discover_objects
-    #   exp = @b.digital_objects[0].bundle_attr
-    #   @b.digital_objects.each do |dobj|
-    #     dobj.bundle_attr.should equal(exp)  # Checking object identity.
-    #   end
-    # end
-
   end
 
   ####################
