@@ -10,24 +10,16 @@
 # TODO: WorkflowService should provide a way to delete a workflow.
 
 
----------------------------------------
-Refactoring on the multi-project branch
----------------------------------------
-
-Don't overload desc_md_template
-    - refactor initialization and required_files
-
-    desc_md_template
-    desc_md_template_xml
+-----------
+Refactoring
+-----------
 
 Add log() calls to various new methods.
 
 Content metadata refactoring:
-  - Currently handles simple-image: revs rumsey ReidDennis
-  - Needed:
-      - simple book: gould
-      - simple book with multiple image types per page: AP Hummel
-      - audio: SOHP
+  - simple book: gould
+  - simple book with multiple image types per page: AP Hummel
+  - audio: SOHP
 
 
 -------------------

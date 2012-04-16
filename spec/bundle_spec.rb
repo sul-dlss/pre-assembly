@@ -60,10 +60,12 @@ describe PreAssembly::Bundle do
     end
 
     it "required_files() should return expected N of items" do
-      @b.required_files.should have(2).items
+      @b.required_files.should have(3).items
       @b.manifest = nil
-      @b.required_files.should have(1).items
+      @b.required_files.should have(2).items
       @b.checksums_file = nil
+      @b.required_files.should have(1).items
+      @b.desc_md_template = nil
       @b.required_files.should have(0).items
     end
 

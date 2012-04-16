@@ -17,7 +17,7 @@ module PreAssembly
       :publish_attr,
       :bundle_dir,
       :staging_dir,
-      :desc_md_template,
+      :desc_md_template_xml,
       :init_assembly_wf,
     ]
 
@@ -232,7 +232,7 @@ module PreAssembly
 
     def generate_desc_metadata
       # Do nothing for bundles that don't suppy a template.
-      return unless @desc_md_template
+      return unless @desc_md_template_xml
       create_desc_metadata_xml
       write_desc_metadata
     end
@@ -243,7 +243,7 @@ module PreAssembly
       # Run the XML through ERB. Note that the template uses the
       # variable name `manifest_row`, so we set it here.
       manifest_row = @manifest_row
-      template     = ERB.new(@desc_md_template)
+      template     = ERB.new(@desc_md_template_xml)
       @desc_md_xml = template.result(binding)
 
       # The @manifest_row is a hash, with column names as the key.
