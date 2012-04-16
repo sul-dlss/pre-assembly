@@ -47,7 +47,7 @@ describe "Pre-assembly integration" do
     # Set values needed for assertions.
     conf           = Dor::Config.pre_assembly
     @n_objects     = 3
-    @exp_files     = ['*.tif', conf.cm_file_name, conf.dm_file_name]
+    @exp_files     = ['*.tif', conf.content_md_file, conf.desc_md_file]
   end
 
   def determine_staged_druid_trees

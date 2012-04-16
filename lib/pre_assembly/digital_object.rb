@@ -17,7 +17,7 @@ module PreAssembly
       :publish_attr,
       :bundle_dir,
       :staging_dir,
-      :desc_meta_template,
+      :desc_md_template,
       :init_assembly_wf,
     ]
 
@@ -30,10 +30,10 @@ module PreAssembly
       :label,
       :manifest_row,
       :source_id,
-      :content_md_file_name,
-      :desc_md_file_name,
-      :content_metadata_xml,
-      :desc_metadata_xml,
+      :content_md_file,
+      :desc_md_file,
+      :content_md_xml,
+      :desc_md_xml,
       :stager,
     ]
 
@@ -47,19 +47,19 @@ module PreAssembly
     def initialize(params = {})
       INIT_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
-      @pid                  = ''
-      @druid                = nil
-      @druid_tree_dir       = ''
-      @dor_object           = nil
-      @reg_by_pre_assembly  = false
-      @label                = nil
-      @source_id            = nil
-      @manifest_row         = nil
+      @pid                 = ''
+      @druid               = nil
+      @druid_tree_dir      = ''
+      @dor_object          = nil
+      @reg_by_pre_assembly = false
+      @label               = nil
+      @source_id           = nil
+      @manifest_row        = nil
 
-      @content_md_file_name = Dor::Config.pre_assembly.cm_file_name
-      @desc_md_file_name    = Dor::Config.pre_assembly.dm_file_name
-      @content_metadata_xml = ''
-      @desc_metadata_xml    = ''
+      @content_md_file     = Dor::Config.pre_assembly.content_md_file
+      @desc_md_file        = Dor::Config.pre_assembly.desc_md_file
+      @content_md_xml      = ''
+      @desc_md_xml         = ''
 
       @stager           = lambda { |f,d| FileUtils.cp_r f, d }
       @get_pid_dispatch = {
@@ -211,13 +211,13 @@ module PreAssembly
           }
         }
       }
-      @content_metadata_xml = builder.to_xml
+      @content_md_xml = builder.to_xml
     end
 
     def write_content_metadata
-      file_name = File.join @druid_tree_dir, @content_md_file_name
+      file_name = File.join @druid_tree_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
+      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
     end
 
     def content_object_files
@@ -232,7 +232,7 @@ module PreAssembly
 
     def generate_desc_metadata
       # Do nothing for bundles that don't suppy a template.
-      return unless @desc_meta_template
+      return unless @desc_md_template
       create_desc_metadata_xml
       write_desc_metadata
     end
@@ -242,23 +242,23 @@ module PreAssembly
 
       # Run the XML through ERB. Note that the template uses the
       # variable name `manifest_row`, so we set it here.
-      manifest_row       = @manifest_row
-      template           = ERB.new(@desc_meta_template)
-      @desc_metadata_xml = template.result(binding)
+      manifest_row = @manifest_row
+      template     = ERB.new(@desc_md_template)
+      @desc_md_xml = template.result(binding)
 
       # The @manifest_row is a hash, with column names as the key.
       # In the template, users can specific placeholders inside
       # double brackets: "blah [[column_name]] blah".
       # Here we replace those placeholders with the corresponding value
       # from the manifest row.
-      @manifest_row.each { |k,v| @desc_metadata_xml.gsub! "[[#{k}]]", v.to_s }
+      @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s }
       return true
     end
 
     def write_desc_metadata
-      file_name = File.join @druid_tree_dir, @desc_md_file_name
+      file_name = File.join @druid_tree_dir, @desc_md_file
       log "    - write_desc_metadata_xml(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
+      File.open(file_name, 'w') { |fh| fh.puts @desc_md_xml }
     end
 
 

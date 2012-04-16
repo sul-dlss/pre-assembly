@@ -8,7 +8,7 @@ staging_dir:          tmp
 
 manifest:             ~
 checksums_file:       ~
-desc_meta_template:   ~
+desc_md_template:     ~
 
 project_name:         Revs
 apo_druid_id:         druid:qv648vd4392
