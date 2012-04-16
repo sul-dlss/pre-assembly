@@ -8,6 +8,7 @@ module PreAssembly
   end
 
   class Bundle
+
     include PreAssembly::Logging
     include CsvMapper
 
@@ -126,6 +127,8 @@ module PreAssembly
     ####
 
     def run_pre_assembly
+      # Runs the pre-assembly process and returns an array of PIDs
+      # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       discover_objects
@@ -155,7 +158,7 @@ module PreAssembly
 
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
-      # For each container, create a new Digitalobject.
+      # For each container, creates a new Digitalobject.
       use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
@@ -185,7 +188,7 @@ module PreAssembly
 
     def pruned_containers(containers)
       # If user configured pre-assembly to process a limited N of objects,
-      # return the requested number.
+      # return the requested number of object containers.
       j = @limit_n ? @limit_n - 1 : -1
       containers[0 .. j]
     end
@@ -273,7 +276,9 @@ module PreAssembly
     end
 
     def load_provider_checksums
-      # Read checksums_file, using its content to populate a hash of expected checksums.
+      # Read the provider-supplied checksums_file, using its 
+      # content to populate a hash of expected checksums.
+      # This method works with default output from md5sum.
       log "load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
@@ -287,7 +292,7 @@ module PreAssembly
     end
 
     def retrieve_checksum(file_path)
-      # Takes a path to a file. Returns md5 checksum, which either (a) comes
+      # Takes a path to a file. Returns md5 checksum, which either (a) came
       # from a provider-supplied checksums file, or (b) is computed here.
       @provider_checksums[file_path] ||= compute_checksum(file_path)
     end
@@ -308,15 +313,17 @@ module PreAssembly
       mrows = manifest_rows  # Convenience variable, and used for testing.
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
+        # Get label and source_id from column names declared in YAML config.
         dobj.label         = r.send(@manifest_cols[:label])
         dobj.source_id     = r.send(@manifest_cols[:source_id]) + source_id_suffix
+        # Also store a hash of all values from the manifest row, using column names as keys.
         dobj.manifest_row  = Hash[r.each_pair.to_a]
       end
     end
 
     def manifest_rows
       # On first call, loads the manifest data (does not reload on subsequent calls).
-      # If bundles is not using a manifest, just loads and returns emtpy array.
+      # If bundle is not using a manifest, just loads and returns emtpy array.
       return @manifest_rows if @manifest_rows
       @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
     end
@@ -371,11 +378,17 @@ module PreAssembly
     end
 
     def relative_path(base, path)
-      # Takes a base and a path. Return the portion of the path after the base:
+      # Returns the portion of the path after the base. For example:
       #   base     BLAH/BLAH
       #   path     BLAH/BLAH/foo/bar.txt
       #   returns            foo/bar.txt
-      path[base.size + 1 .. -1]
+      bs = base.size
+      raise ArgumentError unless (
+        bs > 0 and 
+        path.size > bs and
+        path.index(base) == 0
+      )
+      path[bs + 1 .. -1]
     end
 
     def dir_exists(dir)

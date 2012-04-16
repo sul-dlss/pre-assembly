@@ -21,9 +21,6 @@ describe PreAssembly::Bundle do
       bundle_setup :style_revs
     end
 
-    it "###" do
-    end
-
     it "can initialize a Bundle" do
       @b.should be_kind_of PreAssembly::Bundle
     end
@@ -488,6 +485,16 @@ describe PreAssembly::Bundle do
 
     it "relative_path() should return expected value" do
       @b.relative_path(@b.bundle_dir, @full).should == @relative
+    end
+
+    it "relative_path() raise error if given bogus arguments" do
+      f       = 'fubb.txt'
+      base    = 'foo/bar'
+      path    = "#{base}/#{f}"
+      exp_err = ArgumentError
+      lambda { @b.relative_path('',   path) }.should raise_error exp_err
+      lambda { @b.relative_path(path, path) }.should raise_error exp_err
+      lambda { @b.relative_path('xx', path) }.should raise_error exp_err
     end
 
     it "should be able to exercise file-dir existence methods" do
