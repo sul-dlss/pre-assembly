@@ -88,7 +88,7 @@ module PreAssembly
 
 
     ####
-    # Registration.
+    # Registration and Dor interaction.
     ####
 
     def determine_druid
@@ -131,6 +131,7 @@ module PreAssembly
     end
 
     def add_dor_object_to_set
+      # Add the object to a set (a sub-collection).
       return unless @set_druid_id
       @dor_object.add_relationship *add_relationship_params
       @dor_object.save
