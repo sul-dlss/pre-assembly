@@ -14,11 +14,9 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-General review.
-    Bundle
-        wrap return of PIDs
-        organize tests for object discovery
-    DigitalObject
+Bundle
+    wrap return of PIDs
+    organize tests for object discovery
 
 Generalize project style to be a hash of attributes:
     content_structure:   simple_image|simple_book
