@@ -14,10 +14,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Wrap descMeta methods in one method, conditional on @desc_meta_template.
-
-Tests for load_desc_meta_template().
-
 Publish-shelve-preseve
     - if not present, don't add to contentMetadata
     - remove global defaults from pre_assembly.rb

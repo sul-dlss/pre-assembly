@@ -98,6 +98,7 @@ module PreAssembly
       return IO.read(@desc_meta_template)
     end
 
+
     ####
     # Usage validation.
     ####

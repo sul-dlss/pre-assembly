@@ -29,13 +29,16 @@ describe PreAssembly::Bundle do
       @b.run_log_msg.should be_kind_of String
     end
 
-    # it "attr_for_digital_objects() should return an OpenStruct" do
-    #   a = @b.attr_for_digital_objects
-    #   a.should be_kind_of OpenStruct
-    #   # Check a couple values.
-    #   a.project_style.should == @b.project_style
-    #   a.project_name.should  == @b.project_name
-    # end
+    it "load_desc_meta_template() should return nil or String" do
+      # Return nil if no template.
+      @b.desc_meta_template = nil
+      @b.load_desc_meta_template.should == nil
+      # Otherwise, read the template and return its content.
+      @b.desc_meta_template = @b.path_in_bundle('mods_template.xml')
+      template = @b.load_desc_meta_template
+      template.should be_kind_of String
+      template.size.should > 0
+    end
 
   end
 

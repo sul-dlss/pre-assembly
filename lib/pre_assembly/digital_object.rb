@@ -90,9 +90,7 @@ module PreAssembly
       add_dor_object_to_set
       stage_files
       generate_content_metadata
-      write_content_metadata
       generate_desc_metadata
-      write_desc_metadata
       initialize_assembly_workflow
       log "  - pre_assemble(#{@pid}) finished"
     end
@@ -214,12 +212,12 @@ module PreAssembly
     # Content metadata.
     ####
 
-    def content_object_files
-      # Object files that should be included in content metadata.
-      @object_files.reject { |ofile| ofile.exclude_from_content }
+    def generate_content_metadata
+      create_content_metadata_xml
+      write_content_metadata
     end
 
-    def generate_content_metadata
+    def create_content_metadata_xml
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
           content_object_files.each_with_index { |ofile, i|
@@ -243,6 +241,11 @@ module PreAssembly
       File.open(file_name, 'w') { |fh| fh.puts @content_metadata_xml }
     end
 
+    def content_object_files
+      # Object files that should be included in content metadata.
+      @object_files.reject { |ofile| ofile.exclude_from_content }
+    end
+
 
     ####
     # Descriptive metadata.
@@ -250,9 +253,13 @@ module PreAssembly
 
     def generate_desc_metadata
       # Do nothing for bundles that don't suppy a template.
-      # Return a value to facilitate testing.
-      return false unless @desc_meta_template
-      log "    - generate_desc_metadata()"
+      return unless @desc_meta_template
+      create_desc_metadata_xml
+      write_desc_metadata
+    end
+
+    def create_desc_metadata_xml
+      log "    - create_desc_metadata_xml()"
 
       # Run the XML through ERB. Note that the template uses the
       # variable name `manifest_row`, so we set it here.
@@ -270,7 +277,6 @@ module PreAssembly
     end
 
     def write_desc_metadata
-      return false unless @desc_meta_template
       file_name = File.join @druid_tree_dir, @desc_md_file_name
       log "    - write_desc_metadata_xml(#{file_name})"
       File.open(file_name, 'w') { |fh| fh.puts @desc_metadata_xml }
