@@ -2,14 +2,14 @@ describe PreAssembly::Bundle do
 
   before(:all) do
     @yaml = {
-      :style_revs   => File.read('config/projects/local_dev_revs.yaml'),
-      :style_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
+      :proj_revs   => File.read('config/projects/local_dev_revs.yaml'),
+      :proj_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
     }
     @md5_regex = /^[0-9a-f]{32}$/
   end
 
-  def bundle_setup(project_style)
-    @ps = YAML.load @yaml[project_style]
+  def bundle_setup(proj)
+    @ps = YAML.load @yaml[proj]
     @b  = PreAssembly::Bundle.new @ps
   end
 
@@ -18,7 +18,7 @@ describe PreAssembly::Bundle do
   describe "initialize() and other setup" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "can initialize a Bundle" do
@@ -54,20 +54,17 @@ describe PreAssembly::Bundle do
   describe "validate_usage()" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @b.user_params = Hash[ @b.required_user_params.map { |p| [p, ''] } ]
       @exp_err = PreAssembly::BundleUsageError
     end
 
-    it "N of required files should vary by project type" do
-      n_exp = {
-        :style_revs   => 2,
-        :style_rumsey => 0,
-      }
-      n_exp.each do |style, n|
-        @b.project_style = style
-        @b.required_files.should have(n).items
-      end
+    it "required_files() should return expected N of items" do
+      @b.required_files.should have(2).items
+      @b.manifest = nil
+      @b.required_files.should have(1).items
+      @b.checksums_file = nil
+      @b.required_files.should have(0).items
     end
 
     it "should do nothing if @validate_usage is false" do
@@ -105,7 +102,7 @@ describe PreAssembly::Bundle do
   describe "main process" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "can exercise run_log_msg()" do
@@ -128,11 +125,11 @@ describe PreAssembly::Bundle do
 
     it "discover_objects() should find the correct N objects, stageables, and files" do
       tests = [
-        [ :style_revs,   3, 1, 1 ],
-        [ :style_rumsey, 3, 2, 2 ],
+        [ :proj_revs,   3, 1, 1 ],
+        [ :proj_rumsey, 3, 2, 2 ],
       ]
-      tests.each do |project_style, n_dobj, n_stag, n_file|
-        bundle_setup project_style
+      tests.each do |proj, n_dobj, n_stag, n_file|
+        bundle_setup proj
         @b.discover_objects
         dobjs = @b.digital_objects
         dobjs.should have(n_dobj).items
@@ -146,11 +143,11 @@ describe PreAssembly::Bundle do
     it "discover_objects() should handle containers correctly" do
       # A project that uses containers as stageables.
       # In this case, the bundle_dir serves as the container.
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @b.discover_objects
       @b.digital_objects[0].container.should == @b.bundle_dir
       # A project that does not.
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       @b.discover_objects
       @b.digital_objects[0].container.size.should > @b.bundle_dir.size
     end
@@ -162,7 +159,7 @@ describe PreAssembly::Bundle do
   describe "object discovery: containers" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
@@ -193,7 +190,7 @@ describe PreAssembly::Bundle do
   describe "object discovery: discovery via manifest and crawl" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "discover_containers_via_manifest() should return expected information" do
@@ -228,7 +225,7 @@ describe PreAssembly::Bundle do
   describe "object discovery: stageable_items_for" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "stageable_items_for() should return [container] if use_container is true" do
@@ -238,7 +235,7 @@ describe PreAssembly::Bundle do
     end
 
     it "stageable_items_for() should return expected crawl results" do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       container = @b.path_in_bundle "cb837cp4412"
       exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
       @b.stageable_items_for(container).should == exp
@@ -251,7 +248,7 @@ describe PreAssembly::Bundle do
   describe "object discovery: discover_all_files()" do
 
     before(:each) do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
       fs = %w(
         cb837cp4412/2874009.tif
@@ -285,11 +282,11 @@ describe PreAssembly::Bundle do
   describe "object discovery: other" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "should be able to exercise all_object_files()" do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       fake_files = [[1,2], [3,4], [5,6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
       @b.digital_objects = fake_dobjs
@@ -297,7 +294,7 @@ describe PreAssembly::Bundle do
     end
 
     it "new_object_file() should return an ObjectFile with expected path values" do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       rel_path = "image1.tif"
       path     = @b.path_in_bundle rel_path
       ofile    = @b.new_object_file path
@@ -310,7 +307,7 @@ describe PreAssembly::Bundle do
         "image1.tif"       => false,
         "descMetadata.xml" => true,
       }
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       tests.each do |f, exp|
         path = @b.path_in_bundle f
         @b.exclude_from_content(path).should == exp
@@ -324,21 +321,21 @@ describe PreAssembly::Bundle do
   describe "checksums: load_checksums()" do
 
     it "should call load_provider_checksums() if the checksums file is present" do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @b.should_receive(:all_object_files).and_return []
       @b.should_receive(:load_provider_checksums)
       @b.load_checksums
     end
 
     it "should call not call load_provider_checksums() when no checksums file is present" do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       @b.should_receive(:all_object_files).and_return []
       @b.should_not_receive(:load_provider_checksums)
       @b.load_checksums
     end
 
     it "should load checksums and attach them to the ObjectFiles" do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       @b.discover_objects
       @b.all_object_files.each { |f| f.checksum.should == nil }
       @b.load_checksums
@@ -352,7 +349,7 @@ describe PreAssembly::Bundle do
   describe "checksums: load_provider_checksums()" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "empty string yields no checksums" do
@@ -381,7 +378,7 @@ describe PreAssembly::Bundle do
   describe "checksums: retrieving and computing" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @file_path = @b.path_in_bundle 'image1.tif'
       @checksum_type = :md5
     end
@@ -412,14 +409,14 @@ describe PreAssembly::Bundle do
   describe "process_manifest()" do
 
     it "should do nothing for bundles that do not use a manifest" do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       @b.discover_objects
       @b.should_not_receive :manifest_rows
       @b.process_manifest
     end
 
     it "should augment the digital objects with additional information" do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       # Discover the objects: we should find some.
       @b.discover_objects
       @b.digital_objects.should have(3).items
@@ -445,7 +442,7 @@ describe PreAssembly::Bundle do
   describe "manifest_rows()" do
 
     it "should load the manifest CSV only once" do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       # Stub out a method that reads the manifest CSV.
       fake_data = [0, 11, 222, 3333]
       meth_name = :load_manifest_rows_from_csv
@@ -457,7 +454,7 @@ describe PreAssembly::Bundle do
     end
 
     it "should return empty array for bundles that do not use a manifest" do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
       @b.manifest_rows.should == []
     end
 
@@ -468,7 +465,7 @@ describe PreAssembly::Bundle do
   describe "validate_files()" do
 
     before(:each) do
-      bundle_setup :style_rumsey
+      bundle_setup :proj_rumsey
     end
 
     it "should return expected tally if all images are valid" do
@@ -494,7 +491,7 @@ describe PreAssembly::Bundle do
   describe "delete_digital_objects()" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @b.digital_objects = []
     end
 
@@ -517,7 +514,7 @@ describe PreAssembly::Bundle do
   describe "file and directory utilities" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
       @relative = 'abc/def.jpg'
       @full     = @b.path_in_bundle @relative
     end
@@ -552,7 +549,7 @@ describe PreAssembly::Bundle do
 
     it "find_files_recursively() should return expected information" do
       exp = {
-        :style_revs => [
+        :proj_revs => [
           "checksums.txt",
           "image1.tif",
           "image2.tif",
@@ -560,7 +557,7 @@ describe PreAssembly::Bundle do
           "manifest.csv",
           "mods_template.xml",
         ],
-        :style_rumsey => [
+        :proj_rumsey => [
           "cb837cp4412/2874009.tif",
           "cb837cp4412/descMetadata.xml",
           "cm057cr1745/2874008.tif",
@@ -569,8 +566,8 @@ describe PreAssembly::Bundle do
           "cp898cs9946/descMetadata.xml",
         ],
       }
-      exp.each do |project_style, files|
-        bundle_setup project_style
+      exp.each do |proj, files|
+        bundle_setup proj
         exp_files = files.map { |f| @b.path_in_bundle f }
         @b.find_files_recursively(@b.bundle_dir).sort.should == exp_files
       end
@@ -583,7 +580,7 @@ describe PreAssembly::Bundle do
   describe "misc utilities" do
 
     before(:each) do
-      bundle_setup :style_revs
+      bundle_setup :proj_revs
     end
 
     it "source_id_suffix() should be empty if not making unique source IDs" do
@@ -616,6 +613,20 @@ describe PreAssembly::Bundle do
         PreAssembly::Bundle.symbolize_keys(input).should == exp
       end
     end
+
+    it "values_to_symbols!() should convert string values to symbols" do
+      tests = [
+        [ {}, {} ],
+        [
+          { :a => 123, :b => 'b', :c => 'ccc' },
+          { :a => 123, :b => :b , :c => :ccc  },
+        ],
+      ]
+      tests.each do |input, exp|
+        PreAssembly::Bundle.values_to_symbols!(input).should == exp
+      end
+    end
+
   end
 
 end
