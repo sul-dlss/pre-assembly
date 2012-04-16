@@ -25,10 +25,6 @@ describe PreAssembly::Bundle do
       @b.should be_kind_of PreAssembly::Bundle
     end
 
-    it "can exercise the run_log_msg" do
-      @b.run_log_msg.should be_kind_of String
-    end
-
     it "load_desc_meta_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_meta_template = nil
@@ -41,10 +37,10 @@ describe PreAssembly::Bundle do
     end
 
     it "setup_other() should prune @publish_attr" do
-      # All are present.
+      # All keys are present.
       ks = @b.publish_attr.keys.map { |k| k.to_s }
       ks.sort.should == %w(preserve publish shelve)
-      # Nils removed.
+      # Keys would nil values should be removed.
       @b.publish_attr[:preserve] = nil
       @b.publish_attr[:publish]  = nil
       @b.setup_other
@@ -106,9 +102,20 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "main process" do
+
+    it "can exercise run_log_msg()" do
+      bundle_setup :style_revs
+      @b.run_log_msg.should be_kind_of String
+    end
+
+  end
+
+  ####################
+
   describe "object discovery: discover_objects()" do
 
-    it "discover_objects() should file the correct N objects, stageables, and files" do
+    it "discover_objects() should find the correct N objects, stageables, and files" do
       tests = [
         [ :style_revs,   3, 1, 1 ],
         [ :style_rumsey, 3, 2, 2 ],
@@ -126,12 +133,12 @@ describe PreAssembly::Bundle do
     end
 
     it "discover_objects() should handle containers correctly" do
-      # Project that uses containers as stageables.
+      # A project that uses containers as stageables.
       # In this case, the bundle_dir serves as the container.
       bundle_setup :style_revs
       @b.discover_objects
       @b.digital_objects[0].container.should == @b.bundle_dir
-      # Project that does not.
+      # A project that does not.
       bundle_setup :style_rumsey
       @b.discover_objects
       @b.digital_objects[0].container.size.should > @b.bundle_dir.size
@@ -262,7 +269,7 @@ describe PreAssembly::Bundle do
       ofile.relative_path.should == rel_path
     end
 
-    it "exclude_from_content() should " do
+    it "exclude_from_content() should behave correctly" do
       tests = {
         "image1.tif"       => false,
         "descMetadata.xml" => true,
@@ -278,16 +285,16 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "load_checksums()" do
+  describe "checksums: load_checksums()" do
 
-    it "should call load_provider_checksums if the checksums file is present" do
+    it "should call load_provider_checksums() if the checksums file is present" do
       bundle_setup :style_revs
       @b.should_receive(:all_object_files).and_return []
       @b.should_receive(:load_provider_checksums)
       @b.load_checksums
     end
 
-    it "should call not call load_provider_checksums when no checksums file is present" do
+    it "should call not call load_provider_checksums() when no checksums file is present" do
       bundle_setup :style_rumsey
       @b.should_receive(:all_object_files).and_return []
       @b.should_not_receive(:load_provider_checksums)
@@ -306,38 +313,7 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "retrieving and computing checksums" do
-
-    before(:each) do
-      bundle_setup :style_revs
-      @file_path = @b.path_in_bundle 'image1.tif'
-      @checksum_type = :md5
-    end
-
-    it "retrieve_checksum() should return provider checksum when it is available" do
-      fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
-      @b.provider_checksums = { @file_path => fake_md5 }
-      @b.should_not_receive :compute_checksum
-      @b.retrieve_checksum(@file_path).should == fake_md5
-    end
-
-    it "retrieve_checksum() should compute checksum when checksum is not available" do
-      @b.provider_checksums = {}
-      @b.should_receive :compute_checksum
-      @b.retrieve_checksum @file_path
-    end
-
-    it "compute_checksum() should return an md5 checksum" do
-      c = @b.compute_checksum @file_path
-      c.should be_kind_of String
-      c.should =~ @md5_regex
-    end
-
-  end
-
-  ####################
-
-  describe "load_provider_checksums()" do
+  describe "checksums: load_provider_checksums()" do
 
     before(:each) do
       bundle_setup :style_revs
@@ -366,23 +342,31 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "manifest_rows()" do
+  describe "checksums: retrieving and computing" do
 
-    it "should load the manifest CSV only once" do
+    before(:each) do
       bundle_setup :style_revs
-      # Stub out a method that reads the manifest CSV.
-      fake_data = [0, 11, 222, 3333]
-      meth_name = :load_manifest_rows_from_csv
-      @b.stub(meth_name).and_return fake_data
-      # Our stubbed method should be called only once, even though
-      # we call manifest_rows() multiple times.
-      @b.should_receive(meth_name).once
-      3.times { @b.manifest_rows.should == fake_data }
+      @file_path = @b.path_in_bundle 'image1.tif'
+      @checksum_type = :md5
     end
 
-    it "should return empty array for bundles that do not use a manifest" do
-      bundle_setup :style_rumsey
-      @b.manifest_rows.should == []
+    it "retrieve_checksum() should return provider checksum when it is available" do
+      fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
+      @b.provider_checksums = { @file_path => fake_md5 }
+      @b.should_not_receive :compute_checksum
+      @b.retrieve_checksum(@file_path).should == fake_md5
+    end
+
+    it "retrieve_checksum() should compute checksum when checksum is not available" do
+      @b.provider_checksums = {}
+      @b.should_receive :compute_checksum
+      @b.retrieve_checksum @file_path
+    end
+
+    it "compute_checksum() should return an md5 checksum" do
+      c = @b.compute_checksum @file_path
+      c.should be_kind_of String
+      c.should =~ @md5_regex
     end
 
   end
@@ -416,6 +400,29 @@ describe PreAssembly::Bundle do
         dobj.source_id.should be_kind_of    String
         dobj.manifest_row.should be_kind_of Hash
       end
+    end
+
+  end
+
+  ####################
+
+  describe "manifest_rows()" do
+
+    it "should load the manifest CSV only once" do
+      bundle_setup :style_revs
+      # Stub out a method that reads the manifest CSV.
+      fake_data = [0, 11, 222, 3333]
+      meth_name = :load_manifest_rows_from_csv
+      @b.stub(meth_name).and_return fake_data
+      # Our stubbed method should be called only once, even though
+      # we call manifest_rows() multiple times.
+      @b.should_receive(meth_name).once
+      3.times { @b.manifest_rows.should == fake_data }
+    end
+
+    it "should return empty array for bundles that do not use a manifest" do
+      bundle_setup :style_rumsey
+      @b.manifest_rows.should == []
     end
 
   end
