@@ -21,6 +21,9 @@ describe PreAssembly::Bundle do
       bundle_setup :style_revs
     end
 
+    it "###" do
+    end
+
     it "can initialize a Bundle" do
       @b.should be_kind_of PreAssembly::Bundle
     end

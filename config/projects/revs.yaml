@@ -1,3 +1,5 @@
+project_style:        style_revs
+
 bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
 staging_dir:          /home/lyberadmin/pre-assembly/revs_test_run/output
 
@@ -14,15 +16,7 @@ publish_attr:
   shelve:             no
   preserve:           yes
 
-limit_n:              10
-uniqify_source_ids:   false
-cleanup:              false
-show_progress:        true
-validate_usage:       true
-
 init_assembly_wf:     true
-
-project_style:        style_revs
 
 object_discovery:
   use_manifest:       true
@@ -40,3 +34,9 @@ manifest_cols:
   label:              label
 
 content_exclusion:    ~
+
+limit_n:              10
+uniqify_source_ids:   false
+cleanup:              false
+show_progress:        true
+validate_usage:       true
