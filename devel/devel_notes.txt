@@ -14,10 +14,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Publish-shelve-preseve
-    - if not present, don't add to contentMetadata
-    - remove global defaults from pre_assembly.rb
-
 General review.
 
 Generalize project style to be a hash of attributes:
@@ -31,7 +27,7 @@ Change should_register()
 
 Add log() calls to various new methods.
 
-content metadata refactoring:
+Content metadata refactoring:
   - Currently handles simple-image: revs rumsey ReidDennis
   - Needed:
       - simple book: gould

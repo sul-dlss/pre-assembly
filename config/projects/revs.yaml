@@ -9,9 +9,10 @@ project_name:         Revs
 apo_druid_id:         druid:qv648vd4392
 set_druid_id:         druid:yt502zj0924
 
-publish:              no
-shelve:               no
-preserve:             yes
+publish_attr:
+  publish:            no
+  shelve:             no
+  preserve:           yes
 
 limit_n:              10
 uniqify_source_ids:   false
