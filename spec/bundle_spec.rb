@@ -40,6 +40,17 @@ describe PreAssembly::Bundle do
       template.size.should > 0
     end
 
+    it "setup_other() should prune @publish_attr" do
+      # All are present.
+      ks = @b.publish_attr.keys.map { |k| k.to_s }
+      ks.sort.should == %w(preserve publish shelve)
+      # Nils removed.
+      @b.publish_attr[:preserve] = nil
+      @b.publish_attr[:publish]  = nil
+      @b.setup_other
+      @b.publish_attr.keys.should == [:shelve]
+    end
+
   end
 
   ####################

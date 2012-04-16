@@ -67,11 +67,7 @@ module PreAssembly
       @dor_object                 = nil
       @druid_tree_dir             = ''
       @stager                     = lambda { |f,d| FileUtils.cp_r f, d }
-      @publish_attr               = {
-        :preserve => params[:preserve],
-        :shelve   => params[:shelve],
-        :publish  => params[:publish],
-      }
+      @publish_attr               = params[:publish_attr]
       @get_pid_dispatch = {
         :style_revs   => method(:get_pid_from_suri),
         :style_rumsey => method(:get_pid_from_container),

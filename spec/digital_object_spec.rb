@@ -42,9 +42,7 @@ describe PreAssembly::DigitalObject do
       :desc_meta_template =>desc_meta_template,
       :project_name => 'ProjectBar',
       :label        => 'LabelQuux',
-      :publish      => 'no',
-      :shelve       => 'no',
-      :preserve     => 'yes'
+      :publish_attr => { :publish => 'no', :shelve => 'no', :preserve => 'yes' }
     }
     @dobj              = PreAssembly::DigitalObject.new @ps
     @pid               = 'druid:ab123cd4567'

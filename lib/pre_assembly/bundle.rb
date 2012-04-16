@@ -29,9 +29,7 @@ module PreAssembly
       :user_params,
       :project_style,
       :provider_checksums,
-      :publish,
-      :shelve,
-      :preserve,
+      :publish_attr,
       :digital_objects,
       :object_discovery,
       :stageable_discovery,
@@ -59,9 +57,7 @@ module PreAssembly
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
       @cleanup             = params[:cleanup]
-      @publish             = params[:publish]  || conf.publish
-      @shelve              = params[:shelve]   || conf.shelve
-      @preserve            = params[:preserve] || conf.preserve
+      @publish_attr        = params[:publish_attr]
       @limit_n             = params[:limit_n]
       @uniqify_source_ids  = params[:uniqify_source_ids]
       @show_progress       = params[:show_progress]
@@ -74,18 +70,23 @@ module PreAssembly
       @desc_meta_template  = params[:desc_meta_template]
 
       # Other setup work facilitated by having access to instance vars.
-      setup
+      setup_paths
+      setup_other
     end
 
-    def setup
+    def setup_paths
       @manifest           = path_in_bundle @manifest           unless @manifest.nil?
       @checksums_file     = path_in_bundle @checksums_file     unless @checksums_file.nil?
       @desc_meta_template = path_in_bundle @desc_meta_template unless @desc_meta_template.nil?
+      @desc_meta_template = load_desc_meta_template
+    end
+
+    def setup_other
       @provider_checksums = {}
       @digital_objects    = []
       @manifest_rows      = nil
       @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
-      @desc_meta_template = load_desc_meta_template
+      @publish_attr.delete_if { |k,v| v.nil? }
 
       # Validate parameters supplied via user script.
       # Unit testing often bypasses such checks.
@@ -194,9 +195,7 @@ module PreAssembly
           :project_name       => @project_name,
           :apo_druid_id       => @apo_druid_id,
           :set_druid_id       => @set_druid_id,
-          :publish            => @publish,
-          :shelve             => @shelve,
-          :preserve           => @preserve,
+          :publish_attr       => @publish_attr,
           :bundle_dir         => @bundle_dir,
           :staging_dir        => @staging_dir,
           :desc_meta_template => @desc_meta_template,
