@@ -48,7 +48,6 @@ describe "Pre-assembly integration" do
     conf           = Dor::Config.pre_assembly
     @n_objects     = 3
     @exp_files     = ['*.tif', conf.cm_file_name, conf.dm_file_name]
-    @already_regis = proj == 'rumsey'
   end
 
   def determine_staged_druid_trees
@@ -76,7 +75,7 @@ describe "Pre-assembly integration" do
   def check_dor_objects
     # Make sure we can get the object from Dor.
     # Skip test for projects not registered by pre-assembly.
-    return if @already_regis
+    return unless @b.project_style[:should_register]
     @pids.each do |pid|
       item = Dor::Item.find pid
       item.should be_kind_of Dor::Item

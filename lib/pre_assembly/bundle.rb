@@ -50,24 +50,25 @@ module PreAssembly
     ####
 
     def initialize(params = {})
-      # Unpack the user-supplied parameters.
-      conf                   = Dor::Config.pre_assembly
-      params                 = Bundle.symbolize_keys params
-      @user_params           = params
-      params[:project_style] = params[:project_style].to_sym
+      # Unpack the user-supplied parameters, after converting
+      # all hash keys and some hash values to symbols.
+      conf   = Dor::Config.pre_assembly
+      params = Bundle.symbolize_keys params
+      Bundle.values_to_symbols! params[:project_style]
+      @user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
       # Other setup work.
       setup_paths
       setup_other
       validate_usage
+      load_desc_meta_template
     end
 
     def setup_paths
       @manifest           = path_in_bundle @manifest           unless @manifest.nil?
       @checksums_file     = path_in_bundle @checksums_file     unless @checksums_file.nil?
       @desc_meta_template = path_in_bundle @desc_meta_template unless @desc_meta_template.nil?
-      @desc_meta_template = load_desc_meta_template
     end
 
     def setup_other
@@ -80,7 +81,7 @@ module PreAssembly
 
     def load_desc_meta_template
       return nil unless @desc_meta_template and file_exists(@desc_meta_template)
-      return IO.read(@desc_meta_template)
+      @desc_meta_template = IO.read(@desc_meta_template)
     end
 
 
@@ -93,7 +94,7 @@ module PreAssembly
     end
 
     def required_files
-      @project_style == :style_revs ? [@manifest, @checksums_file] : []
+      [@manifest, @checksums_file].compact
     end
 
     def required_user_params
@@ -147,7 +148,7 @@ module PreAssembly
         :staging_dir   => @staging_dir,
         :environment   => ENV['ROBOT_ENVIRONMENT'],
       }
-      return log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
+      return log_params.map { |k,v| "#{k}=#{v.inspect}"  }.join(', ')
     end
 
     def processed_pids
@@ -433,6 +434,11 @@ module PreAssembly
       else
         h
       end
+    end
+
+    def self.values_to_symbols!(h)
+      # Takes a hash and converts its string values to symbols -- not recursively.
+      h.each { |k,v| h[k] = v.to_sym if v.class == String }
     end
 
   end

@@ -1,4 +1,7 @@
-project_style:        style_revs
+project_style:
+  content_structure:  simple_image
+  should_register:    true
+  get_druid_from:     suri
 
 bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
 staging_dir:          /home/lyberadmin/pre-assembly/revs_test_run/output

@@ -14,14 +14,9 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Generalize project style to be a hash of attributes:
-    content_structure:   simple_image|simple_book
-    uses_manifest:       true|false
-    should_register:     true|false
-
-Change should_register()
-    - use new style params rather than :style_revs.
-    - modify integration test (see @already_regis)
+Meta naming:
+    - make consistent but short
+    - don't overload desc_meta_template
 
 Add log() calls to various new methods.
 

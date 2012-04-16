@@ -35,7 +35,6 @@ module PreAssembly
       :content_metadata_xml,
       :desc_metadata_xml,
       :stager,
-      :get_pid_dispatch,
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -64,8 +63,8 @@ module PreAssembly
 
       @stager           = lambda { |f,d| FileUtils.cp_r f, d }
       @get_pid_dispatch = {
-        :style_revs   => method(:get_pid_from_suri),
-        :style_rumsey => method(:get_pid_from_container),
+        :suri      => method(:get_pid_from_suri),
+        :container => method(:get_pid_from_container),
       }
     end
 
@@ -92,7 +91,8 @@ module PreAssembly
     ####
 
     def determine_druid
-      @pid   = @get_pid_dispatch[@project_style].call
+      k      = @project_style[:get_druid_from]
+      @pid   = @get_pid_dispatch[k].call
       @druid = Druid.new @pid
     end
 
@@ -105,14 +105,10 @@ module PreAssembly
     end
 
     def register
-      return unless should_register
+      return unless @project_style[:should_register]
       log "    - register(#{@pid})"
       @dor_object          = register_in_dor(registration_params)
       @reg_by_pre_assembly = true
-    end
-
-    def should_register
-      return @project_style == :style_revs
     end
 
     def register_in_dor(params)

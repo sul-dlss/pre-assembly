@@ -2,12 +2,13 @@ describe PreAssembly::DigitalObject do
 
   before(:each) do
     @ps = {
-      :apo_druid_id => 'qq333xx4444',
-      :set_druid_id => 'mm111nn2222',
-      :source_id    => 'SourceIDFoo',
-      :project_name => 'ProjectBar',
-      :label        => 'LabelQuux',
-      :publish_attr => { :publish => 'no', :shelve => 'no', :preserve => 'yes' }
+      :apo_druid_id  => 'qq333xx4444',
+      :set_druid_id  => 'mm111nn2222',
+      :source_id     => 'SourceIDFoo',
+      :project_name  => 'ProjectBar',
+      :label         => 'LabelQuux',
+      :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
+      :project_style => {},
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
     @pid          = 'druid:ab123cd4567'
@@ -49,7 +50,7 @@ describe PreAssembly::DigitalObject do
     it "determine_druid() should set correct values for @pid and @druid" do
       # Setup.
       dru = 'aa111bb2222'
-      @dobj.project_style = :style_rumsey
+      @dobj.project_style[:get_druid_from] = :container
       @dobj.container     = "foo/bar/#{dru}"
       # Before and after assertions.
       @dobj.pid.should   == ''
@@ -70,13 +71,13 @@ describe PreAssembly::DigitalObject do
   describe "register()" do
 
     it "should do nothing if should_register is false" do
-      @dobj.stub(:should_register).and_return(false)
+      @dobj.project_style[:should_register] = false
       @dobj.should_not_receive :register_in_dor
       @dobj.register
     end
 
     it "can exercise method using stubbed exernal calls" do
-      @dobj.stub(:should_register).and_return(true)
+      @dobj.project_style[:should_register] = true
       @dobj.stub(:register_in_dor).and_return(1234)
       @dobj.dor_object.should == nil
       @dobj.register
