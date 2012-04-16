@@ -88,55 +88,16 @@ module PreAssembly
 
 
     ####
-    # External dependencies.
-    ####
-
-    def get_pid_from_suri()
-      Dor::SuriService.mint_id
-    end
-
-    def register_in_dor(params)
-      Dor::RegistrationService.register_object params
-    end
-
-    def add_dor_object_to_set
-      return unless @set_druid_id
-      @dor_object.add_relationship *add_relationship_params
-      @dor_object.save
-    end
-
-    def delete_from_dor(pid)
-      Dor::Config.fedora.client["objects/#{pid}"].delete
-    end
-
-    def druid_tree_mkdir(dir)
-      FileUtils.mkdir_p dir
-    end
-
-    def set_workflow_step_to_error(pid, step)
-      wf_name = Dor::Config.pre_assembly.assembly_wf
-      msg     = 'Integration testing'
-      params  =  ['dor', pid, wf_name, step, msg]
-      resp    = Dor::WorkflowService.update_workflow_error_status *params
-      raise "update_workflow_error_status() returned false." unless resp == true
-    end
-
-    ####
-    # Project-specific dispatching.
-    ####
-
-    def should_register
-      return @project_style == :style_revs
-    end
-
-
-    ####
     # Registration.
     ####
 
     def determine_druid
       @pid   = @get_pid_dispatch[@project_style].call
       @druid = Druid.new @pid
+    end
+
+    def get_pid_from_suri()
+      Dor::SuriService.mint_id
     end
 
     def get_pid_from_container
@@ -150,6 +111,14 @@ module PreAssembly
       @reg_by_pre_assembly = true
     end
 
+    def should_register
+      return @project_style == :style_revs
+    end
+
+    def register_in_dor(params)
+      Dor::RegistrationService.register_object params
+    end
+
     def registration_params
       {
         :object_type  => 'item',
@@ -159,6 +128,12 @@ module PreAssembly
         :label        => @label,
         :tags         => ["Project : #{@project_name}"],
       }
+    end
+
+    def add_dor_object_to_set
+      return unless @set_druid_id
+      @dor_object.add_relationship *add_relationship_params
+      @dor_object.save
     end
 
     def add_relationship_params
@@ -182,6 +157,18 @@ module PreAssembly
       @reg_by_pre_assembly = false
     end
 
+    def set_workflow_step_to_error(pid, step)
+      wf_name = Dor::Config.pre_assembly.assembly_wf
+      msg     = 'Integration testing'
+      params  =  ['dor', pid, wf_name, step, msg]
+      resp    = Dor::WorkflowService.update_workflow_error_status *params
+      raise "update_workflow_error_status() returned false." unless resp == true
+    end
+
+    def delete_from_dor(pid)
+      Dor::Config.fedora.client["objects/#{pid}"].delete
+    end
+
 
     ####
     # Staging files.
@@ -196,6 +183,10 @@ module PreAssembly
         log "    - staging(#{si_path}, #{@druid_tree_dir})"
         @stager.call si_path, @druid_tree_dir
       end
+    end
+
+    def druid_tree_mkdir(dir)
+      FileUtils.mkdir_p dir
     end
 
 
