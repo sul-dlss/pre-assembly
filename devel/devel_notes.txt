@@ -15,9 +15,10 @@ Refactoring on the multi-project branch
 ---------------------------------------
 
 General review.
-    bundle_spec.rb
-    digital_object.rb
-    digital_object_spec.rb
+    Bundle
+        wrap return of PIDs
+        organize tests for object discovery
+    DigitalObject
 
 Generalize project style to be a hash of attributes:
     content_structure:   simple_image|simple_book
