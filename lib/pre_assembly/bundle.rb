@@ -137,8 +137,7 @@ module PreAssembly
       validate_files
       process_digital_objects
       delete_digital_objects
-      pids = @digital_objects.map { |dobj| dobj.pid }
-      return pids
+      return processed_pids
     end
 
     def run_log_msg
@@ -149,6 +148,10 @@ module PreAssembly
         :environment   => ENV['ROBOT_ENVIRONMENT'],
       }
       return log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
+    end
+
+    def processed_pids
+      return @digital_objects.map { |dobj| dobj.pid }
     end
 
 

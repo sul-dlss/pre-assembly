@@ -104,10 +104,21 @@ describe PreAssembly::Bundle do
 
   describe "main process" do
 
-    it "can exercise run_log_msg()" do
+    before(:each) do
       bundle_setup :style_revs
+    end
+
+    it "can exercise run_log_msg()" do
       @b.run_log_msg.should be_kind_of String
     end
+
+    it "can exercise processed_pids()" do
+      exp_pids = [11,22,33]
+      @b.digital_objects = exp_pids.map { |p| double 'dobj', :pid => p }
+      @b.processed_pids.should == exp_pids
+    end
+
+
 
   end
 
