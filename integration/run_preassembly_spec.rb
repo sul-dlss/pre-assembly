@@ -1,6 +1,7 @@
 describe "Pre-assembly integration" do
 
   # The integration tests.
+  # All of the work happens elsewhere.
   it "Revs" do
     run_integration_tests 'revs'
   end
@@ -13,6 +14,7 @@ describe "Pre-assembly integration" do
     run_integration_tests 'reid_dennis'
   end
 
+
   def run_integration_tests(proj)
     # Setup the bundle for a project and run pre-assembly.
     setup_bundle proj
@@ -24,6 +26,7 @@ describe "Pre-assembly integration" do
     check_for_expected_files
     check_dor_objects
   end
+
 
   def setup_bundle(proj)
     # Load the project's YAML config file.
@@ -52,6 +55,7 @@ describe "Pre-assembly integration" do
     # Determine the druid tree paths in the staging directory.
     @druid_trees = @pids.map { |pid| Druid.new(pid).path(@temp_dir) }
   end
+
 
   def check_n_of_objects
     # Did we get the expected N of staged objects?
