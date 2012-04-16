@@ -5,80 +5,78 @@
   <titleInfo type="alternative">
     <title>[[title1]]</title>
   </titleInfo>
-
-	<% if manifest_row[:name1_type] 
-        node_value="<name type=\"#{manifest_row[:name1_type]}\"><namePart>#{manifest_row[:name1_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name1_when]}</namePart>" if manifest_row[:name1_when]
-		node_value+="<description>#{manifest_row[:name1_where]}</description>" if manifest_row[:name1_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name1_role]}</roleTerm></role>" if manifest_row[:name1_role]
+<% if manifest_row[:name1_type] && !manifest_row[:name1_type].strip.empty? %>
+	<%= node_value="<name type=\"#{manifest_row[:name1_type].strip}\"><namePart>#{manifest_row[:name1_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name1_when].strip}</namePart>" if manifest_row[:name1_when] && !manifest_row[:name1_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name1_where].strip}</description>" if manifest_row[:name1_where] && !manifest_row[:name1_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name1_role].strip}</roleTerm></role>" if manifest_row[:name1_role] && !manifest_row[:name1_role].strip.empty?
 		node_value+="</name>"
-		node_value
-  end %>
-
-	<% if manifest_row[:name2_type] 
-        node_value="<name type=\"#{manifest_row[:name2_type]}\"><namePart>#{manifest_row[:name2_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name2_when]}</namePart>" if manifest_row[:name2_when]
-		node_value+="<description>#{manifest_row[:name2_where]}</description>" if manifest_row[:name2_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name2_role]}</roleTerm></role>" if manifest_row[:name2_role]
+	node_value %>
+ <% end %>
+	<% if manifest_row[:name2_type] && !manifest_row[:name2_type].strip.empty? %>
+        <%= node_value="<name type=\"#{manifest_row[:name2_type].strip}\"><namePart>#{manifest_row[:name2_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name2_when].strip}</namePart>" if manifest_row[:name2_when] && !manifest_row[:name2_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name2_where].strip}</description>" if manifest_row[:name2_where] && !manifest_row[:name2_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name2_role].strip}</roleTerm></role>" if manifest_row[:name2_role] && !manifest_row[:name2_role].strip.empty?
 		node_value+="</name>"
-		node_value
-  end %>
-
-	<% if manifest_row[:name3_type] 
-        node_value="<name type=\"#{manifest_row[:name3_type]}\"><namePart>#{manifest_row[:name3_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name3_when]}</namePart>" if manifest_row[:name3_when]
-		node_value+="<description>#{manifest_row[:name3_where]}</description>" if manifest_row[:name3_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name3_role]}</roleTerm></role>" if manifest_row[:name3_role]
+			node_value %>
+	<% end %>
+	<% if manifest_row[:name3_type] && !manifest_row[:name3_type].strip.empty? %>
+	<%= node_value="<name type=\"#{manifest_row[:name3_type].strip}\"><namePart>#{manifest_row[:name3_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name3_when].strip}</namePart>" if manifest_row[:name3_when] && !manifest_row[:name3_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name3_where].strip}</description>" if manifest_row[:name3_where] && !manifest_row[:name3_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name3_role].strip}</roleTerm></role>" if manifest_row[:name3_role] && !manifest_row[:name3_role].strip.empty?
 		node_value+="</name>"
-		node_value
-  end %>
+			node_value %>
+	<% end %>
+	<% if manifest_row[:name4_type] && !manifest_row[:name4_type].strip.empty? %>
+	<%= node_value="<name type=\"#{manifest_row[:name4_type].strip}\"><namePart>#{manifest_row[:name4_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name4_when].strip}</namePart>" if manifest_row[:name4_when] && !manifest_row[:name4_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name4_where].strip}</description>" if manifest_row[:name4_where] && !manifest_row[:name4_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name4_role1].strip}</roleTerm></role>" if manifest_row[:name4_role1] && !manifest_row[:name4_role1].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name4_role2].strip}</roleTerm></role>" if manifest_row[:name4_role2] && !manifest_row[:name4_role2].strip.empty?
+			node_value+="</name>"
+			node_value %>
+	<% end %>
+	<% if manifest_row[:name5_type] && !manifest_row[:name5_type].strip.empty? %>
+	<%= node_value="<name type=\"#{manifest_row[:name5_type].strip}\"><namePart>#{manifest_row[:name5_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name5_when].strip}</namePart>" if manifest_row[:name5_when] && !manifest_row[:name5_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name5_where].strip}</description>" if manifest_row[:name5_where] && !manifest_row[:name5_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name5_role].strip}</roleTerm></role>" if manifest_row[:name5_role] && !manifest_row[:name5_role].strip.empty?
+			node_value+="</name>"
+			node_value %>
+	<% end %>
+	<% if manifest_row[:name6_type] && !manifest_row[:name6_type].strip.empty? %>
+	<%= node_value="<name type=\"#{manifest_row[:name6_type].strip}\"><namePart>#{manifest_row[:name6_name].strip}</namePart>"
+		node_value+="<namePart type=\"date\">#{manifest_row[:name6_when].strip}</namePart>" if manifest_row[:name6_when] && !manifest_row[:name6_when].strip.empty?
+		node_value+="<description>#{manifest_row[:name6_where].strip}</description>" if manifest_row[:name6_where] && !manifest_row[:name6_where].strip.empty?
+		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name6_role].strip}</roleTerm></role>" if manifest_row[:name6_role] && !manifest_row[:name6_role].strip.empty?
+			node_value+="</name>"
+			node_value %>
+	 <% end %>
 
-	<% if manifest_row[:name4_type] 
-        node_value="<name type=\"#{manifest_row[:name4_type]}\"><namePart>#{manifest_row[:name4_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name4_when]}</namePart>" if manifest_row[:name4_when]
-		node_value+="<description>#{manifest_row[:name4_where]}</description>" if manifest_row[:name4_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name4_role1]}</roleTerm></role>" if manifest_row[:name4_role1]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name4_role2]}</roleTerm></role>" if manifest_row[:name4_role2]
-		node_value+="</name>"
-		node_value
-  end %>
+	<% if manifest_row[:provenance] && !manifest_row[:provenance].strip.empty? %>
+		<%= "<name type=\"corporate\"><namePart>#{manifest_row[:provenance].strip}</namePart><role><roleTerm type=\"text\">provenance</roleTerm></role></name>"%>
+	<% end %>
 
-	<% if manifest_row[:name5_type] 
-        node_value="<name type=\"#{manifest_row[:name5_type]}\"><namePart>#{manifest_row[:name5_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name5_when]}</namePart>" if manifest_row[:name5_when]
-		node_value+="<description>#{manifest_row[:name5_where]}</description>" if manifest_row[:name5_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name5_role]}</roleTerm></role>" if manifest_row[:name5_role]
-		node_value+="</name>"
-		node_value
-  end %>
+  	<typeOfResource>still image</typeOfResource>
+	<% if manifest_row[:pubdate] && !manifest_row[:pubdate].strip.empty?%>
+		<%= "<originInfo><dateIssued>#{manifest_row[:pubdate].strip}</dateIssued></originInfo>" %> 
+	<% end %>
 
-	<% if manifest_row[:name6_type] 
-        node_value="<name type=\"#{manifest_row[:name6_type]}\"><namePart>#{manifest_row[:name6_name]}</namePart>"
-		node_value+="<namePart type=\"date\">#{manifest_row[:name6_when]}</namePart>" if manifest_row[:name6_when]
-		node_value+="<description>#{manifest_row[:name6_where]}</description>" if manifest_row[:name6_where]
-		node_value+="<role><roleTerm type=\"text\">#{manifest_row[:name6_role]}</roleTerm></role>" if manifest_row[:name6_role]
-		node_value+="</name>"
-		node_value
-  end %>
-
-  <% if manifest_row[:provenance] %><%= "<name type=\"corporate\"><namePart>#{manifest_row[:provenance]}</namePart><role><roleTerm type=\"text\">provenance</roleTerm></role></name>"%><% end %>
-
-  <typeOfResource>still image</typeOfResource>
-  <% if manifest_row[:pubdate] %><%= "<originInfo><dateIssued>#{manifest_row[:pubdate]}</originInfo></dateIssued>" %> <% end %>
-
-	<% if !['Paintings','Drawings','Graphics'].include? manifest_row[:type] %>
-  	<%= "<subject><topic authority=\"lcsh\">#{manifest_row[:type]}</topic></subject>" %>
+	<% if !['Paintings','Drawings','Graphics'].include? manifest_row[:type].strip %>
+  		<%= "<subject><topic authority=\"lcsh\">#{manifest_row[:type].strip}</topic></subject>" %>
 	<% end %>
 
   <physicalDescription>
-		<% if ['Paintings','Drawings','Graphics'].include? manifest_row[:type] %>
-    	<%= "<form authority=\"aat\">#{manifest_row[:type]}</form>" %>
-		<% end %>
+	<% if ['Paintings','Drawings','Graphics'].include? manifest_row[:type].strip %>
+    	<%= "<form authority=\"aat\">#{manifest_row[:type].strip}</form>" %>
+	<% end %>
     <form>[[medium]]</form>
     <note displayLabel="Dimensions">[[dimensions]]</note>
     <note displayLabel="Condition">[[condition]]</note>
   </physicalDescription>
-  <% if manifest_row[:note] %><%= "<note>#{manifest_row[:note]}</note>" %> <% end %>
-  <% if manifest_row[:description] %><%= "<note>#{manifest_row[:description]}</note>" %> <% end %>
+  <% if manifest_row[:note] && !manifest_row[:note].strip.empty? %><%= "<note>#{manifest_row[:note].strip}</note>" %> <% end %>
+  <% if manifest_row[:description]  && !manifest_row[:description].strip.empty? %><%= "<note>#{manifest_row[:description].strip}</note>" %> <% end %>
   <identifier type="local">[[id]]</identifier>
 </mods>
