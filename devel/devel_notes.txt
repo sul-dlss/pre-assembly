@@ -14,10 +14,6 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Bundle
-    wrap return of PIDs
-    organize tests for object discovery
-
 Generalize project style to be a hash of attributes:
     content_structure:   simple_image|simple_book
     uses_manifest:       true|false

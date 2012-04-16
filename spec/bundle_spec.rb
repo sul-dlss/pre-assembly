@@ -159,6 +159,95 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "object discovery: containers" do
+
+    before(:each) do
+      bundle_setup :style_revs
+    end
+
+    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
+      items = [0,11,22,33,44,55,66,77]
+      @b.limit_n = nil
+      @b.pruned_containers(items).should == items
+      @b.limit_n = 3
+      @b.pruned_containers(items).should == items[0..2]
+    end
+
+    it "object_containers() should dispatch the correct method" do
+      exp = {
+        :discover_containers_via_manifest => true,
+        :discover_items_via_crawl         => false,
+      }
+      exp.each do |meth, use_man|
+        @b.object_discovery[:use_manifest] = use_man
+        @b.stub(meth).and_return []
+        @b.should_receive(meth).exactly(1).times
+        @b.object_containers
+      end
+    end
+
+  end
+
+  ####################
+
+  describe "object discovery: discovery via manifest and crawl" do
+
+    before(:each) do
+      bundle_setup :style_revs
+    end
+
+    it "discover_containers_via_manifest() should return expected information" do
+      col_name  = :col_foo
+      vals      = %w(123.tif 456.tif 789.tif)
+      exp       = vals.map { |v| @b.path_in_bundle v }
+      fake_rows = vals.map { |v| double('row', col_name => v) }
+      @b.manifest_cols[:object_container] = col_name
+      @b.stub(:manifest_rows).and_return fake_rows
+      @b.discover_containers_via_manifest.should == exp
+    end
+
+    it "discover_items_via_crawl() should return expected information" do
+      items = [
+        'abc.txt', 'def.txt', 'ghi.txt',
+        '123.tif', '456.tif', '456.TIF',
+      ]
+      items = items.map { |i| @b.path_in_bundle i }
+      @b.stub(:dir_glob).and_return items
+      # No regex filtering.
+      @b.object_discovery = { :regex => '', :glob => '' }
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items
+      # Only tif files.
+      @b.object_discovery[:regex] = '(?i)\.tif$'
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1]
+    end
+
+  end
+
+  ####################
+
+  describe "object discovery: stageable_items_for" do
+
+    before(:each) do
+      bundle_setup :style_revs
+    end
+
+    it "stageable_items_for() should return [container] if use_container is true" do
+      container = 'foo.tif'
+      @b.stageable_discovery[:use_container] = true
+      @b.stageable_items_for(container).should == [container]
+    end
+
+    it "stageable_items_for() should return expected crawl results" do
+      bundle_setup :style_rumsey
+      container = @b.path_in_bundle "cb837cp4412"
+      exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
+      @b.stageable_items_for(container).should == exp
+    end
+
+  end
+
+  ####################
+
   describe "object discovery: discover_all_files()" do
 
     before(:each) do
@@ -197,70 +286,6 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       bundle_setup :style_revs
-    end
-
-    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
-      items = [0,11,22,33,44,55,66,77]
-      @b.limit_n = nil
-      @b.pruned_containers(items).should == items
-      @b.limit_n = 3
-      @b.pruned_containers(items).should == items[0..2]
-    end
-
-    it "object_containers() should dispatch the correct method" do
-      exp = {
-        :discover_containers_via_manifest => true,
-        :discover_items_via_crawl         => false,
-      }
-      exp.each do |meth, use_man|
-        @b.object_discovery[:use_manifest] = use_man
-        @b.stub(meth).and_return []
-        @b.should_receive(meth).exactly(1).times
-        @b.object_containers
-      end
-    end
-
-    it "discover_containers_via_manifest() should return expected information" do
-      col_name  = :col_foo
-      vals      = %w(123.tif 456.tif 789.tif)
-      exp       = vals.map { |v| @b.path_in_bundle v }
-      fake_rows = vals.map { |v| double('row', col_name => v) }
-      @b.manifest_cols[:object_container] = col_name
-      @b.stub(:manifest_rows).and_return fake_rows
-      @b.discover_containers_via_manifest.should == exp
-    end
-
-    it "discover_items_via_crawl() should return expected information" do
-      items = [
-        'abc.txt', 'def.txt', 'ghi.txt',
-        '123.tif', '456.tif', '456.TIF',
-      ]
-      items = items.map { |i| @b.path_in_bundle i }
-      @b.stub(:dir_glob).and_return items
-      # No regex filtering.
-      @b.object_discovery = { :regex => '', :glob => '' }
-      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items
-      # Only tif files.
-      @b.object_discovery[:regex] = '(?i)\.tif$'
-      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1]
-    end
-
-    it "dir_glob() should return expected information" do
-      exp = [1,2,3].map { |n| @b.path_in_bundle "image#{n}.tif" }
-      @b.dir_glob(@b.path_in_bundle "*.tif").should == exp
-    end
-
-    it "stageable_items_for() should return [container] if use_container is true" do
-      container = 'foo.tif'
-      @b.stageable_discovery[:use_container] = true
-      @b.stageable_items_for(container).should == [container]
-    end
-
-    it "stageable_items_for() should return expected crawl results" do
-      bundle_setup :style_rumsey
-      container = @b.path_in_bundle "cb837cp4412"
-      exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
-      @b.stageable_items_for(container).should == exp
     end
 
     it "should be able to exercise all_object_files()" do
@@ -518,6 +543,11 @@ describe PreAssembly::Bundle do
     it "should be able to exercise file-dir existence methods" do
       @b.file_exists(@b.manifest).should == true
       @b.dir_exists(@b.bundle_dir).should == true
+    end
+
+    it "dir_glob() should return expected information" do
+      exp = [1,2,3].map { |n| @b.path_in_bundle "image#{n}.tif" }
+      @b.dir_glob(@b.path_in_bundle "*.tif").should == exp
     end
 
     it "find_files_recursively() should return expected information" do
