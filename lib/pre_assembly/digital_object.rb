@@ -19,7 +19,6 @@ module PreAssembly
       :staging_dir,
       :desc_meta_template,
       :init_assembly_wf,
-
     ]
 
     OTHER_ACCESSORS = [
