@@ -40,6 +40,7 @@ module PreAssembly
       :user_params,
       :provider_checksums,
       :digital_objects,
+      :desc_md_template_xml,
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -66,8 +67,8 @@ module PreAssembly
     end
 
     def setup_paths
-      @manifest           = path_in_bundle @manifest           unless @manifest.nil?
-      @checksums_file     = path_in_bundle @checksums_file     unless @checksums_file.nil?
+      @manifest         = path_in_bundle @manifest         unless @manifest.nil?
+      @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
       @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
     end
 
@@ -81,7 +82,7 @@ module PreAssembly
 
     def load_desc_md_template
       return nil unless @desc_md_template and file_exists(@desc_md_template)
-      @desc_md_template = IO.read(@desc_md_template)
+      @desc_md_template_xml = IO.read(@desc_md_template)
     end
 
 
@@ -94,7 +95,8 @@ module PreAssembly
     end
 
     def required_files
-      [@manifest, @checksums_file].compact
+      # If a file parameter from the YAML is non-nil, the file must exist.
+      [@manifest, @checksums_file, @desc_md_template].compact
     end
 
     def required_user_params
@@ -172,18 +174,18 @@ module PreAssembly
         files      = discover_all_files(stageables)
         # Create the object.
         params = {
-          :project_style      => @project_style,
-          :bundle_dir         => @bundle_dir,
-          :staging_dir        => @staging_dir,
-          :desc_md_template => @desc_md_template,
-          :project_name       => @project_name,
-          :apo_druid_id       => @apo_druid_id,
-          :set_druid_id       => @set_druid_id,
-          :publish_attr       => @publish_attr,
-          :init_assembly_wf   => @init_assembly_wf,
-          :container          => container,
-          :stageable_items    => stageables,
-          :object_files       => files.map { |f| new_object_file(f) },
+          :project_style        => @project_style,
+          :bundle_dir           => @bundle_dir,
+          :staging_dir          => @staging_dir,
+          :desc_md_template_xml => @desc_md_template_xml,
+          :project_name         => @project_name,
+          :apo_druid_id         => @apo_druid_id,
+          :set_druid_id         => @set_druid_id,
+          :publish_attr         => @publish_attr,
+          :init_assembly_wf     => @init_assembly_wf,
+          :container            => container,
+          :stageable_items      => stageables,
+          :object_files         => files.map { |f| new_object_file(f) },
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
