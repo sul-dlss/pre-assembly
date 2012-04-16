@@ -11,6 +11,8 @@ module PreAssembly
     include PreAssembly::Logging
     include CsvMapper
 
+    INIT_PARAMS = [:foo, :bar]
+
     attr_accessor(
       :bundle_dir,
       :manifest,
@@ -48,16 +50,20 @@ module PreAssembly
       params = Bundle.symbolize_keys params
 
       @user_params         = params
+
       @project_style       = params[:project_style].to_sym
-      @bundle_dir          = params[:bundle_dir]     || ''
+
+      @bundle_dir          = params[:bundle_dir]
       @staging_dir         = params[:staging_dir]
       @manifest            = params[:manifest]
       @checksums_file      = params[:checksums_file]
+
       @project_name        = params[:project_name]
       @apo_druid_id        = params[:apo_druid_id]
       @set_druid_id        = params[:set_druid_id]
-      @cleanup             = params[:cleanup]
       @publish_attr        = params[:publish_attr]
+
+      @cleanup             = params[:cleanup]
       @limit_n             = params[:limit_n]
       @uniqify_source_ids  = params[:uniqify_source_ids]
       @show_progress       = params[:show_progress]

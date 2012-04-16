@@ -1,3 +1,5 @@
+project_style:        style_rumsey
+
 bundle_dir:           spec/test_data/bundle_input_b
 staging_dir:          tmp
 
@@ -14,15 +16,7 @@ publish_attr:
   shelve:             no
   preserve:           yes
 
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
-show_progress:        true
-validate_usage:       true
-
 init_assembly_wf:     false
-
-project_style:        style_rumsey
 
 object_discovery:
   use_manifest:       false
@@ -40,3 +34,9 @@ manifest_cols:
   label:              ~
 
 content_exclusion:    '(?ix) descMetadata\.xml $'
+
+limit_n:              10
+uniqify_source_ids:   true
+cleanup:              true
+show_progress:        true
+validate_usage:       true
