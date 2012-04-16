@@ -6,35 +6,40 @@ module PreAssembly
 
     include PreAssembly::Logging
 
-    attr_accessor(
+    INIT_PARAMS = [
       :container,
-      :reg_by_pre_assembly,
       :stageable_items,
       :object_files,
-      :manifest_row,
-      :project_name,
       :project_style,
-      :init_assembly_wf,
-      :get_pid_dispatch,
+      :project_name,
       :apo_druid_id,
       :set_druid_id,
+      :publish_attr,
       :bundle_dir,
       :staging_dir,
-      :label,
-      :source_id,
-      :druid,
-      :pid,
-      :content_metadata_xml,
-      :content_md_file_name,
-      :desc_metadata_xml,
       :desc_meta_template,
-      :desc_md_file_name,
-      :workflow_metadata_xml,
-      :dor_object,
+      :init_assembly_wf,
+
+    ]
+
+    OTHER_ACCESSORS = [
+      :pid,
+      :druid,
       :druid_tree_dir,
+      :dor_object,
+      :reg_by_pre_assembly,
+      :label,
+      :manifest_row,
+      :source_id,
+      :content_md_file_name,
+      :desc_md_file_name,
+      :content_metadata_xml,
+      :desc_metadata_xml,
       :stager,
-      :publish_attr
-    )
+      :get_pid_dispatch,
+    ]
+
+    (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
 
 
     ####
@@ -42,32 +47,23 @@ module PreAssembly
     ####
 
     def initialize(params = {})
-      @container                  = params[:container]
-      @stageable_items            = params[:stageable_items]
-      @object_files               = params[:object_files]
-      @manifest_row               = params[:manifest_row]
-      @project_name               = params[:project_name]
-      @project_style              = params[:project_style]
-      @init_assembly_wf           = params[:init_assembly_wf]
-      @apo_druid_id               = params[:apo_druid_id]
-      @set_druid_id               = params[:set_druid_id]
-      @bundle_dir                 = params[:bundle_dir]
-      @staging_dir                = params[:staging_dir]
-      @label                      = params[:label]
-      @source_id                  = params[:source_id]
-      @reg_by_pre_assembly        = false
-      @druid                      = nil
-      @pid                        = ''
-      @content_metadata_xml       = ''
-      @content_md_file_name       = Dor::Config.pre_assembly.cm_file_name
-      @desc_metadata_xml          = ''
-      @desc_meta_template = params[:desc_meta_template]
-      @desc_md_file_name          = Dor::Config.pre_assembly.dm_file_name
-      @workflow_metadata_xml      = ''
-      @dor_object                 = nil
-      @druid_tree_dir             = ''
-      @stager                     = lambda { |f,d| FileUtils.cp_r f, d }
-      @publish_attr               = params[:publish_attr]
+      INIT_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
+
+      @pid                  = ''
+      @druid                = nil
+      @druid_tree_dir       = ''
+      @dor_object           = nil
+      @reg_by_pre_assembly  = false
+      @label                = nil
+      @source_id            = nil
+      @manifest_row         = nil
+
+      @content_md_file_name = Dor::Config.pre_assembly.cm_file_name
+      @desc_md_file_name    = Dor::Config.pre_assembly.dm_file_name
+      @content_metadata_xml = ''
+      @desc_metadata_xml    = ''
+
+      @stager           = lambda { |f,d| FileUtils.cp_r f, d }
       @get_pid_dispatch = {
         :style_revs   => method(:get_pid_from_suri),
         :style_rumsey => method(:get_pid_from_container),

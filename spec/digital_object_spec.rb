@@ -98,6 +98,7 @@ describe PreAssembly::DigitalObject do
 
     it "can generate registration parameters" do
       @dobj.druid = @druid
+      @dobj.label = "LabelQuux"
       rps = @dobj.registration_params
       rps.should             be_kind_of Hash
       rps[:source_id].should be_kind_of Hash

@@ -35,13 +35,13 @@ module PreAssembly
       :cleanup,
     ]
 
-    # Create accessors.
-    YAML_PARAMS.each { |p| attr_accessor p }
-    attr_accessor(
+    OTHER_ACCESSORS = [
       :user_params,
       :provider_checksums,
-      :digital_objects
-    )
+      :digital_objects,
+    ]
+
+    (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
 
 
     ####
@@ -165,18 +165,18 @@ module PreAssembly
         files      = discover_all_files(stageables)
         # Create the object.
         params = {
-          :container          => container,
-          :stageable_items    => stageables,
-          :object_files       => files.map { |f| new_object_file(f) },
           :project_style      => @project_style,
+          :bundle_dir         => @bundle_dir,
+          :staging_dir        => @staging_dir,
+          :desc_meta_template => @desc_meta_template,
           :project_name       => @project_name,
           :apo_druid_id       => @apo_druid_id,
           :set_druid_id       => @set_druid_id,
           :publish_attr       => @publish_attr,
-          :bundle_dir         => @bundle_dir,
-          :staging_dir        => @staging_dir,
-          :desc_meta_template => @desc_meta_template,
           :init_assembly_wf   => @init_assembly_wf,
+          :container          => container,
+          :stageable_items    => stageables,
+          :object_files       => files.map { |f| new_object_file(f) },
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
