@@ -11,32 +11,36 @@ module PreAssembly
     include PreAssembly::Logging
     include CsvMapper
 
-    INIT_PARAMS = [:foo, :bar]
-
-    attr_accessor(
+    # Paramaters passed via YAML config files.
+    YAML_PARAMS = [
+      :project_style,
       :bundle_dir,
+      :staging_dir,
       :manifest,
-      :desc_meta_template,
-      :init_assembly_wf,
       :checksums_file,
+      :desc_meta_template,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
-      :cleanup,
-      :staging_dir,
-      :limit_n,
-      :uniqify_source_ids,
-      :show_progress,
-      :validate_usage,
-      :user_params,
-      :project_style,
-      :provider_checksums,
       :publish_attr,
-      :digital_objects,
+      :init_assembly_wf,
       :object_discovery,
       :stageable_discovery,
       :manifest_cols,
-      :content_exclusion
+      :content_exclusion,
+      :validate_usage,
+      :show_progress,
+      :limit_n,
+      :uniqify_source_ids,
+      :cleanup,
+    ]
+
+    # Create accessors.
+    YAML_PARAMS.each { |p| attr_accessor p }
+    attr_accessor(
+      :user_params,
+      :provider_checksums,
+      :digital_objects
     )
 
 
@@ -46,38 +50,16 @@ module PreAssembly
 
     def initialize(params = {})
       # Unpack the user-supplied parameters.
-      conf   = Dor::Config.pre_assembly
-      params = Bundle.symbolize_keys params
+      conf                   = Dor::Config.pre_assembly
+      params                 = Bundle.symbolize_keys params
+      @user_params           = params
+      params[:project_style] = params[:project_style].to_sym
+      YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
-      @user_params         = params
-
-      @project_style       = params[:project_style].to_sym
-
-      @bundle_dir          = params[:bundle_dir]
-      @staging_dir         = params[:staging_dir]
-      @manifest            = params[:manifest]
-      @checksums_file      = params[:checksums_file]
-
-      @project_name        = params[:project_name]
-      @apo_druid_id        = params[:apo_druid_id]
-      @set_druid_id        = params[:set_druid_id]
-      @publish_attr        = params[:publish_attr]
-
-      @cleanup             = params[:cleanup]
-      @limit_n             = params[:limit_n]
-      @uniqify_source_ids  = params[:uniqify_source_ids]
-      @show_progress       = params[:show_progress]
-      @validate_usage      = params[:validate_usage]
-      @object_discovery    = params[:object_discovery]
-      @stageable_discovery = params[:stageable_discovery]
-      @manifest_cols       = params[:manifest_cols]
-      @content_exclusion   = params[:content_exclusion]
-      @init_assembly_wf    = params[:init_assembly_wf]
-      @desc_meta_template  = params[:desc_meta_template]
-
-      # Other setup work facilitated by having access to instance vars.
+      # Other setup work.
       setup_paths
       setup_other
+      validate_usage
     end
 
     def setup_paths
@@ -93,12 +75,7 @@ module PreAssembly
       @manifest_rows      = nil
       @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
       @publish_attr.delete_if { |k,v| v.nil? }
-
-      # Validate parameters supplied via user script.
-      # Unit testing often bypasses such checks.
-      validate_usage if @validate_usage
     end
-
 
     def load_desc_meta_template
       return nil unless @desc_meta_template and file_exists(@desc_meta_template)
@@ -119,20 +96,14 @@ module PreAssembly
     end
 
     def required_user_params
-      [
-        :project_style,
-        :bundle_dir,
-        :staging_dir,
-        :manifest,
-        :checksums_file,
-        :project_name,
-        :apo_druid_id,
-        :set_druid_id,
-      ]
+      return YAML_PARAMS
     end
 
     def validate_usage
-      # Check for required parameters, directories, and files.
+      # Validate parameters supplied via user script.
+      # Unit testing often bypasses such checks.
+      return unless @validate_usage
+
       required_user_params.each do |p|
         next if @user_params.has_key? p
         raise BundleUsageError, "Missing parameter: #{p}."

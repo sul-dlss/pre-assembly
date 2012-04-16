@@ -77,6 +77,12 @@ describe PreAssembly::Bundle do
       end
     end
 
+    it "should do nothing if @validate_usage is false" do
+      @b.validate_usage = false
+      @b.should_not_receive(:required_user_params)
+      @b.validate_usage
+    end
+
     it "should not raise an exception if requirements are satisfied" do
       @b.validate_usage
     end
