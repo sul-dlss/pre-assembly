@@ -3,8 +3,8 @@ Dor::Config.configure do
   pre_assembly do
 
     # Default file names when writing metadata streams.
-    cm_file_name 'contentMetadata.xml'
-    dm_file_name 'descMetadata.xml'
+    content_md_file 'contentMetadata.xml'
+    desc_md_file    'descMetadata.xml'
 
     # The assembly workflow parameters
     # TODO Remove these when they are no longer needed to unregister an object

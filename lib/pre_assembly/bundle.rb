@@ -19,7 +19,7 @@ module PreAssembly
       :staging_dir,
       :manifest,
       :checksums_file,
-      :desc_meta_template,
+      :desc_md_template,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -62,13 +62,13 @@ module PreAssembly
       setup_paths
       setup_other
       validate_usage
-      load_desc_meta_template
+      load_desc_md_template
     end
 
     def setup_paths
       @manifest           = path_in_bundle @manifest           unless @manifest.nil?
       @checksums_file     = path_in_bundle @checksums_file     unless @checksums_file.nil?
-      @desc_meta_template = path_in_bundle @desc_meta_template unless @desc_meta_template.nil?
+      @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
     end
 
     def setup_other
@@ -79,9 +79,9 @@ module PreAssembly
       @publish_attr.delete_if { |k,v| v.nil? }
     end
 
-    def load_desc_meta_template
-      return nil unless @desc_meta_template and file_exists(@desc_meta_template)
-      @desc_meta_template = IO.read(@desc_meta_template)
+    def load_desc_md_template
+      return nil unless @desc_md_template and file_exists(@desc_md_template)
+      @desc_md_template = IO.read(@desc_md_template)
     end
 
 
@@ -175,7 +175,7 @@ module PreAssembly
           :project_style      => @project_style,
           :bundle_dir         => @bundle_dir,
           :staging_dir        => @staging_dir,
-          :desc_meta_template => @desc_meta_template,
+          :desc_md_template => @desc_md_template,
           :project_name       => @project_name,
           :apo_druid_id       => @apo_druid_id,
           :set_druid_id       => @set_druid_id,

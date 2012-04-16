@@ -221,13 +221,13 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should generate the expected xml text" do
-      noko_doc(@dobj.content_metadata_xml).should be_equivalent_to @exp_xml
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.content_md_file_name
+        file_name = File.join tmp_area, @dobj.content_md_file
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
@@ -252,7 +252,7 @@ describe PreAssembly::DigitalObject do
         'foo'         =>  '123',
         'bar'         =>  '456',
       }
-      @dobj.desc_meta_template = <<-END.gsub(/^ {8}/, '')
+      @dobj.desc_md_template = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
           <typeOfResource>still image</typeOfResource>
@@ -323,21 +323,21 @@ describe PreAssembly::DigitalObject do
     end
 
     it "generate_desc_metadata() should do nothing if there is no template" do
-      @dobj.desc_meta_template = nil
+      @dobj.desc_md_template = nil
       @dobj.should_not_receive :create_desc_metadata_xml
       @dobj.generate_desc_metadata
     end
 
     it "create_desc_metadata_xml() should generate the expected xml text" do
       @dobj.create_desc_metadata_xml
-      noko_doc(@dobj.desc_metadata_xml).should be_equivalent_to @exp_xml
+      noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the desc_metadata XML to a file" do
       @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.desc_md_file_name
+        file_name = File.join tmp_area, @dobj.desc_md_file
         File.exists?(file_name).should == false
         @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml

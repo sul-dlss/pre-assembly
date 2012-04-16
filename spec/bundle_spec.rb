@@ -25,13 +25,13 @@ describe PreAssembly::Bundle do
       @b.should be_kind_of PreAssembly::Bundle
     end
 
-    it "load_desc_meta_template() should return nil or String" do
+    it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
-      @b.desc_meta_template = nil
-      @b.load_desc_meta_template.should == nil
+      @b.desc_md_template = nil
+      @b.load_desc_md_template.should == nil
       # Otherwise, read the template and return its content.
-      @b.desc_meta_template = @b.path_in_bundle('mods_template.xml')
-      template = @b.load_desc_meta_template
+      @b.desc_md_template = @b.path_in_bundle('mods_template.xml')
+      template = @b.load_desc_md_template
       template.should be_kind_of String
       template.size.should > 0
     end

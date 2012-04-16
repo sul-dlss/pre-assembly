@@ -14,9 +14,11 @@
 Refactoring on the multi-project branch
 ---------------------------------------
 
-Meta naming:
-    - make consistent but short
-    - don't overload desc_meta_template
+Don't overload desc_md_template
+    - refactor initialization and required_files
+
+    desc_md_template
+    desc_md_template_xml
 
 Add log() calls to various new methods.
 
