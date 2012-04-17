@@ -2,6 +2,7 @@ project_style:
   content_structure:  smpl
   should_register:    false
   get_druid_from:     container
+  use_druid_minter:   false
 
 bundle_dir:           spec/test_data/bundle_input_e
 staging_dir:          tmp
