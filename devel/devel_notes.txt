@@ -1,5 +1,5 @@
 # TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
-# TODO: ReidDennis and Rumsey are using Revs APOs in dev.
+# TODO: ReidDennis, Gould, and Rumsey are using Revs APOs in dev.
 # TODO: Modify revs.yaml when we start using for real.
 # TODO: Modify assembly robots to handle different types of content metadata.
 # TODO: Set up pre-assembly under Hudson.
@@ -7,13 +7,11 @@
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
-
 -----------
 Refactoring
 -----------
 
 Setup test bundle like Gould.
-    - create test bundle
     - setup integration test
     - check output
 
