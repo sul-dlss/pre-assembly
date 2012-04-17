@@ -9,6 +9,7 @@ describe PreAssembly::DigitalObject do
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
+      :bundle_dir    => 'spec/test_data/bundle_input_a',
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
     @pid          = 'druid:ab123cd4567'
@@ -21,7 +22,7 @@ describe PreAssembly::DigitalObject do
     (1..2).each do |i|
       f = "image_#{i}.tif"
       @dobj.object_files.push PreAssembly::ObjectFile.new(
-        :path                 => "#{@bundle_dir}/#{f}",
+        :path                 => "#{@dobj.bundle_dir}/#{f}",
         :relative_path        => f,
         :exclude_from_content => false,
         :checksum             => "#{i}" * 4
@@ -206,18 +207,21 @@ describe PreAssembly::DigitalObject do
     end
 
     it "content_object_files() should filter @object_files correctly" do
-      # Some fake object_files.
-      n = 10
-      @dobj.object_files = (1 .. n).map do
-        f = OpenStruct.new
-        f.exclude_from_content = false
-        f
+      # Generate some object_files.
+      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      n = files.size
+      m = n / 2
+      @dobj.object_files = files.map do |f|
+        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
       end
       # All of them are included in content.
       @dobj.content_object_files.size.should == n
-      # Now exclude some.
-      (0 ... n / 2).each { |i| @dobj.object_files[i].exclude_from_content = true }
-      @dobj.content_object_files.size.should == n / 2
+      # Now exclude some. Make sure we got correct N of items.
+      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      ofiles = @dobj.content_object_files
+      ofiles.size.should == m
+      # Also check their ordering.
+      ofiles.map { |f| f.relative_path }.should == files[m .. -1].sort
     end
 
     it "should generate the expected xml text" do
