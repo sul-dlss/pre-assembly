@@ -1,43 +1,49 @@
 require 'csv-mapper'
-require 'ostruct'
 
 module PreAssembly
 
   class BundleUsageError < StandardError
-    # Exception class used to pass usage error messages back to
-    # users of the bin/pre-assemble script.
+    # An exception class used to pass usage error messages
+    # back to users of the bin/pre-assemble script.
   end
 
   class Bundle
+
     include PreAssembly::Logging
     include CsvMapper
 
-    attr_accessor(
+    # Paramaters passed via YAML config files.
+    YAML_PARAMS = [
+      :project_style,
       :bundle_dir,
+      :staging_dir,
       :manifest,
-      :descriptive_metadata_template,
-      :desc_metadata_xml_template,
       :checksums_file,
+      :desc_md_template,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
-      :staging_dir,
-      :limit_n,
-      :uniqify_source_ids,
-      :show_progress,
-      :validate_usage,
-      :user_params,
-      :project_style,
-      :provider_checksums,
-      :publish,
-      :shelve,
-      :preserve,
-      :digital_objects,
+      :publish_attr,
+      :init_assembly_wf,
       :object_discovery,
       :stageable_discovery,
       :manifest_cols,
-      :content_exclusion
-    )
+      :content_exclusion,
+      :validate_usage,
+      :show_progress,
+      :limit_n,
+      :uniqify_source_ids,
+      :cleanup,
+    ]
+
+    OTHER_ACCESSORS = [
+      :user_params,
+      :provider_checksums,
+      :digital_objects,
+      :desc_md_template_xml,
+    ]
+
+    (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
 
 
     ####
@@ -45,68 +51,38 @@ module PreAssembly
     ####
 
     def initialize(params = {})
-      # Unpack the user-supplied parameters.
+      # Unpack the user-supplied parameters, after converting
+      # all hash keys and some hash values to symbols.
       conf   = Dor::Config.pre_assembly
       params = Bundle.symbolize_keys params
+      Bundle.values_to_symbols! params[:project_style]
+      @user_params = params
+      YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
-      @user_params         = params
-      @project_style       = params[:project_style].to_sym
-      @bundle_dir          = params[:bundle_dir]     || ''
-      @staging_dir         = params[:staging_dir]
-      @manifest            = params[:manifest]
-      @checksums_file      = params[:checksums_file]
-      @project_name        = params[:project_name]
-      @apo_druid_id        = params[:apo_druid_id]
-      @set_druid_id        = params[:set_druid_id]
-      @publish             = params[:publish]  || conf.publish
-      @shelve              = params[:shelve]   || conf.shelve
-      @preserve            = params[:preserve] || conf.preserve
-      @limit_n             = params[:limit_n]
-      @uniqify_source_ids  = params[:uniqify_source_ids]
-      @show_progress       = params[:show_progress]
-      @validate_usage      = params[:validate_usage]
-      @object_discovery    = params[:object_discovery]
-      @stageable_discovery = params[:stageable_discovery]
-      @manifest_cols       = params[:manifest_cols]
-      @content_exclusion   = params[:content_exclusion]
-
-      @descriptive_metadata_template = params[:descriptive_metadata_template] || conf.descriptive_metadata_template
-
-      # Other setup work facilitated by having access to instance vars.
-      setup
+      # Other setup work.
+      setup_paths
+      setup_other
+      validate_usage
+      load_desc_md_template
     end
 
-    def setup
-      @manifest           = path_in_bundle @manifest       unless @manifest.nil?
-      @checksums_file     = path_in_bundle @checksums_file unless @checksums_file.nil?
+    def setup_paths
+      @manifest         = path_in_bundle @manifest         unless @manifest.nil?
+      @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
+      @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
+    end
+
+    def setup_other
       @provider_checksums = {}
       @digital_objects    = []
       @manifest_rows      = nil
       @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
-
-      @descriptive_metadata_template = path_in_bundle @descriptive_metadata_template
-      @desc_metadata_xml_template    = File.open( @descriptive_metadata_template, "rb").read if file_exists @descriptive_metadata_template
-
-      # Validate parameters supplied via user script.
-      # Unit testing often bypasses such checks.
-      validate_usage if @validate_usage
+      @publish_attr.delete_if { |k,v| v.nil? }
     end
 
-    def attr_for_digital_objects
-      # Returns a simple object containing bundle-level information that
-      # will need to be passed down to DigitalObjects as they are created.
-      a                            = OpenStruct.new
-      a.project_style              = @project_style
-      a.project_name               = @project_name
-      a.apo_druid_id               = @apo_druid_id
-      a.set_druid_id               = @set_druid_id
-      a.publish                    = @publish
-      a.shelve                     = @shelve
-      a.preserve                   = @preserve
-      a.bundle_dir                 = @bundle_dir
-      a.staging_dir                = @staging_dir
-      a.desc_metadata_xml_template = @desc_metadata_xml_template
-      return a
+    def load_desc_md_template
+      return nil unless @desc_md_template and file_exists(@desc_md_template)
+      @desc_md_template_xml = IO.read(@desc_md_template)
     end
 
 
@@ -119,24 +95,19 @@ module PreAssembly
     end
 
     def required_files
-      @project_style == :style_revs ? [@manifest, @checksums_file] : []
+      # If a file parameter from the YAML is non-nil, the file must exist.
+      [@manifest, @checksums_file, @desc_md_template].compact
     end
 
     def required_user_params
-      [
-        :project_style,
-        :bundle_dir,
-        :staging_dir,
-        :manifest,
-        :checksums_file,
-        :project_name,
-        :apo_druid_id,
-        :set_druid_id,
-      ]
+      return YAML_PARAMS
     end
 
     def validate_usage
-      # Check for required parameters, directories, and files.
+      # Validate parameters supplied via user script.
+      # Unit testing often bypasses such checks.
+      return unless @validate_usage
+
       required_user_params.each do |p|
         next if @user_params.has_key? p
         raise BundleUsageError, "Missing parameter: #{p}."
@@ -159,23 +130,17 @@ module PreAssembly
     ####
 
     def run_pre_assembly
-      # TODO: run_pre_assembly: allow non-Revs projects to run.
+      # Runs the pre-assembly process and returns an array of PIDs
+      # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      # New steps.
       discover_objects
       load_checksums
       process_manifest
       validate_files
       process_digital_objects
-      return
-
-      # Old Revs-centric steps. Will delete soon.
-      load_provider_checksums
-      load_manifest
-      validate_images
-      process_digital_objects
-      return
+      delete_digital_objects
+      return processed_pids
     end
 
     def run_log_msg
@@ -185,7 +150,11 @@ module PreAssembly
         :staging_dir   => @staging_dir,
         :environment   => ENV['ROBOT_ENVIRONMENT'],
       }
-      return log_params.map { |k,v| "#{k}='#{v}'"  }.join(', ')
+      return log_params.map { |k,v| "#{k}=#{v.inspect}"  }.join(', ')
+    end
+
+    def processed_pids
+      return @digital_objects.map { |dobj| dobj.pid }
     end
 
 
@@ -195,9 +164,9 @@ module PreAssembly
 
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
-      # For each container, create a new Digitalobject.
-      bundle_attr = attr_for_digital_objects
-      use_c       = @stageable_discovery[:use_container]
+      # For each container, creates a new Digitalobject.
+      log "discover_objects()"
+      use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
         # the DigitalObject container is just the bundle_dir.
@@ -206,10 +175,18 @@ module PreAssembly
         files      = discover_all_files(stageables)
         # Create the object.
         params = {
-          :container       => container,
-          :stageable_items => stageables,
-          :object_files    => files.map { |f| new_object_file(f) },
-          :bundle_attr     => bundle_attr,
+          :project_style        => @project_style,
+          :bundle_dir           => @bundle_dir,
+          :staging_dir          => @staging_dir,
+          :desc_md_template_xml => @desc_md_template_xml,
+          :project_name         => @project_name,
+          :apo_druid_id         => @apo_druid_id,
+          :set_druid_id         => @set_druid_id,
+          :publish_attr         => @publish_attr,
+          :init_assembly_wf     => @init_assembly_wf,
+          :container            => container,
+          :stageable_items      => stageables,
+          :object_files         => files.map { |f| new_object_file(f) },
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
@@ -218,7 +195,7 @@ module PreAssembly
 
     def pruned_containers(containers)
       # If user configured pre-assembly to process a limited N of objects,
-      # return the requested number.
+      # return the requested number of object containers.
       j = @limit_n ? @limit_n - 1 : -1
       containers[0 .. j]
     end
@@ -299,6 +276,7 @@ module PreAssembly
     ####
 
     def load_checksums
+      log "load_checksums()"
       load_provider_checksums if @checksums_file
       all_object_files.each do |file|
         file.checksum = retrieve_checksum(file.path)
@@ -306,8 +284,10 @@ module PreAssembly
     end
 
     def load_provider_checksums
-      # Read checksums_file, using its content to populate a hash of expected checksums.
-      log "load_provider_checksums()"
+      # Read the provider-supplied checksums_file, using its 
+      # content to populate a hash of expected checksums.
+      # This method works with default output from md5sum.
+      log "  - load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
         @provider_checksums[file_name] = md5
@@ -320,7 +300,7 @@ module PreAssembly
     end
 
     def retrieve_checksum(file_path)
-      # Takes a path to a file. Returns md5 checksum, which either (a) comes
+      # Takes a path to a file. Returns md5 checksum, which either (a) came
       # from a provider-supplied checksums file, or (b) is computed here.
       @provider_checksums[file_path] ||= compute_checksum(file_path)
     end
@@ -338,18 +318,21 @@ module PreAssembly
       # For bundles using a manifest, adds the manifest info to the digital objects.
       # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
       return unless @object_discovery[:use_manifest]
+      log "process_manifest()"
       mrows = manifest_rows  # Convenience variable, and used for testing.
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
+        # Get label and source_id from column names declared in YAML config.
         dobj.label         = r.send(@manifest_cols[:label])
         dobj.source_id     = r.send(@manifest_cols[:source_id]) + source_id_suffix
-        dobj.manifest_attr = Hash[r.each_pair.to_a]
+        # Also store a hash of all values from the manifest row, using column names as keys.
+        dobj.manifest_row  = Hash[r.each_pair.to_a]
       end
     end
 
     def manifest_rows
       # On first call, loads the manifest data (does not reload on subsequent calls).
-      # If bundles is not using a manifest, just loads and returns emtpy array.
+      # If bundle is not using a manifest, just loads and returns emtpy array.
       return @manifest_rows if @manifest_rows
       @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
     end
@@ -359,45 +342,13 @@ module PreAssembly
       return import(@manifest) { read_attributes_from_file }
     end
 
-    def load_manifest
-      # Read manifest and initialize digital objects.
-      log "load_manifest()"
-      manifest_rows.each do |r|
-        # Create digital object.
-        dobj_params = {
-          :project_name => @project_name,
-          :apo_druid_id => @apo_druid_id,
-          :set_druid_id => @set_druid_id,
-          :desc_metadata_xml_template => @desc_metadata_xml_template,
-          :publish      => @publish,
-          :shelve       => @shelve,
-          :preserve     => @preserve,
-          :source_id    => r.sourceid + source_id_suffix,
-          :label        => r.label,
-        }
-        dobj = DigitalObject::new dobj_params
-
-        # Add the image to the object.
-        f = r.filename
-        dobj.add_image(
-          :file_name     => f,
-          :full_path     => path_in_bundle(f),
-          :provider_attr => Hash[r.each_pair.to_a],
-          :exp_md5       => @provider_checksums[f]
-        )
-        @digital_objects.push dobj
-
-        # Bail if user asked to process a limited N of objects.
-        break if @limit_n and @digital_objects.size >= @limit_n
-      end
-    end
-
 
     ####
     # Digital object processing.
     ####
 
     def validate_files
+      log "validate_files()"
       tally = Hash.new(0)           # A tally to facilitate testing.
       all_object_files.each do |f|
         if not f.image?
@@ -412,23 +363,19 @@ module PreAssembly
       return tally
     end
 
-    def validate_images
-      log "validate_images()"
-      @digital_objects.each do |dobj|
-        dobj.images.each do |img|
-          next if img.valid?
-          msg = "Image validation failed: #{img.full_path} #{dobj.source_id.inspect}"
-          raise msg
-        end
-      end
-    end
-
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
         dobj.pre_assemble
         puts dobj.druid.druid if @show_progress
       end
+    end
+
+    def delete_digital_objects
+      # During development, delete objects that we register.
+      log "delete_digital_objects()"
+      return unless @cleanup
+      @digital_objects.each { |dobj| dobj.unregister }
     end
 
 
@@ -441,11 +388,17 @@ module PreAssembly
     end
 
     def relative_path(base, path)
-      # Takes a base and a path. Return the portion of the path after the base:
+      # Returns the portion of the path after the base. For example:
       #   base     BLAH/BLAH
       #   path     BLAH/BLAH/foo/bar.txt
       #   returns            foo/bar.txt
-      path[base.size + 1 .. -1]
+      bs = base.size
+      raise ArgumentError unless (
+        bs > 0 and 
+        path.size > bs and
+        path.index(base) == 0
+      )
+      path[bs + 1 .. -1]
     end
 
     def dir_exists(dir)
@@ -487,6 +440,11 @@ module PreAssembly
       else
         h
       end
+    end
+
+    def self.values_to_symbols!(h)
+      # Takes a hash and converts its string values to symbols -- not recursively.
+      h.each { |k,v| h[k] = v.to_sym if v.class == String }
     end
 
   end

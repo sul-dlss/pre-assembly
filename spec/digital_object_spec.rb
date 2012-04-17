@@ -1,56 +1,21 @@
 describe PreAssembly::DigitalObject do
 
   before(:each) do
-    desc_metadata_xml_template=<<-END
-      <?xml version="1.0"?>
-      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-        <typeOfResource>still image</typeOfResource>
-        <genre authority="att">digital image</genre>
-        <subject authority="lcsh">
-          <topic>Automobile</topic>
-          <topic>History</topic>
-        </subject>
-        <relatedItem type="host">
-          <titleInfo>
-            <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-          </titleInfo>
-          <typeOfResource collection="yes"/>
-        </relatedItem>
-        <relatedItem type="original">
-          <physicalDescription>
-            <form authority="att">[[format]]</form>
-          </physicalDescription>
-        </relatedItem>
-        <originInfo>
-          <dateCreated>[[year]]</dateCreated>
-        </originInfo>
-        <titleInfo>
-          <title>'[[label]]' is the label!</title>
-        </titleInfo>
-        <note>[[description]]</note>
-        <note>ERB Test: <%=manifest_row['description']%></note>
-        <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
-        <note type="source note" ID="foo">[[foo]]</note>
-        <note type="source note" ID="bar">[[bar]]</note>
-      </mods>
-      END
-
     @ps = {
-      :apo_druid_id => 'qq333xx4444',
-      :set_druid_id => 'mm111nn2222',
-      :source_id    => 'SourceIDFoo',
-      :desc_metadata_xml_template =>desc_metadata_xml_template,
-      :project_name => 'ProjectBar',
-      :label        => 'LabelQuux',
-      :publish      => 'no',
-      :shelve       => 'no',
-      :preserve     => 'yes'
+      :apo_druid_id  => 'qq333xx4444',
+      :set_druid_id  => 'mm111nn2222',
+      :source_id     => 'SourceIDFoo',
+      :project_name  => 'ProjectBar',
+      :label         => 'LabelQuux',
+      :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
+      :project_style => {},
+      :bundle_dir    => 'spec/test_data/bundle_input_a',
     }
-    @dobj          = PreAssembly::DigitalObject.new @ps
-    @druid         = Druid.new 'druid:ab123cd4567'
-    @druid_alt     = Druid.new 'druid:ee222vv4444'
-    @provider_attr = {'sourceid'=>'foo-1','label'=>'this is a label','year'=>'2012','description'=>'this is a description','format'=>'film','foo' => '123', 'bar' => '456'}
-    @tmp_dir_args  = [nil, 'tmp']
+    @dobj         = PreAssembly::DigitalObject.new @ps
+    @dru          = 'ab123cd4567'
+    @pid          = "druid:#{@dru}"
+    @druid        = Druid.new @pid
+    @tmp_dir_args = [nil, 'tmp']
   end
 
   def add_object_files
@@ -58,22 +23,10 @@ describe PreAssembly::DigitalObject do
     (1..2).each do |i|
       f = "image_#{i}.tif"
       @dobj.object_files.push PreAssembly::ObjectFile.new(
-        :path                 => "#{@bundle_dir}/#{f}",
+        :path                 => "#{@dobj.bundle_dir}/#{f}",
         :relative_path        => f,
         :exclude_from_content => false,
         :checksum             => "#{i}" * 4
-      )
-    end
-  end
-
-  def add_images_to_dobj(img_dir = '/tmp')
-    (1..2).each do |i|
-      f = "image_#{i}.tif"
-      @dobj.add_image(
-        :file_name     => f,
-        :full_path     => "#{img_dir}/#{f}",
-        :provider_attr => {:i => i}.merge(@provider_attr),
-        :exp_md5       => "#{i}" * 4
       )
     end
   end
@@ -90,22 +43,16 @@ describe PreAssembly::DigitalObject do
       @dobj.should be_kind_of PreAssembly::DigitalObject
     end
 
-    it "can add images to the digital object" do
-      n = 4
-      (1..n).each { |i| @dobj.add_image "#{i}.tif" }
-      @dobj.images.should have(n).items
-    end
-
   end
 
   ####################
 
-  describe "registration" do
+  describe "determining the druid" do
 
-    it "should be able to exercise determine_druid() and get_pid_from_container" do
+    it "determine_druid() should set correct values for @pid and @druid" do
       # Setup.
       dru = 'aa111bb2222'
-      @dobj.project_style = :style_rumsey
+      @dobj.project_style[:get_druid_from] = :container
       @dobj.container     = "foo/bar/#{dru}"
       # Before and after assertions.
       @dobj.pid.should   == ''
@@ -115,8 +62,39 @@ describe PreAssembly::DigitalObject do
       @dobj.druid.should be_kind_of Druid
     end
 
-    it "can generate registration parameters" do
+    it "get_pid_from_container() extracts druid from basename of object container" do
+      d = 'xx111yy2222'
+      @dobj.container = "foo/bar/#{d}"
+      @dobj.get_pid_from_container.should == "druid:#{d}"
+    end
+
+    it "get_pid_from_container_barcode() extracts druid from barcode in object container" do
+      b = '36105115575834'
+      @dobj.container = "foo/bar/#{b}"
+      @dobj.get_pid_from_container_barcode
+    end
+
+  end
+
+  describe "register()" do
+
+    it "should do nothing if should_register is false" do
+      @dobj.project_style[:should_register] = false
+      @dobj.should_not_receive :register_in_dor
+      @dobj.register
+    end
+
+    it "can exercise method using stubbed exernal calls" do
+      @dobj.project_style[:should_register] = true
+      @dobj.stub(:register_in_dor).and_return(1234)
+      @dobj.dor_object.should == nil
+      @dobj.register
+      @dobj.dor_object.should == 1234
+    end
+
+    it "can exercise registration_params() an get expected data structure" do
       @dobj.druid = @druid
+      @dobj.label = "LabelQuux"
       rps = @dobj.registration_params
       rps.should             be_kind_of Hash
       rps[:source_id].should be_kind_of Hash
@@ -124,35 +102,11 @@ describe PreAssembly::DigitalObject do
       rps[:label].should == "LabelQuux"
     end
 
-    it "can generate add_relationship parameters" do
-      @dobj.druid = @druid
-      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"]
-      arps = @dobj.add_relationship_params.should == exp
-    end
+  end
 
-    it "register() should do nothing if should_register is false" do
-      @dobj.stub(:should_register).and_return(false)
-      @dobj.should_not_receive :register_in_dor
-      @dobj.register
-    end
+  describe "add_dor_object_to_set()" do
 
-    it "can exercise register()" do
-      @dobj.stub(:should_register).and_return(true)
-      @dobj.stub(:register_in_dor).and_return(1234)
-      @dobj.dor_object.should == nil
-      @dobj.register
-      @dobj.dor_object.should == 1234
-    end
-
-    it "can exercise unregister(), with external calls stubbed" do
-      @dobj.dor_object = 1234
-      @dobj.stub :delete_from_dor
-      @dobj.stub :set_workflow_step_to_error
-      @dobj.unregister
-      @dobj.dor_object.should == nil
-    end
-
-    it "add_dor_object_to_set() should do nothing when @set_druid_id is false" do
+    it "should do nothing when @set_druid_id is false" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
       @dobj.set_druid_id = nil
@@ -160,61 +114,74 @@ describe PreAssembly::DigitalObject do
       @dobj.add_dor_object_to_set
     end
 
+    it "can exercise method using stubbed exernal calls" do
+      @dobj.dor_object = double('dor_object', :add_relationship => nil, :save => nil)
+      @dobj.add_dor_object_to_set
+    end
+
+    it "add_relationship() returns expected data structure" do
+      @dobj.druid = @druid
+      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"]
+      arps = @dobj.add_relationship_params.should == exp
+    end
+
   end
+
+  ####################
+
+  describe "unregister()" do
+
+    before(:each) do
+      @dobj.dor_object = 1234
+      @dobj.stub :delete_from_dor
+      @dobj.stub :set_workflow_step_to_error
+    end
+
+    it "should do nothing unless the digitial object was registered by pre-assembly" do
+      @dobj.should_not_receive :delete_from_dor
+      @dobj.reg_by_pre_assembly = false
+      @dobj.unregister
+    end
+
+    it "can exercise unregister(), with external calls stubbed" do
+      @dobj.reg_by_pre_assembly = true
+      @dobj.unregister
+      @dobj.dor_object.should == nil
+      @dobj.reg_by_pre_assembly.should == false
+    end
+
+  end
+
 
   ####################
 
   describe "file staging" do
 
     it "should be able to copy stageable items successfully" do
-        bundle      = PreAssembly::Bundle.new :project_style => :style_revs
-        @dobj.druid = @druid
+      @dobj.druid = @druid
 
-        Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-          # Add some stageable items to the digital object, and
-          # create those files.
-          files                 = [1,2,3].map { |n| "image#{n}.tif" }
-          @dobj.bundle_dir      = tmp_area
-          @dobj.staging_dir     = "#{tmp_area}/target"
-          @dobj.stageable_items = files.map { |f| "#{tmp_area}/#{f}" }
-          @dobj.stageable_items.each { |si| FileUtils.touch si }
+      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+        # Add some stageable items to the digital object, and
+        # create those files.
+        files                 = [1,2,3].map { |n| "image#{n}.tif" }
+        @dobj.bundle_dir      = tmp_area
+        @dobj.staging_dir     = "#{tmp_area}/target"
+        @dobj.stageable_items = files.map { |f| "#{tmp_area}/#{f}" }
+        @dobj.stageable_items.each { |si| FileUtils.touch si }
 
-          # Stage the files.
-          FileUtils.mkdir @dobj.staging_dir
-          @dobj.stage_files
+        # Stage the files.
+        FileUtils.mkdir @dobj.staging_dir
+        @dobj.stage_files
 
-          # Check outcome: both source and copy should exist.
-          files.each_with_index do |f, i|
-            src = @dobj.stageable_items[i]
-            cpy = File.join @dobj.druid_tree_dir, f
-            File.exists?(src).should == true
-            File.exists?(cpy).should == true
-          end
+        # Check outcome: both source and copy should exist.
+        files.each_with_index do |f, i|
+          src = @dobj.stageable_items[i]
+          cpy = File.join @dobj.druid_tree_dir, f
+          File.exists?(src).should == true
+          File.exists?(cpy).should == true
         end
+      end
     end
-
-    # it "should be able to copy images successfully" do
-    #     bundle       = PreAssembly::Bundle.new :project_style => :style_revs
-    #     @dobj.druid  = @druid
-    #     @dobj.images = []
-    #     Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-    #       # Add images to the digital object and create the files.
-    #       add_images_to_dobj tmp_area
-    #       @dobj.images.each { |img| FileUtils.touch img.full_path }
-    #       # Stage the images.
-    #       base_target_dir = "#{tmp_area}/target"
-    #       FileUtils.mkdir base_target_dir
-    #       @dobj.stage_images bundle.stager, base_target_dir
-    #       # Check outcome.
-    #       @dobj.images.each do |img|
-    #         staged_img_path = File.join @dobj.druid_tree_dir, img.file_name
-    #         # Both source and copy should exist.
-    #         File.exists?(img.full_path).should   == true
-    #         File.exists?(staged_img_path).should == true
-    #       end
-    #       puts `tree #{tmp_area}`
-    #     end
-    # end
 
   end
 
@@ -225,7 +192,7 @@ describe PreAssembly::DigitalObject do
     before(:each) do
       @dobj.druid = @druid
       add_object_files
-      @dobj.generate_content_metadata
+      @dobj.create_content_metadata_xml
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <contentMetadata objectId="ab123cd4567">
@@ -247,33 +214,68 @@ describe PreAssembly::DigitalObject do
     end
 
     it "content_object_files() should filter @object_files correctly" do
-      # Some fake object_files.
-      n = 10
-      @dobj.object_files = (1 .. n).map do
-        f = OpenStruct.new
-        f.exclude_from_content = false
-        f
+      # Generate some object_files.
+      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      n = files.size
+      m = n / 2
+      @dobj.object_files = files.map do |f|
+        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
       end
       # All of them are included in content.
       @dobj.content_object_files.size.should == n
-      # Now exclude some.
-      (0 ... n / 2).each { |i| @dobj.object_files[i].exclude_from_content = true }
-      @dobj.content_object_files.size.should == n / 2
+      # Now exclude some. Make sure we got correct N of items.
+      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      ofiles = @dobj.content_object_files
+      ofiles.size.should == m
+      # Also check their ordering.
+      ofiles.map { |f| f.relative_path }.should == files[m .. -1].sort
     end
 
     it "should generate the expected xml text" do
-      noko_doc(@dobj.content_metadata_xml).should be_equivalent_to @exp_xml
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.content_md_file_name
+        file_name = File.join tmp_area, @dobj.content_md_file
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
+    end
+
+    it "node_attr_cm() should return correct value based on @content_structure" do
+      base_exp = { :objectId => @dru }
+      tests = {
+        :simple_image => {},
+        :simple_book  => { :type => 'book' },
+      }
+      tests.each do |cs, other_attr|
+        @dobj.content_structure = cs
+        @dobj.node_attr_cm.should == base_exp.merge(other_attr)
+      end
+    end
+
+    it "node_attr_cm_resource() should return correct value based on @content_structure" do
+      seq = 123
+      base_exp = { :sequence => seq, :id => "#{@dru}_#{seq}" }
+      tests = {
+        :simple_image => {},
+        :simple_book  => { :type => 'page' },
+      }
+      tests.each do |cs, other_attr|
+        @dobj.content_structure = cs
+        @dobj.node_attr_cm_resource(seq).should == base_exp.merge(other_attr)
+      end
+    end
+
+    it "node_attr_cm_file() should return expected value" do
+      p           = 'foo/bar.txt'
+      object_file = double 'object_file', :relative_path => p
+      exp         = {:id => p}.merge @dobj.publish_attr
+      @dobj.node_attr_cm_file(object_file).should == exp
     end
 
   end
@@ -284,8 +286,48 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
-      add_images_to_dobj
-      @dobj.generate_desc_metadata
+      @dobj.manifest_row = {
+        'sourceid'    => 'foo-1',
+        'label'       => 'this is a label',
+        'year'        => '2012',
+        'description' => 'this is a description',
+        'format'      => 'film',
+        'foo'         =>  '123',
+        'bar'         =>  '456',
+      }
+      @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+          <typeOfResource>still image</typeOfResource>
+          <genre authority="att">digital image</genre>
+          <subject authority="lcsh">
+            <topic>Automobile</topic>
+            <topic>History</topic>
+          </subject>
+          <relatedItem type="host">
+            <titleInfo>
+              <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+            </titleInfo>
+            <typeOfResource collection="yes"/>
+          </relatedItem>
+          <relatedItem type="original">
+            <physicalDescription>
+              <form authority="att">[[format]]</form>
+            </physicalDescription>
+          </relatedItem>
+          <originInfo>
+            <dateCreated>[[year]]</dateCreated>
+          </originInfo>
+          <titleInfo>
+            <title>'[[label]]' is the label!</title>
+          </titleInfo>
+          <note>[[description]]</note>
+          <note>ERB Test: <%=manifest_row['description']%></note>
+          <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+          <note type="source note" ID="foo">[[foo]]</note>
+          <note type="source note" ID="bar">[[bar]]</note>
+        </mods>
+      END
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <?xml version="1.0"?>
@@ -323,15 +365,22 @@ describe PreAssembly::DigitalObject do
       @exp_xml = noko_doc @exp_xml
     end
 
-    it "should generate the expected xml text" do
-      noko_doc(@dobj.desc_metadata_xml).should be_equivalent_to @exp_xml
+    it "generate_desc_metadata() should do nothing if there is no template" do
+      @dobj.desc_md_template_xml = nil
+      @dobj.should_not_receive :create_desc_metadata_xml
+      @dobj.generate_desc_metadata
+    end
+
+    it "create_desc_metadata_xml() should generate the expected xml text" do
+      @dobj.create_desc_metadata_xml
+      noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
     end
 
     it "should be able to write the desc_metadata XML to a file" do
+      @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.desc_md_file_name
-
+        file_name = File.join tmp_area, @dobj.desc_md_file
         File.exists?(file_name).should == false
         @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
@@ -342,15 +391,19 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "initiate workflow" do
+  describe "initiate assembly workflow" do
 
-    before(:each) do
-      @dobj.druid = @druid
+    it "initialize_assembly_workflow() should do nothing if init_assembly_wf is false" do
+      @dobj.init_assembly_wf = false
+      @dobj.should_not_receive :assembly_workflow_url
+      @dobj.initialize_assembly_workflow
     end
 
-    it "should be able to exercise initialize_assembly_workflow()" do
-      # our attempt to start workflow should fail since the Rest call will fail with a 404
-      @dobj.initialize_assembly_workflow.should == false
+    it "assembly_workflow_url() should return expected value" do
+      @dobj.pid = @pid
+      url = @dobj.assembly_workflow_url
+      url.should =~ /^http.+assemblyWF$/
+      url.include?(@pid).should == true
     end
 
   end

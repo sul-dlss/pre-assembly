@@ -39,8 +39,8 @@ GEM
     addressable (2.2.7)
     akami (1.0.0)
       gyoku (>= 0.4.0)
-    assembly-image (1.1.0)
-      assembly-objectfile
+    assembly-image (1.1.3)
+      assembly-objectfile (~> 1.1.0)
       nokogiri
       uuidtools
     assembly-objectfile (1.1.0)

@@ -1,53 +1,27 @@
+# TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
+# TODO: ReidDennis, Gould, and Rumsey are using Revs APOs in dev.
+# TODO: Modify revs.yaml when we start using for real.
 # TODO: Modify assembly robots to handle different types of content metadata.
 # TODO: Set up pre-assembly under Hudson.
 # TODO: Set up assembly under Hudson.
-# TODO: reevaluate logging for use in deployed context.
-# TODO: consider whether to persist information about druids processed.
-# TODO: Modify revs.yaml when we start using for real.
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+-----------
+Refactoring
+-----------
 
----------------------------------------
-Refactoring on the multi-project branch
----------------------------------------
+Setup test bundle like Gould.
+    - setup integration test
+    - check output
 
-desc metadata
-    - skip for many projects
-    - if needed, use manifest and template
-        revs
-        ReidDennis
-
-initialize_assembly_workflow
-    - Store workflow in APO.
-    - just make service call to begin assembly; no need to generate XML.
-    - remove assembly steps from configuration.
-    - always do, unless disabled (add parameter to support this)
-
-Try to run other projects (rumsey and ReidDennis)
-    - write integration tests
-
-Decommission the old revs-centric code
-    - first comment out in Bundle and DigitalObject; then delete
-
-Other
-    - Refactor desc_meta var naming.
-    - Add log() calls to various new methods.
-    - General review.
-    - Generalize project style to be a hash of attributes:
-        content_structure:   simple_image|simple_book
-        uses_manifest:       true|false
-
-content metadata refactoring:
-  - Currently handles simple-image: revs rumsey ReidDennis
-  - Needed:
-      - simple book: gould
-      - simple book with multiple image types per page: AP Hummel
-      - audio: SOHP
+Content metadata refactoring:
+  - simple book with multiple image types per page: AP Hummel
+  - audio: SOHP
 
 
 -------------------
-PROJECT DIFFERENCES
+Project Differences
 -------------------
 
 Projects to use as most pressing examples:

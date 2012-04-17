@@ -1,53 +1,85 @@
 describe "Pre-assembly integration" do
 
-  before(:each) do
-    cmf          = Dor::Config.pre_assembly.cm_file_name
-    dmf          = Dor::Config.pre_assembly.dm_file_name
-    @temp_dir    = Dir.mktmpdir 'integ_test_', 'tmp'
-    @exp_n_files = 3
-    @rumsey_dir  = 'spec/test_data/bundle_input_b'
-
-    @exp_file_patterns = [
-      "#{@temp_dir}/**/*.tif",
-      "#{@temp_dir}/**/#{cmf}",
-      "#{@temp_dir}/**/#{dmf}",
-    ]
+  # The integration tests.
+  # All of the work happens elsewhere.
+  it "Revs" do
+    run_integration_tests 'revs'
   end
 
-  def setup_bundle(custom_params = {})
-    yaml = YAML.load_file "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_revs.yaml"
-    @params = PreAssembly::Bundle.symbolize_keys yaml
-    @params.merge! custom_params
-    @params[:staging_dir]    = @temp_dir
-    @params[:show_progress]  = false
+  it "Rumsey" do
+    run_integration_tests 'rumsey'
+  end
+
+  it "ReidDennis" do
+    run_integration_tests 'reid_dennis'
+  end
+
+
+  def run_integration_tests(proj)
+    # Setup the bundle for a project and run pre-assembly.
+    setup_bundle proj
+    @pids = @b.run_pre_assembly
+    determine_staged_druid_trees
+
+    # Run checks.
+    check_n_of_objects
+    check_for_expected_files
+    check_dor_objects
+  end
+
+
+  def setup_bundle(proj)
+    # Load the project's YAML config file.
+    yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
+    yaml      = YAML.load_file yaml_file
+    @params   = PreAssembly::Bundle.symbolize_keys yaml
+    
+    # Create a temp dir to serve as the staging area.
+    @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'
+
+    # Override some params.
+    @params[:staging_dir]   = @temp_dir
+    @params[:show_progress] = false
+
+    # Create the bundle.
     @b = PreAssembly::Bundle.new @params
+
+    # Set values needed for assertions.
+    conf           = Dor::Config.pre_assembly
+    @n_objects     = 3
+    @exp_files     = ['*.tif', conf.content_md_file, conf.desc_md_file]
   end
 
-  describe "Revs-style project" do
+  def determine_staged_druid_trees
+    # Determine the druid tree paths in the staging directory.
+    @druid_trees = @pids.map { |pid| Druid.new(pid).path(@temp_dir) }
+  end
 
-    it "should run pre-assembly and produce expected files in staging dir" do
-      setup_bundle
-      @b.run_pre_assembly
-      @exp_file_patterns.each do |patt|
-        fs = Dir[patt].select { |f| File.file? f }
-        fs.size.should == @exp_n_files
+
+  def check_n_of_objects
+    # Did we get the expected N of staged objects?
+    @pids.size.should == @n_objects
+  end
+
+  def check_for_expected_files
+    # Make sure the files were staged as we expected.
+    @druid_trees.each do |dt|
+      @exp_files.each do |ef|
+        glob = File.join dt, ef
+        fs   = Dir[glob]
+        fs.size.should == 1
       end
     end
-
   end
 
-  describe "Rumsey-style project" do
-
-    it "should ........" do
-      # TODO: Rumsey integration assertions.
-      setup_bundle :bundle_dir => @rumsey_dir, :project_style => 'style_rumsey'
-      # @b.run_pre_assembly
-      # @exp_file_patterns.each do |patt|
-      #   fs = Dir[patt].select { |f| File.file? f }
-      #   fs.size.should == @exp_n_files
-      # end
+  def check_dor_objects
+    # Make sure we can get the object from Dor.
+    # Skip test for projects not registered by pre-assembly.
+    return unless @b.project_style[:should_register]
+    @pids.each do |pid|
+      item = Dor::Item.find pid
+      item.should be_kind_of Dor::Item
     end
-
   end
 
 end
