@@ -277,7 +277,7 @@ module PreAssembly
       # Run the XML through ERB. Note that the template uses the
       # variable name `manifest_row`, so we set it here.
       manifest_row = @manifest_row
-      template     = ERB.new(@desc_md_template_xml)
+      template     = ERB.new(@desc_md_template_xml, nil, '>')
       @desc_md_xml = template.result(binding)
 
       # The @manifest_row is a hash, with column names as the key.
