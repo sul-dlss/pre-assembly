@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object>
+  
+  <identifiers>
+    <id type="local" name="sourceID">SC1017_s1_Terman</id>
+    <id type="local" name="druid">sg324fk4242</id>
+  </identifiers>
+ 
+ 
+  <resource type="audio" role="pm">
+    <label>Tape 1, Side A</label>
+    <file type="content" id="sg324fk4242_a_pm.wav" publish="no" shelve="no" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_pm.wav</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_pm_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_pm.wav.md5</location>
+    </file>
+  </resource>
+  
+  <resource type="audio" role="pm">
+    <label>Tape 1, Side A, Part 1</label>
+    <file type="content" id="sg324fk4242_a_p1_pm.wav" publish="no" shelve="no" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p1_pm.wav</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p1_pm_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p1_pm.wav.md5</location>
+    </file>
+  </resource>
+  
+  <resource type="audio" role="pm">
+    <label>Tape 1, Side A, Part 2</label>
+    <file type="content" id="sg324fk4242_a_p2_pm.wav" publish="no" shelve="no" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p2_pm.wav</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p2_pm_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_a_p2_pm.wav.md5</location>
+    </file>
+  </resource>
+ 
+ 
+  <resource type="audio" role="pm">
+    <label>Tape 1, Side B</label>
+    <file type="content" id="sg324fk4242_b_pm.wav" publish="no" shelve="no" preserve="yes">
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_b_pm.wav</location>
+       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_b_pm_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/PM/sg324fk4242_b_pm.wav.md5</location>
+    </file>
+  </resource>
+  
+  <resource type="audio" role="sh">
+    <label>Tape 1, Side A</label>
+    <file type="content" id="sg324fk4242_a_sh.wav" publish="no" shelve="no" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_a_sh.wav</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_a_sh_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_a_sh.wav.md5</location>
+    </file>
+  </resource>
+  
+  <resource type="audio" role="sh">
+    <label>Tape 1, Side B</label>
+    <file type="content" id="sg324fk4242_b_sh.wav" publish="no" shelve="no" preserve="yes">
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_b_sh.wav</location>
+       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_b_sh_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SH/sg324fk4242_b_sh.wav.md5</location>
+    </file>
+  </resource>
+
+  <resource type="audio" role="sl" seq="1">
+    <label>Tape 1, Side A</label>
+    <file type="content" id="sg324fk4242_a_sl.mp3" publish="yes" shelve="no" preserve="yes">
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_a_sl.mp3</location>
+       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD"
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_a_sl_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_a_sl.mp3.md5</location>
+    </file>
+  </resource>
+  
+  
+  <resource type="audio" role="sl" seq="2">
+    <label>Tape 1, Side B</label>
+    <file type="content" id="sg324fk4242_b_sl.mp3" publish="yes" shelve="no" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_b_sl.mp3</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="techMD"
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_b_sl_techmd.xml</location>
+    </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_b_sl.mp3.md5</location>
+    </file>
+  </resource>
+ 
+  
+
+<resource type="image">
+  <label></label>
+  <file type="content" id="sg324fk4242_img_1.jpg" publish="yes" shelve="yes" preserve="yes">
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/Images/sg324fk4242_img_1.jpg</location>
+    <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+  </file>
+  <file type="metadata" role="checksum">
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_img_1.jpg.md5</location>
+  </file>
+</resource>
+
+<resource type="image">
+  <label></label>  
+  <file type="content" id="sg324fk4242_img_2.jpg" publish="yes" shelve="yes" preserve="yes">
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/Images/sg324fk4242_img_2.jpg</location>
+    <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+  </file>
+    <file type="metadata" role="checksum">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/SL/sg324fk4242_img_2.jpg.md5</location>
+    </file>
+</resource>
+  
+  <resource type="text">
+  <label>Transcript</label>
+    <file type="content" id="edited_transcript.pdf" publish="yes" shelve="yes" preserve="yes">
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/Transcript/edited_transcript.pdf</location>
+      <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
+    </file>
+    <file type="metadata" role="checksum">
+        <location>http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP/sg324fk4242/Transcript/edited_transcript.pdf.md5</location>
+    </file>
+  </resource>
+  
+</object>
