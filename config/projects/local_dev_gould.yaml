@@ -1,16 +1,16 @@
 project_style:
-  content_structure:  simple_image
+  content_structure:  simple_book
   should_register:    false
-  get_druid_from:     container
+  get_druid_from:     container_barcode
 
-bundle_dir:           spec/test_data/bundle_input_b
+bundle_dir:           spec/test_data/bundle_input_d
 staging_dir:          tmp
 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
-project_name:         Revs
+project_name:         Gould
 apo_druid_id:         druid:qv648vd4392
 set_druid_id:         ~
 
@@ -28,15 +28,15 @@ object_discovery:
 
 stageable_discovery:
   use_container:      false
-  glob:               '*'
-  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
+  glob:               '00/*'
+  regex:              '(?ix) \.jpg $'
 
 manifest_cols:
   object_container:   ~
   source_id:          ~
   label:              ~
 
-content_exclusion:    '(?ix) descMetadata\.xml $'
+content_exclusion:    ~
 
 validate_usage:       true
 show_progress:        true

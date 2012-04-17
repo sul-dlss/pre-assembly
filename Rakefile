@@ -135,6 +135,7 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path, :source_
   previous_druid=''
   
   # iterate through the CSV
+
   CSV.foreach(csv_filename) do |row|
     
     # read the columns
@@ -208,3 +209,4 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path, :source_
   write_out_xml(@output_folder,@cm) # write out last XML file
   
 end
+

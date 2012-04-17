@@ -6,9 +6,11 @@ assembled and then accessioned in SULAIR digital library.
 
 ==Running
 
-1. Create project-configuration file in config/projects.
+1. Create project-configuration YAML file in config/projects.
 
-2. Run bin/pre-assemble config/projects/NAME_OF_PROJECT.yaml
+2. Run pre-assembly:
+
+    bin/pre-assemble config/projects/YAML_FILE_NAME
 
 
 ==Deployment
@@ -38,7 +40,7 @@ See the capfile.
 
 For local testing, it's easiest to put this in your bash profile:
 
-	export ROBOT_ENVIRONMENT="local"
+	export ROBOT_ENVIRONMENT=local
 
 Running tests:
 
