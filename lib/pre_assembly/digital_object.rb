@@ -108,14 +108,18 @@ module PreAssembly
     end
 
     def get_pid_from_container
-      return "druid:#{File.basename @container}"
+      return "druid:#{container_basename}"
     end
 
     def get_pid_from_container_barcode
-      return DruidMinter.next
+      return DruidMinter.next if @project_style[:use_druid_minter]
+      barcode = container_basename
+      # TODO: not really implemented yet.
+      return "druid:xx888yy#{barcode[0..3]}"
+    end
 
-      barcode = File.basename @container 
-      return "druid:#{barcode}"
+    def container_basename
+      return File.basename(@container)
     end
 
     def register

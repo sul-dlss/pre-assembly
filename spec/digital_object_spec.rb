@@ -68,13 +68,27 @@ describe PreAssembly::DigitalObject do
       @dobj.get_pid_from_container.should == "druid:#{d}"
     end
 
-    it "get_pid_from_container_barcode() extracts druid from barcode in object container" do
+    it "container_basename()" do
+      d = 'xx111yy2222'
+      @dobj.container = "foo/bar/#{d}"
+      @dobj.container_basename.should == d
+    end
+
+  end
+
+  describe "get_pid_from_container_barcode()" do
+
+    it "should retun DruidMinter.next if use_druid_minter is true" do
+      exp = PreAssembly::DruidMinter.current
+      @dobj.project_style[:use_druid_minter] = true
+      @dobj.should_not_receive :container_basename
+      @dobj.get_pid_from_container_barcode.should == exp.next
+    end
+
+    it "should get druid from barcode" do
       b = '36105115575834'
       @dobj.container = "foo/bar/#{b}"
-      # ap @dobj.get_pid_from_container_barcode
-      # ap @dobj.get_pid_from_container_barcode
-      # ap @dobj.get_pid_from_container_barcode
-      # ap @dobj.get_pid_from_container_barcode
+      @dobj.get_pid_from_container_barcode.should == "druid:xx888yy3610"
     end
 
   end
