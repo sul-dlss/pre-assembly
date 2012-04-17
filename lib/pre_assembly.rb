@@ -24,6 +24,7 @@ end
 require 'fileutils'
 require 'erb'
 
+require 'pre_assembly/druid_minter'
 require 'pre_assembly/bundle'
 require 'pre_assembly/digital_object'
 require 'pre_assembly/object_file'
