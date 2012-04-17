@@ -165,6 +165,7 @@ module PreAssembly
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
+      log "discover_objects()"
       use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
@@ -275,6 +276,7 @@ module PreAssembly
     ####
 
     def load_checksums
+      log "load_checksums()"
       load_provider_checksums if @checksums_file
       all_object_files.each do |file|
         file.checksum = retrieve_checksum(file.path)
@@ -285,7 +287,7 @@ module PreAssembly
       # Read the provider-supplied checksums_file, using its 
       # content to populate a hash of expected checksums.
       # This method works with default output from md5sum.
-      log "load_provider_checksums()"
+      log "  - load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
         @provider_checksums[file_name] = md5
@@ -316,6 +318,7 @@ module PreAssembly
       # For bundles using a manifest, adds the manifest info to the digital objects.
       # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
       return unless @object_discovery[:use_manifest]
+      log "process_manifest()"
       mrows = manifest_rows  # Convenience variable, and used for testing.
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
@@ -345,6 +348,7 @@ module PreAssembly
     ####
 
     def validate_files
+      log "validate_files()"
       tally = Hash.new(0)           # A tally to facilitate testing.
       all_object_files.each do |f|
         if not f.image?

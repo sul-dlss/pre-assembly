@@ -82,7 +82,7 @@ module PreAssembly
       generate_content_metadata
       generate_desc_metadata
       initialize_assembly_workflow
-      log "  - pre_assemble(#{@pid}) finished"
+      log "    - pre_assemble(#{@pid}) finished"
     end
 
 
@@ -91,7 +91,8 @@ module PreAssembly
     ####
 
     def determine_druid
-      k      = @project_style[:get_druid_from]
+      k = @project_style[:get_druid_from]
+      log "    - determine_druid(#{k})"
       @pid   = @get_pid_dispatch[k].call
       @druid = Druid.new @pid
     end
@@ -129,6 +130,7 @@ module PreAssembly
     def add_dor_object_to_set
       # Add the object to a set (a sub-collection).
       return unless @set_druid_id
+      log "    - add_dor_object_to_set(#{@set_druid_id})"
       @dor_object.add_relationship *add_relationship_params
       @dor_object.save
     end
@@ -197,6 +199,7 @@ module PreAssembly
     end
 
     def create_content_metadata_xml
+      log "    - create_content_metadata_xml()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(:objectId => @druid.id) {
           content_object_files.each_with_index { |ofile, i|
@@ -269,6 +272,7 @@ module PreAssembly
     def initialize_assembly_workflow
       # Call web service to add assemblyWF to the object in DOR.
       return unless @init_assembly_wf
+      log "    - initialize_assembly_workflow()"
       url = assembly_workflow_url
       RestClient.post url, {}
     end
