@@ -1,0 +1,49 @@
+project_style:
+  content_structure:  smpl
+  should_register:    false
+  get_druid_from:     container
+
+bundle_dir:           spec/test_data/bundle_input_e
+staging_dir:          tmp
+
+manifest:             ~
+checksums_file:       ~
+desc_md_template:     ~
+
+project_name:         SOHP
+apo_druid_id:         ~
+set_druid_id:         ~
+
+publish_attr:
+  publish:            no
+  shelve:             no
+  preserve:           yes
+
+init_assembly_wf:     false
+
+object_discovery:
+  use_manifest:       false
+  glob:               '*'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
+
+stageable_discovery:
+  use_container:      false
+  glob:               '*'
+  regex:              '(?ix) \. (jpg|wav|mp3|pdf|xml) $'
+
+manifest_cols:
+  object_container:   ~
+  source_id:          ~
+  label:              ~
+
+content_exclusion:    ~
+
+validate_usage:       true
+show_progress:        true
+limit_n:              10
+uniqify_source_ids:   true
+cleanup:              true
+
+content_metadata:
+  label:              Item
+  custom_method:      smpl

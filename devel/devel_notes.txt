@@ -11,13 +11,39 @@
 Refactoring
 -----------
 
-Setup test bundle like Gould.
+Gould
     - setup integration test
     - check output
 
-Content metadata refactoring:
-  - simple book with multiple image types per page: AP Hummel
-  - audio: SOHP
+SOHP
+    zh839tm0156/
+    |-- Images
+    |   |-- zh839tm0156_243_img_1.jpg
+    |   |-- zh839tm0156_243_img_1.jpg.md5
+    |   |-- zh839tm0156_243_img_2.jpg
+    |   `-- zh839tm0156_243_img_2.jpg.md5
+    |-- PM
+    |   |-- zh839tm0156_243_a_pm.wav
+    |   |-- zh839tm0156_243_a_pm.wav.md5
+    |   |-- zh839tm0156_243_b_pm.wav
+    |   `-- zh839tm0156_243_b_pm.wav.md5
+    |-- SH
+    |   |-- zh839tm0156_243_a_sh.wav
+    |   |-- zh839tm0156_243_a_sh.wav.md5
+    |   |-- zh839tm0156_243_b_sh.wav
+    |   `-- zh839tm0156_243_b_sh.wav.md5
+    |-- SL
+    |   |-- zh839tm0156_243_a_sl.mp3
+    |   |-- zh839tm0156_243_a_sl.mp3.md5
+    |   |-- zh839tm0156_243_a_sl_techmd.xml
+    |   |-- zh839tm0156_243_b_sl.mp3
+    |   |-- zh839tm0156_243_b_sl.mp3.md5
+    |   `-- zh839tm0156_243_b_sl_techmd.xml
+    `-- Transcript
+        |-- zh839tm0156.pdf
+        `-- zh839tm0156.pdf.md5
+
+Simple book with multiple image types per page: AP Hummel.
 
 
 -------------------
