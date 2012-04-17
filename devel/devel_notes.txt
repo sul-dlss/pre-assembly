@@ -12,13 +12,12 @@
 Refactoring
 -----------
 
-Content metadata refactoring:
-  - param for xml.label in content_metadata
-  - if content_structure is simple_book
-        <contentMetadata type="book">
-          <resource type="page">
-  - setup test bundle like Gould
+Setup test bundle like Gould.
+    - create test bundle
+    - setup integration test
+    - check output
 
+Content metadata refactoring:
   - simple book with multiple image types per page: AP Hummel
   - audio: SOHP
 

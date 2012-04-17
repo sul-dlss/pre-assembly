@@ -12,7 +12,8 @@ describe PreAssembly::DigitalObject do
       :bundle_dir    => 'spec/test_data/bundle_input_a',
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
-    @pid          = 'druid:ab123cd4567'
+    @dru          = 'ab123cd4567'
+    @pid          = "druid:#{@dru}"
     @druid        = Druid.new @pid
     @tmp_dir_args = [nil, 'tmp']
   end
@@ -237,6 +238,38 @@ describe PreAssembly::DigitalObject do
         @dobj.write_content_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
+    end
+
+    it "node_attr_cm() should return correct value based on @content_structure" do
+      base_exp = { :objectId => @dru }
+      tests = {
+        :simple_image => {},
+        :simple_book  => { :type => 'book' },
+      }
+      tests.each do |cs, other_attr|
+        @dobj.content_structure = cs
+        @dobj.node_attr_cm.should == base_exp.merge(other_attr)
+      end
+    end
+
+    it "node_attr_cm_resource() should return correct value based on @content_structure" do
+      seq = 123
+      base_exp = { :sequence => seq, :id => "#{@dru}_#{seq}" }
+      tests = {
+        :simple_image => {},
+        :simple_book  => { :type => 'page' },
+      }
+      tests.each do |cs, other_attr|
+        @dobj.content_structure = cs
+        @dobj.node_attr_cm_resource(seq).should == base_exp.merge(other_attr)
+      end
+    end
+
+    it "node_attr_cm_file() should return expected value" do
+      p           = 'foo/bar.txt'
+      object_file = double 'object_file', :relative_path => p
+      exp         = {:id => p}.merge @dobj.publish_attr
+      @dobj.node_attr_cm_file(object_file).should == exp
     end
 
   end
