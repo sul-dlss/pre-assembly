@@ -225,7 +225,7 @@ module PreAssembly
 
     def content_object_files
       # Object files that should be included in content metadata.
-      @object_files.reject { |ofile| ofile.exclude_from_content }
+      @object_files.reject { |ofile| ofile.exclude_from_content }.sort
     end
 
 

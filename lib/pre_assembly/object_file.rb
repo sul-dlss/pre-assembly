@@ -31,6 +31,10 @@ module PreAssembly
       assembly_object_file.valid_image?
     end
 
+    def <=>(other)
+      @relative_path <=> other.relative_path
+    end
+
   end
 
 end
