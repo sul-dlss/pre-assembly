@@ -68,6 +68,12 @@ describe PreAssembly::DigitalObject do
       @dobj.get_pid_from_container.should == "druid:#{d}"
     end
 
+    it "get_pid_from_container_barcode() extracts druid from barcode in object container" do
+      b = '36105115575834'
+      @dobj.container = "foo/bar/#{b}"
+      @dobj.get_pid_from_container_barcode
+    end
+
   end
 
   describe "register()" do

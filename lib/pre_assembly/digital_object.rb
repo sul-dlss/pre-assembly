@@ -68,8 +68,9 @@ module PreAssembly
       @content_structure = @project_style[:content_structure]
       @stager            = lambda { |f,d| FileUtils.cp_r f, d }
       @get_pid_dispatch  = {
-        :suri      => method(:get_pid_from_suri),
-        :container => method(:get_pid_from_container),
+        :suri              => method(:get_pid_from_suri),
+        :container         => method(:get_pid_from_container),
+        :container_barcode => method(:get_pid_from_container_barcode),
       }
     end
 
@@ -108,6 +109,11 @@ module PreAssembly
 
     def get_pid_from_container
       return "druid:#{File.basename @container}"
+    end
+
+    def get_pid_from_container_barcode
+      barcode = File.basename @container 
+      return "druid:#{barcode}"
     end
 
     def register
