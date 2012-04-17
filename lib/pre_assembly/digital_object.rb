@@ -34,6 +34,7 @@ module PreAssembly
       :desc_md_file,
       :content_md_xml,
       :desc_md_xml,
+      :content_structure,
       :stager,
     ]
 
@@ -46,7 +47,10 @@ module PreAssembly
 
     def initialize(params = {})
       INIT_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
+      setup
+    end
 
+    def setup
       @pid                 = ''
       @druid               = nil
       @druid_tree_dir      = ''
@@ -61,8 +65,9 @@ module PreAssembly
       @content_md_xml      = ''
       @desc_md_xml         = ''
 
-      @stager           = lambda { |f,d| FileUtils.cp_r f, d }
-      @get_pid_dispatch = {
+      @content_structure = @project_style[:content_structure]
+      @stager            = lambda { |f,d| FileUtils.cp_r f, d }
+      @get_pid_dispatch  = {
         :suri      => method(:get_pid_from_suri),
         :container => method(:get_pid_from_container),
       }
@@ -201,14 +206,13 @@ module PreAssembly
     def create_content_metadata_xml
       log "    - create_content_metadata_xml()"
       builder = Nokogiri::XML::Builder.new { |xml|
-        xml.contentMetadata(:objectId => @druid.id) {
-          content_object_files.each_with_index { |ofile, i|
+        xml.contentMetadata(node_attr_cm) {
+          content_object_files.each_with_index { |object_file, i|
             seq = i + 1
-            xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}") {
-              file_params = { :id => ofile.relative_path }.merge @publish_attr
+            xml.resource(node_attr_cm_resource seq) {
               xml.label "Item #{seq}"
-              xml.file(file_params) {
-                xml.provider_checksum ofile.checksum, :type => 'md5'
+              xml.file(node_attr_cm_file object_file) {
+                xml.provider_checksum object_file.checksum, :type => 'md5'
               }
             }
           }
@@ -226,6 +230,25 @@ module PreAssembly
     def content_object_files
       # Object files that should be included in content metadata.
       @object_files.reject { |ofile| ofile.exclude_from_content }.sort
+    end
+
+    def node_attr_cm
+      # Returns hash of attributes for a <contenteMetadata> node.
+      h = { :objectId => @druid.id }
+      h.merge!(:type => 'book') if @content_structure == :simple_book
+      return h
+    end
+
+    def node_attr_cm_resource(seq)
+      # Returns hash of attributes for a contenteMetadata <resource> node.
+      h = { :sequence => seq, :id => "#{@druid.id}_#{seq}" }
+      h.merge!(:type => 'page') if @content_structure == :simple_book
+      return h
+    end
+
+    def node_attr_cm_file(object_file)
+      # Returns hash of attributes for a contenteMetadata <file> node.
+      return { :id => object_file.relative_path }.merge @publish_attr
     end
 
 
