@@ -112,6 +112,8 @@ module PreAssembly
     end
 
     def get_pid_from_container_barcode
+      return DruidMinter.next
+
       barcode = File.basename @container 
       return "druid:#{barcode}"
     end

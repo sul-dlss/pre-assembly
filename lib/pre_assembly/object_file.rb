@@ -2,8 +2,6 @@ module PreAssembly
 
   class ObjectFile
 
-    include PreAssembly::Logging
-
     attr_accessor(
       :path,
       :relative_path,
