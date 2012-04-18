@@ -7,62 +7,22 @@
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+Modify object discovery to fix bug.
+
+    get stageable path_in_bundle
+      - ofbd = get_base_dir(stageable)   # Base dir of the object file.
+      - object_file.relative_path = relative_path(ofbd, file_path)
+
+      def get_base_dir(path)
+        bd = File.dirname(path)
+        return bd unless bd == '.'
+        raise ArgumentError, "Bad path: get_base_dir(#{path.inspect})"
+
+    same logic applies to determining the container:
+      - abandon use_c
+      - container = get_base_dir(c)
+
 ReidDennis test files: make image file names different.
-
-Add test for BUG.
-
-object_discovery:    container_is:   file
-stageable_discovery: use_container:  true
-                     stageable_is:   file (the container)
-
-    initial container:   image.tif
-    converted container: B
-    stageable:           B/image.tif
-    object_file:
-        path             B/image.tif
-        rel_path         image.tif
-
-object_discovery:    container_is:   file
-stageable_discovery: use_container:  false
-                     stageable_is:   ~
-
-    Not allowed: would not yield any stageable items
-
-object_discovery:    container_is:   dir
-stageable_discovery: use_container:  true
-                     stageable_is:   dir  (the container)
-
-    initial container:   B/dir
-    converted container: B
-    stageable:           B/dir
-    object_file:
-        path             B/dir/image.tif
-        rel_path         dir/image.tif
-
-object_discovery:    container_is:   dir
-stageable_discovery: use_container:  false
-                     stageable_is:   either
-
-    # stageable_is = directly within container
-    # stageable_is =     FILE                        DIR
-    #                    ---------------------------------------------
-    initial container:   B/dir                     
-    converted container: B/dir                     
-    stageable:           B/dir/image.tif             B/dir/subdir
-    object_file:                                   
-        path             B/dir/image.tif             B/dir/subdir/image.tif
-        rel_path         image.tif                   subdir/image.tif
-
-    # stageable_is = within a subdir of container
-    # stageable_is =     FILE                        DIR
-    #                    -----------------------------------------
-    initial container:   B/dir                      
-    converted container: B/dir                      
-    stageable:           B/dir/subdir/image.tif      B/dir/subdir/subdir2
-    object_file:                                    
-        path             B/dir/subdir/image.tif      B/dir/subdir/subdir2/image.tif
-        rel_path         subdir/image.tif            subdir/subdir2/image.tif
-
 
 -----------
 Refactoring

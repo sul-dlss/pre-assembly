@@ -1,0 +1,73 @@
+---------------------------------------------------------------------
+Notes on the discovery of object containers and their stageable items
+---------------------------------------------------------------------
+
+container is FILE
+
+    use_container as stageable = true
+
+        stageable_is         FILE                        DIR (na)
+                             ---------------------------------------------
+        initial container:   B/image.tif
+        converted container: B
+        stageable:           B/image.tif
+        object_file:
+            path             B/image.tif
+            rel_path         image.tif
+
+        initial container:   B/x/y/image.tif
+        converted container: B/x/y
+        stageable:           B/x/y/image.tif
+        object_file:
+            path             B/x/y/image.tif
+            rel_path         image.tif
+
+    use_container as stageable = false
+
+        Not allowed: would not yield any stageable items
+
+
+container is DIR
+
+    use_container as stageable = true
+
+        stageable_is         FILE (na)                  DIR
+                             ---------------------------------------------
+        initial container:                              B/dir
+        converted container:                            B
+        stageable:                                      B/dir
+        object_file:                                    
+            path                                        B/dir/image.tif
+            rel_path                                    dir/image.tif
+                                                        
+        initial container:                              B/x/y/dir
+        converted container:                            B/x/y
+        stageable:                                      B/x/y/dir
+        object_file:                                    
+            path                                        B/x/y/dir/image.tif
+            rel_path                                    dir/image.tif
+
+    use_container as stageable = false
+
+        stageable_is         FILE                        DIR
+                             ---------------------------------------------
+        initial container:   B/dir                     
+        converted container: B/dir                     
+        stageable:           B/dir/image.tif             B/dir/subdir
+        object_file:                                   
+            path             B/dir/image.tif             B/dir/subdir/image.tif
+            rel_path         image.tif                   subdir/image.tif
+
+        initial container:   B/dir                      
+        converted container: B/dir                      
+        stageable:           B/dir/subdir/image.tif      B/dir/subdir/subdir2
+        object_file:                                    
+            path             B/dir/subdir/image.tif      B/dir/subdir/subdir2/image.tif
+            rel_path         image.tif                   subdir2/image.tif
+
+        initial container:   B/dir                      
+        converted container: B/dir                      
+        stageable:           B/dir/x/y/image.tif         B/dir/x/y/subdir
+        object_file:                                    
+            path             B/dir/x/y/image.tif         B/dir/x/y/subdir/image.tif
+            rel_path         image.tif                   subdir/image.tif
