@@ -166,15 +166,10 @@ module PreAssembly
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
       log "discover_objects()"
-      use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
-        # If using the container as the stageable item,
-        # the DigitalObject container needs adjustment.
-        container    = use_c ? get_base_dir(c) : c
+        container    = actual_container(c)
         stageables   = stageable_items_for(c)
         object_files = discover_object_files(stageables)
-
-        # Create the object.
         params = {
           :project_style        => @project_style,
           :bundle_dir           => @bundle_dir,
@@ -236,6 +231,12 @@ module PreAssembly
         items.push(item) if rel_path =~ regex
       end
       return items
+    end
+
+    def actual_container(container)
+      # When the discovered object's container functions as the stageable item,
+      # we adjust the value that will serve as the DigitalObject container.
+      return @stageable_discovery[:use_container] ? get_base_dir(container) : container
     end
 
     def stageable_items_for(container)

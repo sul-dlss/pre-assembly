@@ -270,8 +270,8 @@ describe PreAssembly::Bundle do
 
   end
 
-  ####################
-
+#  ####################
+#
 #   describe "object discovery: discover_all_files()" do
 # 
 #     before(:each) do
@@ -310,6 +310,18 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       bundle_setup :proj_revs
+    end
+
+    it "actual_container() should behave as expected" do
+      p = 'foo/bar'
+      f = 'x.tif'
+      c = "#{p}/#{f}"
+      # Return the container unmodified.
+      @b.stageable_discovery[:use_container] = false
+      @b.actual_container(c).should == c
+      # Adjust the container value.
+      @b.stageable_discovery[:use_container] = true
+      @b.actual_container(c).should == p
     end
 
     it "should be able to exercise all_object_files()" do
