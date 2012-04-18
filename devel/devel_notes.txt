@@ -7,6 +7,55 @@
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+object_discovery:    container_is:   file
+stageable_discovery: use_container:  true
+                     stageable_is:   file (the container)
+
+    initial container:   image.tif
+    converted container: B
+    stageable:           B/image.tif
+    object_file:
+        path             B/image.tif
+        rel_path         image.tif
+
+object_discovery:    container_is:   file
+stageable_discovery: use_container:  false
+                     stageable_is:   ~
+
+    Not allowed: would not yield any stageable items
+
+object_discovery:    container_is:   dir
+stageable_discovery: use_container:  true
+                     stageable_is:   dir  (the container)
+
+    initial container:   B/dir
+    converted container: B
+    stageable:           B/dir
+    object_file:
+        path             B/dir/image.tif
+        rel_path         dir/image.tif
+
+object_discovery:    container_is:   dir
+stageable_discovery: use_container:  false
+                     stageable_is:   either
+
+    # stageable_is = file
+    initial container:   B/dir
+    converted container: B/dir
+    stageable:           B/dir/image.tif
+    object_file:
+        path             B/dir/image.tif
+        rel_path         image.tif
+
+    # stageable_is = dir
+    initial container:   B/dir
+    converted container: B/dir
+    stageable:           B/dir/subdir
+    object_file:
+        path             B/dir/subdir/image.tif
+        rel_path         subdir/image.tif
+
+
 -----------
 Refactoring
 -----------
