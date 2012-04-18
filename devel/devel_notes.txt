@@ -13,10 +13,9 @@ Refactoring
 
 Gould
     - setup integration test
-    - check output
-    - get_pid_from_container_barcode() is not implemented yet: waiting on Lynn/Stu.
+    - check staging results
 
-ReidDennis test files: make image file names different.
+get_pid_from_container_barcode(): implement (use APO to disambiguate)
 
 SOHP
 
