@@ -13,10 +13,6 @@ Modify object discovery to fix bug.
       - ofbd = get_base_dir(stageable)   # Base dir of the object file.
       - object_file.relative_path = relative_path(ofbd, file_path)
 
-    same logic applies to determining the container:
-      - abandon use_c
-      - container = get_base_dir(c)
-
 ReidDennis test files: make image file names different.
 
 -----------
