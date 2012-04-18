@@ -7,6 +7,10 @@
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
+ReidDennis test files: make image file names different.
+
+Add test for BUG.
+
 object_discovery:    container_is:   file
 stageable_discovery: use_container:  true
                      stageable_is:   file (the container)
@@ -39,21 +43,25 @@ object_discovery:    container_is:   dir
 stageable_discovery: use_container:  false
                      stageable_is:   either
 
-    # stageable_is = file
-    initial container:   B/dir
-    converted container: B/dir
-    stageable:           B/dir/image.tif
-    object_file:
-        path             B/dir/image.tif
-        rel_path         image.tif
+    # stageable_is = directly within container
+    # stageable_is =     FILE                        DIR
+    #                    ---------------------------------------------
+    initial container:   B/dir                     
+    converted container: B/dir                     
+    stageable:           B/dir/image.tif             B/dir/subdir
+    object_file:                                   
+        path             B/dir/image.tif             B/dir/subdir/image.tif
+        rel_path         image.tif                   subdir/image.tif
 
-    # stageable_is = dir
-    initial container:   B/dir
-    converted container: B/dir
-    stageable:           B/dir/subdir
-    object_file:
-        path             B/dir/subdir/image.tif
-        rel_path         subdir/image.tif
+    # stageable_is = within a subdir of container
+    # stageable_is =     FILE                        DIR
+    #                    -----------------------------------------
+    initial container:   B/dir                      
+    converted container: B/dir                      
+    stageable:           B/dir/subdir/image.tif      B/dir/subdir/subdir2
+    object_file:                                    
+        path             B/dir/subdir/image.tif      B/dir/subdir/subdir2/image.tif
+        rel_path         subdir/image.tif            subdir/subdir2/image.tif
 
 
 -----------

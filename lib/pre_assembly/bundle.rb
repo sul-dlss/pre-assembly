@@ -170,9 +170,10 @@ module PreAssembly
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
         # the DigitalObject container is just the bundle_dir.
-        container  = use_c ? @bundle_dir : path_in_bundle(c)
+        container  = use_c ? @bundle_dir : c
         stageables = stageable_items_for(c)
         files      = discover_all_files(stageables)
+
         # Create the object.
         params = {
           :project_style        => @project_style,
@@ -186,7 +187,7 @@ module PreAssembly
           :init_assembly_wf     => @init_assembly_wf,
           :container            => container,
           :stageable_items      => stageables,
-          :object_files         => files.map { |f| new_object_file(f) },
+          :object_files         => files.map { |f| new_object_file(container, f) },
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
@@ -255,10 +256,10 @@ module PreAssembly
       @digital_objects.map { |dobj| dobj.object_files }.flatten
     end
 
-    def new_object_file(file_path)
+    def new_object_file(container, file_path)
       return ObjectFile.new(
         :path                 => file_path,
-        :relative_path        => relative_path(@bundle_dir, file_path),
+        :relative_path        => relative_path(container, file_path),
         :exclude_from_content => exclude_from_content(file_path)
       )
     end
@@ -393,12 +394,13 @@ module PreAssembly
       #   path     BLAH/BLAH/foo/bar.txt
       #   returns            foo/bar.txt
       bs = base.size
-      raise ArgumentError unless (
+      return path[bs + 1 .. -1] if (
         bs > 0 and 
         path.size > bs and
         path.index(base) == 0
       )
-      path[bs + 1 .. -1]
+      err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
+      raise ArgumentError, err_msg
     end
 
     def dir_exists(dir)
