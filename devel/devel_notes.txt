@@ -11,10 +11,6 @@
 Refactoring
 -----------
 
-Gould
-    - setup integration test
-    - check staging results
-
 get_pid_from_container_barcode(): implement (use APO to disambiguate)
 
 SOHP
