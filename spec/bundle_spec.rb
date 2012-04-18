@@ -247,6 +247,31 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "object discovery: discover_object_files()" do
+
+    before(:each) do
+      bundle_setup :proj_rumsey
+      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
+      fs = %w(
+        cb837cp4412/2874009.tif
+        cb837cp4412/descMetadata.xml
+        cm057cr1745/2874008.tif
+        cm057cr1745/descMetadata.xml
+        cp898cs9946/2874018.tif
+        cp898cs9946/descMetadata.xml
+      )
+      @files = fs.map { |f| @b.path_in_bundle f }
+      @dirs  = ds.map { |d| @b.path_in_bundle d }
+    end
+
+    it "XXX should ..." do
+      # ap @b.discover_object_files(@files)
+    end
+
+  end
+
+  ####################
+
   describe "object discovery: discover_all_files()" do
 
     before(:each) do
@@ -269,10 +294,10 @@ describe PreAssembly::Bundle do
     end
 
     it "should find files within directories, recursively" do
-      @b.discover_all_files(@dirs).should == @files
+      @b.discover_all_files(@b.bundle_dir).should == @files
     end
 
-    it "should returns same arguments if given only files" do
+    it "should return same arguments if given only files" do
       fs = @files[0..1]
       @b.discover_all_files(fs).should == fs
     end
@@ -297,11 +322,41 @@ describe PreAssembly::Bundle do
 
     it "new_object_file() should return an ObjectFile with expected path values" do
       bundle_setup :proj_revs
-      rel_path = "image1.tif"
-      path     = @b.path_in_bundle rel_path
-      ofile    = @b.new_object_file @b.bundle_dir, path
-      ofile.path.should          == path
-      ofile.relative_path.should == rel_path
+      @b.stub(:exclude_from_path).and_return(false)
+      tests = [
+        # Stageable is a file:
+        # - immediately in bundle dir.
+        { :stageable    => 'BUNDLE/x.tif',
+          :file_path    => 'BUNDLE/x.tif',
+          :exp_rel_path => 'x.tif' },
+        # - within subdir of bundle dir.
+        { :stageable    => 'BUNDLE/a/b/x.tif',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'x.tif' },
+        # Stageable is a directory:
+        # - immediately in bundle dir
+        { :stageable    => 'BUNDLE/a',
+          :file_path    => 'BUNDLE/a/x.tif',
+          :exp_rel_path => 'a/x.tif' },
+        # - immediately in bundle dir, with file deeper
+        { :stageable    => 'BUNDLE/a',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'a/b/x.tif' },
+        # - within a subdir of bundle dir
+        { :stageable    => 'BUNDLE/a/b',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'b/x.tif' },
+        # - within a subdir of bundle dir, with file deeper
+        { :stageable    => 'BUNDLE/a/b',
+          :file_path    => 'BUNDLE/a/b/c/d/x.tif',
+          :exp_rel_path => 'b/c/d/x.tif' },
+      ]
+      tests.each do |t|
+        ofile = @b.new_object_file t[:stageable], t[:file_path]
+        ofile.should be_kind_of PreAssembly::ObjectFile
+        ofile.path.should          == t[:file_path]
+        ofile.relative_path.should == t[:exp_rel_path]
+      end
     end
 
     it "exclude_from_content() should behave correctly" do

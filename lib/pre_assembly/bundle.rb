@@ -250,16 +250,27 @@ module PreAssembly
       return stageable_items.map { |i| find_files_recursively i }.flatten
     end
 
+    def discover_object_files(stageable_items)
+      # Returns a list of the ObjectFiles for a digital object.
+      object_files = []
+      stageable_items.each do |stageable|
+        find_files_recursively(stageable).each do |file_path|
+          object_files.push(new_object_file stageable, file_path)
+        end
+      end
+      return object_files
+    end
+
     def all_object_files
       # A convenience method to return all ObjectFiles for all digital objects.
       # Also used for stubbing during testing.
       @digital_objects.map { |dobj| dobj.object_files }.flatten
     end
 
-    def new_object_file(container, file_path)
+    def new_object_file(stageable, file_path)
       return ObjectFile.new(
         :path                 => file_path,
-        :relative_path        => relative_path(container, file_path),
+        :relative_path        => relative_path(get_base_dir(stageable), file_path),
         :exclude_from_content => exclude_from_content(file_path)
       )
     end
