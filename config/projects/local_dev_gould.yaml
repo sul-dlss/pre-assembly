@@ -12,7 +12,7 @@ checksums_file:       ~
 desc_md_template:     ~
 
 project_name:         Gould
-apo_druid_id:         druid:qv648vd4392
+apo_druid_id:         ~
 set_druid_id:         ~
 
 publish_attr:
@@ -25,7 +25,7 @@ init_assembly_wf:     false
 object_discovery:
   use_manifest:       false
   glob:               '*'
-  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
+  regex:              '^\d+$'
 
 stageable_discovery:
   use_container:      false
