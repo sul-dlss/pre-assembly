@@ -13,11 +13,6 @@ Modify object discovery to fix bug.
       - ofbd = get_base_dir(stageable)   # Base dir of the object file.
       - object_file.relative_path = relative_path(ofbd, file_path)
 
-      def get_base_dir(path)
-        bd = File.dirname(path)
-        return bd unless bd == '.'
-        raise ArgumentError, "Bad path: get_base_dir(#{path.inspect})"
-
     same logic applies to determining the container:
       - abandon use_c
       - container = get_base_dir(c)

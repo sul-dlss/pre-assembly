@@ -403,6 +403,16 @@ module PreAssembly
       raise ArgumentError, err_msg
     end
 
+    def get_base_dir(path)
+      # Returns the portion of the path before basename. For example:
+      #   path     BLAH/BLAH/foo/bar.txt
+      #   returns  BLAH/BLAH/foo
+      bd = File.dirname(path)
+      return bd unless bd == '.'
+      err_msg = "Bad arg to get_base_dir(#{path.inspect})"
+      raise ArgumentError, err_msg
+    end
+
     def dir_exists(dir)
       File.directory? dir
     end
