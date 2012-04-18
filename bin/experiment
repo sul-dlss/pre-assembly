@@ -4,3 +4,46 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
+class DOMock
+
+    def initialize
+      @project_style = {}
+    end
+
+    def container_basename
+      return '36105115575834'
+    end
+
+    def get_pid_from_container_barcode
+      return DruidMinter.next if @project_style[:use_druid_minter]
+      barcode = container_basename
+
+      result = []
+
+      pids = Dor::SearchService.query_by_id(:barcode => barcode)
+      return pids.first if pids.size == 1
+
+      pids.each do |pid|
+        dobj = Dor::Item.find pid
+        apos = dobj.admin_policy_object
+
+        result.push apos.map { |a| a.pid }
+        
+        # Need the Gould APO.
+
+        # ActiveFedora::ObjectNotFoundError        
+
+      end
+
+      return result
+
+    end
+
+end
+
+require 'awesome_print'
+
+dobj = DOMock.new
+
+r = dobj.get_pid_from_container_barcode
+ap r
