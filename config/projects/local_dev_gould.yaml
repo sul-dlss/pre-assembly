@@ -29,8 +29,8 @@ object_discovery:
 
 stageable_discovery:
   use_container:      false
-  glob:               '00/*'
-  regex:              '(?ix) \.jpg $'
+  glob:               '00'
+  regex:              ''
 
 manifest_cols:
   object_container:   ~

@@ -299,7 +299,7 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_revs
       rel_path = "image1.tif"
       path     = @b.path_in_bundle rel_path
-      ofile    = @b.new_object_file path
+      ofile    = @b.new_object_file @b.bundle_dir, path
       ofile.path.should          == path
       ofile.relative_path.should == rel_path
     end
@@ -534,9 +534,10 @@ describe PreAssembly::Bundle do
       base    = 'foo/bar'
       path    = "#{base}/#{f}"
       exp_err = ArgumentError
-      lambda { @b.relative_path('',   path) }.should raise_error exp_err
-      lambda { @b.relative_path(path, path) }.should raise_error exp_err
-      lambda { @b.relative_path('xx', path) }.should raise_error exp_err
+      exp_msg = /^Bad args to relative_path/
+      lambda { @b.relative_path('',   path) }.should raise_error exp_err, exp_msg
+      lambda { @b.relative_path(path, path) }.should raise_error exp_err, exp_msg
+      lambda { @b.relative_path('xx', path) }.should raise_error exp_err, exp_msg
     end
 
     it "should be able to exercise file-dir existence methods" do
