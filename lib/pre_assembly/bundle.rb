@@ -244,13 +244,6 @@ module PreAssembly
       return discover_items_via_crawl(container, @stageable_discovery)
     end
 
-    # def discover_all_files(stageable_items)
-    #   # Returns a list of the files for a digital object.
-    #   # This list differs from stageable_items only when some
-    #   # of the stageable_items are directories.
-    #   return stageable_items.map { |i| find_files_recursively i }.flatten
-    # end
-
     def discover_object_files(stageable_items)
       # Returns a list of the ObjectFiles for a digital object.
       object_files = []

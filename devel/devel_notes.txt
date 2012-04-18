@@ -16,8 +16,6 @@ Gould
     - check output
     - get_pid_from_container_barcode() is not implemented yet: waiting on Lynn/Stu.
 
-Remove code for discover_all_files().
-
 ReidDennis test files: make image file names different.
 
 SOHP
