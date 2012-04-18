@@ -170,9 +170,9 @@ module PreAssembly
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
         # the DigitalObject container needs adjustment.
-        container  = use_c ? get_base_dir(c) : c
-        stageables = stageable_items_for(c)
-        files      = discover_all_files(stageables)
+        container    = use_c ? get_base_dir(c) : c
+        stageables   = stageable_items_for(c)
+        object_files = discover_object_files(stageables)
 
         # Create the object.
         params = {
@@ -187,7 +187,7 @@ module PreAssembly
           :init_assembly_wf     => @init_assembly_wf,
           :container            => container,
           :stageable_items      => stageables,
-          :object_files         => files.map { |f| new_object_file(container, f) },
+          :object_files         => object_files,
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
@@ -243,12 +243,12 @@ module PreAssembly
       return discover_items_via_crawl(container, @stageable_discovery)
     end
 
-    def discover_all_files(stageable_items)
-      # Returns a list of the files for a digital object.
-      # This list differs from stageable_items only when some
-      # of the stageable_items are directories.
-      return stageable_items.map { |i| find_files_recursively i }.flatten
-    end
+    # def discover_all_files(stageable_items)
+    #   # Returns a list of the files for a digital object.
+    #   # This list differs from stageable_items only when some
+    #   # of the stageable_items are directories.
+    #   return stageable_items.map { |i| find_files_recursively i }.flatten
+    # end
 
     def discover_object_files(stageable_items)
       # Returns a list of the ObjectFiles for a digital object.

@@ -272,37 +272,37 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "object discovery: discover_all_files()" do
-
-    before(:each) do
-      bundle_setup :proj_rumsey
-      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
-      fs = %w(
-        cb837cp4412/2874009.tif
-        cb837cp4412/descMetadata.xml
-        cm057cr1745/2874008.tif
-        cm057cr1745/descMetadata.xml
-        cp898cs9946/2874018.tif
-        cp898cs9946/descMetadata.xml
-      )
-      @files = fs.map { |f| @b.path_in_bundle f }
-      @dirs  = ds.map { |d| @b.path_in_bundle d }
-    end
-
-    it "should find files within directories" do
-      @b.discover_all_files(@dirs).should == @files
-    end
-
-    it "should find files within directories, recursively" do
-      @b.discover_all_files(@b.bundle_dir).should == @files
-    end
-
-    it "should return same arguments if given only files" do
-      fs = @files[0..1]
-      @b.discover_all_files(fs).should == fs
-    end
-
-  end
+#   describe "object discovery: discover_all_files()" do
+# 
+#     before(:each) do
+#       bundle_setup :proj_rumsey
+#       ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
+#       fs = %w(
+#         cb837cp4412/2874009.tif
+#         cb837cp4412/descMetadata.xml
+#         cm057cr1745/2874008.tif
+#         cm057cr1745/descMetadata.xml
+#         cp898cs9946/2874018.tif
+#         cp898cs9946/descMetadata.xml
+#       )
+#       @files = fs.map { |f| @b.path_in_bundle f }
+#       @dirs  = ds.map { |d| @b.path_in_bundle d }
+#     end
+# 
+#     it "should find files within directories" do
+#       @b.discover_all_files(@dirs).should == @files
+#     end
+# 
+#     it "should find files within directories, recursively" do
+#       @b.discover_all_files(@b.bundle_dir).should == @files
+#     end
+# 
+#     it "should return same arguments if given only files" do
+#       fs = @files[0..1]
+#       @b.discover_all_files(fs).should == fs
+#     end
+# 
+#   end
 
   ####################
 
