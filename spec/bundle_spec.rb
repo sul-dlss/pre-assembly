@@ -529,7 +529,7 @@ describe PreAssembly::Bundle do
       @b.relative_path(@b.bundle_dir, @full).should == @relative
     end
 
-    it "relative_path() raise error if given bogus arguments" do
+    it "relative_path() should raise error if given bogus arguments" do
       f       = 'fubb.txt'
       base    = 'foo/bar'
       path    = "#{base}/#{f}"
@@ -538,6 +538,19 @@ describe PreAssembly::Bundle do
       lambda { @b.relative_path('',   path) }.should raise_error exp_err, exp_msg
       lambda { @b.relative_path(path, path) }.should raise_error exp_err, exp_msg
       lambda { @b.relative_path('xx', path) }.should raise_error exp_err, exp_msg
+    end
+
+    it "get_base_dir() should return expected value" do
+      @b.get_base_dir('foo/bar/fubb.txt').should == 'foo/bar'
+    end
+
+    it "get_base_dir() should raise error if given bogus arguments" do
+      exp_err  = ArgumentError
+      exp_msg  = /^Bad arg to get_base_dir/
+      bad_args = ['foo.txt', '', 'x\y\foo.txt']
+      bad_args.each do |arg|
+        lambda { @b.get_base_dir(arg) }.should raise_error exp_err, exp_msg
+      end
     end
 
     it "should be able to exercise file-dir existence methods" do
