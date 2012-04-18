@@ -169,8 +169,8 @@ module PreAssembly
       use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
         # If using the container as the stageable item,
-        # the DigitalObject container is just the bundle_dir.
-        container  = use_c ? @bundle_dir : c
+        # the DigitalObject container needs adjustment.
+        container  = use_c ? get_base_dir(c) : c
         stageables = stageable_items_for(c)
         files      = discover_all_files(stageables)
 
