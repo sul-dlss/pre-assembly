@@ -252,7 +252,7 @@ describe PreAssembly::Bundle do
     before(:each) do
       bundle_setup :proj_rumsey
       ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
-      fs = %w(
+      @fs = %w(
         cb837cp4412/2874009.tif
         cb837cp4412/descMetadata.xml
         cm057cr1745/2874008.tif
@@ -260,12 +260,28 @@ describe PreAssembly::Bundle do
         cp898cs9946/2874018.tif
         cp898cs9946/descMetadata.xml
       )
-      @files = fs.map { |f| @b.path_in_bundle f }
-      @dirs  = ds.map { |d| @b.path_in_bundle d }
+      @files = @fs.map { |f| @b.path_in_bundle f }
+      @dirs  =  ds.map { |d| @b.path_in_bundle d }
+
+      @get_paths     = lambda { |fs| fs.map { |f| f.path } }
+      @get_rel_paths = lambda { |fs| fs.map { |f| f.relative_path } }
     end
 
-    it "XXX should ..." do
-      # ap @b.discover_object_files(@files)
+    it "should find expected files with correct relative paths" do
+      bbase = File.basename(@b.bundle_dir)
+      tests = [
+        # Stageables.    Expected relative paths.                 Type of item as stageables. 
+        [ @files,        @fs.map { |f| File.basename f     } ], # Files.
+        [ @dirs,         @fs                                 ], # Directories.
+        [ @b.bundle_dir, @fs.map { |f| File.join(bbase, f) } ], # Even higher directory.
+      ]
+      tests.each do |stageables, exp_relative_paths|
+        # The full paths of the object files should never change,
+        # but the relative paths varies, depending on the stageables.
+        ofiles = @b.discover_object_files(stageables)
+        @get_paths.call(ofiles).should     == @files
+        @get_rel_paths.call(ofiles).should == exp_relative_paths
+      end
     end
 
   end
