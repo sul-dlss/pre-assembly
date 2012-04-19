@@ -47,7 +47,26 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "determining the druid" do
+  describe "determining druid: get_pid_from_container_barcode()" do
+
+    it "should retun DruidMinter.next if use_druid_minter is true" do
+      exp = PreAssembly::DruidMinter.current
+      @dobj.project_style[:use_druid_minter] = true
+      @dobj.should_not_receive :container_basename
+      @dobj.get_pid_from_container_barcode.should == exp.next
+    end
+
+    it "should get druid from barcode" do
+      b = '36105115575834'
+      @dobj.container = "foo/bar/#{b}"
+      @dobj.get_pid_from_container_barcode.should == "druid:xx888yy3610"
+    end
+
+  end
+
+  ####################
+
+  describe "determining the druid: other" do
 
     it "determine_druid() should set correct values for @pid and @druid" do
       # Setup.
@@ -68,30 +87,26 @@ describe PreAssembly::DigitalObject do
       @dobj.get_pid_from_container.should == "druid:#{d}"
     end
 
-    it "container_basename()" do
+    it "container_basename() should work" do
       d = 'xx111yy2222'
       @dobj.container = "foo/bar/#{d}"
       @dobj.container_basename.should == d
     end
 
-  end
-
-  describe "get_pid_from_container_barcode()" do
-
-    it "should retun DruidMinter.next if use_druid_minter is true" do
-      exp = PreAssembly::DruidMinter.current
-      @dobj.project_style[:use_druid_minter] = true
-      @dobj.should_not_receive :container_basename
-      @dobj.get_pid_from_container_barcode.should == exp.next
-    end
-
-    it "should get druid from barcode" do
-      b = '36105115575834'
-      @dobj.container = "foo/bar/#{b}"
-      @dobj.get_pid_from_container_barcode.should == "druid:xx888yy3610"
+    it "apo_matches_exactly_one?() should work" do
+      z = double 'apo', :pid => 'zz00zzz0000'
+      apos = %w(foo bar fubb).map { |a| double('apo', :pid => a) }
+      @dobj.apo_druid_id = z.pid
+      @dobj.apo_matches_exactly_one?(apos).should == false  # Too few.
+      apos.push z
+      @dobj.apo_matches_exactly_one?(apos).should == true   # One = just right.
+      apos.push z
+      @dobj.apo_matches_exactly_one?(apos).should == false  # Too many.
     end
 
   end
+
+  ####################
 
   describe "register()" do
 
@@ -120,6 +135,8 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
 
   describe "add_dor_object_to_set()" do
 
