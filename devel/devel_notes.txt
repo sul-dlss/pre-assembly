@@ -1,19 +1,24 @@
+SOHP: integration test
+
+Persist info about processed items.
+
+Examine whether we want to catch any exceptions.
+
+
+# TODO: SOHP content metadata.
+# TODO: Simple book with multiple image types per page (like AP and Hummel).
+
 # TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
-# TODO: ReidDennis, Gould, and Rumsey are using Revs APOs in dev.
+# TODO: ReidDennis is using Revs APO in dev.
 # TODO: Modify revs.yaml when we start using for real.
+
 # TODO: Modify assembly robots to handle different types of content metadata.
+
 # TODO: Set up pre-assembly under Hudson.
 # TODO: Set up assembly under Hudson.
+
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
-
------------
-Refactoring
------------
-
-SOHP
-
-Simple book with multiple image types per page: AP Hummel.
 
 
 -------------------
@@ -153,4 +158,3 @@ In process_digital_objects()
         # to blow up.
 
     end
-
