@@ -100,3 +100,59 @@ Project structure and differences
         - has a manifest
         - we could create a checksums.txt file
         - manifest requires some more complex templating logic
+
+
+-------------------------------------------
+Pre-assembly: progress logging and resuming
+-------------------------------------------
+
+Add attribute to YAML file:
+
+    data_for_resume:  log/revs_resume.yaml
+
+When run_pre_assemble() is called:
+
+    If running in resume mode:
+
+        load the persisted data from the prior run
+
+    Otherwise:
+
+        truncate the data_for_resume file.
+
+Before pre-assembling individual digital objects:
+
+      For each completed step:
+        - persist any accumulated information
+        - set an attribute for the step: can_skip_on_resume = true.
+
+      Some steps are fast; others take some time:
+      
+        - discover_objects   # Full crawl of bundle directory.
+        - load_checksums     # If no provider checksums, call to Checksum::Tools.
+        - process_manifest   # Fast.
+        - validate_files     # Gets info from Assembly::ObjectFile.exif for every file.
+
+In process_digital_objects()
+
+  @digital_objects.each do |dobj|
+
+    # Persist info that we started work on dobj.container.
+
+    begin
+        dobj.pre_assemble
+
+        # Persist that we finished dobj.pid.
+        
+        puts dobj.pid if @show_progress
+
+    rescue PreAssembly::PreAssembleError => err
+
+        # Persist info about failure, but keep working on other objects.
+        # In DigitalObject we should catch survivable exceptions
+        # and then throw PreAssembleError.
+        # Other -- non survivable -- exceptions should cause pre-assemble
+        # to blow up.
+
+    end
+
