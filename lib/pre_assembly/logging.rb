@@ -14,7 +14,7 @@ module PreAssembly
     TIME_FORMAT   = "%Y-%m-%d %H:%M:%S"
 
     def self.setup(project_root, environment)
-      log_file = File.join project_root, "/log/#{environment}.log"
+      log_file = File.join(project_root, 'log', "#{environment}.log")
       @@log       ||= Logger.new(log_file)
       @@log.level   = LEVELS[:info]
 

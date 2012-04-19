@@ -185,7 +185,7 @@ module PreAssembly
     end
 
     def unregister
-      # Used during testing/development work to unregister objects created in -dev.
+      # Used during testing and development work to unregister objects created in -dev.
       # Do not run unless the object was registered by pre-assembly.
       return unless @reg_by_pre_assembly
 

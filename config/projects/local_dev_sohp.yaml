@@ -1,5 +1,5 @@
 project_style:
-  content_structure:  smpl
+  content_structure:  sohp
   should_register:    false
   get_druid_from:     container
   use_druid_minter:   false
@@ -29,8 +29,8 @@ object_discovery:
 
 stageable_discovery:
   use_container:      false
-  glob:               '*'
-  regex:              '(?ix) \. (jpg|wav|mp3|pdf|xml) $'
+  glob:               '*/'
+  regex:              ''
 
 manifest_cols:
   object_container:   ~
@@ -44,7 +44,3 @@ show_progress:        true
 limit_n:              10
 uniqify_source_ids:   true
 cleanup:              true
-
-content_metadata:
-  label:              Item
-  custom_method:      smpl
