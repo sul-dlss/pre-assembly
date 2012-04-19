@@ -1,3 +1,4 @@
+source_id,filename,label,sequence,druid_no_audio
 SC1017_s1_Manson,bc006dj2846_111_a_pm.wav,"Tape 1, Side A",
 ,bc006dj2846_111_a_sh.wav,"Tape 1, Side A",
 ,bc006dj2846_111_a_sl.mp3,"Tape 1, Side A",1
@@ -1539,3 +1540,11 @@ SC1017_s4_McGilvray,zv693dd0997_54_a_pm.wav,"Tape 1, Side A",
 ,zv693dd0997_54_b_pm.wav,"Tape 1, Side B",
 ,zv693dd0997_54_b_sh.wav,"Tape 1, Side B",
 ,zv693dd0997_54_b_sl.mp3,"Tape 1, Side B",2
+SC1017_s7_Newell,,,,dk471cc4617
+SC1017_s1_Chuck,,,,mg062dd6453
+SC1017_s1_Jones,,,,nr755xc8292
+SC1017_s1_Bacon_Harold,,,,rw449vc4959
+SC1017_s1_Terman,,,,sg324fk4242
+SC1017_s1_Fishman,,,,tx280tj5262
+SC1017_s7_Beard,,,,wx313fj6889
+SC1017_s1_Bowes,,,,ym152fr1687
