@@ -6,44 +6,61 @@ require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 class DOMock
 
-    def initialize
+    def initialize(barcode)
       @project_style = {}
+      @apo_druid_id  = 'druid:sr292kr3857' 
+      @mock_barcode  = barcode
     end
 
     def container_basename
-      return '36105115575834'
+      return @mock_barcode
     end
 
     def get_pid_from_container_barcode
       return DruidMinter.next if @project_style[:use_druid_minter]
       barcode = container_basename
-
-      result = []
-
-      pids = Dor::SearchService.query_by_id(:barcode => barcode)
-      return pids.first if pids.size == 1
-
+      pids    = query_dor_by_barcode(barcode)
       pids.each do |pid|
-        dobj = Dor::Item.find pid
-        apos = dobj.admin_policy_object
-
-        result.push apos.map { |a| a.pid }
-        
-        # Need the Gould APO.
-
-        # ActiveFedora::ObjectNotFoundError        
-
+        apos = get_dor_item_apos(pid)
+        return pid if apo_matches_exactly_one?(apos)
       end
+      return nil
+    end
 
-      return result
+    def query_dor_by_barcode(barcode)
+      return Dor::SearchService.query_by_id :barcode => barcode
+    end
 
+    def get_dor_item_apos(pid)
+      begin
+        item = Dor::Item.find pid
+        return item.admin_policy_object
+      rescue ActiveFedora::ObjectNotFoundError
+        return []
+      end
+    end
+
+    def apo_matches_exactly_one?(apos)
+      n = 0
+      apos.each { |apo| n += 1 if apo.pid == @apo_druid_id }
+      return n == 1
     end
 
 end
 
 require 'awesome_print'
 
-dobj = DOMock.new
+def main(barcode_file_name, limit = nil)
+  n = 0
+  limit = limit.to_i if limit
+  IO.foreach(barcode_file_name) do |barcode|
+    barcode.strip!
+    dobj = DOMock.new barcode
+    pid  = dobj.get_pid_from_container_barcode
+    n += 1
+    puts [n, barcode, pid].join "\t"
+    break if limit and n >= limit
+  end
+end
 
-r = dobj.get_pid_from_container_barcode
-ap r
+main *ARGV
