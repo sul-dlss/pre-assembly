@@ -19,6 +19,23 @@ describe "Pre-assembly integration" do
           [1, conf.content_md_file],
         ],
       },
+      :sohp => {
+        :n_objects => 2,
+        :exp_files => [
+          [2, 'Images/*.jpg'],
+          [2, 'Images/*.jpg.md5'],
+          [2, 'PM/*_pm.wav'],
+          [2, 'PM/*_pm.wav.md5'],
+          [2, 'SH/*_sh.wav'],
+          [2, 'SH/*_sh.wav.md5'],
+          [2, 'SL/*_sl.mp3'],
+          [2, 'SL/*_sl.mp3.md5'],
+          [2, 'SL/*_sl_techmd.xml'],
+          [1, 'Transcript/*.pdf'],
+          [1, 'Transcript/*.pdf.md5'],
+          [1, conf.content_md_file],
+        ],
+      },
     }
     @expected[:rumsey]      = @expected[:revs]
     @expected[:reid_dennis] = @expected[:revs]
@@ -27,19 +44,23 @@ describe "Pre-assembly integration" do
   # The integration tests.
   # All of the work happens elsewhere.
   it "Revs" do
-    run_integration_tests 'revs'
+    # run_integration_tests 'revs'
   end
 
   it "Rumsey" do
-    run_integration_tests 'rumsey'
+    # run_integration_tests 'rumsey'
   end
 
   it "ReidDennis" do
-    run_integration_tests 'reid_dennis'
+    # run_integration_tests 'reid_dennis'
   end
 
   it "Gould" do
-    run_integration_tests 'gould'
+    # run_integration_tests 'gould'
+  end
+
+  it "SOHP" do
+    run_integration_tests 'sohp'
   end
 
 
