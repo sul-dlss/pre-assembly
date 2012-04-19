@@ -7,71 +7,11 @@
 # TODO: YARD documentation.
 # TODO: WorkflowService should provide a way to delete a workflow.
 
-ReidDennis test files: make image file names different.
-
-Add test for BUG.
-
-object_discovery:    container_is:   file
-stageable_discovery: use_container:  true
-                     stageable_is:   file (the container)
-
-    initial container:   image.tif
-    converted container: B
-    stageable:           B/image.tif
-    object_file:
-        path             B/image.tif
-        rel_path         image.tif
-
-object_discovery:    container_is:   file
-stageable_discovery: use_container:  false
-                     stageable_is:   ~
-
-    Not allowed: would not yield any stageable items
-
-object_discovery:    container_is:   dir
-stageable_discovery: use_container:  true
-                     stageable_is:   dir  (the container)
-
-    initial container:   B/dir
-    converted container: B
-    stageable:           B/dir
-    object_file:
-        path             B/dir/image.tif
-        rel_path         dir/image.tif
-
-object_discovery:    container_is:   dir
-stageable_discovery: use_container:  false
-                     stageable_is:   either
-
-    # stageable_is = directly within container
-    # stageable_is =     FILE                        DIR
-    #                    ---------------------------------------------
-    initial container:   B/dir                     
-    converted container: B/dir                     
-    stageable:           B/dir/image.tif             B/dir/subdir
-    object_file:                                   
-        path             B/dir/image.tif             B/dir/subdir/image.tif
-        rel_path         image.tif                   subdir/image.tif
-
-    # stageable_is = within a subdir of container
-    # stageable_is =     FILE                        DIR
-    #                    -----------------------------------------
-    initial container:   B/dir                      
-    converted container: B/dir                      
-    stageable:           B/dir/subdir/image.tif      B/dir/subdir/subdir2
-    object_file:                                    
-        path             B/dir/subdir/image.tif      B/dir/subdir/subdir2/image.tif
-        rel_path         subdir/image.tif            subdir/subdir2/image.tif
-
-
 -----------
 Refactoring
 -----------
 
-Gould
-    - setup integration test
-    - check output
-    - get_pid_from_container_barcode() is not implemented yet: waiting on Lynn/Stu.
+get_pid_from_container_barcode(): implement (use APO to disambiguate)
 
 SOHP
 
@@ -160,3 +100,59 @@ Project structure and differences
         - has a manifest
         - we could create a checksums.txt file
         - manifest requires some more complex templating logic
+
+
+-------------------------------------------
+Pre-assembly: progress logging and resuming
+-------------------------------------------
+
+Add attribute to YAML file:
+
+    data_for_resume:  log/revs_resume.yaml
+
+When run_pre_assemble() is called:
+
+    If running in resume mode:
+
+        load the persisted data from the prior run
+
+    Otherwise:
+
+        truncate the data_for_resume file.
+
+Before pre-assembling individual digital objects:
+
+      For each completed step:
+        - persist any accumulated information
+        - set an attribute for the step: can_skip_on_resume = true.
+
+      Some steps are fast; others take some time:
+      
+        - discover_objects   # Full crawl of bundle directory.
+        - load_checksums     # If no provider checksums, call to Checksum::Tools.
+        - process_manifest   # Fast.
+        - validate_files     # Gets info from Assembly::ObjectFile.exif for every file.
+
+In process_digital_objects()
+
+  @digital_objects.each do |dobj|
+
+    # Persist info that we started work on dobj.container.
+
+    begin
+        dobj.pre_assemble
+
+        # Persist that we finished dobj.pid.
+        
+        puts dobj.pid if @show_progress
+
+    rescue PreAssembly::PreAssembleError => err
+
+        # Persist info about failure, but keep working on other objects.
+        # In DigitalObject we should catch survivable exceptions
+        # and then throw PreAssembleError.
+        # Other -- non survivable -- exceptions should cause pre-assemble
+        # to blow up.
+
+    end
+
