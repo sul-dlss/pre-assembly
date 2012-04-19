@@ -2,6 +2,8 @@
 require 'csv'
 require 'nokogiri'
 require 'assembly-objectfile'
+require 'csv-mapper'
+include CsvMapper
     
 desc "Convert incoming spreadsheet from SMPL into XML file that will be produced.  Should only be temporarily needed until final XML is delivered."
 task :prepare_smpl_content, :content_path, :csv_filename, :output_path do |t, args|
@@ -15,7 +17,7 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path do |t, ar
   
   content_path = args[:content_path] || '/thumpers/dpgthumper2-smpl/SC1017_SOHP'
   csv_filename = args[:csv_filename] || 'config/projects/sohp_preaccessioning_sorted.csv'
-  output_path = args[:content_path] || '/tmp'
+  output_path = args[:content_path] || content_path
   
   puts "Content path: #{content_path}"
   puts "Input spreadsheet: #{csv_filename}"
@@ -23,20 +25,21 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path do |t, ar
   # keep track of which druid we just operated on, so we know when to start working on a new one (this is because the input CSV has more than one row per druid, but we only need one XML file per druid)
   previous_druid=''
   
-  # iterate through the CSV
+  # read CSV
+  @items=CsvMapper.import(csv_filename) do read_attributes_from_file end  
 
-  CSV.foreach(csv_filename) do |row|
+  @items.each do |row|
     
-    # read the columns
-    source_id=row[0]
-    filename=row[1]
-    label=row[2]
-    sequence=row[3]
+    # if druid_no_audio exists, it will specify a druid that has no audio files, so we just need to look for extra files (images/transcripts)
     
     # get the druid and file extensions
-    druid=get_druid(filename)
-    role=get_role(filename)
-    file_extension=File.extname(filename)
+    if row.druid_no_audio
+      druid=row.druid_no_audio
+    else
+      druid=get_druid(row.filename)
+      role=get_role(row.filename)
+      file_extension=File.extname(row.filename)
+    end
     
     if druid != previous_druid # we have a new druid, so let's finish up all the bits for the previous one
 
@@ -59,7 +62,7 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path do |t, ar
       ids << Nokogiri::XML::Node.new("id", @cm)
       ids[0]['type']='local'
       ids[0]['name']='sourceID'
-      ids[0].content=source_id
+      ids[0].content=row.source_id
       identifiers_node << ids[0]
       ids << Nokogiri::XML::Node.new("id", @cm)
       ids[1]['type']='local'
@@ -72,22 +75,24 @@ task :prepare_smpl_content, :content_path, :csv_filename, :output_path do |t, ar
     @content_folder=File.join(content_path,druid)   # this is the path to where the content is
     @output_folder=File.join(output_path,druid)     # this is the path to where we will write the resulting XML file (which could be the same as the content path)
         
-    puts "operating on '#{filename}' with label '#{label}' -- sequence '#{sequence}', role '#{role}'"
+    puts "operating on '#{row.filename}' with label '#{row.label}' -- sequence '#{row.sequence}', role '#{role}'"
     
-    # create the resource node for the file
-    resource_node = Nokogiri::XML::Node.new("resource", @cm)
-    resource_node['type']='audio'
-    resource_node['role']=role.downcase
-    resource_node['seq']=sequence if sequence
-    label_node = Nokogiri::XML::Node.new("label", @cm)
-    label_node.content=label
-    resource_node << label_node
+    unless row.druid_no_audio
+      # create the resource node for the file
+      resource_node = Nokogiri::XML::Node.new("resource", @cm)
+      resource_node['type']='audio'
+      resource_node['role']=role.downcase
+      resource_node['seq']=row.sequence if row.sequence
+      label_node = Nokogiri::XML::Node.new("label", @cm)
+      label_node.content=row.label
+      resource_node << label_node
 
-    @object_node << resource_node
+      @object_node << resource_node
     
-    # create the file node and attach it to the resource node, along with supplemenatry md5 and techMD nodes
-    create_file_node(resource_node,:filename=>filename,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>file_attributes[role.downcase])
-       
+      # create the file node and attach it to the resource node, along with supplemenatry md5 and techMD nodes
+      create_file_node(resource_node,:filename=>row.filename,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>file_attributes[role.downcase])
+    end
+    
     # set the previous druid so we know when we are starting a new one 
     previous_druid=druid
         
@@ -121,7 +126,8 @@ def write_out_xml(output_folder,cm)
   Dir.mkdir(output_folder) unless File.exists?(output_folder) # create the output directory if it doesn't exist
 
   # write out the previous druid XML file to the output directory, unless this is the first druid we are processing
-  output_xml=File.join(output_folder,'contentMetadata.xml')
+  output_xml=File.join(output_folder,'preContentMetadata.xml')
+  File.delete File.join(output_folder,'contentMetadata.xml')
   puts "****writing to #{output_xml}"
   xml_file=File.open(output_xml,'w')
   xml_file.write cm.to_xml
@@ -143,7 +149,7 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
       resource_node = Nokogiri::XML::Node.new("resource", cm)
       resource_node['type']='image'
       label_node = Nokogiri::XML::Node.new("label", cm)
-      label_node.content=''
+      label_node.content=get_image_label(image_file)
       resource_node << label_node
       create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
       object_node << resource_node        
@@ -164,7 +170,7 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
       label_node = Nokogiri::XML::Node.new("label", cm)
       label_node.content='Transcript'
       resource_node << label_node
-      create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['transcript'])       
+      create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
       object_node << resource_node        
     end
   end
@@ -227,6 +233,19 @@ def get_role(filename)
   else
     matches.first.sub('_','').strip
   end
+end
+
+def get_image_label(filename)
+  # given an image filename, find the corresponding label for the audio file based on filename rules
+  audio_file_to_match=filename.gsub('_img_1','_a_sl').gsub('_img_2','_b_sl').gsub('.jpg','.mp3')
+  @items.each do |row|    
+    if row.filename==audio_file_to_match
+      return row.label
+      break
+    end
+  end
+  return ''
+  puts '*************** NO IMAGE LABEL FOUND'
 end
 
 def get_druid(filename)
