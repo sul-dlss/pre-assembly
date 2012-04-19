@@ -47,7 +47,45 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "determining the druid" do
+  describe "determining druid: get_pid_from_container_barcode()" do
+
+    before(:each) do
+      @druids = %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222)
+      apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999)
+      apos = apos.map { |a| double('apo', :pid => a) }
+      @barcode = '36105115575834'
+      @dobj.stub(:container_basename).and_return @barcode
+      @dobj.stub(:query_dor_by_barcode).and_return @druids
+      @dobj.stub(:get_dor_item_apos).and_return apos
+      @stubbed_return_vals = @druids.map { false }
+    end
+
+    it "should retun DruidMinter.next if use_druid_minter is true" do
+      exp = PreAssembly::DruidMinter.current
+      @dobj.project_style[:use_druid_minter] = true
+      @dobj.should_not_receive :container_basename
+      @dobj.get_pid_from_container_barcode.should == exp.next
+    end
+
+    it "should return nil whether there are no matches" do
+      @dobj.stub(:apo_matches_exactly_one?).and_return *@stubbed_return_vals
+      @dobj.get_pid_from_container_barcode.should == nil
+    end
+
+    it "should return the druid of the object with the matching APO" do
+      @druids.each_with_index do |druid, i|
+        @stubbed_return_vals[i] = true
+        @dobj.stub(:apo_matches_exactly_one?).and_return *@stubbed_return_vals
+        @dobj.get_pid_from_container_barcode.should == @druids[i]
+        @stubbed_return_vals[i] = false
+      end
+    end
+
+  end
+
+  ####################
+
+  describe "determining the druid: other" do
 
     it "determine_druid() should set correct values for @pid and @druid" do
       # Setup.
@@ -68,30 +106,26 @@ describe PreAssembly::DigitalObject do
       @dobj.get_pid_from_container.should == "druid:#{d}"
     end
 
-    it "container_basename()" do
+    it "container_basename() should work" do
       d = 'xx111yy2222'
       @dobj.container = "foo/bar/#{d}"
       @dobj.container_basename.should == d
     end
 
-  end
-
-  describe "get_pid_from_container_barcode()" do
-
-    it "should retun DruidMinter.next if use_druid_minter is true" do
-      exp = PreAssembly::DruidMinter.current
-      @dobj.project_style[:use_druid_minter] = true
-      @dobj.should_not_receive :container_basename
-      @dobj.get_pid_from_container_barcode.should == exp.next
-    end
-
-    it "should get druid from barcode" do
-      b = '36105115575834'
-      @dobj.container = "foo/bar/#{b}"
-      @dobj.get_pid_from_container_barcode.should == "druid:xx888yy3610"
+    it "apo_matches_exactly_one?() should work" do
+      z = 'zz00zzz0000'
+      apos = %w(foo bar fubb)
+      @dobj.apo_druid_id = z
+      @dobj.apo_matches_exactly_one?(apos).should == false  # Too few.
+      apos.push z
+      @dobj.apo_matches_exactly_one?(apos).should == true   # One = just right.
+      apos.push z
+      @dobj.apo_matches_exactly_one?(apos).should == false  # Too many.
     end
 
   end
+
+  ####################
 
   describe "register()" do
 
@@ -120,6 +154,8 @@ describe PreAssembly::DigitalObject do
     end
 
   end
+
+  ####################
 
   describe "add_dor_object_to_set()" do
 
