@@ -93,7 +93,7 @@ module PreAssembly
 
 
     ####
-    # Registration and Dor interaction.
+    # Determining the druid.
     ####
 
     def determine_druid
@@ -111,16 +111,48 @@ module PreAssembly
       return "druid:#{container_basename}"
     end
 
+    # TODO: tests.
     def get_pid_from_container_barcode
       return DruidMinter.next if @project_style[:use_druid_minter]
       barcode = container_basename
-      # TODO: not really implemented yet.
-      return "druid:xx888yy#{barcode[0..3]}"
+      pids    = query_dor_by_barcode(barcode)
+      pids.each do |pid|
+        apos = get_dor_item_apos(pid)
+        return pid if apo_matches_exactly_one?(apos)
+      end
+      return nil
+    end
+
+    # TODO: tests.
+    def query_dor_by_barcode(barcode)
+      return Dor::SearchService.query_by_id :barcode => barcode
+    end
+
+    # TODO: tests.
+    def get_dor_item_apos(pid)
+      begin
+        item = Dor::Item.find pid
+        return item.admin_policy_object
+      rescue ActiveFedora::ObjectNotFoundError
+        return []
+      end
+    end
+
+    # TODO: tests.
+    def apo_matches_exactly_one?(apos)
+      n = 0
+      apos.each { |apo| n += 1 if apo.pid == @apo_druid_id }
+      return n == 1
     end
 
     def container_basename
       return File.basename(@container)
     end
+
+
+    ####
+    # Registration and other Dor interactions.
+    ####
 
     def register
       return unless @project_style[:should_register]
