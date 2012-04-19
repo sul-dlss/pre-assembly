@@ -111,24 +111,21 @@ module PreAssembly
       return "druid:#{container_basename}"
     end
 
-    # TODO: tests.
     def get_pid_from_container_barcode
       return DruidMinter.next if @project_style[:use_druid_minter]
       barcode = container_basename
       pids    = query_dor_by_barcode(barcode)
       pids.each do |pid|
-        apos = get_dor_item_apos(pid)
-        return pid if apo_matches_exactly_one?(apos)
+        apo_pids = get_dor_item_apos(pid).map { |apo| apo.pid }
+        return pid if apo_matches_exactly_one?(apo_pids)
       end
       return nil
     end
 
-    # TODO: tests.
     def query_dor_by_barcode(barcode)
       return Dor::SearchService.query_by_id :barcode => barcode
     end
 
-    # TODO: tests.
     def get_dor_item_apos(pid)
       begin
         item = Dor::Item.find pid
@@ -138,10 +135,9 @@ module PreAssembly
       end
     end
 
-    # TODO: tests.
-    def apo_matches_exactly_one?(apos)
+    def apo_matches_exactly_one?(apo_pids)
       n = 0
-      apos.each { |apo| n += 1 if apo.pid == @apo_druid_id }
+      apo_pids.each { |pid| n += 1 if pid == @apo_druid_id }
       return n == 1
     end
 
