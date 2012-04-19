@@ -11,8 +11,6 @@
 Refactoring
 -----------
 
-get_pid_from_container_barcode(): implement (use APO to disambiguate)
-
 SOHP
 
 Simple book with multiple image types per page: AP Hummel.

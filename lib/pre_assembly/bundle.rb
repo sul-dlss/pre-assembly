@@ -433,7 +433,7 @@ module PreAssembly
     def find_files_recursively(path)
       # Takes a path to a file or dir. Returns all files (but not dirs)
       # contained in the path, recursively.
-      patterns = [path, "#{path}/**/*"]
+      patterns = [path, File.join(path, '**', '*')]
       return Dir.glob(patterns).reject { |f| File.directory? f }
     end
 
