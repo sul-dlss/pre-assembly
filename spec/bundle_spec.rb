@@ -247,12 +247,12 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "object discovery: discover_all_files()" do
+  describe "object discovery: discover_object_files()" do
 
     before(:each) do
       bundle_setup :proj_rumsey
       ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
-      fs = %w(
+      @fs = %w(
         cb837cp4412/2874009.tif
         cb837cp4412/descMetadata.xml
         cm057cr1745/2874008.tif
@@ -260,21 +260,28 @@ describe PreAssembly::Bundle do
         cp898cs9946/2874018.tif
         cp898cs9946/descMetadata.xml
       )
-      @files = fs.map { |f| @b.path_in_bundle f }
-      @dirs  = ds.map { |d| @b.path_in_bundle d }
+      @files = @fs.map { |f| @b.path_in_bundle f }
+      @dirs  =  ds.map { |d| @b.path_in_bundle d }
+
+      @get_paths     = lambda { |fs| fs.map { |f| f.path } }
+      @get_rel_paths = lambda { |fs| fs.map { |f| f.relative_path } }
     end
 
-    it "should find files within directories" do
-      @b.discover_all_files(@dirs).should == @files
-    end
-
-    it "should find files within directories, recursively" do
-      @b.discover_all_files(@dirs).should == @files
-    end
-
-    it "should returns same arguments if given only files" do
-      fs = @files[0..1]
-      @b.discover_all_files(fs).should == fs
+    it "should find expected files with correct relative paths" do
+      bbase = File.basename(@b.bundle_dir)
+      tests = [
+        # Stageables.    Expected relative paths.                 Type of item as stageables. 
+        [ @files,        @fs.map { |f| File.basename f     } ], # Files.
+        [ @dirs,         @fs                                 ], # Directories.
+        [ @b.bundle_dir, @fs.map { |f| File.join(bbase, f) } ], # Even higher directory.
+      ]
+      tests.each do |stageables, exp_relative_paths|
+        # The full paths of the object files should never change,
+        # but the relative paths varies, depending on the stageables.
+        ofiles = @b.discover_object_files(stageables)
+        @get_paths.call(ofiles).should     == @files
+        @get_rel_paths.call(ofiles).should == exp_relative_paths
+      end
     end
 
   end
@@ -287,6 +294,18 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_revs
     end
 
+    it "actual_container() should behave as expected" do
+      p = 'foo/bar'
+      f = 'x.tif'
+      c = "#{p}/#{f}"
+      # Return the container unmodified.
+      @b.stageable_discovery[:use_container] = false
+      @b.actual_container(c).should == c
+      # Adjust the container value.
+      @b.stageable_discovery[:use_container] = true
+      @b.actual_container(c).should == p
+    end
+
     it "should be able to exercise all_object_files()" do
       bundle_setup :proj_revs
       fake_files = [[1,2], [3,4], [5,6]]
@@ -297,11 +316,41 @@ describe PreAssembly::Bundle do
 
     it "new_object_file() should return an ObjectFile with expected path values" do
       bundle_setup :proj_revs
-      rel_path = "image1.tif"
-      path     = @b.path_in_bundle rel_path
-      ofile    = @b.new_object_file @b.bundle_dir, path
-      ofile.path.should          == path
-      ofile.relative_path.should == rel_path
+      @b.stub(:exclude_from_path).and_return(false)
+      tests = [
+        # Stageable is a file:
+        # - immediately in bundle dir.
+        { :stageable    => 'BUNDLE/x.tif',
+          :file_path    => 'BUNDLE/x.tif',
+          :exp_rel_path => 'x.tif' },
+        # - within subdir of bundle dir.
+        { :stageable    => 'BUNDLE/a/b/x.tif',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'x.tif' },
+        # Stageable is a directory:
+        # - immediately in bundle dir
+        { :stageable    => 'BUNDLE/a',
+          :file_path    => 'BUNDLE/a/x.tif',
+          :exp_rel_path => 'a/x.tif' },
+        # - immediately in bundle dir, with file deeper
+        { :stageable    => 'BUNDLE/a',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'a/b/x.tif' },
+        # - within a subdir of bundle dir
+        { :stageable    => 'BUNDLE/a/b',
+          :file_path    => 'BUNDLE/a/b/x.tif',
+          :exp_rel_path => 'b/x.tif' },
+        # - within a subdir of bundle dir, with file deeper
+        { :stageable    => 'BUNDLE/a/b',
+          :file_path    => 'BUNDLE/a/b/c/d/x.tif',
+          :exp_rel_path => 'b/c/d/x.tif' },
+      ]
+      tests.each do |t|
+        ofile = @b.new_object_file t[:stageable], t[:file_path]
+        ofile.should be_kind_of PreAssembly::ObjectFile
+        ofile.path.should          == t[:file_path]
+        ofile.relative_path.should == t[:exp_rel_path]
+      end
     end
 
     it "exclude_from_content() should behave correctly" do
@@ -529,7 +578,7 @@ describe PreAssembly::Bundle do
       @b.relative_path(@b.bundle_dir, @full).should == @relative
     end
 
-    it "relative_path() raise error if given bogus arguments" do
+    it "relative_path() should raise error if given bogus arguments" do
       f       = 'fubb.txt'
       base    = 'foo/bar'
       path    = "#{base}/#{f}"
@@ -538,6 +587,19 @@ describe PreAssembly::Bundle do
       lambda { @b.relative_path('',   path) }.should raise_error exp_err, exp_msg
       lambda { @b.relative_path(path, path) }.should raise_error exp_err, exp_msg
       lambda { @b.relative_path('xx', path) }.should raise_error exp_err, exp_msg
+    end
+
+    it "get_base_dir() should return expected value" do
+      @b.get_base_dir('foo/bar/fubb.txt').should == 'foo/bar'
+    end
+
+    it "get_base_dir() should raise error if given bogus arguments" do
+      exp_err  = ArgumentError
+      exp_msg  = /^Bad arg to get_base_dir/
+      bad_args = ['foo.txt', '', 'x\y\foo.txt']
+      bad_args.each do |arg|
+        lambda { @b.get_base_dir(arg) }.should raise_error exp_err, exp_msg
+      end
     end
 
     it "should be able to exercise file-dir existence methods" do

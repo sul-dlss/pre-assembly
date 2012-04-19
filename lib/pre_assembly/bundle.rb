@@ -166,15 +166,10 @@ module PreAssembly
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
       log "discover_objects()"
-      use_c = @stageable_discovery[:use_container]
       pruned_containers(object_containers).each do |c|
-        # If using the container as the stageable item,
-        # the DigitalObject container is just the bundle_dir.
-        container  = use_c ? @bundle_dir : c
-        stageables = stageable_items_for(c)
-        files      = discover_all_files(stageables)
-
-        # Create the object.
+        container    = actual_container(c)
+        stageables   = stageable_items_for(c)
+        object_files = discover_object_files(stageables)
         params = {
           :project_style        => @project_style,
           :bundle_dir           => @bundle_dir,
@@ -187,7 +182,7 @@ module PreAssembly
           :init_assembly_wf     => @init_assembly_wf,
           :container            => container,
           :stageable_items      => stageables,
-          :object_files         => files.map { |f| new_object_file(container, f) },
+          :object_files         => object_files,
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
@@ -238,16 +233,26 @@ module PreAssembly
       return items
     end
 
+    def actual_container(container)
+      # When the discovered object's container functions as the stageable item,
+      # we adjust the value that will serve as the DigitalObject container.
+      return @stageable_discovery[:use_container] ? get_base_dir(container) : container
+    end
+
     def stageable_items_for(container)
       return [container] if @stageable_discovery[:use_container]
       return discover_items_via_crawl(container, @stageable_discovery)
     end
 
-    def discover_all_files(stageable_items)
-      # Returns a list of the files for a digital object.
-      # This list differs from stageable_items only when some
-      # of the stageable_items are directories.
-      return stageable_items.map { |i| find_files_recursively i }.flatten
+    def discover_object_files(stageable_items)
+      # Returns a list of the ObjectFiles for a digital object.
+      object_files = []
+      stageable_items.each do |stageable|
+        find_files_recursively(stageable).each do |file_path|
+          object_files.push(new_object_file stageable, file_path)
+        end
+      end
+      return object_files
     end
 
     def all_object_files
@@ -256,10 +261,10 @@ module PreAssembly
       @digital_objects.map { |dobj| dobj.object_files }.flatten
     end
 
-    def new_object_file(container, file_path)
+    def new_object_file(stageable, file_path)
       return ObjectFile.new(
         :path                 => file_path,
-        :relative_path        => relative_path(container, file_path),
+        :relative_path        => relative_path(get_base_dir(stageable), file_path),
         :exclude_from_content => exclude_from_content(file_path)
       )
     end
@@ -400,6 +405,16 @@ module PreAssembly
         path.index(base) == 0
       )
       err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
+      raise ArgumentError, err_msg
+    end
+
+    def get_base_dir(path)
+      # Returns the portion of the path before basename. For example:
+      #   path     BLAH/BLAH/foo/bar.txt
+      #   returns  BLAH/BLAH/foo
+      bd = File.dirname(path)
+      return bd unless bd == '.'
+      err_msg = "Bad arg to get_base_dir(#{path.inspect})"
       raise ArgumentError, err_msg
     end
 

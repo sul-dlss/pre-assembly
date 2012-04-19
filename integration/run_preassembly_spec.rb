@@ -1,5 +1,29 @@
 describe "Pre-assembly integration" do
 
+  # Project-specific expectations.
+  before(:all) do
+    conf = Dor::Config.pre_assembly
+    @expected  = {
+      :revs => {
+        :n_objects => 3,
+        :exp_files => [
+          [1, '*.tif'],
+          [1, conf.content_md_file],
+          [1, conf.desc_md_file],
+        ],
+      },
+      :gould => {
+        :n_objects => 3,
+        :exp_files => [
+          [3, '00/*.jpg'],
+          [1, conf.content_md_file],
+        ],
+      },
+    }
+    @expected[:rumsey]      = @expected[:revs]
+    @expected[:reid_dennis] = @expected[:revs]
+  end
+
   # The integration tests.
   # All of the work happens elsewhere.
   it "Revs" do
@@ -12,6 +36,10 @@ describe "Pre-assembly integration" do
 
   it "ReidDennis" do
     run_integration_tests 'reid_dennis'
+  end
+
+  it "Gould" do
+    run_integration_tests 'gould'
   end
 
 
@@ -45,9 +73,9 @@ describe "Pre-assembly integration" do
     @b = PreAssembly::Bundle.new @params
 
     # Set values needed for assertions.
-    conf           = Dor::Config.pre_assembly
-    @n_objects     = 3
-    @exp_files     = ['*.tif', conf.content_md_file, conf.desc_md_file]
+    exp        = @expected[proj.to_sym]
+    @n_objects = exp[:n_objects]
+    @exp_files = exp[:exp_files]
   end
 
   def determine_staged_druid_trees
@@ -64,10 +92,10 @@ describe "Pre-assembly integration" do
   def check_for_expected_files
     # Make sure the files were staged as we expected.
     @druid_trees.each do |dt|
-      @exp_files.each do |ef|
+      @exp_files.each do |n, ef|
         glob = File.join dt, ef
         fs   = Dir[glob]
-        fs.size.should == 1
+        fs.size.should == n
       end
     end
   end
