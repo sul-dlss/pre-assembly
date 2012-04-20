@@ -34,6 +34,7 @@ module PreAssembly
       :desc_md_file,
       :content_md_xml,
       :desc_md_xml,
+      :pre_assem_finished,
       :content_structure,
       :stager,
     ]
@@ -65,9 +66,10 @@ module PreAssembly
       @content_md_xml      = ''
       @desc_md_xml         = ''
 
-      @content_structure = @project_style[:content_structure]
-      @stager            = lambda { |f,d| FileUtils.cp_r f, d }
-      @get_pid_dispatch  = {
+      @pre_assem_finished = false
+      @content_structure  = @project_style[:content_structure]
+      @stager             = lambda { |f,d| FileUtils.cp_r f, d }
+      @get_pid_dispatch   = {
         :suri              => method(:get_pid_from_suri),
         :container         => method(:get_pid_from_container),
         :container_barcode => method(:get_pid_from_container_barcode),

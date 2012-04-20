@@ -11,6 +11,7 @@ manifest:             manifest.csv
 checksums_file:       checksums.txt
 desc_md_template:     mods_template.xml
 
+progress_log_file:    log/progress_reid_dennis.yaml
 project_name:         ReidDennis
 apo_druid_id:         druid:qv648vd4392
 set_druid_id:         ~

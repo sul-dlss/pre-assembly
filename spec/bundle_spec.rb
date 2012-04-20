@@ -544,6 +544,28 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "log_progress()" do
+
+    it "should return expected YAML about a digital object" do
+      bundle_setup :proj_revs
+      # Setup a mock digital object, along with a StringIO for the progress log.
+      initial_data =  {
+        :container          => "foo/bar",
+        :pid                => "druid:aa11bb9999",
+        :pre_assem_finished => true,
+      }
+      dobj = double('digital_object', initial_data)
+      @b.progress_log_handle = StringIO.new
+      # After we call log_progress() the resulting YAML read from
+      # the StringIO should equal the data we started with.
+      @b.log_progress(dobj)
+      YAML.load(@b.progress_log_handle.string).should == initial_data
+    end
+
+  end
+
+  ####################
+
   describe "delete_digital_objects()" do
 
     before(:each) do
