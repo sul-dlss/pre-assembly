@@ -20,6 +20,7 @@ publish_attr:
   shelve:             no
   preserve:           yes
 
+no_compute_checksum:  false
 init_assembly_wf:     true
 
 object_discovery:

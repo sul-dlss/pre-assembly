@@ -252,7 +252,7 @@ module PreAssembly
             xml.resource(node_attr_cm_resource seq) {
               xml.label "Item #{seq}"
               xml.file(node_attr_cm_file object_file) {
-                xml.provider_checksum object_file.checksum, :type => 'md5'
+                node_provider_checksum(xml, object_file.checksum)
               }
             }
           }
@@ -289,6 +289,12 @@ module PreAssembly
     def node_attr_cm_file(object_file)
       # Returns hash of attributes for a contenteMetadata <file> node.
       return { :id => object_file.relative_path }.merge @publish_attr
+    end
+
+    def node_provider_checksum(xml, checksum)
+      # Receives Nokogiri builder and a checksum.
+      # Adds provider checksum node, but only if there is a checksum.
+      xml.provider_checksum(checksum, :type => 'md5') if checksum
     end
 
 
