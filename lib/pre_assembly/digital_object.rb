@@ -1,11 +1,10 @@
-require 'rest_client'
-
 module PreAssembly
 
   class DigitalObject
 
     include PreAssembly::Logging
-
+    include PreAssembly::ProjectSpecific
+    
     INIT_PARAMS = [
       :container,
       :stageable_items,
@@ -77,7 +76,7 @@ module PreAssembly
       }
       @content_md_dispatch = {
         :default => method(:create_content_metadata_xml),
-        :sohp    => method(:create_content_metadata_xml_soph),
+        :smpl    => method(:create_content_metadata_xml_smpl),
       }
     end
 
