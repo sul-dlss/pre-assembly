@@ -253,7 +253,7 @@ module PreAssembly
 
     def create_content_metadata_xml
       # Default content metadata creation is here.
-      # See lib/project_specifics.rb for custom code by project.
+      # See lib/project_specific.rb for custom code by project.
       log "    - create_content_metadata_xml()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(node_attr_cm) {

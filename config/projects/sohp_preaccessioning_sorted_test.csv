@@ -1,0 +1,28 @@
+source_id,filename,label,sequence,druid_no_audio
+SC1017_s1_Manson,bc006dj2846_111_a_pm.wav,"Tape 1, Side A",
+,bc006dj2846_111_a_sh.wav,"Tape 1, Side A",
+,bc006dj2846_111_a_sl.mp3,"Tape 1, Side A",1
+,bc006dj2846_111_b_pm.wav,"Tape 1, Side B",
+,bc006dj2846_111_b_sh.wav,"Tape 1, Side B",
+,bc006dj2846_111_b_sl.mp3,"Tape 1, Side B",2
+SC1017_s1_Schofield,bg598tg6338_125_a_pm.wav,"Tape 1, Side A",
+,bg598tg6338_125_a_sh.wav,"Tape 1, Side A",
+,bg598tg6338_125_a_sl.mp3,"Tape 1, Side A",1
+,bg598tg6338_125_b_pm.wav,"Tape 1, Side B",
+,bg598tg6338_125_b_sh.wav,"Tape 1, Side B",
+,bg598tg6338_125_b_sl.mp3,"Tape 1, Side B",2
+SC1017_s1_Hall_Marion,bh634sp8073_71_a_pm.wav,"Tape 1, Side A",
+,bh634sp8073_71_a_sh.wav,"Tape 1, Side A",
+,bh634sp8073_71_a_sl.mp3,"Tape 1, Side A",1
+,bh634sp8073_71_b_pm.wav,"Tape 1, Side B",
+,bh634sp8073_71_b_sh.wav,"Tape 1, Side B",
+,bh634sp8073_71_b_sl.mp3,"Tape 1, Side B",2
+SC1017_s3_Lane,bh744xf2156_181_a_pm.wav,"Tape 1, Side A",
+,bh744xf2156_181_a_sh.wav,"Tape 1, Side A",
+,bh744xf2156_181_a_sl.mp3,"Tape 1, Side A",1
+,bh744xf2156_181_b_pm.wav,"Tape 1, Side B",
+,bh744xf2156_181_b_sh.wav,"Tape 1, Side B",
+,bh744xf2156_181_b_sl.mp3,"Tape 1, Side B",2
+SC1017_s1_Fishman,,,,tx280tj5262
+SC1017_s7_Beard,,,,wx313fj6889
+SC1017_s1_Bowes,,,,ym152fr1687
