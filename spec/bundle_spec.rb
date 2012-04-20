@@ -447,6 +447,11 @@ describe PreAssembly::Bundle do
       @b.retrieve_checksum @file_path
     end
 
+    it "compute_checksum() should return nil if @no_compute_checksum is true" do
+      @b.no_compute_checksum = true
+      @b.compute_checksum(@file_path).should == nil
+    end
+
     it "compute_checksum() should return an md5 checksum" do
       c = @b.compute_checksum @file_path
       c.should be_kind_of String

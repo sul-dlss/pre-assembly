@@ -331,6 +331,12 @@ describe PreAssembly::DigitalObject do
       @dobj.node_attr_cm_file(object_file).should == exp
     end
 
+    it "node_provider_checksum() should do nothing if given a nil checksum" do
+      xml_builder = double('xml_builder')
+      xml_builder.should_not_receive(:provider_checksum)
+      @dobj.node_provider_checksum(xml_builder, nil)
+    end
+
   end
 
   ####################
