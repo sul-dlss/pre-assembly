@@ -24,6 +24,10 @@ publish_attr:
 no_compute_checksum:  false
 init_assembly_wf:     false
 
+content_md_creation:
+  style:              :default
+  pre_md_file:        ~
+
 object_discovery:
   use_manifest:       true
   glob:               ~
