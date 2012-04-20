@@ -374,7 +374,22 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-        dobj.pre_assemble
+
+        finished = true
+        begin
+          dobj.pre_assemble
+        rescue
+          finished = false
+          raise
+        ensure
+          progress_info = {
+            :container => dobj.container,
+            :pid       => dobj.pid,
+            :finished  => finished,
+          }
+          # puts progress_info.to_yaml
+        end
+
         puts dobj.druid.druid if @show_progress
       end
     end
