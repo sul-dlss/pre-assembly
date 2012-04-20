@@ -1,5 +1,5 @@
 project_style:
-  content_structure:  sohp
+  content_structure:  smpl
   should_register:    false
   get_druid_from:     container
   use_druid_minter:   false
@@ -25,8 +25,8 @@ no_compute_checksum:  true
 init_assembly_wf:     false
 
 content_md_creation:
-  style:              :sohp
-  pre_md_file:        ~
+  style:              :smpl
+  pre_md_file:        preContentMetadata.xml
 
 object_discovery:
   use_manifest:       false

@@ -26,10 +26,11 @@ require 'erb'
 
 require 'pre_assembly/druid_minter'
 require 'pre_assembly/bundle'
+require 'pre_assembly/project_specific'
 require 'pre_assembly/digital_object'
-require 'pre_assembly/project_specifics'
 require 'pre_assembly/object_file'
 require 'pre_assembly/version'
 
 require 'assembly-image'
 require 'checksum-tools'
+require 'rest_client'
