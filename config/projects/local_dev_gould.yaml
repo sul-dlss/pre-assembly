@@ -11,6 +11,7 @@ manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
+progress_log_file:    log/progress_gould.yaml
 project_name:         Gould
 apo_druid_id:         druid:sr292kr3857
 set_druid_id:         ~

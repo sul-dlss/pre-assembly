@@ -20,6 +20,7 @@ module PreAssembly
       :manifest,
       :checksums_file,
       :desc_md_template,
+      :progress_log_file,
       :project_name,
       :apo_druid_id,
       :set_druid_id,
@@ -42,6 +43,7 @@ module PreAssembly
       :provider_checksums,
       :digital_objects,
       :desc_md_template_xml,
+      :progress_log_handle,
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -74,10 +76,11 @@ module PreAssembly
     end
 
     def setup_other
-      @provider_checksums = {}
-      @digital_objects    = []
-      @manifest_rows      = nil
-      @content_exclusion  = Regexp.new(@content_exclusion) if @content_exclusion
+      @provider_checksums  = {}
+      @digital_objects     = []
+      @manifest_rows       = nil
+      @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
+      @progress_log_handle = nil
       @publish_attr.delete_if { |k,v| v.nil? }
     end
 
@@ -135,12 +138,14 @@ module PreAssembly
       # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      discover_objects
-      load_checksums
-      process_manifest
-      validate_files
-      process_digital_objects
-      delete_digital_objects
+      File.open(@progress_log_file, 'w') do |@progress_log_handle|
+        discover_objects
+        load_checksums
+        process_manifest
+        validate_files
+        process_digital_objects
+        delete_digital_objects
+      end
       return processed_pids
     end
 
@@ -374,24 +379,36 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       @digital_objects.each do |dobj|
-
-        finished = true
         begin
+          # Try to pre_assemble the digital object.
           dobj.pre_assemble
+          # Indicate that we finished.
+          dobj.pre_assem_finished = true
+          puts dobj.druid.druid if @show_progress
         rescue
-          finished = false
+          # For now, just re-raise the exception.
+          #
+          # Later, we might decide to do the following:
+          #   - catch specific types of exceptions in DigitalObject during the
+          #     pre_assemble() process
+          #   - from that point, raise a PreAssembly::PreAssembleError
+          #   - then catch such errors here, allowing the current
+          #     digital object to fail but the remaining objects to be processed.
           raise
         ensure
-          progress_info = {
-            :container => dobj.container,
-            :pid       => dobj.pid,
-            :finished  => finished,
-          }
-          # puts progress_info.to_yaml
+          # Log the outcome no matter what.
+          log_progress(dobj)
         end
-
-        puts dobj.druid.druid if @show_progress
       end
+    end
+
+    def log_progress(dobj)
+      info = {
+        :container          => dobj.container,
+        :pid                => dobj.pid,
+        :pre_assem_finished => dobj.pre_assem_finished,
+      }
+      @progress_log_handle.puts info.to_yaml
     end
 
     def delete_digital_objects

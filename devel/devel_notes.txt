@@ -1,8 +1,3 @@
-Persist info about processed items.
-
-Examine whether we want to catch any exceptions.
-
-
 # TODO: SOHP content metadata.
 # TODO: Simple book with multiple image types per page (like AP and Hummel).
 

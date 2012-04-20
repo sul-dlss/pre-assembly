@@ -11,6 +11,7 @@ manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
+progress_log_file:    log/progress_sohp.yaml
 project_name:         SOHP
 apo_druid_id:         ~
 set_druid_id:         ~
