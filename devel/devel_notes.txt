@@ -7,7 +7,6 @@
 
 # TODO: Modify assembly robots to handle different types of content metadata.
 
-# TODO: Move SOPH task out of Rake file: put script in bin/ or devel/ directory.
 # TODO: Set up pre-assembly under Hudson.
 # TODO: Set up assembly under Hudson.
 
