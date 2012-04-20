@@ -1,6 +1,26 @@
 describe "Pre-assembly integration" do
 
-  # Project-specific expectations.
+  ####
+  # Invoke the Rspec tests.
+  ####
+
+  PROJECTS = [
+    'revs',
+    'rumsey',
+    'reid_dennis',
+    'gould',
+    'sohp',
+  ]
+
+  PROJECTS.each do |p|
+    it(p) { run_integration_tests p }
+  end
+
+
+  ####
+  # Define expectations for the projects.
+  ####
+
   before(:all) do
     conf = Dor::Config.pre_assembly
     @expected  = {
@@ -41,28 +61,10 @@ describe "Pre-assembly integration" do
     @expected[:reid_dennis] = @expected[:revs]
   end
 
-  # The integration tests.
-  # All of the work happens elsewhere.
-  it "Revs" do
-    # run_integration_tests 'revs'
-  end
 
-  it "Rumsey" do
-    # run_integration_tests 'rumsey'
-  end
-
-  it "ReidDennis" do
-    # run_integration_tests 'reid_dennis'
-  end
-
-  it "Gould" do
-    # run_integration_tests 'gould'
-  end
-
-  it "SOHP" do
-    run_integration_tests 'sohp'
-  end
-
+  ####
+  # Execute the checks.
+  ####
 
   def run_integration_tests(proj)
     # Setup the bundle for a project and run pre-assembly.
@@ -76,6 +78,10 @@ describe "Pre-assembly integration" do
     check_dor_objects
   end
 
+
+  ####
+  # Setup the project-specific bundle and expectations.
+  ####
 
   def setup_bundle(proj)
     # Load the project's YAML config file.
@@ -104,6 +110,10 @@ describe "Pre-assembly integration" do
     @druid_trees = @pids.map { |pid| Druid.new(pid).path(@temp_dir) }
   end
 
+
+  ####
+  # The checks.
+  ####
 
   def check_n_of_objects
     # Did we get the expected N of staged objects?
