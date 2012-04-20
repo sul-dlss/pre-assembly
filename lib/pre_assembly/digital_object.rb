@@ -19,6 +19,7 @@ module PreAssembly
       :staging_dir,
       :desc_md_template_xml,
       :init_assembly_wf,
+      :content_md_creation,
     ]
 
     OTHER_ACCESSORS = [
@@ -73,6 +74,10 @@ module PreAssembly
         :suri              => method(:get_pid_from_suri),
         :container         => method(:get_pid_from_container),
         :container_barcode => method(:get_pid_from_container_barcode),
+      }
+      @content_md_dispatch = {
+        :default => method(:create_content_metadata_xml),
+        :sohp    => method(:create_content_metadata_xml_soph),
       }
     end
 
@@ -241,11 +246,15 @@ module PreAssembly
     ####
 
     def generate_content_metadata
-      create_content_metadata_xml
+      # Invoke the contentMetadata creation method used by the
+      # project (usually the default), and then write that XML to a file.
+      @content_md_dispatch[@content_md_creation[:style]].call
       write_content_metadata
     end
 
     def create_content_metadata_xml
+      # Default content metadata creation is here.
+      # See lib/project_specifics.rb for custom code by project.
       log "    - create_content_metadata_xml()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(node_attr_cm) {
