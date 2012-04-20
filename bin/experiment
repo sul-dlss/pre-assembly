@@ -4,6 +4,75 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
+
+
+__END__
+
+
+yaml = "--- 
+-
+  :foo: 123
+  :bar: 456
+-
+  :foo: 22
+  :bar: 44
+"
+
+yaml = "
+--- 
+:action:    :started
+:container: B/x/image1.tif
+--- 
+:action:    :finished
+:pid:       druid:aa111aa1111
+--- 
+:action:    :started
+:container: B/x/image2.tif
+--- 
+:action:    :finished
+:pid:       druid:aa111aa2222
+"
+
+yf = StringIO.new yaml
+
+exp = [
+  { :foo => 123, :bar => 456 },
+  { :foo => 22,  :bar => 44  },
+]
+
+
+  YAML.each_document(yf) do |ydoc|
+    ap ydoc
+  end
+  
+__END__
+
+
+# puts data.to_yaml
+
+
+# data = YAML.load(yaml)
+
+# ap data
+# ap data == exp
+
+y = "--- \n"
+exp.each { |dobj|
+  y << "-\n"
+  dobj.each { |k,v|
+    y << " :#{k}: #{v}\n"
+  }
+}
+
+data = YAML.load(y)
+
+ap exp.to_yaml
+ap data
+ap data == exp
+
+__END__
+
+
 class DOMock
 
     def initialize(barcode)
