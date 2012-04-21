@@ -31,9 +31,6 @@ describe PreAssembly::DigitalObject do
     end
   end
 
-  def noko_doc(x)
-    Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
-  end
 
   ####################
 
