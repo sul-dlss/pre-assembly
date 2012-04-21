@@ -39,7 +39,7 @@ describe "Pre-assembly integration" do
           [1, conf.content_md_file],
         ],
       },
-      :smpl => {
+      :sohp => {
         :n_objects => 2,
         :exp_files => [
           [2, 'Images/*.jpg'],
