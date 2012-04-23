@@ -4,7 +4,7 @@ project_style:
   get_druid_from:     container
   use_druid_minter:   false
 
-bundle_dir:           /thumpers/dpgthumper2-se1/Batchelor/Batchelor_sample
+bundle_dir:           /home/lyberadmin/pre-assembly/Batchelor_sample
 staging_dir:          /dor/assembly_test
 
 manifest:             ~
