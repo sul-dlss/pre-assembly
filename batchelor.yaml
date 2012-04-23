@@ -1,19 +1,19 @@
 project_style:
-  content_structure:  simple_book
+  content_structure:  simple_image
   should_register:    false
-  get_druid_from:     container_barcode
-  use_druid_minter:   true
+  get_druid_from:     container
+  use_druid_minter:   false
 
-bundle_dir:           spec/test_data/bundle_input_d
-staging_dir:          tmp
+bundle_dir:           /thumpers/dpgthumper2-se1/Batchelor/Batchelor_sample
+staging_dir:          /dor/assembly_test
 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
-progress_log_file:    log/progress_gould.yaml
-project_name:         Gould
-apo_druid_id:         druid:sr292kr3857
+progress_log_file:    log/progress_batchelor.yaml
+project_name:         Batchelor
+apo_druid_id:         ~
 set_druid_id:         ~
 
 publish_attr:
@@ -22,7 +22,7 @@ publish_attr:
   preserve:           yes
 
 compute_checksum:     true
-init_assembly_wf:     false
+init_assembly_wf:     true
 
 content_md_creation:
   style:              :default
@@ -31,7 +31,7 @@ content_md_creation:
 object_discovery:
   use_manifest:       false
   glob:               '*'
-  regex:              '^\d+$'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
 
 stageable_discovery:
   use_container:      false
@@ -47,6 +47,6 @@ content_exclusion:    ~
 
 validate_usage:       true
 show_progress:        true
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
+limit_n:              5000
+uniqify_source_ids:   false
+cleanup:              false

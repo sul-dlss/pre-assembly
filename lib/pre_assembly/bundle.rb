@@ -25,7 +25,7 @@ module PreAssembly
       :apo_druid_id,
       :set_druid_id,
       :publish_attr,
-      :no_compute_checksum,
+      :compute_checksum,
       :init_assembly_wf,
       :content_md_creation,
       :object_discovery,
@@ -320,8 +320,7 @@ module PreAssembly
     end
 
     def compute_checksum(file_path)
-      return nil if @no_compute_checksum
-      return Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5]
+      @compute_checksum ? Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5] : nil
     end
 
 
