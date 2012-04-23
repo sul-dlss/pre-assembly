@@ -326,7 +326,7 @@ module PreAssembly
       manifest_row = @manifest_row
       
       # XML escape all of the entries in the manifest row so they won't break the XML
-      manifest_row.each {|k,v| manifest_row[k]=Nokogiri::XML::Text.new(v,Nokogiri::XML('')).to_s }
+      manifest_row.each {|k,v| manifest_row[k]=Nokogiri::XML::Text.new(v,Nokogiri::XML('')).to_s if v }
       
       # Run the XML template through ERB. 
       template     = ERB.new(@desc_md_template_xml, nil, '>')

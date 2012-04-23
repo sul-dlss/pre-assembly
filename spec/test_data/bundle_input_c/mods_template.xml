@@ -1,4 +1,5 @@
-<mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+<?xml version="1.0"?>
+<mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
   <titleInfo>
     <title>[[title2]]</title>
   </titleInfo>
@@ -32,7 +33,7 @@
          role_key = build_key(kn, 'role') 
          role1_key = build_key(kn, 'role1') 
          role2_key = build_key(kn, 'role2') 
-         node_value="\n  <name type=\"#{get_value(type_key)}\">\n    <namePart>#{get_value(name_key)}</namePart>\n" 
+         node_value="<name type=\"#{get_value(type_key)}\">\n    <namePart>#{get_value(name_key)}</namePart>\n" 
          node_value+="    <namePart type=\"date\">#{get_value(when_key)}</namePart>\n" if not_empty(when_key) 
        node_value+="    <description>#{get_value(where_key)}</description>\n" if not_empty(where_key) 
        if kn=='name4'
@@ -41,24 +42,28 @@
        else 
         node_value+="    <role><roleTerm type=\"text\">#{get_value(role_key)}</roleTerm></role>\n" if not_empty(role_key) 
        end 
-      node_value+="  </name>" 
+      node_value+="  </name>\n" 
 %>
   <%=  node_value %>
 <%   end 
     end %>
-<%  if not_empty(:provenance) %>
-    <%= "\n  <name type=\"corporate\">\n    <namePart>#{get_value(:provenance)}</namePart>\n    <role><roleTerm type=\"text\">provenance</roleTerm></role>\n  </name>\n"%>
+<%  if not_empty(:prior_source_or_collection) %>
+    <%= "  <name type=\"corporate\">\n    <namePart>#{get_value(:prior_source_or_collection)}</namePart>\n    <role><roleTerm type=\"text\">former owner</roleTerm></role>\n  </name>\n"%>
 <%  end %>
   <typeOfResource>still image</typeOfResource>
 <% if not_empty(:pubdate) %>
 <%= "  <originInfo><dateIssued>#{get_value(:pubdate)}</dateIssued></originInfo>\n" %>
 <% end %>
-<% if !['Paintings','Drawings','Graphics'].include? get_value(:type) %>
+<% if not_empty(:type) %>
+<%   if !['Paintings','Drawings','Graphics'].include? get_value(:type) %>
 <%= "  <subject><topic authority=\"lcsh\">#{get_value(:type)}</topic></subject>\n" %>
+<%   end %>
 <% end %>
   <physicalDescription>
+<% if not_empty(:type) %>
 <%  if ['Paintings','Drawings','Graphics'].include? get_value(:type) %>
 <%= "    <form authority=\"aat\">#{get_value(:type)}</form>\n" %>
+<%   end %>
 <%  end %>
     <form>[[medium]]</form>
     <note displayLabel="Dimensions">[[dimensions]]</note>
@@ -68,7 +73,7 @@
   <%= "  <note>\n    #{get_value(:note)}\n  </note>\n" %> 
 <% end %>
 <% if not_empty(:description)  %>
-<%= "  <note>\n    #{get_value(:description)}\n  </note>\n" %> 
+<%= "  <note>\n    #{get_value(:description)}\n  </note>" %> 
 <% end %>
-  <identifier type="local">[[id]]</identifier>
+  <identifier type="local">rd-[[id]]</identifier>
 </mods>
