@@ -447,8 +447,8 @@ describe PreAssembly::Bundle do
       @b.retrieve_checksum @file_path
     end
 
-    it "compute_checksum() should return nil if @no_compute_checksum is true" do
-      @b.no_compute_checksum = true
+    it "compute_checksum() should return nil if @compute_checksum is false" do
+      @b.compute_checksum = false
       @b.compute_checksum(@file_path).should == nil
     end
 
