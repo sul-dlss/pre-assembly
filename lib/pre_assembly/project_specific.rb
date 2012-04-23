@@ -3,9 +3,6 @@ module PreAssembly
   module ProjectSpecific
 
       def create_content_metadata_xml_smpl
-
-        #TODO deal with sequence numbers in resources if they exist
-        #TODO write a spec test 
         
         log "    - create_content_metadata_xml_smpl()"
         
@@ -20,21 +17,35 @@ module PreAssembly
         input_xml = Nokogiri::XML(f)
         f.close
         
-        # generate array of unique labels, so we know how to build resource nodes (which will be grouped by label)
+        # generate array of unique labels with sequences, so we know how to build resource nodes (which will be grouped by label)
         label_nodes=input_xml.xpath('//resource/label')
         labels=[]
         label_nodes.each {|label_node| labels << label_node.content}
         labels.uniq! # remove all non-unique labels, so we have a new array with the possible label values
+
+        # get largest identified sequence value and set it to our beginning counter for resource nodes with no identified sequences
+        sequence_values=[]
+        input_xml.xpath('//resource[@seq]').xpath('@seq').each {|node| sequence_values << node.value.to_i}
+        seq_counter=sequence_values.max
         
-        seq=0
         # generate content metadata
         builder = Nokogiri::XML::Builder.new { |xml|
           xml.contentMetadata(node_attr_cm,:type=>'file') {  
             # iterate through each unique label, which will become a resource
             labels.each do |label|
-              seq += 1
-              # grab the files nodes that have this label
-              file_nodes=input_xml.xpath("//resource[label[text()='#{label}']]/file")
+              # grab the resource nodes with this label
+              resource_nodes=input_xml.xpath("//resource[label='#{label}']")
+              # grab the files nodes for this resource
+              file_nodes=resource_nodes.xpath("file")
+              # check to see if there is a sequence defined for this label
+              sequence=resource_nodes.xpath("@seq")
+              # if there is, grab the sequence value
+              if sequence.size > 0 
+                seq=sequence[0].value
+              else # if no sequence is identified for this resource, increment our counter (which starts at the largest existing incoming sequence) and use that
+                seq_counter+=1
+                seq=seq_counter
+              end
               xml.resource(node_attr_cm_resource(seq),:type=>'file') {
                 xml.label label
                 # iterate over all file nodes from input CM and create correct file nodes for this resource
