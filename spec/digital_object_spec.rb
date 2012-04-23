@@ -344,9 +344,9 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.manifest_row = {
         'sourceid'    => 'foo-1',
-        'label'       => 'this is a label',
+        'label'       => 'this is < a label with an & that will break XML unless it is escaped',
         'year'        => '2012',
-        'description' => 'this is a description',
+        'description' => 'this is a description > another description < other stuff',
         'format'      => 'film',
         'foo'         =>  '123',
         'bar'         =>  '456',
@@ -386,7 +386,6 @@ describe PreAssembly::DigitalObject do
       END
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <?xml version="1.0"?>
         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
           <typeOfResource>still image</typeOfResource>
           <genre authority="att">digital image</genre>
@@ -409,11 +408,11 @@ describe PreAssembly::DigitalObject do
             <dateCreated>2012</dateCreated>
           </originInfo>
           <titleInfo>
-            <title>'this is a label' is the label!</title>
+            <title>'this is &lt; a label with an &amp; that will break XML unless it is escaped' is the label!</title>
           </titleInfo>
-          <note>this is a description</note>
+          <note>this is a description &gt; another description &lt; other stuff</note>
           <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
-          <note>ERB Test: this is a description</note>
+          <note>ERB Test: this is a description &gt; another description &lt; other stuff</note>
           <note type="source note" ID="foo">123</note>
           <note type="source note" ID="bar">456</note>
         </mods>
