@@ -1,5 +1,5 @@
 # Convert incoming spreadsheet from SMPL into XML file that will be produced.  Should only be temporarily needed until final XML is delivered.
-# run with ruby devel/prepare_sohp_xml.rb
+# run with ruby devel/prepare_sohp.rb
 
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists
 csv_filename='config/projects/sohp_preaccessioning_sorted.csv' # an input spreadsheet defining the files to find
