@@ -1,8 +1,8 @@
 project_style:
   content_structure:  simple_image
-  should_register:    true
+  should_register:    false
   get_druid_from:     suri
-  use_druid_minter:   false
+  use_druid_minter:   true
 
 bundle_dir:           spec/test_data/bundle_input_c
 staging_dir:          tmp
@@ -47,6 +47,6 @@ content_exclusion:    ~
 
 validate_usage:       true
 show_progress:        true
-limit_n:              10
+limit_n:              5
 uniqify_source_ids:   true
 cleanup:              true
