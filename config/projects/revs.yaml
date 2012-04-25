@@ -21,7 +21,7 @@ publish_attr:
   shelve:             no
   preserve:           yes
 
-no_compute_checksum:  false
+compute_checksum:     true
 init_assembly_wf:     true
 
 content_md_creation:
