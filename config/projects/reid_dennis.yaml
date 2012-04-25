@@ -1,0 +1,52 @@
+project_style:
+  content_structure:  simple_image
+  should_register:    true
+  get_druid_from:     suri
+  use_druid_minter:   false
+
+bundle_dir:           /home/lyberadmin/pre-assembly/reid_dennis_test_run/input
+staging_dir:          /dor/assembly_test
+
+manifest:             manifest.csv
+checksums_file:       checksums.txt
+desc_md_template:     mods_template.xml
+
+progress_log_file:    log/progress_reid_dennis.yaml
+project_name:         ReidDennis
+apo_druid_id:         druid:sd064kn5856
+set_druid_id:         ~
+
+publish_attr:
+  publish:            no
+  shelve:             no
+  preserve:           yes
+
+no_compute_checksum:  false
+init_assembly_wf:     true
+
+content_md_creation:
+  style:              :default
+  pre_md_file:        ~
+
+object_discovery:
+  use_manifest:       true
+  glob:               ~
+  regex:              ~
+
+stageable_discovery:
+  use_container:      true
+  glob:               ~
+  regex:              ~
+
+manifest_cols:
+  object_container:   file_name
+  source_id:          stanford_file_id
+  label:              title1
+
+content_exclusion:    ~
+
+validate_usage:       true
+show_progress:        true
+limit_n:              5
+uniqify_source_ids:   true
+cleanup:              false
