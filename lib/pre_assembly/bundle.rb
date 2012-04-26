@@ -134,6 +134,25 @@ module PreAssembly
     # The main process.
     ####
 
+    # Runs a confirmation for each digital object and confirms there are no duplicate filenames contained within the object
+    # This is useful if you will be flattening the folder structure during pre-assembly.
+    def confirm_object_filenames_unique
+      log ""
+      log "confirm_object_filenames_unique(#{run_log_msg})"
+      unique_objects=0
+      File.open(@progress_log_file, 'w') do |@progress_log_handle|
+        discover_objects
+        @digital_objects.each do |dobj|
+           bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
+           is_unique=object_filenames_unique? dobj
+           unique_objects+=1 if is_unique
+           puts "#{bundle_id} has duplicate filenames" if @show_progress && !is_unique
+        end
+      end
+      puts "Total objects with non unique filenames: #{@digital_objects.count - unique_objects}" if @show_progress
+      return processed_pids      
+    end
+    
     def run_pre_assembly
       # Runs the pre-assembly process and returns an array of PIDs
       # of the digital objects processed.
@@ -164,11 +183,17 @@ module PreAssembly
       return @digital_objects.map { |dobj| dobj.pid }
     end
 
+    def object_filenames_unique?(dobj)
+       filenames=[]
+       dobj.object_files.each {|objfile| filenames << File.basename(objfile.path) } 
+      # ap filenames
+       filenames.count == filenames.uniq.count
+    end
 
     ####
     # Discovery of object containers and stageable items.
     ####
-
+    
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
@@ -195,6 +220,7 @@ module PreAssembly
         dobj = DigitalObject.new params
         @digital_objects.push dobj
       end
+      puts "Discovered #{@digital_objects.count} digital objects" if @show_progress
     end
 
     def pruned_containers(containers)

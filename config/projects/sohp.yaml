@@ -4,8 +4,8 @@ project_style:
   get_druid_from:     container
   use_druid_minter:   false
 
-bundle_dir:           spec/test_data/bundle_input_e
-staging_dir:          tmp
+bundle_dir:           /thumpers/dpgthumper2-smpl/SC1017_SOHP
+staging_dir:          /dor/assembly
 
 manifest:             ~
 checksums_file:       ~
@@ -47,6 +47,6 @@ content_exclusion:    '(?ix) ( \.md5 | _techmd\.xml ) $'
 
 validate_usage:       true
 show_progress:        true
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
+limit_n:              55555
+uniqify_source_ids:   false
+cleanup:              false
