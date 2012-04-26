@@ -30,12 +30,6 @@ task :dev do
   set :bundle_without, []         # Deploy all gem groups on the dev VM.
 end
 
-task :old_testing do
-  set :rvm_type, :user
-  role :app, 'lyberservices-test.stanford.edu'
-  set :deploy_env, 'test'
-end
-
 task :testing do
   role :app, 'sul-lyberservices-test.stanford.edu'
   set :deploy_env, 'test'
