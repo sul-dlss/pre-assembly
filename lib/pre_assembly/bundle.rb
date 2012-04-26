@@ -363,12 +363,15 @@ module PreAssembly
 
     def validate_files
       log "validate_files()"
+      puts "validating files" if @show_progress
       tally = Hash.new(0)           # A tally to facilitate testing.
       all_object_files.each do |f|
         if not f.image?
           tally[:skipped] += 1
+          puts "#{f.path} is not an image" if @show_progress
         elsif f.valid_image?
           tally[:valid] += 1
+          puts "#{f.path} is a valid image" if @show_progress
         else
           msg = "File validation failed: #{f.path}"
           raise msg
@@ -379,6 +382,8 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
+      puts "processing objects" if @show_progress
+      
       @digital_objects.each do |dobj|
         begin
           # Try to pre_assemble the digital object.
