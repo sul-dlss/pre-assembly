@@ -184,9 +184,7 @@ module PreAssembly
     end
 
     def object_filenames_unique?(dobj)
-       filenames=[]
-       dobj.object_files.each {|objfile| filenames << File.basename(objfile.path) } 
-      # ap filenames
+       filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) } 
        filenames.count == filenames.uniq.count
     end
 
