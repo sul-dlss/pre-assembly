@@ -5,7 +5,7 @@ project_style:
   use_druid_minter:   false
 
 bundle_dir:           /home/lyberadmin/pre-assembly/Batchelor_sample
-staging_dir:          /dor/assembly_test
+staging_dir:          /dor/assembly
 
 manifest:             ~
 checksums_file:       ~

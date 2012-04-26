@@ -5,7 +5,7 @@ project_style:
   use_druid_minter:   false
 
 bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
-staging_dir:          /dor/assembly_test
+staging_dir:          /dor/assembly
 
 manifest:             manifest.csv
 checksums_file:       checksums.txt
