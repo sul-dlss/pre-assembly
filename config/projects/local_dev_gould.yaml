@@ -35,7 +35,7 @@ object_discovery:
 
 stageable_discovery:
   use_container:      false
-  glob:               '00'
+  glob:               ''
   regex:              ''
 
 manifest_cols:
