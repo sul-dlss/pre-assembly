@@ -8,7 +8,7 @@ bundle_dir:           /home/lyberadmin/pre-assembly/reid_dennis_test_run/input
 staging_dir:          /dor/assembly
 
 manifest:             manifest.csv
-checksums_file:       checksums.txt
+checksums_file:       ~
 desc_md_template:     mods_template.xml
 
 progress_log_file:    log/progress_reid_dennis.yaml
@@ -21,7 +21,7 @@ publish_attr:
   shelve:             no
   preserve:           yes
 
-no_compute_checksum:  false
+compute_checksum:     true
 init_assembly_wf:     true
 
 content_md_creation:
