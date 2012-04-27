@@ -212,6 +212,7 @@ module PreAssembly
           :init_assembly_wf     => @init_assembly_wf,
           :content_md_creation  => @content_md_creation,
           :container            => container,
+          :unadjusted_container => c,
           :stageable_items      => stageables,
           :object_files         => object_files,
         }
@@ -434,9 +435,9 @@ module PreAssembly
 
     def log_progress(dobj)
       info = {
-        :container          => dobj.container,
-        :pid                => dobj.pid,
-        :pre_assem_finished => dobj.pre_assem_finished,
+        :unadjusted_container => dobj.unadjusted_container,
+        :pid                  => dobj.pid,
+        :pre_assem_finished   => dobj.pre_assem_finished,
       }
       @progress_log_handle.puts info.to_yaml
     end

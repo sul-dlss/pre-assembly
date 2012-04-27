@@ -11,6 +11,7 @@ describe PreAssembly::Bundle do
   def bundle_setup(proj)
     @ps = YAML.load @yaml[proj]
     @b  = PreAssembly::Bundle.new @ps
+    @b.show_progress = false
   end
 
   ####################
@@ -550,9 +551,9 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_revs
       # Setup a mock digital object, along with a StringIO for the progress log.
       initial_data =  {
-        :container          => "foo/bar",
-        :pid                => "druid:aa11bb9999",
-        :pre_assem_finished => true,
+        :unadjusted_container => "foo/bar",
+        :pid                  => "druid:aa11bb9999",
+        :pre_assem_finished   => true,
       }
       dobj = double('digital_object', initial_data)
       @b.progress_log_handle = StringIO.new
