@@ -22,7 +22,7 @@ publish_attr:
   preserve:           yes
 
 compute_checksum:     false
-init_assembly_wf:     false
+init_assembly_wf:     true
 
 content_md_creation:
   style:              :smpl
