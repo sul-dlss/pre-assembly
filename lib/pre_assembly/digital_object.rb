@@ -7,6 +7,7 @@ module PreAssembly
     
     INIT_PARAMS = [
       :container,
+      :unadjusted_container,
       :stageable_items,
       :object_files,
       :project_style,
