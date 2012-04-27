@@ -17,9 +17,9 @@ apo_druid_id:         druid:qv648vd4392
 set_druid_id:         ~
 
 publish_attr:
-  publish:            no
-  shelve:             no
-  preserve:           yes
+  publish:            'no'
+  shelve:             'no'
+  preserve:           'yes'
 
 compute_checksum:     true
 init_assembly_wf:     false
