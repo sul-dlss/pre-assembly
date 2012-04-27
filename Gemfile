@@ -8,7 +8,7 @@ gem 'lyber-core'
 gem 'rest-client'
 gem 'rake'
 gem 'checksum-tools'
-gem 'assembly-objectfile', '~> 1.1.0'
+gem 'assembly-objectfile', '~> 1.1.1'
 gem 'assembly-image'
 
 group :test do
