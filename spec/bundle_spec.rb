@@ -215,10 +215,10 @@ describe PreAssembly::Bundle do
       @b.stub(:dir_glob).and_return items
       # No regex filtering.
       @b.object_discovery = { :regex => '', :glob => '' }
-      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items.sort
       # Only tif files.
       @b.object_discovery[:regex] = '(?i)\.tif$'
-      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1]
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1].sort
     end
 
   end

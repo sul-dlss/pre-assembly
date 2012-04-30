@@ -263,7 +263,7 @@ module PreAssembly
         rel_path = relative_path root, item
         items.push(item) if rel_path =~ regex
       end
-      return items
+      return items.sort
     end
 
     def actual_container(container)
