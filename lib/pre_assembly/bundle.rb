@@ -162,9 +162,6 @@ module PreAssembly
         discover_objects
         load_provider_checksums
         process_manifest
-
-        # load_checksums
-        validate_files
         process_digital_objects
         delete_digital_objects
       end
@@ -222,7 +219,7 @@ module PreAssembly
         dobj = DigitalObject.new params
         @digital_objects.push dobj
       end
-      puts "Discovered #{@digital_objects.count} digital objects" if @show_progress
+      log "discover_objects(found #{@digital_objects.count} objects)"
     end
 
     def pruned_containers(containers)
@@ -337,6 +334,7 @@ module PreAssembly
     def load_checksums(dobj)
       # Takes a DigitalObject. For each of its ObjectFiles,
       # sets the checksum attribute.
+      log "    - load_checksums()"
       dobj.object_files.each do |file|
         file.checksum = retrieve_checksum(file.path)
       end
@@ -390,17 +388,14 @@ module PreAssembly
     # Digital object processing.
     ####
 
-    def validate_files
-      log "validate_files()"
-      puts "validating files" if @show_progress
+    def validate_files(dobj)
+      log "    - validate_files()"
       tally = Hash.new(0)           # A tally to facilitate testing.
-      all_object_files.each do |f|
+      dobj.object_files.each do |f|
         if not f.image?
           tally[:skipped] += 1
-          puts "#{f.path} is not an image" if @show_progress
         elsif f.valid_image?
           tally[:valid] += 1
-          puts "#{f.path} is a valid image" if @show_progress
         else
           msg = "File validation failed: #{f.path}"
           raise msg
@@ -411,12 +406,9 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
-      puts "processing objects" if @show_progress
-      
       @digital_objects.each do |dobj|
-
         load_checksums(dobj)
-
+        validate_files(dobj)
         begin
           # Try to pre_assemble the digital object.
           dobj.pre_assemble

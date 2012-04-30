@@ -515,22 +515,25 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       bundle_setup :proj_rumsey
+      @b.discover_objects
     end
 
     it "should return expected tally if all images are valid" do
-      @b.discover_objects
-      @b.validate_files.should == { :valid => 3, :skipped => 3 }
+      @b.digital_objects.each do |dobj|
+        @b.validate_files(dobj).should == { :valid => 1, :skipped => 1 }
+      end
     end
 
     it "should raise exception if one of the object files is an invalid image" do
       # Create a double that will simulate an invalid image.
       img_params = {:image? => true, :valid_image? => false, :path => 'bad/image.tif'}
-      bad_image = double 'bad_image', img_params
-      # Stub out all_object_files() to return that image.
-      @b.stub(:all_object_files).and_return [ bad_image ]
-      # Check for expected excption.
-      exp_msg = /^File validation failed/
-      lambda { @b.validate_files }.should raise_error(exp_msg)
+      bad_image  = double 'bad_image', img_params
+      # Check for exceptions.
+      exp_msg    = /^File validation failed/
+      @b.digital_objects.each do |dobj|
+        dobj.object_files = [ bad_image ]
+        lambda { @b.validate_files(dobj) }.should raise_error(exp_msg)
+      end
     end
 
   end
