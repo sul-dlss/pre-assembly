@@ -160,8 +160,10 @@ module PreAssembly
       log "run_pre_assembly(#{run_log_msg})"
       File.open(@progress_log_file, 'w') do |@progress_log_handle|
         discover_objects
-        load_checksums
+        load_provider_checksums
         process_manifest
+
+        load_checksums
         validate_files
         process_digital_objects
         delete_digital_objects
@@ -316,7 +318,6 @@ module PreAssembly
 
     def load_checksums
       log "load_checksums()"
-      load_provider_checksums if @checksums_file
       all_object_files.each do |file|
         file.checksum = retrieve_checksum(file.path)
       end
@@ -326,6 +327,7 @@ module PreAssembly
       # Read the provider-supplied checksums_file, using its 
       # content to populate a hash of expected checksums.
       # This method works with default output from md5sum.
+      return unless @checksums_file
       log "  - load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|

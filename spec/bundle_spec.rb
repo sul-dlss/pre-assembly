@@ -372,20 +372,6 @@ describe PreAssembly::Bundle do
 
   describe "checksums: load_checksums()" do
 
-    it "should call load_provider_checksums() if the checksums file is present" do
-      bundle_setup :proj_revs
-      @b.should_receive(:all_object_files).and_return []
-      @b.should_receive(:load_provider_checksums)
-      @b.load_checksums
-    end
-
-    it "should call not call load_provider_checksums() when no checksums file is present" do
-      bundle_setup :proj_rumsey
-      @b.should_receive(:all_object_files).and_return []
-      @b.should_not_receive(:load_provider_checksums)
-      @b.load_checksums
-    end
-
     it "should load checksums and attach them to the ObjectFiles" do
       bundle_setup :proj_rumsey
       @b.discover_objects
@@ -402,6 +388,12 @@ describe PreAssembly::Bundle do
 
     before(:each) do
       bundle_setup :proj_revs
+    end
+
+    it "should do nothing when no checksums file is present" do
+      bundle_setup :proj_rumsey
+      @b.should_not_receive(:read_exp_checksums)
+      @b.load_checksums
     end
 
     it "empty string yields no checksums" do
