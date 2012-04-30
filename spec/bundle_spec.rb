@@ -375,9 +375,9 @@ describe PreAssembly::Bundle do
     it "should load checksums and attach them to the ObjectFiles" do
       bundle_setup :proj_rumsey
       @b.discover_objects
-      @b.all_object_files.each { |f| f.checksum.should == nil }
-      @b.load_checksums
-      @b.all_object_files.each { |f| f.checksum.should =~ @md5_regex }
+      @b.all_object_files.each { |f|    f.checksum.should == nil }
+      @b.digital_objects.each  { |dobj| @b.load_checksums(dobj)  }
+      @b.all_object_files.each { |f|    f.checksum.should =~ @md5_regex }
     end
 
   end
@@ -393,7 +393,7 @@ describe PreAssembly::Bundle do
     it "should do nothing when no checksums file is present" do
       bundle_setup :proj_rumsey
       @b.should_not_receive(:read_exp_checksums)
-      @b.load_checksums
+      @b.load_provider_checksums
     end
 
     it "empty string yields no checksums" do

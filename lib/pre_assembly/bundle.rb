@@ -163,7 +163,7 @@ module PreAssembly
         load_provider_checksums
         process_manifest
 
-        load_checksums
+        # load_checksums
         validate_files
         process_digital_objects
         delete_digital_objects
@@ -186,9 +186,10 @@ module PreAssembly
     end
 
     def object_filenames_unique?(dobj)
-       filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) } 
-       filenames.count == filenames.uniq.count
+      filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) } 
+      filenames.count == filenames.uniq.count
     end
+
 
     ####
     # Discovery of object containers and stageable items.
@@ -316,13 +317,6 @@ module PreAssembly
     # Checksums.
     ####
 
-    def load_checksums
-      log "load_checksums()"
-      all_object_files.each do |file|
-        file.checksum = retrieve_checksum(file.path)
-      end
-    end
-
     def load_provider_checksums
       # Read the provider-supplied checksums_file, using its 
       # content to populate a hash of expected checksums.
@@ -338,6 +332,14 @@ module PreAssembly
     def read_exp_checksums
       # Read checksums file. Wrapped in a method for unit testing.
       IO.read @checksums_file
+    end
+
+    def load_checksums(dobj)
+      # Takes a DigitalObject. For each of its ObjectFiles,
+      # sets the checksum attribute.
+      dobj.object_files.each do |file|
+        file.checksum = retrieve_checksum(file.path)
+      end
     end
 
     def retrieve_checksum(file_path)
@@ -412,6 +414,9 @@ module PreAssembly
       puts "processing objects" if @show_progress
       
       @digital_objects.each do |dobj|
+
+        load_checksums(dobj)
+
         begin
           # Try to pre_assemble the digital object.
           dobj.pre_assemble
