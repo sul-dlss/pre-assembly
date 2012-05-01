@@ -1,9 +1,6 @@
-# TODO: SOHP content metadata.
 # TODO: Simple book with multiple image types per page (like AP and Hummel).
 
 # TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
-# TODO: ReidDennis is using Revs APO in dev.
-# TODO: Modify revs.yaml when we start using for real.
 
 # TODO: Modify assembly robots to handle different types of content metadata.
 
