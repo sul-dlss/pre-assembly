@@ -191,6 +191,7 @@ module PreAssembly
         :bundle_dir    => @bundle_dir,
         :staging_dir   => @staging_dir,
         :environment   => ENV['ROBOT_ENVIRONMENT'],
+        :resume        => @resume,
       }
       return log_params.map { |k,v| "#{k}=#{v.inspect}"  }.join(', ')
     end
