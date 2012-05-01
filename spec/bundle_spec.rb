@@ -590,22 +590,18 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "log_progress()" do
+  describe "log_progress_info()" do
 
-    it "should return expected YAML about a digital object" do
+    it "should return expected info about a digital object" do
       bundle_setup :proj_revs
-      # Setup a mock digital object, along with a StringIO for the progress log.
-      initial_data =  {
-        :unadjusted_container => "foo/bar",
-        :pid                  => "druid:aa11bb9999",
-        :pre_assem_finished   => true,
+      @b.discover_objects
+      dobj = @b.digital_objects[0]
+      exp =  {
+        :unadjusted_container => dobj.unadjusted_container,
+        :pid                  => dobj.pid,
+        :pre_assem_finished   => dobj.pre_assem_finished,
       }
-      dobj = double('digital_object', initial_data)
-      @b.progress_log_handle = StringIO.new
-      # After we call log_progress() the resulting YAML read from
-      # the StringIO should equal the data we started with.
-      @b.log_progress(dobj)
-      YAML.load(@b.progress_log_handle.string).should == initial_data
+      @b.log_progress_info(dobj).should == exp
     end
 
   end

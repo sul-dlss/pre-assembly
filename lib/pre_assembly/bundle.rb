@@ -46,8 +46,6 @@ module PreAssembly
       :digital_objects,
       :skippables,
       :desc_md_template_xml,
-      :progress_log_handle,
-      :progress_write_mode,
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -86,8 +84,6 @@ module PreAssembly
       @skippables          = {}
       @manifest_rows       = nil
       @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
-      @progress_log_handle = nil
-      @progress_write_mode = @resume ? 'a' : 'w'
       @publish_attr.delete_if { |k,v| v.nil? }
     end
 
@@ -151,20 +147,19 @@ module PreAssembly
     # The main process.
     ####
 
-    # Runs a confirmation for each digital object and confirms there are no duplicate filenames contained within the object
-    # This is useful if you will be flattening the folder structure during pre-assembly.
     def confirm_object_filenames_unique
+      # Runs a confirmation for each digital object and confirms there are 
+      # no duplicate filenames contained within the object. This is useful
+      # if you will be flattening the folder structure during pre-assembly.
       log ""
       log "confirm_object_filenames_unique(#{run_log_msg})"
       unique_objects=0
-      File.open(@progress_log_file, @progress_write_mode) do |@progress_log_handle|
-        discover_objects
-        @digital_objects.each do |dobj|
-           bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
-           is_unique=object_filenames_unique? dobj
-           unique_objects+=1 if is_unique
-           puts "#{bundle_id} has duplicate filenames" if @show_progress && !is_unique
-        end
+      discover_objects
+      @digital_objects.each do |dobj|
+         bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
+         is_unique=object_filenames_unique? dobj
+         unique_objects+=1 if is_unique
+         puts "#{bundle_id} has duplicate filenames" if @show_progress && !is_unique
       end
       puts "Total objects with non unique filenames: #{@digital_objects.count - unique_objects}" if @show_progress
       return processed_pids      
@@ -175,13 +170,11 @@ module PreAssembly
       # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      File.open(@progress_log_file, @progress_write_mode) do |@progress_log_handle|
-        discover_objects
-        load_provider_checksums
-        process_manifest
-        process_digital_objects
-        delete_digital_objects
-      end
+      discover_objects
+      load_provider_checksums
+      process_manifest
+      process_digital_objects
+      delete_digital_objects
       return processed_pids
     end
 
@@ -429,29 +422,33 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
+      # Initialize the progress_log_file, unless we are resuming.
+      FileUtils.rm(@progress_log_file, :force => true) unless @resume
+      # Start processing the non-skipped digital objects.
       objects_to_process.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
-        load_checksums(dobj)
-        validate_files(dobj)
         begin
           # Try to pre_assemble the digital object.
+          load_checksums(dobj)
+          validate_files(dobj)
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
           puts dobj.druid.druid if @show_progress
         rescue
-          # For now, just re-raise the exception.
+          # For now, just re-raise any exceptions.
           #
           # Later, we might decide to do the following:
-          #   - catch specific types of exceptions in DigitalObject during the
-          #     pre_assemble() process
+          #   - catch specific types of expected exceptions
           #   - from that point, raise a PreAssembly::PreAssembleError
           #   - then catch such errors here, allowing the current
           #     digital object to fail but the remaining objects to be processed.
           raise
         ensure
           # Log the outcome no matter what.
-          log_progress(dobj)
+          File.open(@progress_log_file, 'a') do |f|
+            f.puts log_progress_info(dobj).to_yaml
+          end
         end
       end
     end
@@ -460,13 +457,12 @@ module PreAssembly
       @digital_objects.reject { |dobj| @skippables.has_key?(dobj.unadjusted_container) }
     end
 
-    def log_progress(dobj)
-      info = {
+    def log_progress_info(dobj)
+      return {
         :unadjusted_container => dobj.unadjusted_container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
       }
-      @progress_log_handle.puts info.to_yaml
     end
 
     def delete_digital_objects
