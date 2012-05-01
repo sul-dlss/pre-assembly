@@ -1,19 +1,19 @@
 project_style:
-  content_structure:  simple_image
+  content_structure:  'simple_image'
   should_register:    false
-  get_druid_from:     suri
+  get_druid_from:     'suri'
   use_druid_minter:   true
 
-bundle_dir:           spec/test_data/bundle_input_c
-staging_dir:          tmp
+bundle_dir:           'spec/test_data/bundle_input_c'
+staging_dir:          'tmp'
 
-manifest:             manifest.csv
-checksums_file:       checksums.txt
-desc_md_template:     mods_template.xml
+manifest:             'manifest.csv'
+checksums_file:       'checksums.txt'
+desc_md_template:     'mods_template.xml'
 
-progress_log_file:    log/progress_reid_dennis.yaml
-project_name:         ReidDennis
-apo_druid_id:         druid:qv648vd4392
+progress_log_file:    'log/progress_reid_dennis.yaml'
+project_name:         'ReidDennis'
+apo_druid_id:         'druid:qv648vd4392'
 set_druid_id:         ~
 
 publish_attr:
@@ -39,9 +39,9 @@ stageable_discovery:
   regex:              ~
 
 manifest_cols:
-  object_container:   file_name
-  source_id:          stanford_file_id
-  label:              title1
+  object_container:   'file_name'
+  source_id:          'stanford_file_id'
+  label:              'title1'
 
 content_exclusion:    ~
 

@@ -1,19 +1,19 @@
 project_style:
-  content_structure:  simple_book
+  content_structure:  'simple_book'
   should_register:    false
-  get_druid_from:     container
+  get_druid_from:     'container'
   use_druid_minter:   false
 
-bundle_dir:           /thumpers/dpgthumper-staging/ArchivesParlementaires
-staging_dir:          /dor/assembly
+bundle_dir:           '/thumpers/dpgthumper-staging/ArchivesParlementaires'
+staging_dir:          '/dor/assembly'
 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
-progress_log_file:    log/progress_ap.yaml
-project_name:         ArchivesParlementaires
-apo_druid_id:         druid:hy787xj5878
+progress_log_file:    'log/progress_ap.yaml'
+project_name:         'ArchivesParlementaires'
+apo_druid_id:         'druid:hy787xj5878'
 set_druid_id:         ~
 
 publish_attr:

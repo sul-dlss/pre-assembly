@@ -1,19 +1,19 @@
 project_style:
-  content_structure:  simple_book
+  content_structure:  'simple_book'
   should_register:    false
-  get_druid_from:     container_barcode
+  get_druid_from:     'container_barcode'
   use_druid_minter:   true
 
-bundle_dir:           spec/test_data/bundle_input_d
-staging_dir:          tmp
+bundle_dir:           'spec/test_data/bundle_input_d'
+staging_dir:          'tmp'
 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
-progress_log_file:    log/progress_gould.yaml
-project_name:         Gould
-apo_druid_id:         druid:sr292kr3857
+progress_log_file:    'log/progress_gould.yaml'
+project_name:         'Gould'
+apo_druid_id:         'druid:sr292kr3857'
 set_druid_id:         ~
 
 publish_attr:

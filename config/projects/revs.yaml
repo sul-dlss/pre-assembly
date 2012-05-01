@@ -1,20 +1,20 @@
 project_style:
-  content_structure:  simple_image
+  content_structure:  'simple_image'
   should_register:    true
-  get_druid_from:     suri
+  get_druid_from:     'suri'
   use_druid_minter:   false
 
-bundle_dir:           /home/lyberadmin/pre-assembly/revs_test_run/input
-staging_dir:          /dor/assembly
+bundle_dir:           '/home/lyberadmin/pre-assembly/revs_test_run/input'
+staging_dir:          '/dor/assembly'
 
-manifest:             manifest.csv
-checksums_file:       checksums.txt
-desc_md_template:     mods_template.xml
+manifest:             'manifest.csv'
+checksums_file:       'checksums.txt'
+desc_md_template:     'mods_template.xml'
 
-progress_log_file:    log/progress_revs.yaml
-project_name:         Revs
-apo_druid_id:         druid:qv648vd4392
-set_druid_id:         druid:yt502zj0924
+progress_log_file:    'log/progress_revs.yaml'
+project_name:         'Revs'
+apo_druid_id:         'druid:qv648vd4392'
+set_druid_id:         'druid:yt502zj0924'
 
 publish_attr:
   publish:            'no'
@@ -39,9 +39,9 @@ stageable_discovery:
   regex:              ~
 
 manifest_cols:
-  object_container:   filename
-  source_id:          sourceid
-  label:              label
+  object_container:   'filename'
+  source_id:          'sourceid'
+  label:              'label'
 
 content_exclusion:    ~
 
