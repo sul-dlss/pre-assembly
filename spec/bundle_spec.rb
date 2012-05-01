@@ -216,6 +216,9 @@ describe PreAssembly::Bundle do
       # No regex filtering.
       @b.object_discovery = { :regex => '', :glob => '' }
       @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items.sort
+      # No regex filtering: using nil as regex.
+      @b.object_discovery = { :regex => nil, :glob => '' }
+      @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items.sort
       # Only tif files.
       @b.object_discovery[:regex] = '(?i)\.tif$'
       @b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery).should == items[3..-1].sort
