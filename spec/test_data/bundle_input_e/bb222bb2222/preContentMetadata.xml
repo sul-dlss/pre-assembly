@@ -10,58 +10,58 @@
   <resource type="audio" role="pm">
     <label>Tape 1, Side A</label>
     <file type="content" id="bb222bb2222_001_a_pm.wav" publish="yes" shelve="no" preserve="yes">
-      <location>PM/bb222bb2222_001_a_pm.wav</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/PM/bb222bb2222_001_a_pm.wav</location>
       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="checksum">
-      <location>PM/bb222bb2222_001_a_pm.wav.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/PM/bb222bb2222_001_a_pm.wav.md5</location>
     </file>
   </resource>
    
   <resource type="audio" role="pm">
     <label>Tape 1, Side B</label>
     <file type="content" id="bb222bb2222_001_b_pm.wav" publish="yes" shelve="no" preserve="yes">
-       <location>PM/bb222bb2222_001_b_pm.wav</location>
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/PM/bb222bb2222_001_b_pm.wav</location>
        <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="checksum">
-      <location>PM/bb222bb2222_001_b_pm.wav.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/PM/bb222bb2222_001_b_pm.wav.md5</location>
     </file>
   </resource>
   
   <resource type="audio" role="sh">
     <label>Tape 1, Side A</label>
     <file type="content" id="bb222bb2222_001_a_sh.wav" publish="yes" shelve="no" preserve="yes">
-      <location>SH/bb222bb2222_001_a_sh.wav</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SH/bb222bb2222_001_a_sh.wav</location>
       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="checksum">
-      <location>SH/bb222bb2222_001_a_sh.wav.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SH/bb222bb2222_001_a_sh.wav.md5</location>
     </file>
   </resource>
   
   <resource type="audio" role="sh">
     <label>Tape 1, Side B</label>
     <file type="content" id="bb222bb2222_001_b_sh.wav" publish="yes" shelve="no" preserve="yes">
-       <location>SH/bb222bb2222_001_b_sh.wav</location>
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SH/bb222bb2222_001_b_sh.wav</location>
        <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="checksum">
-      <location>SH/bb222bb2222_001_b_sh.wav.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SH/bb222bb2222_001_b_sh.wav.md5</location>
     </file>
   </resource>
 
   <resource type="audio" role="sl" seq="1">
     <label>Tape 1, Side A</label>
     <file type="content" id="bb222bb2222_001_a_sl.mp3" publish="yes" shelve="no" preserve="yes">
-       <location>SL/bb222bb2222_001_a_sl.mp3</location>
+       <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_a_sl.mp3</location>
        <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="techMD">
-      <location>SL/bb222bb2222_001_a_sl_techmd.xml</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_a_sl_techmd.xml</location>
     </file>
     <file type="metadata" role="checksum">
-      <location>SL/bb222bb2222_001_a_sl.mp3.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_a_sl.mp3.md5</location>
     </file>
   </resource>
   
@@ -69,47 +69,47 @@
   <resource type="audio" role="sl" seq="2">
     <label>Tape 1, Side B</label>
     <file type="content" id="bb222bb2222_001_b_sl.mp3" publish="yes" shelve="no" preserve="yes">
-      <location>SL/bb222bb2222_001_b_sl.mp3</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_b_sl.mp3</location>
       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="techMD">
-      <location>SL/bb222bb2222_001_b_sl_techmd.xml</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_b_sl_techmd.xml</location>
     </file>
     <file type="metadata" role="checksum">
-      <location>SL/bb222bb2222_001_b_sl.mp3.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_b_sl.mp3.md5</location>
     </file>
   </resource>
  
  <resource type="image">
   <label>Tape 1, Side A</label>
   <file type="content" id="bb222bb2222_001_img_1.jpg" publish="yes" shelve="yes" preserve="yes">
-    <location>Images/bb222bb2222_001_img_1.jpg</location>
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/Images/bb222bb2222_001_img_1.jpg</location>
     <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
   </file>
   <file type="metadata" role="checksum">
-    <location>SL/bb222bb2222_001_img_1.jpg.md5</location>
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_img_1.jpg.md5</location>
   </file>
 </resource>
 
 <resource type="image">
   <label>Tape 1, Side B</label>  
   <file type="content" id="bb222bb2222_001_img_2.jpg" publish="yes" shelve="yes" preserve="yes">
-    <location>Images/bb222bb2222_001_img_2.jpg</location>
+    <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/Images/bb222bb2222_001_img_2.jpg</location>
     <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
   </file>
     <file type="metadata" role="checksum">
-      <location>SL/bb222bb2222_001_img_2.jpg.md5</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/SL/bb222bb2222_001_img_2.jpg.md5</location>
     </file>
 </resource>
   
   <resource type="text">
   <label>Transcript</label>
     <file type="content" id="edited_transcript.pdf" publish="yes" shelve="yes" preserve="yes">
-      <location>Transcript/bb222bb2222.pdf</location>
+      <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/Transcript/bb222bb2222.pdf</location>
       <checksum type="md5">d268d825bf57c520d379ac3190f73905</checksum>
     </file>
     <file type="metadata" role="checksum">
-        <location>Transcript/bb222bb2222.pdf.md5</location>
+        <location>http://dpgthumper2.stanford.edu/~pool0/smpl/project/bb222bb2222/Transcript/bb222bb2222.pdf.md5</location>
     </file>
   </resource>
   
