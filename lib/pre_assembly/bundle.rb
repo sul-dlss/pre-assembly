@@ -352,6 +352,27 @@ module PreAssembly
 
 
     ####
+    # Object file validation.
+    ####
+
+    def validate_files(dobj)
+      log "    - validate_files()"
+      tally = Hash.new(0)           # A tally to facilitate testing.
+      dobj.object_files.each do |f|
+        if not f.image?
+          tally[:skipped] += 1
+        elsif f.valid_image?
+          tally[:valid] += 1
+        else
+          msg = "File validation failed: #{f.path}"
+          raise msg
+        end
+      end
+      return tally
+    end
+
+
+    ####
     # Manifest.
     ####
 
@@ -387,22 +408,6 @@ module PreAssembly
     ####
     # Digital object processing.
     ####
-
-    def validate_files(dobj)
-      log "    - validate_files()"
-      tally = Hash.new(0)           # A tally to facilitate testing.
-      dobj.object_files.each do |f|
-        if not f.image?
-          tally[:skipped] += 1
-        elsif f.valid_image?
-          tally[:valid] += 1
-        else
-          msg = "File validation failed: #{f.path}"
-          raise msg
-        end
-      end
-      return tally
-    end
 
     def process_digital_objects
       log "process_digital_objects()"
