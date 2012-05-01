@@ -319,7 +319,7 @@ module PreAssembly
       # content to populate a hash of expected checksums.
       # This method works with default output from md5sum.
       return unless @checksums_file
-      log "  - load_provider_checksums()"
+      log "load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5|
         @provider_checksums[file_name] = md5
@@ -334,7 +334,7 @@ module PreAssembly
     def load_checksums(dobj)
       # Takes a DigitalObject. For each of its ObjectFiles,
       # sets the checksum attribute.
-      log "    - load_checksums()"
+      log "  - load_checksums()"
       dobj.object_files.each do |file|
         file.checksum = retrieve_checksum(file.path)
       end
@@ -356,7 +356,7 @@ module PreAssembly
     ####
 
     def validate_files(dobj)
-      log "    - validate_files()"
+      log "  - validate_files()"
       tally = Hash.new(0)           # A tally to facilitate testing.
       dobj.object_files.each do |f|
         if not f.image?
