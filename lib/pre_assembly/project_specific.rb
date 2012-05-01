@@ -4,10 +4,12 @@ module PreAssembly
 
       def create_content_metadata_xml_smpl
         
-        log "    - create_content_metadata_xml_smpl()"
-        
+        # if this is set to true, we will assume folder structure has been flattened during pre-assembly
+        flattened_object=true
         # do not include these files in the new content metadata when creating file nodes
         file_extensions_to_exclude=%w{.md5 .xml}
+                
+        log "    - create_content_metadata_xml_smpl()"
         
         # create path to smpl XML content metadata
         input_cm_filename=File.join(bundle_dir,container_basename,content_md_creation[:pre_md_file])
@@ -63,6 +65,7 @@ module PreAssembly
                   # only create file nodes when the file extension is not in our exclusion list set above
                   if file_node['id'] && !file_extensions_to_exclude.include?(File.extname(file_node['id']))
                     file_id=file_node.xpath('location')[0].content.gsub(server_prefix,'')
+                    file_id=File.basename(file_id) if flattened_object # strip out the folder structure too if we are flattening the object
                     xml.file(:id=>file_id,:preserve=>file_node['preserve'],:publish=>file_node['publish'],:shelve=>file_node['shelve']) {
                       checksum=file_node.xpath('checksum')  
                       node_provider_checksum(xml, checksum[0].content) if checksum
