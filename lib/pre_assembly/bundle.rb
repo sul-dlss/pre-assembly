@@ -430,6 +430,7 @@ module PreAssembly
     def process_digital_objects
       log "process_digital_objects()"
       objects_to_process.each do |dobj|
+        log "  - Processing object: #{dobj.unadjusted_container}"
         load_checksums(dobj)
         validate_files(dobj)
         begin
