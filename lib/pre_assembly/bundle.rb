@@ -256,12 +256,12 @@ module PreAssembly
       #   - A glob pattern to obtain a list of dirs and/or files.
       #   - A regex to filter that list.
       glob    = discovery_info[:glob]
-      regex   = Regexp.new discovery_info[:regex]
+      regex   = Regexp.new(discovery_info[:regex]) if discovery_info[:regex]
       pattern = File.join root, glob
       items   = []
       dir_glob(pattern).each do |item|
         rel_path = relative_path root, item
-        items.push(item) if rel_path =~ regex
+        items.push(item) if regex.nil? or rel_path =~ regex
       end
       return items.sort
     end
