@@ -37,14 +37,17 @@ module PreAssembly
       :limit_n,
       :uniqify_source_ids,
       :cleanup,
+      :resume,
     ]
 
     OTHER_ACCESSORS = [
       :user_params,
       :provider_checksums,
       :digital_objects,
+      :skippables,
       :desc_md_template_xml,
       :progress_log_handle,
+      :progress_write_mode,
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -68,6 +71,7 @@ module PreAssembly
       setup_other
       validate_usage
       load_desc_md_template
+      load_skippables
     end
 
     def setup_paths
@@ -79,15 +83,28 @@ module PreAssembly
     def setup_other
       @provider_checksums  = {}
       @digital_objects     = []
+      @skippables          = {}
       @manifest_rows       = nil
       @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
       @progress_log_handle = nil
+      @progress_write_mode = @resume ? 'a' : 'w'
       @publish_attr.delete_if { |k,v| v.nil? }
     end
 
     def load_desc_md_template
       return nil unless @desc_md_template and file_exists(@desc_md_template)
       @desc_md_template_xml = IO.read(@desc_md_template)
+    end
+
+    def load_skippables
+      return unless @resume
+      YAML.each_document(read_progress_log) do |yd|
+        skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
+      end
+    end
+
+    def read_progress_log
+      return File.file?(@progress_log_file) ? IO.read(@progress_log_file) : ''
     end
 
 
@@ -140,7 +157,7 @@ module PreAssembly
       log ""
       log "confirm_object_filenames_unique(#{run_log_msg})"
       unique_objects=0
-      File.open(@progress_log_file, 'w') do |@progress_log_handle|
+      File.open(@progress_log_file, @progress_write_mode) do |@progress_log_handle|
         discover_objects
         @digital_objects.each do |dobj|
            bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
@@ -158,7 +175,7 @@ module PreAssembly
       # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      File.open(@progress_log_file, 'w') do |@progress_log_handle|
+      File.open(@progress_log_file, @progress_write_mode) do |@progress_log_handle|
         discover_objects
         load_provider_checksums
         process_manifest
@@ -411,7 +428,7 @@ module PreAssembly
 
     def process_digital_objects
       log "process_digital_objects()"
-      @digital_objects.each do |dobj|
+      objects_to_process.each do |dobj|
         load_checksums(dobj)
         validate_files(dobj)
         begin
@@ -435,6 +452,10 @@ module PreAssembly
           log_progress(dobj)
         end
       end
+    end
+
+    def objects_to_process
+      @digital_objects.reject { |dobj| @skippables.has_key?(dobj.unadjusted_container) }
     end
 
     def log_progress(dobj)

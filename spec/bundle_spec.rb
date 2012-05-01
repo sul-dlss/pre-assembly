@@ -52,6 +52,30 @@ describe PreAssembly::Bundle do
 
   ####################
 
+  describe "load_skippables()" do
+
+    before(:each) do
+      bundle_setup :proj_rumsey
+    end
+
+    it "should do nothing if @resume is false" do
+      @b.resume = false
+      @b.should_not_receive(:read_progress_log)
+      @b.load_skippables
+    end
+
+    it "should return expected hash of skippable items" do
+      @b.resume = true
+      @b.progress_log_file = 'spec/test_data/input/mock_progress_log.yaml'
+      @b.skippables.should == {}
+      @b.load_skippables
+      @b.skippables.should == { "aa" => true, "bb" => true }
+    end
+
+  end
+
+  ####################
+
   describe "validate_usage()" do
 
     before(:each) do
@@ -537,6 +561,29 @@ describe PreAssembly::Bundle do
         dobj.object_files = [ bad_image ]
         lambda { @b.validate_files(dobj) }.should raise_error(exp_msg)
       end
+    end
+
+  end
+
+  ####################
+
+  describe "objects_to_process()" do
+
+    before(:each) do
+      bundle_setup :proj_revs
+      @b.discover_objects
+      @b.skippables = {}
+    end
+
+    it "should return all objects if there are no skippables" do
+      @b.objects_to_process.should == @b.digital_objects
+    end
+
+    it "should return a filtered list of digital objects" do
+      @b.skippables[@b.digital_objects[-1].unadjusted_container] = true
+      o2p = @b.objects_to_process
+      o2p.size.should == @b.digital_objects.size - 1
+      o2p.should == @b.digital_objects[0 .. -2]
     end
 
   end

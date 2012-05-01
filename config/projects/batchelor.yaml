@@ -50,3 +50,4 @@ show_progress:        true
 limit_n:              5000
 uniqify_source_ids:   false
 cleanup:              false
+resume:               false
