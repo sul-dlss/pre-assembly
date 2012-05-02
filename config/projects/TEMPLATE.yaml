@@ -1,0 +1,105 @@
+# General YAML conventions:
+#
+#    ~         nil
+#    true      Boolean
+#    false     Boolean
+#    'foo'     a string
+
+
+# General options relating to project type and the registration of objects.
+project_style:
+  # A general designation of the project type, style, and input structure.
+  content_structure:  'simple_image'
+                      'simple_book'
+                      'smpl'
+
+  # Whether the pre-assembly process should register the objects.
+  should_register:    true
+                      false
+
+  # The method pre-assembly uses to obtain a druid for the digital object.
+  get_druid_from:     'suri'               # Used with should_register = true.
+                      'container'          # Object is contained in a druid subdir.
+                      'container_barcode'  # Object is contained in a barcode subdir.
+
+  # Whether to mint mock druids.
+  # Used only by developers.
+  use_druid_minter:   false
+                      true    # Mints a mock druid rather than using Suri.
+
+
+# Paths to the pre-assembly input and output.
+bundle_dir:           'foo/bar/revs'     # Input location (the "bundle").
+staging_dir:          '/dor/assembly'    # Where to put the pre-assembled materials.
+
+
+# How will pre-assembly locate objects within the bundle_dir?
+# Here we are discovering the object containers. An object container
+# is either a single file or a single directory.
+object_discovery:
+  # Option 1: use a manifest.
+  use_manifest:       true    # If true, set glob and regex to nil.
+                      false
+
+  # Option 2: directory crawl.
+  # This process has two phases.
+  #
+  #   - A glob pattern is used to find the object containers.
+  #     This pattern is passed to Ruby's Dir.glob().
+  #
+  #   - Optionally, the results of that glob can be filtered,
+  #     retaining only the items matching the given regex.
+  #
+  # Both the glob and regex can be expressed in relative terms --
+  # in other words, they do not need to include the bundle_dir.
+  #
+  # Various examples are shown.
+  glob:               '*'                                    # Everything.
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$' # Druid directories.
+  regex:              '^\d+$'                                # Barcode directories.
+                      '*.tif'                                # Only .tif files.
+  regex:              ~
+                      ''
+
+stageable_discovery:
+  use_container:      true
+  glob:               ~
+  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
+                      '0[12]/'  # The 00, 01, and 02 subdirectories.
+                      '00/*'    # Everything in 00 subdirectory. In the staged materials
+  regex:              ~
+
+content_exclusion:    ~
+
+manifest:             'manifest.csv'
+checksums_file:       'checksums.txt'
+desc_md_template:     'mods_template.xml'
+
+progress_log_file:    'log/progress_revs.yaml'
+project_name:         'Revs'
+apo_druid_id:         'druid:qv648vd4392'
+set_druid_id:         'druid:yt502zj0924'
+
+publish_attr:
+  publish:            'no'
+  shelve:             'no'
+  preserve:           'yes'
+
+compute_checksum:     true
+init_assembly_wf:     false
+
+content_md_creation:
+  style:              :default
+  pre_md_file:        ~
+
+manifest_cols:
+  object_container:   'filename'
+  source_id:          'sourceid'
+  label:              'label'
+
+validate_usage:       true
+show_progress:        true
+limit_n:              10
+uniqify_source_ids:   true
+cleanup:              true
+resume:               false
