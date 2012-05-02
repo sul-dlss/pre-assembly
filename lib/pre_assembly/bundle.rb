@@ -421,12 +421,17 @@ module PreAssembly
     ####
 
     def process_digital_objects
-      log "process_digital_objects()"
+      # Get the non-skipped objects to process.
+      o2p = objects_to_process
+      log "process_digital_objects(#{o2p.size} non-skipped objects)"
+
       # Initialize the progress_log_file, unless we are resuming.
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
-      # Start processing the non-skipped digital objects.
-      objects_to_process.each do |dobj|
+
+      # Start processing.
+      o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
+
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
@@ -435,6 +440,7 @@ module PreAssembly
           # Indicate that we finished.
           dobj.pre_assem_finished = true
           puts dobj.druid.druid if @show_progress
+
         rescue
           # For now, just re-raise any exceptions.
           #
@@ -444,12 +450,14 @@ module PreAssembly
           #   - then catch such errors here, allowing the current
           #     digital object to fail but the remaining objects to be processed.
           raise
+
         ensure
           # Log the outcome no matter what.
           File.open(@progress_log_file, 'a') do |f|
             f.puts log_progress_info(dobj).to_yaml
           end
         end
+
       end
     end
 
