@@ -55,8 +55,8 @@ object_discovery:
   #
   # Various examples are shown.
   glob:               '*'                                    # Everything.
-  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$' # Druid directories.
-  regex:              '^\d+$'                                # Barcode directories.
+                      '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$' # Druid directories.
+                      '^\d+$'                                # Barcode directories.
                       '*.tif'                                # Only .tif files.
   regex:              ~
                       ''
@@ -64,7 +64,7 @@ object_discovery:
 stageable_discovery:
   use_container:      true
   glob:               ~
-  regex:              '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
+                      '(?ix) ^ ( \d+\.tif | descMetadata\.xml ) $'
                       '0[12]/'  # The 00, 01, and 02 subdirectories.
                       '00/*'    # Everything in 00 subdirectory. In the staged materials
   regex:              ~
@@ -81,12 +81,12 @@ apo_druid_id:         'druid:qv648vd4392'
 set_druid_id:         'druid:yt502zj0924'
 
 publish_attr:
-  publish:            'no'
-  shelve:             'no'
-  preserve:           'yes'
+  publish:            ~
+  shelve:             ~
+  preserve:           ~
 
 compute_checksum:     true
-init_assembly_wf:     false
+init_assembly_wf:     true
 
 content_md_creation:
   style:              :default
@@ -99,7 +99,7 @@ manifest_cols:
 
 validate_usage:       true
 show_progress:        true
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
+limit_n:              ~
+uniqify_source_ids:   false
+cleanup:              false
 resume:               false
