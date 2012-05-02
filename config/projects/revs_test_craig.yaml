@@ -4,7 +4,7 @@ project_style:
   get_druid_from:     'suri'
   use_druid_minter:   false
 
-bundle_dir:           '/home/lyberadmin/pre-assembly/revs_test_run/input'
+bundle_dir:           '/dor/content/Revs/May2012/Craig'
 staging_dir:          '/dor/assembly'
 
 manifest:             'manifest.csv'
@@ -47,7 +47,7 @@ content_exclusion:    ~
 
 validate_usage:       true
 show_progress:        true
-limit_n:              10
+limit_n:              30
 uniqify_source_ids:   false
 cleanup:              false
 resume:               false
