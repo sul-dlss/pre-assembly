@@ -14,7 +14,7 @@ desc_md_template:     'mods_template.xml'
 progress_log_file:    'log/progress_revs.yaml'
 project_name:         'Revs'
 apo_druid_id:         'druid:qv648vd4392'
-set_druid_id:         'druid:yt502zj0924'
+set_druid_id:         'druid:wz243gf4151'
 
 publish_attr:
   publish:            'no'
