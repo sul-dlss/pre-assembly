@@ -8,10 +8,10 @@ bundle_dir:           '/dor/content/Revs/May2012/Chambers'
 staging_dir:          '/dor/assembly'
 
 manifest:             'manifest.csv'
-checksums_file:       'checksums.txt'
+checksums_file:       'output.md5'
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'log/progress_revs.yaml'
+progress_log_file:    'log/progress_revs_chambers.yaml'
 project_name:         'Revs'
 apo_druid_id:         'druid:qv648vd4392'
 set_druid_id:         'druid:wz243gf4151'
