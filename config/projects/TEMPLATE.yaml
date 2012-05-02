@@ -8,29 +8,30 @@
 
 # General options relating to project type and the registration of objects.
 project_style:
-  # A general designation of the project type, style, and input structure.
-  content_structure:  'simple_image'
-                      'simple_book'
-                      'smpl'
+  # A general designation of the project type, style, and input structure.  This defines howe base content metadata is generated
+  content_structure:  'simple_image'  # generates content metadata with image resource types by looking at actual files in object
+                      'simple_book'   # generates content metadata with book/page resource types by looking at actual files in object
+                      'smpl'          # generates content metadata by converting from SMPL provided pre-content metadata, ignoring actual files
 
   # Whether the pre-assembly process should register the objects.
-  should_register:    true
-                      false
+  should_register:    true            # if objects are not yet registered
+                      false           # if the objects are already registered
 
-  # The method pre-assembly uses to obtain a druid for the digital object.
-  get_druid_from:     'suri'               # Used with should_register = true.
-                      'container'          # Object is contained in a druid subdir.
+  # The method pre-assembly uses to obtain a druid for the digital object. If "should_register" is true above, you currently
+  # must specify "suri".  If it is false, you can choose another method
+  get_druid_from:     'suri'               # Only used with should_register = true.
+                      'container'          # Object is contained in a druid subdir, i.e. subfolder name is the druid.
                       'container_barcode'  # Object is contained in a barcode subdir.
 
   # Whether to mint mock druids.
   # Used only by developers.
-  use_druid_minter:   false
-                      true    # Mints a mock druid rather than using Suri.
+  use_druid_minter:   false   # This is what you will usually want and will follow the 'get_druid_from' specified above.
+                      true    # Mints a mock druid rather than using Suri. Useful in development.
 
 
 # Paths to the pre-assembly input and output.
-bundle_dir:           'foo/bar/revs'     # Input location (the "bundle").
-staging_dir:          '/dor/assembly'    # Where to put the pre-assembled materials.
+bundle_dir:           'foo/bar/revs'     # Input location for all of your project content (the "bundle").  May contain images directly, or may contain folders, one per object (usually named by druid).
+staging_dir:          '/dor/assembly'    # Where to put the pre-assembled materials.  NOTE: This is where the assembly robots expect to find the assembled content.  If changed, assembly robots will not work.  Only change if you really need to.
 
 
 # How will pre-assembly locate objects within the bundle_dir?
