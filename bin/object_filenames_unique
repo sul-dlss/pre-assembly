@@ -3,7 +3,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n    pre-assemble YAML_CONFIG_FILE\n"
+  abort "#{error_msg}\n\nUsage:\n    object_filenames_unique YAML_CONFIG_FILE\n"
 end
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
