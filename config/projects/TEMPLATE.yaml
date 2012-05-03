@@ -175,10 +175,10 @@ project_name:      'Foo'                   # Required.
 progress_log_file: 'log/progress_foo.yaml' # Required. Typically based on project name.
 
 apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
-                                           # the objects.
+                                           # the objects.  Include druid prefix.
 
 set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
-                                           # the object with a set in Dor.
+                                           # the object with a set in Dor. Include druid prefix.
 
 
 ####
