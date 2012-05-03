@@ -9,7 +9,7 @@ gem 'rest-client'
 gem 'rake'
 gem 'checksum-tools'
 gem 'assembly-objectfile', '~> 1.1.1'
-gem 'assembly-image'
+gem 'assembly-image', '~>1.2.0'
 
 group :test do
   gem 'equivalent-xml'
