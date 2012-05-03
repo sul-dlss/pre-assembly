@@ -191,8 +191,8 @@ content_exclusion: ~             # Include all staged files in content metadata.
 
 # The method used to generate content metadata.
 content_md_creation:
-  style:       :default                 # Used by most projects.
-               :smpl                    # Used by SMPL projects.
+  style:       'default'                # Used by most projects.
+               'smpl'                   # Used by SMPL projects.
   pre_md_file: 'preContentMetadata.xml' # Name of the pre-content metadata file.
                                         # Set to nil if style = :default.
 
