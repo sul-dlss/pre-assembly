@@ -432,6 +432,7 @@ module PreAssembly
       # Start processing.
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
+        log "  - N object files: #{dobj.object_files.size}"
 
         begin
           # Try to pre_assemble the digital object.
