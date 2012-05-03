@@ -25,7 +25,7 @@ compute_checksum:     true
 init_assembly_wf:     false
 
 content_md_creation:
-  style:              :default
+  style:              'default'
   pre_md_file:        ~
 
 object_discovery:
