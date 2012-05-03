@@ -1,3 +1,3 @@
 module PreAssembly
-  VERSION = "1.1.6"
+  VERSION = "1.1.7"
 end

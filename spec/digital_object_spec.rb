@@ -2,8 +2,8 @@ describe PreAssembly::DigitalObject do
 
   before(:each) do
     @ps = {
-      :apo_druid_id  => 'qq333xx4444',
-      :set_druid_id  => 'mm111nn2222',
+      :apo_druid_id  => 'druid:qq333xx4444',
+      :set_druid_id  => 'druid:mm111nn2222',
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',

@@ -188,7 +188,7 @@ module PreAssembly
     end
 
     def add_relationship_params
-      [:is_member_of, "info:fedora/druid:#{@set_druid_id}"]
+      [:is_member_of, "info:fedora/#{@set_druid_id}"]
     end
 
     def unregister
