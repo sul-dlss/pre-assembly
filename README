@@ -6,16 +6,38 @@ assembled and then accessioned in SULAIR digital library.
 
 ==Running
 
-1. Create project-configuration YAML file in config/projects.
+1. Create project-configuration YAML file.
+   See config/projects/TEMPLATE.yaml for a documented example.
 
-2. Run pre-assembly:
+2. Run pre-assembly locally:
 
-    bin/pre-assemble config/projects/YAML_FILE_NAME
+    # Normal run.
+    bin/pre-assemble YAML_FILE
+
+    # Run in resume mode.
+    bin/pre-assemble YAML_FILE --resume
+
+3. Running in the production environment:
+
+    - Navigate to the production box, in the pre-assembly area.
+    - Set the ROBOT_ENVIRONMENT.
+    - Run pre-assembly with nohup and in the background (&).
+    - Optionally, include the --resume option.
+
+    ssh lyberadmin@sul-lyberservices-prod.stanford.edu
+    cd /home/lyberadmin/pre-assembly/current
+    ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
+
+    # Various ways to monitor progress:
+    The workflow grid in Argo.
+    grep pid PROGRESS_LOG          # As defined in YAML progress_log_file.
+    tail -999f log/production.log  # Detailed logging info.
+    tail -999f nohup.out           # Errors, etc.
 
 
 ==Deployment
 
-See the capfile.
+See Capfile.
 
 
 ==Setting up project for local development:
@@ -50,8 +72,3 @@ Running tests:
     # Unit tests and integration tests separately.
     bundle exec rspec spec
     bundle exec rspec integration
-
-
-==Generate Documentation
-
-    rdoc --exclude spec --main lib/preassembly.rb
