@@ -1,4 +1,3 @@
-#NOTE: SMPL style projects will always assume sub-folder structure in objects is being flattened when transforming preContentMetadata into contentMetdata
 project_style:
   content_structure:  'smpl'
   should_register:    false
@@ -26,7 +25,7 @@ compute_checksum:     false
 init_assembly_wf:     true
 
 content_md_creation:
-  style:              :smpl
+  style:              'smpl'
   pre_md_file:        'preContentMetadata.xml'
 
 object_discovery:

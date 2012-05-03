@@ -58,9 +58,10 @@ module PreAssembly
     def initialize(params = {})
       # Unpack the user-supplied parameters, after converting
       # all hash keys and some hash values to symbols.
-      conf   = Dor::Config.pre_assembly
       params = Bundle.symbolize_keys params
       Bundle.values_to_symbols! params[:project_style]
+      cmc          = params[:content_md_creation]
+      cmc[:style]  = cmc[:style].to_sym
       @user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
@@ -431,6 +432,7 @@ module PreAssembly
       # Start processing.
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
+        log "  - N object files: #{dobj.object_files.size}"
 
         begin
           # Try to pre_assemble the digital object.
