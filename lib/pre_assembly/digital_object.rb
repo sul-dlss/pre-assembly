@@ -229,9 +229,10 @@ module PreAssembly
       # Create the druid tree within the staging directory,
       # and then copy-recursive all stageable items to that area.
       @druid_tree_dir = @druid.path(@staging_dir)
+      log "    - staging(druid_tree_dir = #{@druid_tree_dir.inspect})"
       druid_tree_mkdir @druid_tree_dir
       @stageable_items.each do |si_path|
-        log "    - staging(#{si_path}, #{@druid_tree_dir})"
+        log "      - staging(#{si_path}, #{@druid_tree_dir})", :debug
         @stager.call si_path, @druid_tree_dir
       end
     end
