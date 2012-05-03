@@ -2,24 +2,17 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-source_ids = [
-  'revs:foo-1.0',
-  'revs:foo-2.1',
-  'revs:foo-2.2',
-  'REVS:foo-1.0',
-  'REVS:foo-2.1',
-  'REVS:foo-2.2',
+druids = [
+  'druid:xx111yy2222',
+  'druid:aa111bb2222',
 ]
 
-source_ids.each do |sid|
-  druids = Dor::SearchService.query_by_id sid
-  druids.each do |druid|
-    puts "Deleting #{druid}."
-    begin
-      dobj = Dor::Config.fedora.client["objects/#{druid}"]
-      dobj.delete
-    rescue
-      puts "an error occurred trying to delete #{druid}"
-    end
-  end
+druids.each do |druid|
+	puts "Deleting #{druid}."
+	begin
+	  dobj = Dor::Config.fedora.client["objects/#{druid}"]
+	  dobj.delete
+	rescue
+	  puts "an error occurred trying to delete #{druid}"
+	end
 end
