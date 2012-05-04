@@ -144,27 +144,33 @@ module PreAssembly
     end
 
 
-    ####
-    # The main process.
-    ####
-
     def confirm_object_filenames_unique
       # Runs a confirmation for each digital object and confirms there are 
       # no duplicate filenames contained within the object. This is useful
       # if you will be flattening the folder structure during pre-assembly.
       log ""
       log "confirm_object_filenames_unique(#{run_log_msg})"
+      puts "\nProject : #{@project_name}"
+      puts "\nObject Container : Number of Items"
       unique_objects=0
       discover_objects
+      total_objects=@digital_objects.size
       @digital_objects.each do |dobj|
          bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
          is_unique=object_filenames_unique? dobj
          unique_objects+=1 if is_unique
-         puts "#{bundle_id} has duplicate filenames" if @show_progress && !is_unique
+         message="#{bundle_id} : #{dobj.object_files.count}"
+         message += ": Duplicate filenames!" if !is_unique
+         puts message
       end
-      puts "Total objects with non unique filenames: #{@digital_objects.count - unique_objects}" if @show_progress
+      puts "\nTotal Discovered Objects: #{total_objects}"
+      puts "Objects with non unique filenames: #{total_objects - unique_objects}\n"
       return processed_pids      
     end
+
+    ####
+    # The main process.
+    ####
     
     def run_pre_assembly
       # Runs the pre-assembly process and returns an array of PIDs
