@@ -13,7 +13,9 @@ project_tag = ARGV.shift;
 
 resp = Dor::SearchService.query "project_tag_facet:#{project_tag}", :rows => 100, :fl => 'id, wf_wps_facet, source_id_t, objectLabel_t'
 
-CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_tag}.gsub!(' ','_')_report.csv"), "wb") do |csv|
+project_tag.gsub!(' ','_')
+
+CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_tag}_report.csv"), "wb") do |csv|
 
   # header row 
   csv << ["druid", "label", "source_id", "accessioned", "shelved", "purl"] 
