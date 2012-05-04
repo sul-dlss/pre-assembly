@@ -1,0 +1,34 @@
+#! /usr/bin/env ruby
+# This code might not be needed any longer.
+
+require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
+
+def help(error_msg)
+  abort "#{error_msg}\n\nUsage:\n    ./bin/generate_collection_report PROJECT_TAG\n"
+end
+
+help "Incorrect number of arguments." unless ARGV.size == 1
+
+project_tag = ARGV.shift;
+
+resp = Dor::SearchService.query "project_tag_facet:#{project_tag}", :rows => 100, :fl => 'id, wf_wps_facet, source_id_t, objectLabel_t'
+
+CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_tag}.gsub!(' ','_')_report.csv"), "wb") do |csv|
+
+  # header row 
+  csv << ["druid", "label", "source_id", "accessioned", "shelved", "purl"] 
+  # data rows 
+  resp.docs.each do |doc|
+    druid = doc[:id]
+
+    label = doc[:objectLabel_t]
+    accessioned = doc[:wf_wps_facet].include? "accessionWF:publish:completed"
+    shelved = doc[:wf_wps_facet].include? "accessionWF:shelve:completed"
+    source_id = doc[:source_id_t]
+    purl_link = ""
+    val = druid.split(/:/).last
+    purl_link = File.join(Dor::Config.purl.base_url, val) if shelved
+    csv << [druid, label, source_id, accessioned, shelved, purl_link]
+  end
+end
+
