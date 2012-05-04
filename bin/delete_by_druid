@@ -3,8 +3,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 druids = [
-  'druid:xx111yy2222',
-  'druid:aa111bb2222',
+'druid:bd638hf0795',
+'druid:kn773xm8752',
+'druid:gr924dw1729'
 ]
 
 druids.each do |druid|

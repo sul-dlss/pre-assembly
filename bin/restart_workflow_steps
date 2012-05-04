@@ -1,32 +1,28 @@
 #! /usr/bin/env ruby
 
-# This code might not be needed any longer.
+# Restar the assembly or accessioning workflow for specific source IDs or DRUIDs
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
+# if you specify source IDs, they will be used, otherwise you can specify druids below directly
 source_ids = [
-  'REVS:2011-023Cham-1.0_0001',
-  'REVS:2011-023Cham-1.0_0002',
-  'REVS:2011-023Cham-1.0_0003',
-  'REVS:2011-023Cham-1.0_0004',
-  'REVS:2011-023Cham-1.0_0005',
-  'REVS:2011-023Cham-1.0_0006',
-  'REVS:2011-023Cham-1.0_0007',
-  'REVS:2011-023Cham-1.0_0008',
-  'REVS:2011-023Cham-1.0_0009',
-  'REVS:2011-023Cham-1.0_0010'
+  'Revs:2011-023CHAM-1.0_0002',
+  'Revs:2011-023CHAM-1.0_0003'
 ]
 
-source_ids.each do |sid|
-  druids = Dor::SearchService.query_by_id sid
-  druids.each do |druid|
-    puts "Updating #{druid}."
-		begin
-		#	Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'content-metadata', 'waiting'
-			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'publish', 'waiting'
-			Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
-	  rescue
-			puts "an error occurred trying to update workflows for #{druid}"
-		end
-  end
+# druids= [
+#  'druid:xxxxxxxx'
+# ]
+
+druids=source_ids.collect {|sid| Dor::SearchService.query_by_id(sid)}.flatten if source_ids.size > 0 
+
+druids.each do |druid|
+	puts "Updating #{druid}."
+	begin
+		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'rights-metadata', 'waiting'
+		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'descriptive-metadata', 'waiting'
+		#Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
+    rescue
+		puts "an error occurred trying to update workflows for #{druid}"
+	end
 end
