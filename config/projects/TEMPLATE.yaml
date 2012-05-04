@@ -10,14 +10,16 @@
 
 
 ####
-# General options relating to project type and the registration of objects.
+# General options relating to project type and the registration of objects.  For each option, you must select only one value 
+# from the options shown.
 ####
 
 project_style:
 
   # Defines how content metadata is generated.
   content_structure: 'simple_image'  # Basic content metadata. Every file in the digital
-                                     # object will appear as a <file> node.
+                                     # object will appear as a <file> node in <contentMetadata
+									 # with resource type="image"
 
                      'simple_book'   # Like simple_image, but with <contentMetadata
                                      # type="book"> and <resource type="page">.
@@ -26,7 +28,7 @@ project_style:
                                      # pre-content metadata file supplied by SMPL.
 
   # Whether the pre-assembly process should register the objects.
-  should_register: true
+  should_register: true   # Use if the objects are not yet registered
                    false  # Use if the objects are already registered.
 
   # Pre-assembly must obtain a druid for every object.
@@ -48,18 +50,19 @@ project_style:
 # Paths to the pre-assembly input and output.
 ####
 
-bundle_dir:  'foo/bar/revs'  # Input location for the project content (i.e., the 
+bundle_dir:  '/foo/bar/revs'  # Input location for the project content (i.e., the 
                              # "bundle"). May contain images directly or may contain 
-                             # folders, one per object, usually named by druid.
+                             # folders, one per object, usually named by druid. 
+							 # A fully qualified path.
 
 staging_dir: '/dor/assembly' # Where to put the pre-assembled materials. This is
                              # where the assembly robots expect to find the assembled
                              # content. The value is rarely changed, expect by 
                              # developers in special circumstances.
-
+							 # A fully qualified path.
 
 ####
-# How will pre-assembly locate objects within the bundle_dir?
+# Specif how pre-assembly should locate objects within the bundle_dir.
 # Here we are discovering the object containers. An object container
 # is either a single file or a single directory.
 ####
@@ -68,15 +71,17 @@ object_discovery:
 
   # Option 1: use a manifest.
   use_manifest: true    # If true, set glob and regex to nil.
-                false
+                false   # If false, set glob and regex paramaters to match your sub-directories
 
   # Option 2: two-phase directory crawl.
   #
-  #   - A glob pattern is used to find the object containers.
-  #     This pattern is passed to Ruby's Dir.glob().
+  #   - A glob pattern is used to find the object containers within the 'bundle_dir' set above.
+  #     This pattern is passed to Ruby's Dir.glob(). 
+  #     See http://www.ruby-doc.org/core-1.9.3/Dir.html#method-c-glob
   #
-  #   - Optionally, the results of that glob can be filtered,
-  #     retaining only the items matching the given regex.
+  #   - Optionally, the results of that glob pattern can be filtered,
+  #     retaining only the items matching the given regex (Ruby regular expression). 
+  #     See http://www.ruby-doc.org/core-1.9.3/Regexp.html
   #
   # Both the glob and regex should be expressed in relative terms --
   # in other words, they do not include the bundle_dir.
@@ -91,15 +96,15 @@ object_discovery:
 
 
 ####
-# Once object containers have been identified, what items within those
+# Once object containers have been identified, specify which files within those
 # containers should be staged (i.e., copied to the staging_dir).
 ####
 
 stageable_discovery:
 
-  # Option 1: use the object container itself.
+  # Option 1: use the object container itself.  This will simply stage the entire object directory that was matched with the glob above.
   use_container: true    # If true, set glob and regex to nil.
-                 false
+                 false   # If false, use glob and regex below.
 
   # Option 2: a two-phase container crawl.
   #
@@ -114,7 +119,7 @@ stageable_discovery:
   #       1.jp2
   #       2.jp2
   #
-  # If glob = '*', both the 00 and 01 subdirectories will be staged, in
+  # If glob = '*', both the 00 and 01 subdirectories will be staged in
   # their entirely, preserving the original structure.
   #
   # If glob = '00', only the 00 subdirectory will be staged, preserving
@@ -131,13 +136,17 @@ stageable_discovery:
   # As above, express the glob and regex in relative terms -- in 
   # this case, relative to the container.
   #
+  #  Optionally, the results of that glob pattern can be filtered,
+  #     retaining only the items matching the given regex (Ruby regular expression). 
+  #     See http://www.ruby-doc.org/core-1.9.3/Regexp.html
+  #
   # Various examples are shown.
   glob:  '0[12]/'  # Stage the 00, 01, and 02 subdirectories.
-         '00/*'    # Stage the items in the 00 subdirectory.
+         '00/*'    # Stage the items in the 00 subdirectory only, but not the '00' folder itself.
          '*/*'     # Stage the items residing at the second level in the structure.
-         '**/*'    # Stage all leaf items. Results it total flattening. Use with caution.
+         '**/*'    # Stage all leaf items. Results it total flattening. Use with caution since it may cause file name clashes.
 
-  regex: ~                       # No filtering.
+  regex:  ~                       # No filtering.
          '(?ix) \. (tif|xml) $'  # Stage only items with .tif and .xml extentions.
 
 
@@ -148,9 +157,9 @@ stageable_discovery:
 # to bundle_dir.
 ####
 
-manifest:         'manifest.csv'       # The manifest.
-checksums_file:   'checksums.txt'      # Checksums (in default md5sum format).
-desc_md_template: 'mods_template.xml'  # Descriptive metadata XML template.
+manifest:         'manifest.csv'       # The manifest file, if 'use_manifest' is true.  Otherwise, set to ~
+checksums_file:   'checksums.txt'      # A provider checksum file (in default md5sum format).  If none provided, set to ~
+desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML template to use in conjunction with the manifest.
 
 
 ####
@@ -161,7 +170,7 @@ desc_md_template: 'mods_template.xml'  # Descriptive metadata XML template.
 ####
 
 manifest_cols:
-  object_container:   'filename'   # Required.
+  object_container:   'filename'   # Required, indicates the location of the file relative to the bundle directory.
   source_id:          'sourceid'   # Required if pre-assembly is registering the objects.
   label:              'label'      # Ditto.
 
@@ -170,15 +179,17 @@ manifest_cols:
 # General project information.
 ####
 
-project_name:      'Foo'                   # Required.
+project_name:      'Foo'                   # Required.  If objects are not yet registered, this will be used as a prefix to the sourceID and will also become a project tag in DOR for each object..
 
-progress_log_file: 'log/progress_foo.yaml' # Required. Typically based on project name.
+progress_log_file: '/log/progress_foo.yaml' # Required. Typically based on project name.  A fully qualified path.
 
 apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
                                            # the objects.  Include druid prefix.
 
 set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
                                            # the object with a set in Dor. Include druid prefix.
+										   # Note that if you need to attach specific objects in your bundle
+										   # into different sets, you will need to run pre-assembly twice with two different YAML files.
 
 
 ####
@@ -192,17 +203,17 @@ content_exclusion: ~             # Include all staged files in content metadata.
 # The method used to generate content metadata.
 content_md_creation:
   style:       'default'                # Used by most projects.
-               'smpl'                   # Used by SMPL projects.
-  pre_md_file: 'preContentMetadata.xml' # Name of the pre-content metadata file.
-                                        # Set to nil if style = :default.
-
+               'smpl'                   # Only used by SMPL projects.  Will generate a content metadata file using the SMPL preContentMetadata.
+  pre_md_file: ~ 						# Name of the pre-content metadata file. Set to nil if style = 'default' (common scenario)
+  			   'preContentMetadata.xml' # Currently only use by SMPL. 
+  										
 
 ####
 # Attributes related common-accessioning steps.
 ####
 
 publish_attr:
-  publish:  ~      # Most projects should set these values to nil.
+  publish:  ~      # Most projects should set these values to nil.  If specified here, each file in the contentMetadata will get these attributes.  If not specified or nil, they will be added by the assembly robots based on mimetype.
   shelve:   ~
   preserve: ~
 
@@ -222,10 +233,11 @@ resume:           false  # If true, pre-assembly will skip objects that were
                          # option.
 
 limit_n:          ~      # Set to an integer if you want to process only a limited
-                         # number of the discovered objects.
+                         # number of the discovered objects.  Useful for testing.
 
 init_assembly_wf: true   # Whether pre-assembly should initiate the assembly
-                         # workflow for the object.
+                         # workflow for the object.  Should always be true except for testing purposes.
+						 # If set to false, the assembly robots will not operate.
 
 ####
 # Other run options, mainly relevant for developers.
@@ -238,11 +250,11 @@ compute_checksum:   true   # Whether pre-assembly should compute checksums.
 validate_usage:     true   # Whether pre-assembly should confirm that all expected
                            # YAML parameters have been supplied.
 
-show_progress:      true   # Whether to print druids as they are pre-assembled.
+show_progress:      true   # Whether to print druids as they are pre-assembled on the command line.
 
 uniqify_source_ids: false  # If true, pre-assembly attacheds a timestamp to source
-                           # IDs. Used during integration testing.
+                           # IDs. Used during integration testing to avoid duplicate source ID errors that come from DOR.
 
-cleanup:            false  # If true, pre-assembly deletes objects from Dor after
+cleanup:            false  # If true, pre-assembly deletes objects from DOR after
                            # pre-assembly finishes. Relevant only during development.
 

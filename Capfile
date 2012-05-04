@@ -2,7 +2,7 @@
 #
 # 1) Setup directory structure on remote VM.
 #
-#    $ cap dev deploy:setup
+#    $ cap ENVIRONMENT deploy:setup
 #
 # 2) Manually copy files to $application/shared.
 # 
@@ -10,12 +10,17 @@
 #       - certs to config/certs.
 #
 #
-# 3) $ cap dev deploy:update
+# 3) $ cap ENVIRONMENT deploy:update
 #
 # Subsequent deployments:
 #
-#   $ cap dev deploy
+#   $ cap ENVIRONMENT deploy
 #
+#
+# ENVIRONMENT can be:
+#  * testing
+#  * dev
+#  * production
 
 load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 require 'dlss/capistrano/robots'
