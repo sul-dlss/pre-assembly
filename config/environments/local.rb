@@ -24,6 +24,10 @@ Dor::Config.configure do
   solrizer.url 'https://dor-dev.stanford.edu/solr/solrizer'
   workflow.url 'http://lyberservices-dev.stanford.edu/workflow/'
 
+  purl do
+    base_url 'https://purl-test.stanford.edu/'
+  end
+
   dor do
     service_root 'https://dorAdmin:dorAdmin@lyberservices-dev.stanford.edu'
   end
