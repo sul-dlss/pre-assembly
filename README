@@ -39,12 +39,14 @@ You may also have to move a small batch of test content to a location that is vi
 4. Make sure you have an APO for your object, and that the administrativeMetadata data stream has the <assemblyWF> defined in it.  If it does not, go to https://consul.stanford.edu/display/APO/Home and find the "Current FoXML APO template" link at the bottom of the page.  Download and open the template, find the <assembly> node and copy it.  Go to Fedora admin for each relevant environment (test/production) and this node to the administrativeMetadata stream.  If you don't have this workflow defined in your APO, then the assembly robots will never operate and accessioning will not operate.
 This APO should be defined using the same DRUID in test and production if you intend to run in both locations.
 
-5. If you are flattening each object's folder structure during pre-assembly (e.g. each object has images in a '00' and '05' directory, but you don't want to retain those folders when accessioning), check to make sure each file in a given object has unique filenames.
-To do this, run this tool:
+5. To check your YAML configuration, perform a dry discovery run.  This is also important if you are flattening each object's folder structure
+during pre-assembly (e.g. each object has images in a '00' and '05' directory, but you don't want to retain those folders when accessioning), 
+since you will want to check to make sure each file in a given object has unique filenames.
 
-   bin/object_filenames_unique YAML_FILE
+   bin/count_objects YAML_FILE
 
-You will see a report of any objects which have duplicate filenames, or a message if none are found.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
+You will see a report containing the number of objects discovered, the names of each contained, and the files found in that container.
+You will also see any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
 
 6. To run pre-assembly locally:
 
