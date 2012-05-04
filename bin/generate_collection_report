@@ -1,5 +1,4 @@
 #! /usr/bin/env ruby
-# This code might not be needed any longer.
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
