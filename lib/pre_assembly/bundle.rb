@@ -45,7 +45,7 @@ module PreAssembly
       :provider_checksums,
       :digital_objects,
       :skippables,
-      :desc_md_template_xml,
+      :desc_md_template_xml
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -144,16 +144,21 @@ module PreAssembly
     end
 
 
-    def confirm_object_filenames_unique
+    def discovery_report
       # Runs a confirmation for each digital object and confirms there are 
       # no duplicate filenames contained within the object. This is useful
       # if you will be flattening the folder structure during pre-assembly.
       log ""
-      log "confirm_object_filenames_unique(#{run_log_msg})"
+      log "discovery_report(#{run_log_msg})"
       puts "\nProject : #{@project_name}"
+      puts "Directory : #{@bundle_dir}"
+      puts "NOTE: You appear to be using a manifest file - this method is not very useful" if @manifest
       puts "\nObject Container : Number of Items"
       unique_objects=0
+      entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
+      total_entries_in_bundle_directory=entries_in_bundle_directory.count
       discover_objects
+      objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
       total_objects=@digital_objects.size
       @digital_objects.each do |dobj|
          bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
@@ -164,10 +169,36 @@ module PreAssembly
          puts message
       end
       puts "\nTotal Discovered Objects: #{total_objects}"
-      puts "Objects with non unique filenames: #{total_objects - unique_objects}\n"
+      puts "Total Files and Folders in bundle directory: #{total_entries_in_bundle_directory}"
+      if total_entries_in_bundle_directory != total_objects
+        puts "List of entries in bundle directory that will not be discovered: " 
+        puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
+      end
+      puts "\nObjects with non unique filenames: #{total_objects - unique_objects}"
       return processed_pids      
     end
 
+    #TODO - This method needs to be fleshed out
+    # def confirm_object_structure
+    #   log ""
+    #   log "confirm_object_structure(#{run_log_msg})"  
+    #    puts "\nProject : #{@project_name}"
+    #    if @manifest
+    #      puts "You are using a manifest file.  This method is not useful."
+    #      return
+    #    else
+    #      puts "\nObject Container : Number of Items"
+    #      unique_objects=0
+    #      discover_objects
+    #      total_objects=@digital_objects.size
+    #      @digital_objects.each do |dobj|
+    #         puts dobj.unadjusted_container
+    #      end
+    #      puts "\nTotal Discovered Objects: #{total_objects}"
+    #      return processed_pids    
+    #   end
+    # end
+    
     ####
     # The main process.
     ####

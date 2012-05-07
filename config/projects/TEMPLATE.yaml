@@ -93,8 +93,8 @@ object_discovery:
   regex: ~                                      # No filtering.
          '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$' # Only druid directories.
          '^\d+$'                                # Only barcode directories.
-
-
+  
+  
 ####
 # Once object containers have been identified, specify which files within those
 # containers should be staged (i.e., copied to the staging_dir).
