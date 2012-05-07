@@ -3,7 +3,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n    object_filenames_unique YAML_CONFIG_FILE\n"
+  abort "#{error_msg}\n\nUsage:\n    discovery_report YAML_CONFIG_FILE\n"
 end
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
@@ -12,10 +12,9 @@ yaml_config = ARGV.shift
 help "YAML file not found." unless File.file? yaml_config
 params = YAML.load(File.read yaml_config)
 
-# Run pre-assembly.
 begin
   b = PreAssembly::Bundle.new params
-  b.confirm_object_filenames_unique
+  b.discovery_report
 rescue PreAssembly::BundleUsageError => e
   help e.message
 end
