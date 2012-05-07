@@ -306,7 +306,7 @@ module PreAssembly
     def node_provider_checksum(xml, checksum)
       # Receives Nokogiri builder and a checksum.
       # Adds provider checksum node, but only if there is a checksum.
-      xml.provider_checksum(checksum, :type => 'md5') if checksum
+      xml.checksum(checksum, :type => 'md5') if checksum
     end
 
 
