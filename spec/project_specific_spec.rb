@@ -34,37 +34,37 @@ describe PreAssembly::DigitalObject do
         <resource sequence="1" id="aa111aa1111_1" type="file">
           <label>Tape 1, Side A</label>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_pm.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_a_pm.wav</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_a_pm.wav</checksum>
           </file>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_sh.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_a_sh.wav</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_a_sh.wav</checksum>
           </file>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_sl.mp3">
-            <checksum type="md5">checksumforaa111aa1111_001_a_sl.mp3</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_a_sl.mp3</checksum>
           </file>
           <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111_001_img_1.jpg">
-            <checksum type="md5">checksumforaa111aa1111_001_img_1.jpg</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_img_1.jpg</checksum>
           </file>
         </resource>
         <resource sequence="2" id="aa111aa1111_2" type="file">
           <label>Tape 1, Side B</label>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_pm.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_b_pm.wav</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_b_pm.wav</checksum>
           </file>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_sh.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_b_sh.wav</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_b_sh.wav</checksum>
           </file>
           <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_sl.mp3">
-            <checksum type="md5">checksumforaa111aa1111_001_b_sl.mp3</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_b_sl.mp3</checksum>
           </file>
           <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111_001_img_2.jpg">
-            <checksum type="md5">checksumforaa111aa1111_001_img_2.jpg</provider_checksum>
+            <checksum type="md5">checksumforaa111aa1111_001_img_2.jpg</checksum>
           </file>
         </resource>
         <resource sequence="3" id="aa111aa1111_3" type="file">
           <label>Transcript</label>
           <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111.pdf">
-            <checksum type="md5">checksumforedited_transcript.pdf</provider_checksum>
+            <checksum type="md5">checksumforedited_transcript.pdf</checksum>
           </file>
         </resource>
       </contentMetadata>
