@@ -8,13 +8,15 @@ end
 
 help "Incorrect number of arguments." unless ARGV.size == 1
 
-project_tag = ARGV.shift;
+project_tag = "\"" << ARGV.shift << "\""
 
-resp = Dor::SearchService.query "project_tag_facet:#{project_tag}", :rows => 100, :fl => 'id, wf_wps_facet, source_id_t, objectLabel_t'
+query_tag = "project_tag_facet:#{project_tag}"
 
-project_tag.gsub!(' ','_')
+resp = Dor::SearchService.query query_tag, :rows => 10000, :fl => 'id, wf_wps_facet, source_id_t, objectLabel_t'
 
-CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_tag}_report.csv"), "wb") do |csv|
+project_file_name = project_tag.gsub(' ','_').gsub('"','')
+
+CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_file_name}_report.csv"), "wb") do |csv|
 
   # header row 
   csv << ["druid", "label", "source_id", "accessioned", "shelved", "purl"] 
