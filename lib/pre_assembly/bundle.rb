@@ -50,7 +50,8 @@ module PreAssembly
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
 
-
+    DOR_WORKSPACE='/dor/workspace'
+    
     ####
     # Initialization.
     ####
@@ -177,27 +178,6 @@ module PreAssembly
       puts "\nObjects with non unique filenames: #{total_objects - unique_objects}"
       return processed_pids      
     end
-
-    #TODO - This method needs to be fleshed out
-    # def confirm_object_structure
-    #   log ""
-    #   log "confirm_object_structure(#{run_log_msg})"  
-    #    puts "\nProject : #{@project_name}"
-    #    if @manifest
-    #      puts "You are using a manifest file.  This method is not useful."
-    #      return
-    #    else
-    #      puts "\nObject Container : Number of Items"
-    #      unique_objects=0
-    #      discover_objects
-    #      total_objects=@digital_objects.size
-    #      @digital_objects.each do |dobj|
-    #         puts dobj.unadjusted_container
-    #      end
-    #      puts "\nTotal Discovered Objects: #{total_objects}"
-    #      return processed_pids    
-    #   end
-    # end
     
     ####
     # The main process.
@@ -245,11 +225,12 @@ module PreAssembly
       allowed_steps={:stacks=>'This will remove all files from the stacks that were shelved for the objects',
                      :dor=>'This will delete objects from Fedora',
                      :stage=>"This will delete the staged content in #{@staging_dir}",
-                     :symlinks=>"This will remove the symlinks from /dor/workspace"}
+                     :symlinks=>"This will remove the symlinks from #{DOR_WORKSPACE}"}
       
       num_steps=0
       
-      confirm "Run on #{ENV['ROBOT_ENVIRONMENT']}? Any response other than 'y' or 'yes' will stop the cleanup now." 
+      confirm "Run on '#{ENV['ROBOT_ENVIRONMENT']}'? Any response other than 'y' or 'yes' will stop the cleanup now." 
+      confirm "Are you really sure you want to run on production?  CLEANUP IS NOT REVERSIBLE" if ENV['ROBOT_ENVIRONMENT'] == 'production'
       
       steps.each do |step|
         if allowed_steps.keys.include?(step)
@@ -260,24 +241,52 @@ module PreAssembly
       
       raise "no valid steps specified for cleanup" if num_steps == 0
       
+      case ENV['ROBOT_ENVIRONMENT']
+        when "test"
+          stacks_server="stacks-test"
+        when "production"
+          stacks_server="stacks"
+        when "development"
+          stacks_server="stacks-dev"
+      end
+      
+      # start up an SSH session if we are going to try and remove content from the stacks
+      ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if defined? stacks_server && steps.include?(:stacks)
+      
       # load up progress log and find any finished objects
       YAML.each_document(read_progress_log) do |obj|
-        if obj[:pre_assem_finished]
-          log_and_print "processing #{obj[:pid]}"
-          if steps.include?(:dor)
-            log_and_print '-- deleting object from Fedora'
+        begin
+          if obj[:pre_assem_finished]
+            druid=obj[:pid]
+            druid_tree=Druid.new(druid).tree
+            log_and_print "processing #{druid}"
+            if steps.include?(:dor)
+              log_and_print "-- deleting #{druid} from Fedora #{ENV['ROBOT_ENVIRONMENT']}" 
+              Dor::Config.fedora.client["objects/#{druid}"].delete
+            end
+            if steps.include?(:symlinks)
+              path_to_symlink=File.join(DOR_WORKSPACE,druid_tree)
+              log_and_print "-- deleting symlinks from #{path_to_symlink}"
+              File.delete(path_to_symlink)
+            end
+            if steps.include?(:stage)
+              path_to_content=File.join(@staging_dir,druid_tree)
+              log_and_print "-- deleting content from #{path_to_content}"
+              FileUtils.rm_rf path_to_content
+            end
+            if steps.include?(:stacks)
+              path_to_content=File.join('/stacks',druid_tree)
+              log_and_print "-- removing files from the stacks on #{stacks_server} at #{path_to_content}"
+              ssh_session.exec!("rm -fr #{path_to_content}")
+            end
           end
-          if steps.include?(:symlinks)
-            log_and_print '-- deleting symlinks from /dor/workspace'
-          end
-          if steps.include?(:stage)
-            log_and_print "-- deleting content from #{@staging_dir}"
-          end
-          if steps.include?(:stacks)
-            log_and_print '-- removing files from the stacks'
-          end
+        rescue Exception => e
+          log_and_print "** processing failed for #{druid} with #{e.message}"
+          log e.backtrace.inspect
         end
       end
+      
+      ssh_session.close if defined? ssh_session
             
     end
 

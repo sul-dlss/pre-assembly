@@ -181,7 +181,10 @@ manifest_cols:
 project_name:      'Foo'                   # Required.  If objects are not yet registered, this will be used as a prefix to the sourceID and will also become a project tag in DOR for each object..
 
 progress_log_file: '/log/progress_foo.yaml' # Required. Typically based on project name.  A fully qualified path.
-
+                                            # Be sure to keep your progress log file somewhere useful and be aware 
+                                            # if you restart pre-assembly without using the --resume switch, it will be overwritten.
+                                            # You will need the progress log for cleanup and restarting.
+                                            
 apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
                                            # the objects.  Include druid prefix.
 
