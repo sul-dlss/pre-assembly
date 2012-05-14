@@ -84,6 +84,14 @@ d) the total number and listing of any objects which have duplicate filenames.  
     3. tail -999f log/production.log  # Detailed logging info for the pre-assembly project itself.
     4. tail -999f nohup.out           # Errors, etc from unix output.
 
+==Restarting a job
+
+If you have failed objects during your pre-assembly, these will either cause pre-assembly to terminate immediately (if the failure is non-recoverable)
+or it will continue and log the errors.  The progress log file you specified in your YAML configuration will contain information about which bundles failed.
+You can re-start pre-assembly and ask it to re-try the failed objects and continue with any other objects that it hadn't done yet.  To do this,
+use the --resume flag when you run pre-assembly:
+
+    bin/pre-assemble YAML_FILE --resume
 
 ==Post Accessioning Report
 
