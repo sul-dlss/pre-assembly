@@ -38,7 +38,7 @@ module PreAssembly
 
         # get largest identified sequence value and set it to our beginning counter for resource nodes with no identified sequences
         sequence_values=input_xml.xpath('//resource[@seq]').xpath('@seq').map {|node| node.value.to_i}
-        seq_counter=sequence_values.max
+        seq_counter=sequence_values.max || 0
         
         # generate content metadata
         builder = Nokogiri::XML::Builder.new { |xml|

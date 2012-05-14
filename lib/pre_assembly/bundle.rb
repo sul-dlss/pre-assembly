@@ -236,6 +236,50 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
+    ####
+    # Cleanup of objects and associated files in specified environment using logfile as input
+    ####
+    def cleanup(steps=[])
+      log "cleanup()"
+      
+      allowed_steps={:stacks=>'This will remove all files from the stacks that were shelved for the objects',
+                     :dor=>'This will delete objects from Fedora',
+                     :stage=>"This will delete the staged content in #{@staging_dir}",
+                     :symlinks=>"This will remove the symlinks from /dor/workspace"}
+      
+      num_steps=0
+      
+      confirm "Run on #{ENV['ROBOT_ENVIRONMENT']}? Any response other than 'y' or 'yes' will stop the cleanup now." 
+      
+      steps.each do |step|
+        if allowed_steps.keys.include?(step)
+          confirm "Run step '#{step}'?  #{allowed_steps[step]}.  Any response other than 'y' or 'yes' will stop the cleanup now."
+          num_steps+=1 # count the valid steps found and agreed to
+        end
+      end
+      
+      raise "no valid steps specified for cleanup" if num_steps == 0
+      
+      # load up progress log and find any finished objects
+      YAML.each_document(read_progress_log) do |obj|
+        if obj[:pre_assem_finished]
+          log_and_print "processing #{obj[:pid]}"
+          if steps.include?(:dor)
+            log_and_print '-- deleting object from Fedora'
+          end
+          if steps.include?(:symlinks)
+            log_and_print '-- deleting symlinks from /dor/workspace'
+          end
+          if steps.include?(:stage)
+            log_and_print "-- deleting content from #{@staging_dir}"
+          end
+          if steps.include?(:stacks)
+            log_and_print '-- removing files from the stacks'
+          end
+        end
+      end
+            
+    end
 
     ####
     # Discovery of object containers and stageable items.
@@ -600,6 +644,17 @@ module PreAssembly
       h.each { |k,v| h[k] = v.to_sym if v.class == String }
     end
 
+    def log_and_print(message)
+      puts message if @show_progress
+      log message
+    end
+    
+    def confirm(message)
+      puts message
+      response=gets.chomp.downcase
+      raise "Exiting" if response != 'y' && response != 'yes'
+    end
+    
   end
 
 end
