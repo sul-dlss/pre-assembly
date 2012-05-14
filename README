@@ -84,6 +84,9 @@ d) the total number and listing of any objects which have duplicate filenames.  
     3. tail -999f log/production.log  # Detailed logging info for the pre-assembly project itself.
     4. tail -999f nohup.out           # Errors, etc from unix output.
 
+Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without using the --resume switch, it will be overwritten.
+You will need the progress log for cleanup and restarting.
+
 ==Restarting a job
 
 If you have failed objects during your pre-assembly, these will either cause pre-assembly to terminate immediately (if the failure is non-recoverable)
@@ -91,7 +94,43 @@ or it will continue and log the errors.  The progress log file you specified in 
 You can re-start pre-assembly and ask it to re-try the failed objects and continue with any other objects that it hadn't done yet.  To do this,
 use the --resume flag when you run pre-assembly:
 
-    bin/pre-assemble YAML_FILE --resume
+    ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE --resume
+
+==Cleanup
+
+If you need to cleanup accessioned content on test, you can use the progress log file to indicate which objects you would like removed.  
+
+Use the following script to perform a cleanup:
+
+		bin/cleanup YAML_FILE steps
+		
+where steps is a comma delimited list of any of the following steps defined below:
+
+symlinks == remove symlinks from the /dor/workspace
+stage    == removed staged files (typically stored in /dor/assembly, but the specific area is defined as 'staging_dir' in the YAML file)
+dor      == remove objects from Fedora
+stacks   == remove files from the stacks that were shelved during accessioning ... note this step must be run from a server
+(such as sul-lyberservices-test) and you must be able to authenticate to the relevant stacks server
+
+You can also specify the environment using ROBOT_ENVIRONMENT, just as with a pre-assembly run.  Since this script is destructive, you will need
+to confirm each step.
+
+For example:
+
+		ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs_log.yaml symlinks,stage,dor
+
+==Other Useful Scripts
+
+There are various useful scripts in the bin directory that can be run with "ROBOT_ENVIRONMENT=xxx bin/SCRIPT_NAME"
+
+Open the scripts up to set the required configuration parameters at the top (and you should probably back them out if you are committing the code again).
+
+* delete_by_druid  -- specify DRUIDs that should be deleted from Fedora (can be done via the cleanup methods above as well if you have a progress log file)
+* delete_by_sourceid -- specify source_ids of objects that should be deleted from Fedora
+* restart_workflow_steps -- specify DRUIDs or source_ids along with specific workflow steps that should be reset back to 'waiting'
+* run_all_tests -- run all spec and integration tests.  Note that for integration tests to run, you need to be on the Stanford network.
+* find_workflow_statues -- specify a progress log file and this will tell you if your objects have any errors in the assemblyWF
+
 
 ==Post Accessioning Report
 

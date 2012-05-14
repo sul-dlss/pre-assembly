@@ -12,7 +12,6 @@ end
 steps = %w(
   jp2-create
   checksum-compute
-  checksum-compare
   exif-collect
   accessioning-initiate
 )
