@@ -153,8 +153,7 @@ stageable_discovery:
 ####
 # Additional materials accompaning the bundle.
 #
-# These file names should be expressed in relative terms -- relative
-# to bundle_dir.
+# These file names below should be expressed in relative terms -- relative to bundle_dir.
 ####
 
 manifest:         'manifest.csv'       # The manifest file, if 'use_manifest' is true.  Otherwise, set to ~

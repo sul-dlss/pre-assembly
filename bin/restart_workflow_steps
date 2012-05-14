@@ -5,24 +5,25 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 # if you specify source IDs, they will be used, otherwise you can specify druids below directly
-source_ids = [
-  'Revs:2011-023CHAM-1.0_0002',
-  'Revs:2011-023CHAM-1.0_0003'
+# source_ids = [
+#   'Revs:2011-023CHAM-1.0_0002',
+#   'Revs:2011-023CHAM-1.0_0003'
+# ]
+#druids=source_ids.collect {|sid| Dor::SearchService.query_by_id(sid)}.flatten if source_ids.size > 0 
+
+druids= [
+ 'druid:bx920gw4740'
 ]
 
-# druids= [
-#  'druid:xxxxxxxx'
-# ]
-
-druids=source_ids.collect {|sid| Dor::SearchService.query_by_id(sid)}.flatten if source_ids.size > 0 
 
 druids.each do |druid|
 	puts "Updating #{druid}."
 	begin
-		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'rights-metadata', 'waiting'
-		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'descriptive-metadata', 'waiting'
-		#Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
+  		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'content-metadata', 'waiting'
+  		#Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'descriptive-metadata', 'waiting'
+  		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'shelve', 'waiting'
+  		Dor::WorkflowService.update_workflow_status 'dor',druid,'accessionWF', 'publish', 'waiting'
     rescue
-		puts "an error occurred trying to update workflows for #{druid}"
+		  puts "an error occurred trying to update workflows for #{druid}"
 	end
 end
