@@ -18,7 +18,7 @@ def prepare_sohp_content(content_path,csv_filename,output_path,content_xml_filen
   file_attributes={}
   file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
   file_attributes['sh']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
-  file_attributes['sl']={:publish=>'yes',:shelve=>'no',:preserve=>'yes'}
+  file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
   file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
   file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
   
