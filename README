@@ -102,7 +102,7 @@ If you need to cleanup accessioned content on test, you can use the progress log
 
 Use the following script to perform a cleanup:
 
-		bin/cleanup YAML_FILE steps
+		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_FILE steps
 		
 where steps is a comma delimited list of any of the following steps defined below:
 
@@ -113,7 +113,7 @@ stacks   == remove files from the stacks that were shelved during accessioning .
 (such as sul-lyberservices-test) and you must be able to authenticate to the relevant stacks server
 
 You can also specify the environment using ROBOT_ENVIRONMENT, just as with a pre-assembly run.  Since this script is destructive, you will need
-to confirm each step.
+to confirm each step.  It is always best to run this script on the test (or production) environment, since then it will have full access to the stacks.
 
 For example:
 
@@ -129,8 +129,7 @@ Open the scripts up to set the required configuration parameters at the top (and
 * delete_by_sourceid -- specify source_ids of objects that should be deleted from Fedora
 * restart_workflow_steps -- specify DRUIDs or source_ids along with specific workflow steps that should be reset back to 'waiting'
 * run_all_tests -- run all spec and integration tests.  Note that for integration tests to run, you need to be on the Stanford network.
-* find_workflow_statues -- specify a progress log file and this will tell you if your objects have any errors in the assemblyWF
-
+* find_workflow_statues -- specify a progress log file and this will tell you the states for each object in the assemblyWF and accessionWF and will indicate if there are errors with an 'XXXX'
 
 ==Post Accessioning Report
 
