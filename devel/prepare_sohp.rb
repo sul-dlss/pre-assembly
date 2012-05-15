@@ -2,6 +2,7 @@
 # run with ruby devel/prepare_sohp.rb
 
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists
+#content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists
 csv_filename='devel/sohp_preaccessioning_sorted.csv' # an input spreadsheet defining the files to find
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated

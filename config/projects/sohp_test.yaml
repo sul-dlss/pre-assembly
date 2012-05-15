@@ -1,0 +1,53 @@
+project_style:
+  content_structure:  'smpl'
+  should_register:    false
+  get_druid_from:     'container'
+  use_druid_minter:   false
+
+bundle_dir:           'tmp/content'
+staging_dir:          'tmp'
+
+manifest:             ~
+checksums_file:       ~
+desc_md_template:     ~
+
+progress_log_file:    'tmp/progress_sohp.yaml'
+project_name:         'SOHP'
+apo_druid_id:         ~
+set_druid_id:         ~
+
+publish_attr:
+  publish:            'no'
+  shelve:             'no'
+  preserve:           'yes'
+
+compute_checksum:     false
+init_assembly_wf:     false
+
+content_md_creation:
+  style:              'smpl'
+  pre_md_file:        'preContentMetadata.xml'
+
+object_discovery:
+  use_manifest:       false
+  glob:               '*'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
+
+stageable_discovery:
+  use_container:      false
+  glob:               '*/*'
+  regex:              ~
+
+manifest_cols:
+  object_container:   ~
+  source_id:          ~
+  label:              ~
+
+content_exclusion:    '(?ix) ( \.md5 | _techmd\.xml ) $'
+
+validate_usage:       true
+show_progress:        true
+limit_n:              10
+uniqify_source_ids:   true
+cleanup:              true
+resume:               false
