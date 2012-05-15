@@ -226,7 +226,7 @@ module PreAssembly
       allowed_steps={:stacks=>'This will remove all files from the stacks that were shelved for the objects',
                      :dor=>'This will delete objects from Fedora',
                      :stage=>"This will delete the staged content in #{@staging_dir}",
-                     :symlinks=>"This will remove the symlinks from #{DOR_WORKSPACE}"}
+                     :symlinks=>"This will remove the symlink from #{DOR_WORKSPACE}"}
       
       num_steps=0
       
@@ -269,7 +269,7 @@ module PreAssembly
             end
             if steps.include?(:symlinks)
               path_to_symlink=File.join(DOR_WORKSPACE,druid_tree)
-              log_and_print "-- deleting symlinks #{path_to_symlink}"
+              log_and_print "-- deleting symlink #{path_to_symlink}"
               File.delete(path_to_symlink) unless dry_run
             end
             if steps.include?(:stage)
