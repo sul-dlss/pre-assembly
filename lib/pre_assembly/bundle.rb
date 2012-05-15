@@ -1,4 +1,5 @@
 require 'csv-mapper'
+require 'net/ssh'
 
 module PreAssembly
 
@@ -219,7 +220,7 @@ module PreAssembly
     ####
     # Cleanup of objects and associated files in specified environment using logfile as input
     ####
-    def cleanup(steps=[])
+    def cleanup(steps=[],dry_run=false)
       log "cleanup()"
       
       allowed_steps={:stacks=>'This will remove all files from the stacks that were shelved for the objects',
@@ -228,6 +229,8 @@ module PreAssembly
                      :symlinks=>"This will remove the symlinks from #{DOR_WORKSPACE}"}
       
       num_steps=0
+      
+      log_and_print 'THIS IS A DRY RUN' if dry_run
       
       confirm "Run on '#{ENV['ROBOT_ENVIRONMENT']}'? Any response other than 'y' or 'yes' will stop the cleanup now." 
       confirm "Are you really sure you want to run on production?  CLEANUP IS NOT REVERSIBLE" if ENV['ROBOT_ENVIRONMENT'] == 'production'
@@ -251,7 +254,7 @@ module PreAssembly
       end
       
       # start up an SSH session if we are going to try and remove content from the stacks
-      ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if defined? stacks_server && steps.include?(:stacks)
+      ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if steps.include?(:stacks) && defined?(stacks_server)
       
       # load up progress log and find any finished objects
       YAML.each_document(read_progress_log) do |obj|
@@ -262,22 +265,22 @@ module PreAssembly
             log_and_print "processing #{druid}"
             if steps.include?(:dor)
               log_and_print "-- deleting #{druid} from Fedora #{ENV['ROBOT_ENVIRONMENT']}" 
-              Dor::Config.fedora.client["objects/#{druid}"].delete
+              Dor::Config.fedora.client["objects/#{druid}"].delete unless dry_run
             end
             if steps.include?(:symlinks)
               path_to_symlink=File.join(DOR_WORKSPACE,druid_tree)
-              log_and_print "-- deleting symlinks from #{path_to_symlink}"
-              File.delete(path_to_symlink)
+              log_and_print "-- deleting symlinks #{path_to_symlink}"
+              File.delete(path_to_symlink) unless dry_run
             end
             if steps.include?(:stage)
               path_to_content=File.join(@staging_dir,druid_tree)
-              log_and_print "-- deleting content from #{path_to_content}"
-              FileUtils.rm_rf path_to_content
+              log_and_print "-- deleting folder #{path_to_content}"
+              FileUtils.rm_rf path_to_content unless dry_run
             end
             if steps.include?(:stacks)
               path_to_content=File.join('/stacks',druid_tree)
               log_and_print "-- removing files from the stacks on #{stacks_server} at #{path_to_content}"
-              ssh_session.exec!("rm -fr #{path_to_content}")
+              ssh_session.exec!("rm -fr #{path_to_content}") unless dry_run
             end
           end
         rescue Exception => e
@@ -286,7 +289,7 @@ module PreAssembly
         end
       end
       
-      ssh_session.close if defined? ssh_session
+      ssh_session.close if ssh_session
             
     end
 
