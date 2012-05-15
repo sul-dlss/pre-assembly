@@ -5,12 +5,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 # a hash which specifies workflow names, and then the steps you want to reset to waiting for that workflow
-steps={'accessionWF' => ['content-metadata','provenance-metadata'],
-       'assemblyWF'  => ['exif-collect']}
+steps={'assemblyWF'  => ['checksum-compute']}
 
 # if you specify source_ids below, comment this out
 druids= [
- 'druid:bx498hg0161'
+ 'druid:jr535qx4550',
+ 'druid:gk331ym6149'
 ]
 
 # if you specifed druids above, comment these out, or else they will be used instead of DRUIDs
@@ -23,7 +23,7 @@ if defined? source_ids && source_ids.size > 0
 end
 
 druids.each do |druid|
-	puts "Updating #{druid}."
+	puts "** #{druid}"
 	begin
 	    steps.each do |workflow,states| 
 	      states.each do |state| 
