@@ -183,8 +183,8 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.dor_object = 1234
-      @dobj.stub :delete_from_dor
-      @dobj.stub :set_workflow_step_to_error
+      PreAssembly::Utils.stub :delete_from_dor
+      PreAssembly::Utils.stub :set_workflow_step_to_error
     end
 
     it "should do nothing unless the digitial object was registered by pre-assembly" do

@@ -1,5 +1,4 @@
 require 'csv-mapper'
-require 'net/ssh'
 
 module PreAssembly
 
@@ -50,8 +49,6 @@ module PreAssembly
     ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
-
-    DOR_WORKSPACE='/dor/workspace'
     
     ####
     # Initialization.
@@ -97,15 +94,10 @@ module PreAssembly
 
     def load_skippables
       return unless @resume
-      YAML.each_document(read_progress_log) do |yd|
+      YAML.each_document(PreAssembly::Utils.read_file(@progress_log_file)) do |yd|
         skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
       end
     end
-
-    def read_progress_log
-      return File.file?(@progress_log_file) ? IO.read(@progress_log_file) : ''
-    end
-
 
     ####
     # Usage validation.
@@ -221,75 +213,9 @@ module PreAssembly
     # Cleanup of objects and associated files in specified environment using logfile as input
     ####
     def cleanup(steps=[],dry_run=false)
+
       log "cleanup()"
-      
-      allowed_steps={:stacks=>'This will remove all files from the stacks that were shelved for the objects',
-                     :dor=>'This will delete objects from Fedora',
-                     :stage=>"This will delete the staged content in #{@staging_dir}",
-                     :symlinks=>"This will remove the symlink from #{DOR_WORKSPACE}"}
-      
-      num_steps=0
-      
-      log_and_print 'THIS IS A DRY RUN' if dry_run
-      
-      confirm "Run on '#{ENV['ROBOT_ENVIRONMENT']}'? Any response other than 'y' or 'yes' will stop the cleanup now." 
-      confirm "Are you really sure you want to run on production?  CLEANUP IS NOT REVERSIBLE" if ENV['ROBOT_ENVIRONMENT'] == 'production'
-      
-      steps.each do |step|
-        if allowed_steps.keys.include?(step)
-          confirm "Run step '#{step}'?  #{allowed_steps[step]}.  Any response other than 'y' or 'yes' will stop the cleanup now."
-          num_steps+=1 # count the valid steps found and agreed to
-        end
-      end
-      
-      raise "no valid steps specified for cleanup" if num_steps == 0
-      
-      case ENV['ROBOT_ENVIRONMENT']
-        when "test"
-          stacks_server="stacks-test"
-        when "production"
-          stacks_server="stacks"
-        when "development"
-          stacks_server="stacks-dev"
-      end
-      
-      # start up an SSH session if we are going to try and remove content from the stacks
-      ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if steps.include?(:stacks) && defined?(stacks_server)
-      
-      # load up progress log and find any finished objects
-      YAML.each_document(read_progress_log) do |obj|
-        begin
-          if obj[:pre_assem_finished]
-            druid=obj[:pid]
-            druid_tree=Druid.new(druid).tree
-            log_and_print "processing #{druid}"
-            if steps.include?(:dor)
-              log_and_print "-- deleting #{druid} from Fedora #{ENV['ROBOT_ENVIRONMENT']}" 
-              Dor::Config.fedora.client["objects/#{druid}"].delete unless dry_run
-            end
-            if steps.include?(:symlinks)
-              path_to_symlink=File.join(DOR_WORKSPACE,druid_tree)
-              log_and_print "-- deleting symlink #{path_to_symlink}"
-              File.delete(path_to_symlink) unless dry_run
-            end
-            if steps.include?(:stage)
-              path_to_content=File.join(@staging_dir,druid_tree)
-              log_and_print "-- deleting folder #{path_to_content}"
-              FileUtils.rm_rf path_to_content unless dry_run
-            end
-            if steps.include?(:stacks)
-              path_to_content=File.join('/stacks',druid_tree)
-              log_and_print "-- removing files from the stacks on #{stacks_server} at #{path_to_content}"
-              ssh_session.exec!("rm -fr #{path_to_content}") unless dry_run
-            end
-          end
-        rescue Exception => e
-          log_and_print "** processing failed for #{druid} with #{e.message}"
-          log e.backtrace.inspect
-        end
-      end
-      
-      ssh_session.close if ssh_session
+      PreAssembly::Utils.cleanup(:druids=>PreAssembly::Utils.get_completed_druids_from_log(@progress_log_file),:steps=>steps,:dry_run=>dry_run)
             
     end
 
@@ -654,17 +580,6 @@ module PreAssembly
     def self.values_to_symbols!(h)
       # Takes a hash and converts its string values to symbols -- not recursively.
       h.each { |k,v| h[k] = v.to_sym if v.class == String }
-    end
-
-    def log_and_print(message)
-      puts message if @show_progress
-      log message
-    end
-    
-    def confirm(message)
-      puts message
-      response=gets.chomp.downcase
-      raise "Exiting" if response != 'y' && response != 'yes'
     end
     
   end

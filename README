@@ -6,6 +6,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 
 1.0.0  Released to production
 1.2.0  Changed <provider_checksum> node to regular <checksum> node.  Must be run in combination with assembly 1.2.0.
+1.2.2  Significant refactoring of cleanup scripts and movement of methods to a new Util class.  Update integration tests.
 
 ==Running
 
@@ -96,40 +97,6 @@ use the --resume flag when you run pre-assembly:
 
     ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE --resume
 
-==Cleanup
-
-If you need to cleanup accessioned content on test, you can use the progress log file to indicate which objects you would like removed.  
-
-Use the following script to perform a cleanup:
-
-		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_FILE steps
-		
-where steps is a comma delimited list of any of the following steps defined below:
-
-symlinks == remove symlinks from the /dor/workspace
-stage    == removed staged files (typically stored in /dor/assembly, but the specific area is defined as 'staging_dir' in the YAML file)
-dor      == remove objects from Fedora
-stacks   == remove files from the stacks that were shelved during accessioning ... note this step must be run from a server
-(such as sul-lyberservices-test) and you must be able to authenticate to the relevant stacks server
-
-You can also specify the environment using ROBOT_ENVIRONMENT, just as with a pre-assembly run.  Since this script is destructive, you will need
-to confirm each step.  It is always best to run this script on the test (or production) environment, since then it will have full access to the stacks.
-
-For example:
-
-		ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs_log.yaml symlinks,stage,dor
-
-==Other Useful Scripts
-
-There are various useful scripts in the bin directory that can be run with "ROBOT_ENVIRONMENT=xxx bin/SCRIPT_NAME"
-
-Open the scripts up to set the required configuration parameters at the top (and you should probably back them out if you are committing the code again).
-
-* delete_by_druid  -- specify DRUIDs that should be deleted from Fedora (can be done via the cleanup methods above as well if you have a progress log file)
-* delete_by_sourceid -- specify source_ids of objects that should be deleted from Fedora
-* restart_workflow_steps -- specify DRUIDs or source_ids along with specific workflow steps that should be reset back to 'waiting'
-* run_all_tests -- run all spec and integration tests.  Note that for integration tests to run, you need to be on the Stanford network.
-* find_workflow_statues -- specify a progress log file and this will tell you the states for each object in the assemblyWF and accessionWF and will indicate if there are errors with an 'XXXX'
 
 ==Post Accessioning Report
 
@@ -175,6 +142,108 @@ In addition, the entire MODs template is passed through an ERB parser, allowing 
  <mods><title><%= manifest_row[:description] %></title></mods>
  
 will provide the same output as the previous example.  A full example of a MODs template is provided at config/projects/manifest_template/TEMPLATE_mods.xml
+
+==Cleanup
+
+=== Removing Items From DOR and other locations
+
+If you need to cleanup accessioned content, you can do this in two ways.  The first will use the YAML configuration file and the
+associated progress log file to indicate which objects you would like removed.  The script will open the YAML configuration, find the progress log,
+read it to find the actual completed objets, and will then execute cleanup on those objects.  Use the following script to perform a cleanup:
+
+		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_FILE steps
+		
+where steps is a comma delimited list of any or all of the following steps defined below:
+
+symlinks == remove symlinks from the /dor/workspace
+stage    == removed staged files (typically stored in /dor/assembly, but the specific area is defined as 'staging_dir' in the YAML file)
+dor      == remove objects from Fedora
+stacks   == remove files from the stacks that were shelved during accessioning ... note this step must be run from a server
+(such as sul-lyberservices-test) and you must be able to authenticate to the relevant stacks server
+
+You can also specify the environment using ROBOT_ENVIRONMENT, just as with a pre-assembly run.  Since this script is destructive, you will need
+to confirm each step.  It is always best to run this script on the test (or production) server, since then it will have full access to the stacks.
+
+For example, when on sul-lyberservices-test:
+
+		ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs_log.yaml symlinks,stage,dor
+
+The second way to perform a cleanup is from a bin/console prompt running the appropriate environment.  You can then specify a specific
+list of druids and steps (as an array of symbols) to cleanup:
+
+e.g. 
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+> PreAssembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
+
+
+=== Workflow Status Report
+
+If you want to check on the status of objects in DOR without using Argo, you can do this using the following method.  You can specify
+assembly and/or accession workflows (as symbols), and also a filename if you want the report written to disk in CSV format.
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+> PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+
+=== Finding Druids 
+
+If you want to find the druids from your progress log file that are either completed or not completed, you can use a method that will give you
+an array of relevant druids.  You can then use this array in 'workflow_status' method noted above or in the other utility methods.
+
+e.g. 
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',true)
+> failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',false)
+
+# e.g. get workflow status of failed druids:
+> PreAssembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+
+If you want to find druids by source_id, use the utility method PreAssembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this.  You can then
+use the array of druids in the other utility methods.
+
+e.g. 
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> source_ids=%w{foo:123 bar:456}
+> druids=PreAssembly::Utils.get_druids_by_sourceid(source_ids)
+> PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+
+=== Reset Workflow States
+
+If an object fails for some reason and you manually remediate something, you may need to reset the workflow state for certain steps to try again.
+You can reset any workflow steps back to "waiting" for any list of druids you specify and any workflow states.  
+To do this use the PreAssembly::Utils.reset_workflow_states method.
+Provide a list of druids in an array, and a hash containing workflow names (e.g. 'assemblyWF' or 'accessionWF') as the keys, and arrays of steps
+as the corresponding values (e.g. ['checksum-compute','jp2-create']) and they will all be reset to "waiting".
+
+e.g. 
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+> steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
+> druids=PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+
+==Starting Robots
+
+If you are on the test or production server, you can determine if the robots are running and you can start them.
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> PreAssembly::Utils.robots_status # check to see if the assembly and accession robots are running and print out status report
+
+If the robots are not running, you can start them:
+
+> PreAssembly::Utils.start_robots([:assembly,:accession])  # start all robots, or you can specify just assembly or just accession
+> PreAssembly::Utils.start_robots  # just start the assembly robots (default)
+
 
 ==Assembly Robots
 
@@ -239,7 +308,7 @@ For local testing, it's easiest to put this in your bash profile:
 
 Running tests:
 
-    # All tests.
+    # All tests.  Note that to run integration tests you will need to be on the Stanford network since they will attempt to access DOR-dev
     bin/run_all_tests
 
     # Unit tests and integration tests separately.
