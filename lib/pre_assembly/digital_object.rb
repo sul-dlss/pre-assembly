@@ -198,28 +198,11 @@ module PreAssembly
 
       log "  - unregister(#{@pid})"
 
-      # Set all assemblyWF steps to error.
-      steps = Dor::Config.pre_assembly.assembly_wf_steps
-      steps.each { |step, status| set_workflow_step_to_error @pid, step }
-
-      # Delete object from Dor.
-      delete_from_dor @pid
+      PreAssembly::Utils.unregister(@pid)
+      
       @dor_object          = nil
       @reg_by_pre_assembly = false
     end
-
-    def set_workflow_step_to_error(pid, step)
-      wf_name = Dor::Config.pre_assembly.assembly_wf
-      msg     = 'Integration testing'
-      params  =  ['dor', pid, wf_name, step, msg]
-      resp    = Dor::WorkflowService.update_workflow_error_status *params
-      raise "update_workflow_error_status() returned false." unless resp == true
-    end
-
-    def delete_from_dor(pid)
-      Dor::Config.fedora.client["objects/#{pid}"].delete
-    end
-
 
     ####
     # Staging files.

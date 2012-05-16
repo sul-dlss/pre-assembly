@@ -67,6 +67,7 @@ describe "Pre-assembly integration" do
   ####
 
   def run_integration_tests(proj)
+    
     # Setup the bundle for a project and run pre-assembly.
     setup_bundle proj
     @pids = @b.run_pre_assembly
@@ -76,6 +77,8 @@ describe "Pre-assembly integration" do
     check_n_of_objects
     check_for_expected_files
     check_dor_objects
+    cleanup_dor_objects
+    
   end
 
 
@@ -95,6 +98,7 @@ describe "Pre-assembly integration" do
     # Override some params.
     @params[:staging_dir]   = @temp_dir
     @params[:show_progress] = false
+    @params[:cleanup] = false
 
     # Create the bundle.
     @b = PreAssembly::Bundle.new @params
@@ -131,11 +135,20 @@ describe "Pre-assembly integration" do
     end
   end
 
+  def cleanup_dor_objects
+    return unless @b.project_style[:should_register]
+    @pids.each do |pid| 
+      PreAssembly::Utils.unregister(pid)
+      puts "Deleting #{pid}"
+    end
+  end
+
   def check_dor_objects
     # Make sure we can get the object from Dor.
     # Skip test for projects not registered by pre-assembly.
     return unless @b.project_style[:should_register]
     @pids.each do |pid|
+      puts "Looking for #{pid}"
       item = Dor::Item.find pid
       item.should be_kind_of Dor::Item
     end

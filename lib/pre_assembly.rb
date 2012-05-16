@@ -6,6 +6,10 @@ Dor::Config.configure do
     content_md_file 'contentMetadata.xml'
     desc_md_file    'descMetadata.xml'
 
+    # Defaut workspace and assembly areas, used in cleanup
+    dor_workspace='/dor/workspace'
+    assembly_workspace='/dor/assembly'
+    
     # The assembly workflow parameters
     # TODO Remove these when they are no longer needed to unregister an object
     assembly_wf  'assemblyWF'
@@ -13,7 +17,6 @@ Dor::Config.configure do
       [ 'start-assembly',        'completed' ],
       [ 'jp2-create',            'waiting'   ],
       [ 'checksum-compute',      'waiting'   ],
-      [ 'checksum-compare',      'waiting'   ],
       [ 'exif-collect',          'waiting'   ],
       [ 'accessioning-initiate', 'waiting'   ],
     ]
@@ -30,6 +33,7 @@ require 'pre_assembly/project_specific'
 require 'pre_assembly/digital_object'
 require 'pre_assembly/object_file'
 require 'pre_assembly/version'
+require 'pre_assembly/utils'
 
 require 'assembly-image'
 require 'checksum-tools'

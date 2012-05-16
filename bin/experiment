@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-# Script for experiementation -- in the vein of bin/console.
+# Script for experimentation -- in the vein of bin/console.
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
