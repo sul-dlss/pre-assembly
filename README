@@ -237,7 +237,7 @@ If you are on the test or production server, you can determine if the robots are
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> PreAssembly::Utils.robots_status # check to see if the assembly and accession robots are running and print out status report
+> PreAssembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
 
 If the robots are not running, you can start them:
 
