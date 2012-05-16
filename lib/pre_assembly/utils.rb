@@ -16,8 +16,8 @@ module PreAssembly
     
       accession_robots="ps -ef | grep accessionWF | wc -l"
       assembly_robots="ps -ef | grep assemblyWF | wc -l"
-      puts "Accession robots are " +  (`#{accession_robots}`.strip.to_i > 2 ? "running" : "not running")
-      puts "Assembly robots are " +  (`#{assembly_robots}`.strip.to_i > 2 ? "running" : "not running")
+      puts "Accession robots are " +  (`#{accession_robots}`.strip.to_i > 3 ? "running" : "NOT running")
+      puts "Assembly robots are " +  (`#{assembly_robots}`.strip.to_i > 2 ? "running" : "NOT running")
 
     end
     
