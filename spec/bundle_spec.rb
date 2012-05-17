@@ -4,6 +4,8 @@ describe PreAssembly::Bundle do
     @yaml = {
       :proj_revs   => File.read('config/projects/local_dev_revs.yaml'),
       :proj_rumsey => File.read('config/projects/local_dev_rumsey.yaml'),
+      :proj_sohp2   => File.read('config/projects/local_dev_sohp2.yaml'),
+      :proj_sohp3   => File.read('config/projects/local_dev_sohp3.yaml'),
     }
     @md5_regex = /^[0-9a-f]{32}$/
   end
@@ -569,17 +571,25 @@ describe PreAssembly::Bundle do
 
   describe "objects_to_process()" do
 
-    before(:each) do
-      bundle_setup :proj_revs
+    it "should have the correct list of objects to re-accession if specified" do
+      bundle_setup :proj_sohp3
       @b.discover_objects
-      @b.skippables = {}
+      @b.digital_objects.size.should == 2
+      o2p = @b.objects_to_process
+      o2p.size.should == 1
     end
 
     it "should return all objects if there are no skippables" do
+      bundle_setup :proj_revs
+      @b.discover_objects
+      @b.skippables = {}
       @b.objects_to_process.should == @b.digital_objects
     end
 
     it "should return a filtered list of digital objects" do
+      bundle_setup :proj_revs
+      @b.discover_objects
+      @b.skippables = {}
       @b.skippables[@b.digital_objects[-1].unadjusted_container] = true
       o2p = @b.objects_to_process
       o2p.size.should == @b.digital_objects.size - 1
@@ -588,6 +598,30 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
+
+  describe "setup_paths()" do
+
+    it "should set the staging_dir to the value specified in YAML" do
+      bundle_setup :proj_revs
+      @b.setup_paths
+      @b.staging_dir.should == 'tmp'
+    end
+
+    it "should set the staging_dir to the default value if not specified in the YAML" do
+      default_staging_directory=Dor::Config.pre_assembly.assembly_workspace
+      if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)        
+        bundle_setup :proj_sohp2
+        @b.setup_paths
+        @b.staging_dir.should == default_staging_directory
+      else
+        exp_msg="Required directory not found: #{default_staging_directory}."
+        lambda {bundle_setup :proj_sohp2}.should raise_error PreAssembly::BundleUsageError,exp_msg
+      end
+    end
+
+  end
+  
   ####################
 
   describe "log_progress_info()" do

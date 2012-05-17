@@ -97,26 +97,23 @@ module PreAssembly
        raise "no valid steps specified for cleanup" if num_steps == 0
        raise "no druids provided" if druids.size == 0
        
-       case ENV['ROBOT_ENVIRONMENT']
-         when "test"
-           stacks_server="stacks-test"
-         when "production"
-           stacks_server="stacks"
-         when "development"
-           stacks_server="stacks-dev"
-       end
-
-       # start up an SSH session if we are going to try and remove content from the stacks
-       ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if steps.include?(:stacks) && defined?(stacks_server)
-
-       druids.each {|pid| PreAssembly::Utils.cleanup_object(pid,steps)}
-
-       ssh_session.close if ssh_session
+       druids.each {|pid| PreAssembly::Utils.cleanup_object(pid,steps,dry_run)}
 
     end
      
-    def self.cleanup_object(pid,steps)
+    def self.cleanup_object(pid,steps,dry_run=false)
+      case ENV['ROBOT_ENVIRONMENT']
+        when "test"
+          stacks_server="stacks-test"
+        when "production"
+          stacks_server="stacks"
+        when "development"
+          stacks_server="stacks-dev"
+      end
       begin
+         # start up an SSH session if we are going to try and remove content from the stacks
+         ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if steps.include?(:stacks) && defined?(stacks_server)
+        
          druid_tree=Druid.new(pid).tree
          puts "processing #{pid}"
          if steps.include?(:dor)
@@ -142,6 +139,7 @@ module PreAssembly
          puts "** processing failed for #{pid} with #{e.message}"
          puts e.backtrace.inspect
        end  
+       ssh_session.close if ssh_session
     end
     
     
