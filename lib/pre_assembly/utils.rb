@@ -21,13 +21,14 @@ module PreAssembly
 
     end
     
-    def self.start_robots(workflows=[:assembly])
+    def self.start_robots
             
       accession_robots="cd /home/lyberadmin/common-accessioning/current; ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} ./bin/run_robot start accessionWF:content-metadata accessionWF:descriptive-metadata accessionWF:rights-metadata accessionWF:remediate-object accessionWF:publish accessionWF:shelve accessionWF:provenance-metadata accessionWF:cleanup"
       assembly_robots="cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:exif-collect assemblyWF:accessioning-initiate"
       
-      `#{accession_robots}` if workflows.include?(:accession)
-      `#{assembly_robots}` if workflows.include?(:assembly)      
+      puts "To start robots:"
+      puts "#{accession_robots}"
+      puts "#{assembly_robots}" 
 
     end
     

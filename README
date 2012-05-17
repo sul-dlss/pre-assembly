@@ -233,16 +233,15 @@ $ ROBOT_ENVIRONMENT=test bin/console
 
 ==Starting Robots
 
-If you are on the test or production server, you can determine if the robots are running and you can start them.
+If you are on the test or production server, you can determine if the robots are running and you can print out the command to start them.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
 > PreAssembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
 
-If the robots are not running, you can start them:
+If the robots are not running, you can see how to start them.  It won't execute the commands, you can do that yourself at a unix prompt.
 
-> PreAssembly::Utils.start_robots([:assembly,:accession])  # start all robots, or you can specify just assembly or just accession
-> PreAssembly::Utils.start_robots  # just start the assembly robots (default)
+> PreAssembly::Utils.start_robots 
 
 
 ==Assembly Robots
