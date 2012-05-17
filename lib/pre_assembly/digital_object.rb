@@ -191,6 +191,15 @@ module PreAssembly
       [:is_member_of, "info:fedora/#{@set_druid_id}"]
     end
 
+    def prepare_for_reaccession
+      # Used during a re-accession, will remove symlinks in /dor/workspace, files from the stacks and content in /dor/assembly
+      # but will not unregister the object
+      log "  - prepare_for_reaccession(#{@pid})"
+
+      PreAssembly::Utils.cleanup_object(@pid,[:stacks,:stage,:symlinks])
+      
+    end
+    
     def unregister
       # Used during testing and development work to unregister objects created in -dev.
       # Do not run unless the object was registered by pre-assembly.

@@ -5,7 +5,7 @@ project_style:
   use_druid_minter:   false
 
 bundle_dir:           'spec/test_data/bundle_input_e'
-staging_dir:          'tmp'
+staging_dir:          ~
 reaccession_items:   ~
 
 manifest:             ~

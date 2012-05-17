@@ -17,6 +17,7 @@ module PreAssembly
       :project_style,
       :bundle_dir,
       :staging_dir,
+      :reaccession_items,
       :manifest,
       :checksums_file,
       :desc_md_template,
@@ -76,6 +77,7 @@ module PreAssembly
       @manifest         = path_in_bundle @manifest         unless @manifest.nil?
       @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
       @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
+      @staging_dir = Dor::Config.pre_assembly.assembly_workspace if @staging_dir.nil? # if the user didn't supply a bundle_dir, use the default
     end
 
     def setup_other
@@ -445,7 +447,7 @@ module PreAssembly
       o2p = objects_to_process
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
 
-      # Initialize the progress_log_file, unless we are resuming.
+      # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
 
       # Start processing.
@@ -457,6 +459,7 @@ module PreAssembly
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
           validate_files(dobj)
+          dobj.prepare_for_reaccession if @reaccession_items # if we are reaccessioning items, then go ahead and clear them out
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
@@ -483,7 +486,14 @@ module PreAssembly
     end
 
     def objects_to_process
-      @digital_objects.reject { |dobj| @skippables.has_key?(dobj.unadjusted_container) }
+      objects=@digital_objects.reject { |dobj| @skippables.has_key?(dobj.unadjusted_container) }
+      unless @reaccession_items.nil?
+        objects.reject! do |dobj|
+           bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
+          !@reaccession_items.include?(bundle_id)
+        end 
+      end
+      return objects
     end
 
     def log_progress_info(dobj)

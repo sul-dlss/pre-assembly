@@ -53,14 +53,24 @@ project_style:
 bundle_dir:  '/foo/bar/revs'  # Input location for the project content (i.e., the 
                              # "bundle"). May contain images directly or may contain 
                              # folders, one per object, usually named by druid. 
-							 # A fully qualified path.
+							               # A fully qualified path.
 
-staging_dir: '/dor/assembly' # Where to put the pre-assembled materials. This is
+staging_dir: ~               # Where to put the pre-assembled materials. This is
                              # where the assembly robots expect to find the assembled
-                             # content. The value is rarely changed, expect by 
-                             # developers in special circumstances.
-							 # A fully qualified path.
-
+                             # content. The default value is /dor/assembly and will be set automatically
+                             # if you leave this as nil (~)
+                             # Developers and tests may use this in special circumstances.
+							               # A fully qualified path.
+							               
+reaccession_items:   ~      # If the project style is 'should_register: false', and you need to re-accession some material, you can 
+                             # supply a list of container names as an array.  If you do, then when you run pre-assembly, it will limit the pre-assembly
+                             # to only the supplied containers after performing the usual discovery.  Note that you will probably also want to log
+                             # this new run using a different progress log file.  If 'should_register: true', then you should create a new
+                             #  manifest file for a second re-accession run.  You should use names that exactly match the folder names in your bundle_dir.
+                             # Note that using reaccession_items will automatically clean up the objects it is re-accessioning (but not delete them).
+                             # Indicate ~ for a normal run or if 'should_register: true' is set
+                     [aa111aa1111,bb222bb2222]  # this is an example of two druids that will be re-accessioned
+                       
 ####
 # Specif how pre-assembly should locate objects within the bundle_dir.
 # Here we are discovering the object containers. An object container

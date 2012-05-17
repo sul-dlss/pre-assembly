@@ -7,8 +7,8 @@ Dor::Config.configure do
     desc_md_file    'descMetadata.xml'
 
     # Defaut workspace and assembly areas, used in cleanup
-    dor_workspace='/dor/workspace'
-    assembly_workspace='/dor/assembly'
+    dor_workspace      '/dor/workspace'
+    assembly_workspace '/dor/assembly'  # can be overwritten by the value set in the project specific YAML configuration
     
     # The assembly workflow parameters
     # TODO Remove these when they are no longer needed to unregister an object
