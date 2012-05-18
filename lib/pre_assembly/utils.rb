@@ -136,8 +136,7 @@ module PreAssembly
            ssh_session.exec!("rm -fr #{path_to_content}") unless dry_run
          end
        rescue Exception => e
-         puts "** processing failed for #{pid} with #{e.message}"
-         puts e.backtrace.inspect
+         puts "** cleaning up failed for #{pid} with #{e.message}"
        end  
        ssh_session.close if ssh_session
     end
