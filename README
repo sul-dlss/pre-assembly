@@ -251,7 +251,7 @@ $ ROBOT_ENVIRONMENT=test bin/console
 
 > druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 > steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
-> druids=PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+> PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
 
 ==Starting Robots
 
