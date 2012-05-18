@@ -4,9 +4,7 @@ module PreAssembly
 
       def create_content_metadata_xml_smpl
         
-        # if this is set to true, we will assume folder structure has been flattened during pre-assembly
-        flattened_object=true
-        # do not include these files in the new content metadata when creating file nodes
+         # do not include these files in the new content metadata when creating file nodes
         file_extensions_to_exclude=%w{.md5 .xml}
                 
         log "    - create_content_metadata_xml_smpl()"
@@ -24,11 +22,7 @@ module PreAssembly
         labels=[]
         label_nodes.each {|label_node| labels << label_node.content}
         labels.uniq! # remove all non-unique labels, so we have a new array with the possible label values
-
-        # generate common server prefix for location tags (which includes the full path to the server) so we can remove it when generating file ID tags, which just need to be relative
-        location_nodes=input_xml.xpath('//resource/file/location')
-        server_prefix=location_nodes.first[0..location_nodes.first.content.index(container_basename)-1]
-
+ 
         # get largest identified sequence value and set it to our beginning counter for resource nodes with no identified sequences
         sequence_values=input_xml.xpath('//resource[@seq]').xpath('@seq').map {|node| node.value.to_i}
         seq_counter=sequence_values.max || 0
@@ -57,8 +51,7 @@ module PreAssembly
                 file_nodes.each do |file_node|
                   # only create file nodes when the file extension is not in our exclusion list set above
                   if file_node['id'] && !file_extensions_to_exclude.include?(File.extname(file_node['id']))
-                    file_id=file_node.xpath('location')[0].content#.gsub(server_prefix,'')
-                    file_id=File.basename(file_id) if flattened_object # strip out the folder structure too if we are flattening the object
+                    file_id=File.basename(file_node.xpath('location')[0].content) 
                     xml.file(:id=>file_id,:preserve=>file_node['preserve'],:publish=>file_node['publish'],:shelve=>file_node['shelve']) {
                       checksum=file_node.xpath('checksum')  
                       node_provider_checksum(xml, checksum[0].content) if checksum

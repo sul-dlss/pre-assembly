@@ -1,9 +1,9 @@
 # Convert incoming spreadsheet from SMPL into XML file that will be produced.  Should only be temporarily needed until final XML is delivered.
 # run with ruby devel/prepare_sohp.rb
-
+#content_path='/dor/content/SC1017_SOHP' # the folder where the content exists
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists
-csv_filename='devel/sohp_preaccessioning_sorted.csv' # an input spreadsheet defining the files to find
+csv_filename='devel/sohp_preaccessioning_sorted_v2.csv' # an input spreadsheet defining the files to find
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated
 
@@ -22,7 +22,6 @@ def prepare_sohp_content(content_path,csv_filename,output_path,content_xml_filen
   file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
   file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
   file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-  
   
   puts "Content path: #{content_path}"
   puts "Input spreadsheet: #{csv_filename}"
@@ -147,16 +146,18 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
   if File.exists? images_folder
     puts "found #{images_folder}"
     FileUtils.cd(images_folder)
-    Dir.glob('*.jpg').each do |image_file|
+    Dir.glob('*').each do |image_file|
       # create the resource node for the file
-      puts "found #{image_file}"
-      resource_node = Nokogiri::XML::Node.new("resource", cm)
-      resource_node['type']='image'
-      label_node = Nokogiri::XML::Node.new("label", cm)
-      label_node.content=get_image_label(image_file)
-      resource_node << label_node
-      create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
-      object_node << resource_node        
+      if File.extname(image_file) == '.tif' || File.extname(image_file) == '.jpg'
+        puts "found #{image_file}"
+        resource_node = Nokogiri::XML::Node.new("resource", cm)
+        resource_node['type']='image'
+        label_node = Nokogiri::XML::Node.new("label", cm)
+        label_node.content=get_image_label(image_file)
+        resource_node << label_node
+        create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
+        object_node << resource_node        
+      end
     end
   end
 
@@ -241,7 +242,7 @@ end
 
 def get_image_label(filename)
   # given an image filename, find the corresponding label for the audio file based on filename rules
-  audio_file_to_match=filename.gsub('_img_1','_a_sl').gsub('_img_2','_b_sl').gsub('.jpg','.mp3')
+  audio_file_to_match=filename.gsub('_img_1','_a_sl').gsub('_img_2','_b_sl').gsub('.jpg','.mp3').gsub('.tif','.mp3')
   @items.each do |row|    
     if row.filename==audio_file_to_match
       return row.label
