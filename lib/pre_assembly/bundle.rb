@@ -448,7 +448,9 @@ module PreAssembly
       o2p = objects_to_process
       
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
-      puts "#{o2p.size} objects to Pre-Assemble" if @show_progress
+      puts "#{o2p.size} objects to pre-assemble" if @show_progress
+      
+      n=0
       
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
@@ -457,6 +459,7 @@ module PreAssembly
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
+        puts "#{o2p.size-n} objects left" if @show_progress
         puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         
         begin
@@ -485,7 +488,7 @@ module PreAssembly
             f.puts log_progress_info(dobj).to_yaml
           end
         end
-
+        n+=1
       end
     end
 
