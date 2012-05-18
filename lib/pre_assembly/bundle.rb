@@ -447,7 +447,7 @@ module PreAssembly
       o2p = objects_to_process
       
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
-      puts "#{op2.size} objects to Pre-Assemble" if @show_progress
+      puts "#{o2p.size} objects to Pre-Assemble" if @show_progress
       
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
