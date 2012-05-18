@@ -39,6 +39,7 @@ module PreAssembly
       :uniqify_source_ids,
       :cleanup,
       :resume,
+      :config_filename
     ]
 
     OTHER_ACCESSORS = [
@@ -46,8 +47,7 @@ module PreAssembly
       :provider_checksums,
       :digital_objects,
       :skippables,
-      :desc_md_template_xml
-    ]
+      :desc_md_template_xml    ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
     
@@ -78,6 +78,7 @@ module PreAssembly
       @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
       @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
       @staging_dir = Dor::Config.pre_assembly.assembly_workspace if @staging_dir.nil? # if the user didn't supply a bundle_dir, use the default
+      @progress_log_file = File.join(File.dirname(@config_filename),File.basename(@config_filename,'.yaml') + '_progress.yaml') if @progress_log_file.nil? # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
     end
 
     def setup_other
@@ -115,7 +116,7 @@ module PreAssembly
     end
 
     def required_user_params
-      return YAML_PARAMS
+      YAML_PARAMS-[:config_filename]
     end
 
     def validate_usage
