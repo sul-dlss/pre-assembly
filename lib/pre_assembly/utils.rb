@@ -115,7 +115,7 @@ module PreAssembly
          ssh_session=Net::SSH.start(stacks_server,'lyberadmin') if steps.include?(:stacks) && defined?(stacks_server)
         
          druid_tree=Druid.new(pid).tree
-         puts "processing #{pid}"
+         puts "cleaning up #{pid}"
          if steps.include?(:dor)
            puts "-- deleting #{pid} from Fedora #{ENV['ROBOT_ENVIRONMENT']}" 
            PreAssembly::Utils.unregister(pid)

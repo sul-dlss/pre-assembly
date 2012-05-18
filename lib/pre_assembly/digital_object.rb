@@ -90,6 +90,7 @@ module PreAssembly
     def pre_assemble
       log "  - pre_assemble(#{@source_id}) started"
       determine_druid
+      
       prepare_for_reaccession if @reaccession
       register
       add_dor_object_to_set

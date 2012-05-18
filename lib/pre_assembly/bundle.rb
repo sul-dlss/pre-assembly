@@ -447,7 +447,8 @@ module PreAssembly
       o2p = objects_to_process
       
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
-
+      puts "#{op2.size} objects to Pre-Assemble" if @show_progress
+      
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
 
@@ -455,7 +456,8 @@ module PreAssembly
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-
+        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
+        
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
@@ -464,7 +466,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          puts dobj.druid.druid if @show_progress
+          puts "Completed #{dobj.druid.druid}" if @show_progress
 
         rescue
           # For now, just re-raise any exceptions.
