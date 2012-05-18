@@ -30,6 +30,7 @@ module PreAssembly
       :reg_by_pre_assembly,
       :label,
       :manifest_row,
+      :reaccession,
       :source_id,
       :content_md_file,
       :desc_md_file,
@@ -89,6 +90,7 @@ module PreAssembly
     def pre_assemble
       log "  - pre_assemble(#{@source_id}) started"
       determine_druid
+      prepare_for_reaccession if @reaccession
       register
       add_dor_object_to_set
       stage_files
@@ -194,9 +196,9 @@ module PreAssembly
     def prepare_for_reaccession
       # Used during a re-accession, will remove symlinks in /dor/workspace, files from the stacks and content in /dor/assembly
       # but will not unregister the object
-      log "  - prepare_for_reaccession(#{@pid})"
+      log "  - prepare_for_reaccession(#{@druid})"
 
-      PreAssembly::Utils.cleanup_object(@pid,[:stacks,:stage,:symlinks])
+      PreAssembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
       
     end
     

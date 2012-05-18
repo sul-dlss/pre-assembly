@@ -8,6 +8,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.2.0  Changed <provider_checksum> node to regular <checksum> node.  Must be run in combination with assembly 1.2.0.
 1.2.2  Significant refactoring of cleanup scripts and movement of methods to a new Util class.  Update integration tests.
 1.3.0  Add the ability to re-accession
+1.3.1  Bug fixes related to re-accessioning
 
 ==Running
 
@@ -160,7 +161,8 @@ Since you will be re-registering objects, you will get new DRUIDs, and you shoul
 For projects that do not use a manifest and which have their objects already registered (e.g. like Rumsey):
 
 1. Create a new project config YAML file and set the parameter 'reaccession_items' to an array of bundle names (e.g. druid folder names) that 
-you want to re-accession. Also set a different progress log file so you can store the results of your second run separately.
+you want to re-accession. Also set a different progress log file so you can store the results of your second run separately.  See the
+TEMPLATE.yaml for some examples.
 2.  Re-run pre-assembly.
 
 This process will perform an automatic cleanup on the items being re-accessioned (but will leave your objects registered).

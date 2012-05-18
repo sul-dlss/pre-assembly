@@ -445,6 +445,7 @@ module PreAssembly
     def process_digital_objects
       # Get the non-skipped objects to process.
       o2p = objects_to_process
+      
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
 
       # Initialize the progress_log_file, unless we are resuming
@@ -459,7 +460,7 @@ module PreAssembly
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
           validate_files(dobj)
-          dobj.prepare_for_reaccession if @reaccession_items # if we are reaccessioning items, then go ahead and clear them out
+          dobj.reaccession=true if @reaccession_items # if we are reaccessioning items, then go ahead and clear each one out
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true

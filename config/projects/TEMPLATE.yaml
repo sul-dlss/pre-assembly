@@ -66,10 +66,11 @@ reaccession_items:   ~      # If the project style is 'should_register: false', 
                              # supply a list of container names as an array.  If you do, then when you run pre-assembly, it will limit the pre-assembly
                              # to only the supplied containers after performing the usual discovery.  Note that you will probably also want to log
                              # this new run using a different progress log file.  If 'should_register: true', then you should create a new
-                             #  manifest file for a second re-accession run.  You should use names that exactly match the folder names in your bundle_dir.
+                             # manifest file for a second re-accession run.  You should use names that exactly match the folder names in your bundle_dir.
                              # Note that using reaccession_items will automatically clean up the objects it is re-accessioning (but not delete them).
                              # Indicate ~ for a normal run or if 'should_register: true' is set
-                     [aa111aa1111,bb222bb2222]  # this is an example of two druids that will be re-accessioned
+ - aa111aa1111
+ - bb222bb2222              # this is an example of two druids that will be re-accessioned, put them one per line, prefixed by a space, a dash, and space
                        
 ####
 # Specif how pre-assembly should locate objects within the bundle_dir.
