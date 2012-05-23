@@ -282,14 +282,24 @@ module PreAssembly
     def node_attr_cm
       # Returns hash of attributes for a <contenteMetadata> node.
       h = { :objectId => @druid.id }
-      h.merge!(:type => 'book') if @content_structure == :simple_book
+      case @content_structure 
+        when :simple_book
+          h.merge!(:type => 'book') 
+        when :simple_image
+          h.merge!(:type => 'image') 
+      end
       return h
     end
 
     def node_attr_cm_resource(seq)
       # Returns hash of attributes for a contenteMetadata <resource> node.
       h = { :sequence => seq, :id => "#{@druid.id}_#{seq}" }
-      h.merge!(:type => 'page') if @content_structure == :simple_book
+      case @content_structure 
+        when :simple_book
+          h.merge!(:type => 'page') 
+        when :simple_image
+          h.merge!(:type => 'image') 
+      end      
       return h
     end
 

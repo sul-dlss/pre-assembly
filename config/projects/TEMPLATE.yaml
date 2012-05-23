@@ -18,8 +18,7 @@ project_style:
 
   # Defines how content metadata is generated.
   content_structure: 'simple_image'  # Basic content metadata. Every file in the digital
-                                     # object will appear as a <file> node in <contentMetadata
-									 # with resource type="image"
+                                     # object will appear as a <file> node with <contentMetadata type="image"> and <resource type="image">
 
                      'simple_book'   # Like simple_image, but with <contentMetadata
                                      # type="book"> and <resource type="page">.
