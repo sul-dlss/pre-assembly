@@ -11,6 +11,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.3.1  Bug fixes related to re-accessioning
 1.3.2  Bug fixes related to smpl content metadata processing
 1.3.3  Add the ability to leave the progress log filename as nil in the config file, and it will be created automatically.
+1.3.4  Add contentMetadata and resourceTypes of 'image' during pre-assembly if you specify :simple_image as project type.
 
 ==Running
 

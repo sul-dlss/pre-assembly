@@ -299,7 +299,7 @@ describe PreAssembly::DigitalObject do
     it "node_attr_cm() should return correct value based on @content_structure" do
       base_exp = { :objectId => @dru }
       tests = {
-        :simple_image => {},
+        :simple_image => { :type => 'image' },
         :simple_book  => { :type => 'book' },
       }
       tests.each do |cs, other_attr|
@@ -312,7 +312,7 @@ describe PreAssembly::DigitalObject do
       seq = 123
       base_exp = { :sequence => seq, :id => "#{@dru}_#{seq}" }
       tests = {
-        :simple_image => {},
+        :simple_image => { :type => 'image' },
         :simple_book  => { :type => 'page' },
       }
       tests.each do |cs, other_attr|
