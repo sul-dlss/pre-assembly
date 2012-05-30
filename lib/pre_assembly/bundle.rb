@@ -138,6 +138,12 @@ module PreAssembly
         next if file_exists f
         raise BundleUsageError, "Required file not found: #{f}."
       end
+
+      if @stageable_discovery[:use_container]
+        gdf = @project_style[:get_druid_from].to_s
+        msg = "Incompatible option values for use_container and get_druid_from."
+        raise BundleUsageError, msg if gdf =~ /^container/
+      end
     end
 
 

@@ -127,6 +127,15 @@ describe PreAssembly::Bundle do
       lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
     end
 
+    it "should raise exception if use_container and get_druid_from are incompatible" do
+      @b.stageable_discovery[:use_container] = true
+      exp_msg = /^Incompatible option values for use_container and get_druid_from/
+      [:container, :container_barcode].each do |gdf|
+        @b.project_style[:get_druid_from] = gdf
+        lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
+      end
+    end
+
   end
 
   ####################
