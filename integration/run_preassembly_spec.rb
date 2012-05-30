@@ -139,7 +139,6 @@ describe "Pre-assembly integration" do
     return unless @b.project_style[:should_register]
     @pids.each do |pid| 
       PreAssembly::Utils.unregister(pid)
-      puts "Deleting #{pid}"
     end
   end
 
@@ -148,7 +147,6 @@ describe "Pre-assembly integration" do
     # Skip test for projects not registered by pre-assembly.
     return unless @b.project_style[:should_register]
     @pids.each do |pid|
-      puts "Looking for #{pid}"
       item = Dor::Item.find pid
       item.should be_kind_of Dor::Item
     end
