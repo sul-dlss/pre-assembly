@@ -44,13 +44,16 @@ If you cannot move your content, be sure your YAML bundle discovery glob and/or 
    See config/projects/local_dev_revs.yaml for a specific example using a manifest.
    See config/projects/local_dev_gould.yaml for a specific example using a file system crawl.
 
-3. You will benefit from running some objects in a local or test environment.  If your objects are already registered, this may require pre-registering a sample set in test as well as production using the same DRUIDs that are identified with your content.
+3. Check the permissions on the bundle directory, iteratively You need read permissions on all the bundle directory folders and files.  You need to have write permissions in the location you
+plan to write the log file too (often this cannot be the thumper drives since it is mounted as read-only).
+
+4. You will benefit from running some objects in a local or test environment.  If your objects are already registered, this may require pre-registering a sample set in test as well as production using the same DRUIDs that are identified with your content.
 You may also have to move a small batch of test content to a location that is visible to sul-lyberservices-test.  Since the thumper drives are not mounted on the test server, you can use the /dor/content mount on test for this purpose.
 
-4. Make sure you have an APO for your object, and that the administrativeMetadata data stream has the <assemblyWF> defined in it.  If it does not, go to https://consul.stanford.edu/display/APO/Home and find the "Current FoXML APO template" link at the bottom of the page.  Download and open the template, find the <assembly> node and copy it.  Go to Fedora admin for each relevant environment (test/production) and this node to the administrativeMetadata stream.  If you don't have this workflow defined in your APO, then the assembly robots will never operate and accessioning will not operate.
+5. Make sure you have an APO for your object, and that the administrativeMetadata data stream has the <assemblyWF> defined in it.  If it does not, go to https://consul.stanford.edu/display/APO/Home and find the "Current FoXML APO template" link at the bottom of the page.  Download and open the template, find the <assembly> node and copy it.  Go to Fedora admin for each relevant environment (test/production) and this node to the administrativeMetadata stream.  If you don't have this workflow defined in your APO, then the assembly robots will never operate and accessioning will not operate.
 This APO should be defined using the same DRUID in test and production if you intend to run in both locations.
 
-5. If you are not using a manifest, perform a dry discovery run which will enumerate the discovered objects and check for filename uniqueness.
+6. If you are not using a manifest, perform a dry discovery run which will enumerate the discovered objects and check for filename uniqueness.
 This is also important if you are flattening each object's folder structure during pre-assembly (e.g. each object has images in a '00' and '05'
 directory, but you don't want to retain those folders when accessioning), since you will want to check to make sure each file in a given object
 has unique filenames.
@@ -63,7 +66,7 @@ b) the names of each discovered object along with the number of files which will
 c) any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
 d) the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
 
-6. To run pre-assembly locally:
+7. To run pre-assembly locally:
 
     # Normal run.  Will restart and crete a new log file, overwriting any existing log file for that project.
     bin/pre-assemble YAML_FILE
@@ -71,7 +74,7 @@ d) the total number and listing of any objects which have duplicate filenames.  
     # Run in resume mode, which will automatically pick up where left off based on the log file.
     bin/pre-assemble YAML_FILE --resume
 
-7. Running in the production environment:
+8. Running in the production environment:
 
     - Navigate to the production box, in the pre-assembly area.
     - Set the ROBOT_ENVIRONMENT.
@@ -93,6 +96,23 @@ d) the total number and listing of any objects which have duplicate filenames.  
 Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without using the --resume switch, it will be overwritten.
 You will need the progress log for cleanup and restarting.
 
+==Troubleshooting
+
+1. If you don't see all of your objects being discovered or no files are found in discovered objects, check the permissions on the bundle directory.
+You need read permissions on all the bundle directory folders and files.
+
+2. If you don't see JP2s being created (or recreated) for your content, this is probably due to one of the following problems:
+
+a. The content metadata generated by pre-assembly didn't set a resource type or set a resource type other than "image" or "page.  Assembly
+will only create jp2s for images containing in resources marked as "image" or "page".  Pre-assembly will do this automatically for
+:simple_image and :simple_book projects, but check the output of the content metadata to be sure.
+
+b. The image was not a mimetype of 'image/jpeg' or 'image/tiff'.  Any other mimetype will be ignored.
+
+c. Your input image was corrupt or missing a color space profile.  This will usually cause the jp2-create robot to fail and throw an error in that workflow step.
+
+d. You had an existing JP2 in the directory that matched a tiff or jpeg.  In this case the jp2-create robot will not overwrite any existing files just to be safe.
+ 
 ==Restarting a job
 
 If you have failed objects during your pre-assembly, these will either cause pre-assembly to terminate immediately (if the failure is non-recoverable)
