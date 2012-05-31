@@ -43,7 +43,6 @@ end
 task :production do
   role :app, 'sul-lyberservices-prod.stanford.edu'
   set :deploy_env, 'production'
-  after "deploy", "dlss:log_release"
 end
 
 set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
@@ -54,3 +53,4 @@ set :deploy_to,  "/home/#{user}/#{application}"
 set :deploy_via, :copy
 set :shared_config_certs_dir, true
 
+after "deploy", "dlss:log_release"
