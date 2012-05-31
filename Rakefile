@@ -1,5 +1,8 @@
+require 'rubygems'
 require 'rake'
 require 'bundler'
+
+Dir.glob('lib/tasks/*.rake').each { |r| import r }
 
 begin
   Bundler.setup(:default, :development)
@@ -9,14 +12,7 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
-require 'rspec/core/rake_task'
-
-desc 'Default: run specs.'
-task :default => :spec
-
-desc "Run specs"
-RSpec::Core::RakeTask.new do |t|
-  # Put spec opts in a file named .rspec in root
-  t.pattern = ['spec/**/*_spec.rb', 'integration/**/*_spec.rb']
+desc 'Get application version'
+task :app_version do
+  puts File.read(File.expand_path('../VERSION', __FILE__)).match('[\w\.]+')[0]
 end
-
