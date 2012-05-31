@@ -46,7 +46,7 @@ task :production do
 end
 
 set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
-# set :rvm_type,   :user
+set :rvm_type,   :system
 set :user,       'lyberadmin' 
 set :repository, "ssh://#{sunet_id}@corn.stanford.edu/afs/ir/dev/dlss/git/#{git_subdir}"
 set :deploy_to,  "/home/#{user}/#{application}"
