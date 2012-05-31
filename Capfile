@@ -32,17 +32,20 @@ set :rvm_ruby_string, "1.8.7@#{application}"
 task :dev do
   role :app, 'sul-lyberservices-dev.stanford.edu'
   set :deploy_env, 'development'
+  set :rails_env,  'development'  # TEMPORARY: needed until lyberteam-gems-devel is fixed.
   set :bundle_without, []         # Deploy all gem groups on the dev VM.
 end
 
 task :testing do
   role :app, 'sul-lyberservices-test.stanford.edu'
   set :deploy_env, 'test'
+  set :rails_env,  'test'  # TEMPORARY: see above
 end
 
 task :production do
   role :app, 'sul-lyberservices-prod.stanford.edu'
   set :deploy_env, 'production'
+  set :rails_env,  'production' # TEMPORARY: see above
 end
 
 set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
