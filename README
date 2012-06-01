@@ -77,7 +77,7 @@ d) the total number and listing of any objects which have duplicate filenames.  
 8. Running in the production environment:
 
     - Navigate to the production box, in the pre-assembly area.
-    - Set the ROBOT_ENVIRONMENT.
+    - Set the ROBOT_ENVIRONMENT to production.
     - Run pre-assembly with nohup and in the background (&).
     - Optionally, include the --resume option.
 	
@@ -95,6 +95,27 @@ d) the total number and listing of any objects which have duplicate filenames.  
 
 Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without using the --resume switch, it will be overwritten.
 You will need the progress log for cleanup and restarting.
+
+Another possibility instead of running nohup is to run it using the "screen" command.  Start a new screen by typing:
+
+$  screen
+
+You can then start pre-assembly without nohup, just like you would locally:
+
+$  ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE
+
+You can then detach from the screen by pressing ctrl-a, ctrl-d and then exit from the server.
+
+You can come back to your screen by re-logging into the server, and typing 
+
+$ screen -r
+
+You can also see a list of available screens by typing
+
+$ screen -list
+
+For more info on screen, see http://kb.iu.edu/data/acuy.html
+
 
 ==Troubleshooting
 

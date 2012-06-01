@@ -158,7 +158,8 @@ stageable_discovery:
          '00/*'    # Stage the items in the 00 subdirectory only, but not the '00' folder itself.
          '*/*'     # Stage the items residing at the second level in the structure.
          '**/*'    # Stage all leaf items. Results it total flattening. Use with caution since it may cause file name clashes.
-
+         '*'       # Stage all items at the root level of the container (useful for a container that has no structure, just a list of files) 
+         
   regex:  ~                       # No filtering.
          '(?ix) \. (tif|xml) $'  # Stage only items with .tif and .xml extentions.
 
