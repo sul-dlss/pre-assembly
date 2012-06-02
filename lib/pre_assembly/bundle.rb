@@ -148,15 +148,15 @@ module PreAssembly
 
 
     def discovery_report
-      # Runs a confirmation for each digital object and confirms there are 
-      # no duplicate filenames contained within the object. This is useful
-      # if you will be flattening the folder structure during pre-assembly.
+      # Runs a confirmation for each digital object and confirms:
+      # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
+      # b) if each object should already be registered, confirms the object exists and has a valid APO
       log ""
       log "discovery_report(#{run_log_msg})"
       puts "\nProject : #{@project_name}"
       puts "Directory : #{@bundle_dir}"
       puts "NOTE: You appear to be using a manifest file - this method is not very useful" if @manifest
-      puts "\nObject Container : Number of Items"
+      puts "\nObject Container : Number of Items : Duplicate Filenames? : Registered? : APO?"
       unique_objects=0
       entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
       total_entries_in_bundle_directory=entries_in_bundle_directory.count
@@ -167,8 +167,21 @@ module PreAssembly
          bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
          is_unique=object_filenames_unique? dobj
          unique_objects+=1 if is_unique
-         message="#{bundle_id} : #{dobj.object_files.count}"
-         message += ": Duplicate filenames!" if !is_unique
+         message="#{bundle_id} : #{dobj.object_files.count} :"
+         message += (is_unique ? " no :" : "**DUPES**:")
+         if @project_style[:should_register] == false # objects should already be registered, let's confirm that
+           druid = bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}"
+           begin
+             obj = Dor::Item.find(druid)
+             message += " yes : "
+             apos=obj.admin_policy_object_ids.size
+             message += (apos == 0 ? " **NO APO** :" : "#{apos.to_s} :")
+           rescue
+             message += " **NO OBJ** : **NO APO** "
+           end
+         else
+           message += " n/a : n/a"
+         end
          puts message
       end
       puts "\nTotal Discovered Objects: #{total_objects}"
