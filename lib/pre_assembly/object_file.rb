@@ -28,7 +28,15 @@ module PreAssembly
     def valid_image?
       assembly_object_file.valid_image?
     end
-
+    
+    def jp2able?
+      assembly_object_file.jp2able?      
+    end
+    
+    def mimetype
+      assembly_object_file.mimetype          
+    end
+      
     def <=>(other)
       @relative_path <=> other.relative_path
     end
