@@ -109,6 +109,14 @@ Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command to run
 Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without using the --resume switch, it will be overwritten.
 You will need the progress log for cleanup and restarting.
 
+==Legacy Project Notes
+
+The assembly robots will automatically create jp2 derivates from any TIFFs.  If you are working on a legacy project that has JP2s already that 
+were generated from source TIFFs, you should *not* stage those files during pre-assembly, or else you will end up with two JP2s for each TIFF.
+You can this by using a regex to exclude .JP2 files or by only staging certain subfolders.  If you do stage the JP2 files and they have the same
+filename as the TIFF (but with a different extension) they will be preserved (i.e. they will NOT have JP2s re-generated).  If you do state the
+JP2 files and they have a different basename than the TIFFs, they WILL be re-generated, and you will end up with two copies.
+
 ==Environments
 
 Use the ROBOT_ENVIRONMENT=xxxxx in front of commands to run in a specific environment.  Current available environments are:
