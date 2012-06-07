@@ -283,7 +283,7 @@ module PreAssembly
       # Returns hash of attributes for a <contenteMetadata> node.
       h = { :objectId => @druid.id }
       case @content_structure 
-        when :simple_book
+        when :simple_book,:book_as_image
           h.merge!(:type => 'book') 
         when :simple_image
           h.merge!(:type => 'image') 
@@ -297,7 +297,7 @@ module PreAssembly
       case @content_structure 
         when :simple_book
           h.merge!(:type => 'page') 
-        when :simple_image
+        when :simple_image,:book_as_image
           h.merge!(:type => 'image') 
       end      
       return h
