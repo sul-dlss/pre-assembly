@@ -301,6 +301,7 @@ describe PreAssembly::DigitalObject do
       tests = {
         :simple_image => { :type => 'image' },
         :simple_book  => { :type => 'book' },
+        :book_as_image => { :type => 'book' }        
       }
       tests.each do |cs, other_attr|
         @dobj.content_structure = cs
@@ -314,6 +315,7 @@ describe PreAssembly::DigitalObject do
       tests = {
         :simple_image => { :type => 'image' },
         :simple_book  => { :type => 'page' },
+        :book_as_image => { :type => 'image' }
       }
       tests.each do |cs, other_attr|
         @dobj.content_structure = cs
