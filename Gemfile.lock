@@ -40,11 +40,11 @@ GEM
     akami (1.1.0)
       gyoku (>= 0.4.0)
       nokogiri (>= 1.5.2)
-    assembly-image (1.2.5)
+    assembly-image (1.3.0)
       assembly-objectfile (~> 1.1.7)
       nokogiri
       uuidtools
-    assembly-objectfile (1.1.7)
+    assembly-objectfile (1.1.8)
       checksum-tools
       mime-types
       mini_exiftool
@@ -210,7 +210,8 @@ GEM
     tilt (1.3.3)
     uuidtools (2.1.2)
     validatable (1.6.7)
-    wasabi (2.3.0)
+    wasabi (2.4.0)
+      httpi (~> 1.0)
       nokogiri (>= 1.4.0)
     xml-simple (1.1.1)
 
@@ -218,8 +219,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  assembly-image (~> 1.2.1)
-  assembly-objectfile (~> 1.1.1)
+  assembly-image (~> 1.3.0)
+  assembly-objectfile (~> 1.1.8)
   awesome_print
   capistrano
   checksum-tools
