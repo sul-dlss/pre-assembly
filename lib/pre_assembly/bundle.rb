@@ -238,7 +238,7 @@ module PreAssembly
 
       log "cleanup()"
       if File.exists?(@progress_log_file)
-        druids=PreAssembly::Utils.get_completed_druids_from_log(@progress_log_file)
+        druids=PreAssembly::Utils.get_druids_from_log(@progress_log_file)
       else
         puts "#{@progress_log_file} not found!  Cannot proceed"
         return
