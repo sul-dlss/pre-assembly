@@ -272,8 +272,10 @@ This process will perform an automatic cleanup on the items being re-accessioned
 === Removing Items From DOR and other locations
 
 If you need to cleanup accessioned content, you can do this in two ways.  The first will use the YAML configuration file and the
-associated progress log file to indicate which objects you would like removed.  The script will open the YAML configuration, find the progress log,
-read it to find the actual completed objets, and will then execute cleanup on those objects.  Use the following script to perform a cleanup:
+associated progress log file to indicate which objects you would like removed.  Note that the YAML configuration file specifies the 
+location of the progress log file.  If the progress log file has been moved or changed, this will not work correctly.  You should
+confirm that your YAML configuration file still correctly specifies the location of "progress_log_file". The script will open the YAML configuration, find the progress log,
+read it to find the actual completed objects, and will then execute cleanup on those objects.  Use the following script to perform a cleanup:
 
 		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_FILE steps
 		
@@ -290,7 +292,7 @@ to confirm each step.  It is always best to run this script on the test (or prod
 
 For example, when on sul-lyberservices-test:
 
-		ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs_log.yaml symlinks,stage,dor
+		ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs.yaml symlinks,stage,dor
 
 The second way to perform a cleanup is from a bin/console prompt running the appropriate environment.  You can then specify a specific
 list of druids and steps (as an array of symbols) to cleanup:

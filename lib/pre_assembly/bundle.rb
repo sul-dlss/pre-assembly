@@ -237,8 +237,13 @@ module PreAssembly
     def cleanup(steps=[],dry_run=false)
 
       log "cleanup()"
-      PreAssembly::Utils.cleanup(:druids=>PreAssembly::Utils.get_completed_druids_from_log(@progress_log_file),:steps=>steps,:dry_run=>dry_run)
-            
+      if File.exists?(@progress_log_file)
+        druids=PreAssembly::Utils.get_completed_druids_from_log(@progress_log_file)
+      else
+        puts "#{@progress_log_file} not found!  Cannot proceed"
+        return
+      end
+      PreAssembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>dry_run)
     end
 
     ####
