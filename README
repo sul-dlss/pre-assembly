@@ -50,7 +50,7 @@ If you cannot move your content, be sure your YAML bundle discovery glob and/or 
    See config/projects/local_dev_revs.yaml for a specific example using a manifest.
    See config/projects/local_dev_gould.yaml for a specific example using a file system crawl.
 
-3. Check the permissions on the bundle directory, iteratively You need read permissions on all the bundle directory folders and files.  You need to have write permissions in the location you
+3. Check the permissions on the bundle directory, iteratively. You need read permissions on all the bundle directory folders and files.  You need to have write permissions in the location you
 plan to write the log file too (often this cannot be the thumper drives since it is mounted as read-only).
 
 4. You may benefit from running some objects in a local or test environment.  If your objects are already registered, this may require pre-registering a sample set in test as well as production using the same DRUIDs that are identified with your content.
@@ -140,7 +140,9 @@ are not.
 ==Screen Command
 
 If screen is installed on the server you are using (currently not in production), another possibility instead of running nohup is to run 
-using the "screen" command.  Start a new screen by typing:
+using the "screen" command.  (NOTE: currently, screen is not available in production).
+
+Start a new screen by typing:
 
 $  screen
 
@@ -170,7 +172,8 @@ You need read permissions on all the bundle directory folders and files.
 
 3. Be sure you have read access to the YAML file you created from the server you are running on.
 
-4. Be sure you have write access to the location you have specified for your progress log file.
+4. Be sure you have write access to the location you have specified for your progress log file.  When running as lyberadmin on the test and production
+machines, you will NOT have write access to the thumper drivers.  You should store your progress log file elsewhere, such as /dor/preassembly
 
 5. Check to see if the assembly and accessioning robots are running in the environment you are using.  See the "Starting Robots" section below.
 It is not recommended that you start robots in production without consulting the Lyberstructure team.
