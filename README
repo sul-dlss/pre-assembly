@@ -15,6 +15,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.4.6  Add functionality to discovery_report to provide information on whether objects are registered and if they have APOs
 1.4.7  Allow "book_as_image" as new project content type.
 1.4.8  Fix workflow_status report so it doesn't crash if a workflow is not found
+1.4.9  Bug fix in cleanup method
 
 ==Project Location
 
