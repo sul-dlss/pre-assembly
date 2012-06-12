@@ -127,17 +127,17 @@ module PreAssembly
          puts "Cleaning up #{pid}"
          if steps.include?(:dor)
            puts "-- deleting #{pid} from Fedora #{ENV['ROBOT_ENVIRONMENT']}" 
-           PreAssembly::Utils.unregister(pid)
+           PreAssembly::Utils.unregister(pid) unless dry_run
          end
          if steps.include?(:symlinks)
            path_to_symlink=File.join(Dor::Config.pre_assembly.dor_workspace,druid_tree)
            puts "-- deleting symlink #{path_to_symlink}"
-           File.delete(path_to_symlink) unless dry_run
+           File.delete(path_to_symlink) if !dry_run && File.exists?(path_to_symlink)
          end
          if steps.include?(:stage)
            path_to_content=File.join(Dor::Config.pre_assembly.assembly_workspace,druid_tree)
            puts "-- deleting folder #{path_to_content}"
-           FileUtils.rm_rf path_to_content unless dry_run
+           FileUtils.rm_rf path_to_content if !dry_run && File.exists?(path_to_content)
          end
          if steps.include?(:stacks)
            path_to_content=File.join('/stacks',druid_tree)
@@ -159,12 +159,17 @@ module PreAssembly
         
     def self.unregister(pid)
       
-      # Set all assemblyWF steps to error.
-      steps = Dor::Config.pre_assembly.assembly_wf_steps
-      steps.each { |step, status|  PreAssembly::Utils.set_workflow_step_to_error pid, step }
+      begin
+        # Set all assemblyWF steps to error.
+        steps = Dor::Config.pre_assembly.assembly_wf_steps
+        steps.each { |step, status|  PreAssembly::Utils.set_workflow_step_to_error pid, step }
 
-      # Delete object from Dor.
-      PreAssembly::Utils.delete_from_dor pid
+        # Delete object from Dor.
+        PreAssembly::Utils.delete_from_dor pid
+        return true
+      rescue
+        return false
+      end
       
     end
 
