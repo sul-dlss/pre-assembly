@@ -53,8 +53,8 @@ module PreAssembly
     
       druids.each do |druid|
         output=[druid]
-        assembly_steps.each {|step| output << Dor::WorkflowService.get_workflow_status('dor', druid, 'assemblyWF', step)} if workflows.include?(:assembly) 
-        accession_steps.each {|step| output << Dor::WorkflowService.get_workflow_status('dor', druid, 'accessionWF', step)} if workflows.include?(:accession) 
+        assembly_steps.each {|step| output << self.get_workflow_status(druid,'assemblyWF',step)} if workflows.include?(:assembly) 
+        accession_steps.each {|step| output << self.get_workflow_status(druid,'accessionWF',step)} if workflows.include?(:accession) 
         csv << output if filename != ''
         puts output.join(',')
       end
@@ -64,6 +64,15 @@ module PreAssembly
         puts "Report generated in #{filename}"
       end
 
+    end
+    
+    def self.get_workflow_status(druid,workflow,step)
+      begin
+        result=Dor::WorkflowService.get_workflow_status('dor', druid, workflow, step)  
+      rescue
+        result='NOT FOUND'
+      end
+      return result
     end
     
     ####
@@ -207,6 +216,10 @@ module PreAssembly
        druids=[]
        YAML.each_document(PreAssembly::Utils.read_file(progress_log_file)) { |obj| druids << obj[:pid] if obj[:pre_assem_finished] == completed}  
        return druids
+    end
+    
+    def self.load_config(filename)
+      YAML.load(PreAssembly::Utils.read_file(filename))  
     end
     
     def self.read_file(filename)
