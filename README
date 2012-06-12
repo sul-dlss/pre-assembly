@@ -14,6 +14,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.3.4  Add contentMetadata and resourceTypes of 'image' during pre-assembly if you specify :simple_image as project type.
 1.4.6  Add functionality to discovery_report to provide information on whether objects are registered and if they have APOs
 1.4.7  Allow "book_as_image" as new project content type.
+1.4.8  Fix workflow_status report so it doesn't crash if a workflow is not found
 
 ==Project Location
 
@@ -304,6 +305,20 @@ $ ROBOT_ENVIRONMENT=test bin/console
 > druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 > PreAssembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
 
+=== Loading YAML Configuration
+
+If you are working in the console, and want to read your YAML configuration file (for example, to determine where your progress log file is located), you can
+use the following methods to load the configuration into a ruby hash:
+
+e.g. 
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+> config_filename='/thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml'
+> config=PreAssembly::Utils.load_config(config_filename)
+> progress_filename=config['progress_log_file']
+
+You can then use these values in other utility methods as needed.
 
 === Workflow Status Report
 
