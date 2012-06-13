@@ -5,14 +5,17 @@ project_style:
   use_druid_minter:   false
 
 bundle_dir:           'spec/test_data/bundle_input_e'
-staging_dir:          ~
-accession_items:      ~
-
+staging_dir:          'tmp'
+accession_items:   
+ except:
+   - aa111aa1111
+   - bb222bb2222
+ 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~
 
-progress_log_file:    'log/progress_sohp.yaml'
+progress_log_file:    ~
 project_name:         'SOHP'
 apo_druid_id:         ~
 set_druid_id:         ~

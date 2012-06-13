@@ -6,6 +6,7 @@ describe PreAssembly::Bundle do
       :proj_rumsey => 'config/projects/local_dev_rumsey.yaml',
       :proj_sohp2   => 'config/projects/local_dev_sohp2.yaml',
       :proj_sohp3   => 'config/projects/local_dev_sohp3.yaml',      
+      :proj_sohp4   => 'config/projects/local_dev_sohp4.yaml',      
     }
     @yaml={}
     @yaml_filenames.each {|key,value| @yaml[key]=File.read(value) }
@@ -583,13 +584,22 @@ describe PreAssembly::Bundle do
 
   describe "objects_to_process()" do
 
-    it "should have the correct list of objects to re-accession if specified" do
+    it "should have the correct list of objects to re-accession if specified with only option" do
       bundle_setup :proj_sohp3
       @b.discover_objects
       @b.digital_objects.size.should == 2
       o2p = @b.objects_to_process
       o2p.size.should == 1
     end
+
+    it "should have the correct list of objects to accession if specified with except option" do
+      bundle_setup :proj_sohp4
+      @b.discover_objects
+      @b.digital_objects.size.should == 2
+      o2p = @b.objects_to_process
+      o2p.size.should == 0
+    end
+
 
     it "should return all objects if there are no skippables" do
       bundle_setup :proj_revs

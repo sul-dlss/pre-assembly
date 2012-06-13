@@ -17,7 +17,7 @@ module PreAssembly
       :project_style,
       :bundle_dir,
       :staging_dir,
-      :reaccession_items,
+      :accession_items,
       :manifest,
       :checksums_file,
       :desc_md_template,
@@ -490,7 +490,7 @@ module PreAssembly
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
           validate_files(dobj)
-          dobj.reaccession=true if @reaccession_items # if we are reaccessioning items, then go ahead and clear each one out
+          dobj.reaccession=true if !@accession_items.nil? && @accession_items[:reaccession] # if we are reaccessioning items, then go ahead and clear each one out
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
@@ -518,10 +518,18 @@ module PreAssembly
 
     def objects_to_process
       objects=@digital_objects.reject { |dobj| @skippables.has_key?(dobj.unadjusted_container) }
-      unless @reaccession_items.nil?
-        objects.reject! do |dobj|
-           bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
-          !@reaccession_items.include?(bundle_id)
+      unless @accession_items.nil? # check to see if we are specifying certain objects to be accessioned
+        unless @accession_items[:only].nil? # handle the "only" case for accession items specified
+          objects.reject! do |dobj|
+             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
+             !@accession_items[:only].include?(bundle_id)
+          end 
+        end
+        unless @accession_items[:except].nil? # handle the "except" case for accession items specified
+          objects.reject! do |dobj|
+             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
+             @accession_items[:except].include?(bundle_id)
+          end
         end 
       end
       return objects
