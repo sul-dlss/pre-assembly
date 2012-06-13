@@ -6,7 +6,7 @@ project_style:
 
 bundle_dir:           'spec/test_data/bundle_input_c'
 staging_dir:          'tmp'
-reaccession_items:   ~
+accession_items:       ~
 
 manifest:             'manifest.csv'
 checksums_file:       'checksums.txt'

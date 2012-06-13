@@ -6,9 +6,11 @@ project_style:
 
 bundle_dir:           'spec/test_data/bundle_input_e'
 staging_dir:          'tmp'
-reaccession_items:   
- - aa111aa1111
-
+accession_items:   
+ only:
+   - aa111aa1111
+ reaccession: true
+ 
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~

@@ -16,6 +16,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.4.7  Allow "book_as_image" as new project content type.
 1.4.8  Fix workflow_status report so it doesn't crash if a workflow is not found
 1.4.9  Bug fix in cleanup method
+1.5.0  Add the ability to accession or re-accession only specific items via "except" or "only" parameters
 
 ==Project Location
 
@@ -247,9 +248,25 @@ In addition, the entire MODs template is passed through an ERB parser, allowing 
  
 will provide the same output as the previous example.  A full example of a MODs template is provided at config/projects/manifest_template/TEMPLATE_mods.xml
 
+== Accession of Specific Objects
+
+For projects with a manifest (e.g. like Revs):
+
+1. Create a new manifest with only the objects you need accessioned.
+2. Create a new project config YAML file referencing the new manifest and write to a new progress log file.
+3. Run pre-assembly.
+
+For projects that do not use a manifest and which have their objects already registered (e.g. like Rumsey):
+
+1. Create a new project config YAML file and set the parameter 'accession_items' using either the 'only' or 'except' parameter as needed.
+You can include only specific objects (useful when you only want to run a few objects) or you can exclude specific objects (useful when you want
+to run most).  Set the 'reaccession' parameter to false or nil.  Also set a different progress log file so
+you can store the results of your second run separately.  See the TEMPLATE.yaml for some examples.
+2.  Run pre-assembly.
+
 == Re-Accession of Specific Objects
 
-If you need to re-accession a batch of material (for example, after remediating some files in your bundle), you can do this in two ways,
+Very similar to above, if you need to re-accession a batch of material (for example, after remediating some files in your bundle), you can do this in two ways,
 depending on your project setup.
 
 For projects with a manifest (e.g. like Revs):
@@ -262,9 +279,9 @@ Since you will be re-registering objects, you will get new DRUIDs, and you shoul
 
 For projects that do not use a manifest and which have their objects already registered (e.g. like Rumsey):
 
-1. Create a new project config YAML file and set the parameter 'reaccession_items' to an array of bundle names (e.g. druid folder names) that 
-you want to re-accession. Also set a different progress log file so you can store the results of your second run separately.  See the
-TEMPLATE.yaml for some examples.
+1. Create a new project config YAML file and set the parameter 'accession_items' and the 'only' parameter to an array of bundle names
+(e.g. druid folder names) that you want to re-accession.  Set the 'reaccession' parameter to true.  Also set a different progress log file so
+you can store the results of your second run separately.  See the TEMPLATE.yaml for some examples.
 2.  Re-run pre-assembly.
 
 This process will perform an automatic cleanup on the items being re-accessioned (but will leave your objects registered).

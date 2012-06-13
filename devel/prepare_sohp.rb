@@ -1,7 +1,7 @@
 # Convert incoming spreadsheet from SMPL into XML file that will be produced.  Should only be temporarily needed until final XML is delivered.
 # run with ruby devel/prepare_sohp.rb
 #content_path=' ' # the folder where the content exists (on dor test since we couldn't mount the thumpers)
-content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
+content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP/transcripts_needed' # the folder where the content exists (the actual productin content)
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
 csv_filename='devel/sohp_preaccessioning_sorted_v2.csv' # an input spreadsheet defining the files to find (latest version of CSV from Geoff)
 output_path = content_path # the location where the output files will be generated

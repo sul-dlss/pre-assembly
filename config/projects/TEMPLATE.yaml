@@ -61,16 +61,23 @@ staging_dir: ~               # Where to put the pre-assembled materials. This is
                              # Developers and tests may use this in special circumstances.
 							               # A fully qualified path.
 							               
-reaccession_items:   ~      # If the project style is 'should_register: false', and you need to re-accession some material, you can 
-                             # supply a list of container names as an array.  If you do, then when you run pre-assembly, it will limit the pre-assembly
-                             # to only the supplied containers after performing the usual discovery.  Note that you will probably also want to log
-                             # this new run using a different progress log file.  If 'should_register: true', then you should create a new
-                             # manifest file for a second re-accession run.  You should use names that exactly match the folder names in your bundle_dir.
-                             # Note that using reaccession_items will automatically clean up the objects it is re-accessioning (but not delete them).
+accession_items:   ~         # If you are not using a manifest, and you need to accession or re-accession only specific objects
+                             # you can supply a list of container names as an array, and indicate if this list is exlcusionary
+                             # or inclusionary.  In other words, do you want to *only* accession the named items, or accession
+                             # everything except those listed? You can also specify if this list is a re-accession, in which case the
+                             # items will be reset (but not unregistered) from DOR before accessioning again.
+                             # Note that you will probably also want to log this new run using a different progress log file.  
+                             # You should use names that exactly match the folder names in your bundle_dir.
+                             # If 'should_register: true', then you should create a new manifest file for a second re-accession run.  
                              # Indicate ~ for a normal run or if 'should_register: true' is set
- - aa111aa1111
- - bb222bb2222              # this is an example of two druids that will be re-accessioned, put them one per line, prefixed by a space, a dash, and space
-                       
+ only:
+   - aa111aa1111
+   - bb222bb2222              # this is an example of two druids that will be accessioned, put them one per line, prefixed by a space, a dash, and space
+ except:
+   - aa111aa1111
+   - bb222bb2222              # this is an example of two druids that will be ignored, put them one per line, prefixed by a space, a dash, and space
+ reaccession: true            # if running a re-accession, set this to true so that a cleanup will be performed, if this is a first accession attemp for these objects, set it to false or ~                       
+
 ####
 # Specif how pre-assembly should locate objects within the bundle_dir.
 # Here we are discovering the object containers. An object container
