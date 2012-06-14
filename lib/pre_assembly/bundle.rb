@@ -155,7 +155,12 @@ module PreAssembly
       log "discovery_report(#{run_log_msg})"
       puts "\nProject, #{@project_name}"
       puts "Directory, #{@bundle_dir}"
-      puts "NOTE: You appear to be using a manifest file - this method is not very useful" if @manifest
+      puts "NOTE: You appear to be using a manifest file - this method is probably not very useful" if @manifest
+      if @accession_items        
+        puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
+        puts "You are processing specific objects only" if @accession_items[:only]
+        puts "You are processing all discovered except for specific objects" if @accession_items[:except]
+      end
       puts "\nObject Container , Number of Items , Duplicate Filenames? , Registered? , # APOs"
       unique_objects=0
       entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
@@ -163,7 +168,9 @@ module PreAssembly
       discover_objects
       objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
       total_objects=@digital_objects.size
-      @digital_objects.each do |dobj|
+      o2p=objects_to_process
+      total_objects_to_process=o2p.size
+      o2p.each do |dobj|
          bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
          is_unique=object_filenames_unique? dobj
          unique_objects+=1 if is_unique
@@ -184,13 +191,14 @@ module PreAssembly
          end
          puts message
       end
-      puts "\nTotal Discovered Objects, #{total_objects}"
+      puts "\nTotal Objects That will be processed, #{total_objects_to_process}"
+      puts "Total Discovered Objects, #{total_objects}"
       puts "Total Files and Folders in bundle directory, #{total_entries_in_bundle_directory}"
       if total_entries_in_bundle_directory != total_objects
         puts "List of entries in bundle directory that will not be discovered: " 
         puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
       end
-      puts "\nObjects with non unique filenames, #{total_objects - unique_objects}"
+      puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
       return processed_pids      
     end
     
