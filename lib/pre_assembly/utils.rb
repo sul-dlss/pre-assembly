@@ -156,7 +156,46 @@ module PreAssembly
       Dor::Config.fedora.client["objects/#{pid}"].delete
   
     end
-        
+    
+    # quicky update rights metadata for any existing objects using default rights metadata pulled from the supplied APO
+    def self.update_rights_metadata(druids,apo_druid)
+      apo = Dor::Item.find(apo_druid)
+      rights_md = apo.datastreams['defaultObjectRights']
+      self.replace_datastreams(druids,'rightsMetadata',rights_md.content)
+    end
+    
+    # replace a specific datastream for a series of objects in DOR with new content 
+    def self.replace_datastreams(druids,datastream_name,new_content)
+      druids.each do |druid|
+        obj = Dor::Item.find(druid)
+        ds = obj.datastreams[datastream_name]  
+        if ds
+          ds.content = new_content 
+          ds.save
+          puts "replaced #{datastream_name} for #{druid}"
+        else
+          puts "#{datastream_name} does not exist for #{druid}"          
+        end
+      end 
+    end    
+
+    # update a specific datastream for a series of objects in DOR by searching and replacing content 
+    def self.update_datastreams(druids,datastream_name,find_content,replace_content)
+      druids.each do |druid|
+        obj = Dor::Item.find(druid)
+        ds = obj.datastreams[datastream_name]
+        if ds
+          updated_content=ds.content.gsub(find_content,replace_content)  
+          ds.content = updated_content
+          ds.save
+          puts "updated #{datastream_name} for #{druid}"
+        else
+          puts "#{datastream_name} does not exist for #{druid}"          
+        end
+      end 
+    end    
+
+    
     def self.unregister(pid)
       
       begin

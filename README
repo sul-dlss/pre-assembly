@@ -18,6 +18,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.4.9  Bug fix in cleanup method
 1.5.0  Add the ability to accession or re-accession only specific items via "except" or "only" parameters
 1.5.1  Updates to discovery report to only show objects that will be processed
+1.5.2  Add some utility methods to quickly update datastreams for a list of DOR objects
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -208,7 +209,6 @@ use the --resume flag when you run pre-assembly:
 
     ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE --resume
 
-
 ==Post Accessioning Report
 
 A reporting script is available until full reporting is complete in Argo.  Run it with:
@@ -344,16 +344,6 @@ progress_filename=config['progress_log_file']
 
 You can then use these values in other utility methods as needed.
 
-=== Workflow Status Report
-
-If you want to check on the status of objects in DOR without using Argo, you can do this using the following method.  You can specify
-assembly and/or accession workflows (as symbols), and also a filename if you want the report written to disk in CSV format.
-
-$ ROBOT_ENVIRONMENT=test bin/console
-
-druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession])  # add :filename=>'output.csv' to get a CSV report
-
 === Finding Druids 
 
 If you want to find the druids from your progress log file that are either completed or not completed, you can use a method that will give you
@@ -363,8 +353,8 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',true)
-failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',false)
+completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',true)
+failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',false)
 
 # e.g. get workflow status of failed druids:
 PreAssembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
@@ -379,6 +369,42 @@ $ ROBOT_ENVIRONMENT=test bin/console
 source_ids=%w{foo:123 bar:456}
 druids=PreAssembly::Utils.get_druids_by_sourceid(source_ids)
 PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+
+=== Workflow Status Report
+
+If you want to check on the status of objects in DOR without using Argo, you can do this using the following method.  You can specify
+assembly and/or accession workflows (as symbols), and also a filename if you want the report written to disk in CSV format.
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession])  # add :filename=>'output.csv' to get a CSV report
+
+=== Updating Datastreams
+
+Once you have content accessioned, you might need to batch update datastreams (for example, to globally fix a typo).  You can do this by providing an
+array of druids, the name of a datastream and some new content:
+
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+new_content='<xml><more nodes>this should be the whole datastream</more nodes></xml>'
+datastream='rightsMetadata'
+PreAssembly::Utils.replace_datastreams(druids,datastream,new_content)
+
+You can also just replace a part of a datastream instead of the whole thing.  Be careful, this just runs a .gsub on the entire datastream, so it can do damage
+if you aren't careful.
+
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+find_content='FooBarBaz'
+replace_content='Stanford Rules'
+datastream='rightsMetadata'
+PreAssembly::Utils.update_datastreams(druids,datastream,find_content,replace_content)
+
+A helper method is provided to update rightsMetadata using the default rights contained in an APO.  To do this, supply a list of druids to update and
+the druid of the APO to get default rights from:
+
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+apo_druid='druid:cc222cc2222'
+PreAssembly::Utils.update_rights_metadata(druids,apo_druid)
 
 === Reset Workflow States
 
