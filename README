@@ -17,6 +17,12 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.4.8  Fix workflow_status report so it doesn't crash if a workflow is not found
 1.4.9  Bug fix in cleanup method
 1.5.0  Add the ability to accession or re-accession only specific items via "except" or "only" parameters
+1.5.1  Updates to discovery report to only show objects that will be processed
+
+To check which version is running, cd into the home directory of the project and look at the VERSION file:
+
+cd /home/lyberadmin/pre-assembly/current
+more VERSION
 
 ==Project Location
 
@@ -320,8 +326,8 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-> PreAssembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+PreAssembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
 
 === Loading YAML Configuration
 
@@ -332,9 +338,9 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> config_filename='/thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml'
-> config=PreAssembly::Utils.load_config(config_filename)
-> progress_filename=config['progress_log_file']
+config_filename='/thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml'
+config=PreAssembly::Utils.load_config(config_filename)
+progress_filename=config['progress_log_file']
 
 You can then use these values in other utility methods as needed.
 
@@ -345,8 +351,8 @@ assembly and/or accession workflows (as symbols), and also a filename if you wan
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-> PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession])  # add :filename=>'output.csv' to get a CSV report
 
 === Finding Druids 
 
@@ -357,11 +363,11 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',true)
-> failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',false)
+completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',true)
+failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/content/SC1017_SOHP/progress_sohp.yaml',false)
 
 # e.g. get workflow status of failed druids:
-> PreAssembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+PreAssembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
 
 If you want to find druids by source_id, use the utility method PreAssembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this.  You can then
 use the array of druids in the other utility methods.
@@ -370,9 +376,9 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> source_ids=%w{foo:123 bar:456}
-> druids=PreAssembly::Utils.get_druids_by_sourceid(source_ids)
-> PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+source_ids=%w{foo:123 bar:456}
+druids=PreAssembly::Utils.get_druids_by_sourceid(source_ids)
+PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
 
 === Reset Workflow States
 
@@ -386,9 +392,9 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-> steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
-> PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
+PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
 
 ==Starting Robots
 
@@ -396,11 +402,11 @@ If you are on the test or production server, you can determine if the robots are
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-> PreAssembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
+PreAssembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
 
 If the robots are not running, you can see how to start them.  It won't execute the commands, you can do that yourself at a unix prompt.
 
-> PreAssembly::Utils.start_robots 
+PreAssembly::Utils.start_robots 
 
 
 ==Assembly Robots
