@@ -91,7 +91,7 @@ module PreAssembly
     end
 
     def load_desc_md_template
-      return nil unless @desc_md_template and file_exists(@desc_md_template)
+      return nil unless @desc_md_template and file_exists?(@desc_md_template)
       @desc_md_template_xml = IO.read(@desc_md_template)
     end
 
@@ -130,12 +130,12 @@ module PreAssembly
       end
 
       required_dirs.each do |d|
-        next if dir_exists d
+        next if dir_exists? d
         raise BundleUsageError, "Required directory not found: #{d}."
       end
 
       required_files.each do |f|
-        next if file_exists f
+        next if file_exists? f
         raise BundleUsageError, "Required file not found: #{f}."
       end
 
@@ -147,58 +147,91 @@ module PreAssembly
     end
 
 
-    def discovery_report
+    def discovery_report(confirm_checksums=false)
       # Runs a confirmation for each digital object and confirms:
       # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
       # b) if each object should already be registered, confirms the object exists and has a valid APO
+      # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
+      # d) if confirm_checksums is provided, will open up provided checksum file and confirm each checksum
       log ""
       log "discovery_report(#{run_log_msg})"
       puts "\nProject, #{@project_name}"
       puts "Directory, #{@bundle_dir}"
-      puts "NOTE: You appear to be using a manifest file - this method is probably not very useful" if @manifest
+      if @manifest && @object_discovery[:use_manifest]
+        puts "Object discovery via manifest, #{@manifest}"
+        source_id_message=manifest_sourceids_unique? ? " yes " : " **DUPLICATE SOURCEIDS FOUND** "
+
+        puts "All source IDs unique: #{source_id_message}"
+      end
+      puts "Confirming checksums in,#{@checksums_file}" if @checksums_file && confirm_checksums
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
         puts "You are processing specific objects only" if @accession_items[:only]
         puts "You are processing all discovered except for specific objects" if @accession_items[:except]
       end
-      puts "\nObject Container , Number of Items , Duplicate Filenames? , Registered? , # APOs"
+      
+      header="\nObject Container , Number of Items , "
+      header+="All Files Exist, Label , " if @manifest && @object_discovery[:use_manifest]
+      header+="Checksums , " if @checksums_file && confirm_checksums
+      header+="Duplicate Filenames? , " unless @manifest && @object_discovery[:use_manifest]
+      header+="Registered? , APOs" if @project_style[:should_register] == false
+      puts header
+      
       unique_objects=0
       entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
       total_entries_in_bundle_directory=entries_in_bundle_directory.count
       discover_objects
+      load_provider_checksums if @checksums_file && confirm_checksums
+      process_manifest
+
       objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
       total_objects=@digital_objects.size
-      o2p=objects_to_process
+
+      o2p = objects_to_process
       total_objects_to_process=o2p.size
+
       o2p.each do |dobj|
-         bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
-         is_unique=object_filenames_unique? dobj
-         unique_objects+=1 if is_unique
-         message="#{bundle_id} , #{dobj.object_files.count} ,"
-         message += (is_unique ? " no ," : "**DUPES**,")
+         bundle_id=File.basename(dobj.unadjusted_container)
+         message="#{bundle_id} , " # obj container
+         message+= (dobj.object_files.count == 0 ? " **NONE ** ," : "#{dobj.object_files.count} ,")  # of items
+         
+         if @manifest && @object_discovery[:use_manifest] # if we are using a manifest, let's check to see if the file referenced exists
+           message += (object_files_exist?(dobj) ? " yes ," : " **MISSING FILES** ,") # all files exist
+           message += "\"#{dobj.label}\" ," # label
+         end
+         
+         message += confirm_checksums(dobj) ? " confirmed , " : " **FAILED** ," if @checksums_file && confirm_checksums # checksum confirmation
+             
+         unless @manifest && @object_discovery[:use_manifest]
+           is_unique=object_filenames_unique?(dobj)
+           unique_objects+=1 if is_unique
+           message += (is_unique ? " no ," : "**DUPES** ,") # dupe filenames
+         end
+         
          if @project_style[:should_register] == false # objects should already be registered, let's confirm that
            druid = bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}"
            begin
              obj = Dor::Item.find(druid)
              message += " yes , "
              apos=obj.admin_policy_object_ids.size
-             message += (apos == 0 ? " **NO APO** ," : "#{apos.to_s} ")
+             message += (apos == 0 ? " **NO APO** ," : "#{apos.to_s} ,") # registered and apo
            rescue
-             message += " **NO OBJ** , **NO APO** "
+             message += " **NO OBJ** , **NO APO** ,"
            end
-         else
-           message += " n/a , n/a"
          end
          puts message
       end
-      puts "\nTotal Objects That will be processed, #{total_objects_to_process}"
+      puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
       puts "Total Discovered Objects, #{total_objects}"
       puts "Total Files and Folders in bundle directory, #{total_entries_in_bundle_directory}"
-      if total_entries_in_bundle_directory != total_objects
-        puts "List of entries in bundle directory that will not be discovered: " 
-        puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
+      
+      unless @manifest && @object_discovery[:use_manifest]
+        if total_entries_in_bundle_directory != total_objects
+          puts "List of entries in bundle directory that will not be discovered: " 
+          puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
+        end
+        puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
       end
-      puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
       return processed_pids      
     end
     
@@ -237,6 +270,11 @@ module PreAssembly
     def object_filenames_unique?(dobj)
       filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) } 
       filenames.count == filenames.uniq.count
+    end
+
+    def object_files_exist?(dobj)
+      all_files_exist = dobj.object_files.map {|objfile| file_exists?(objfile.path) } 
+      !all_files_exist.uniq.include?(false)
     end
 
     ####
@@ -413,9 +451,13 @@ module PreAssembly
     end
 
     def compute_checksum(file_path)
-      @compute_checksum ? Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5] : nil
+      @compute_checksum ? md5(file_path) : nil
     end
-
+    
+    def md5(file_path)
+      Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5]  
+    end
+    
 
     ####
     # Object file validation.
@@ -437,7 +479,19 @@ module PreAssembly
       return tally
     end
 
+    # confirm that the checksums provided match the checksums as computed 
+    def confirm_checksums(dobj)
+      log "  - confirm_checksums()"
+      result=false
+      dobj.object_files.each { |f| result=(md5(f.path) == @provider_checksums[File.basename(f.path)]) }
+      return result
+    end
 
+    def manifest_sourceids_unique?
+      all_source_ids=manifest_rows.collect {|r| r.send(@manifest_cols[:source_id]) + source_id_suffix}
+      all_source_ids.size == all_source_ids.uniq.size
+    end
+    
     ####
     # Manifest.
     ####
@@ -593,11 +647,11 @@ module PreAssembly
       raise ArgumentError, err_msg
     end
 
-    def dir_exists(dir)
+    def dir_exists?(dir)
       File.directory? dir
     end
 
-    def file_exists(file)
+    def file_exists?(file)
       File.exists? file
     end
 
