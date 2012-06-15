@@ -19,6 +19,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.0  Add the ability to accession or re-accession only specific items via "except" or "only" parameters
 1.5.1  Updates to discovery report to only show objects that will be processed
 1.5.2  Add some utility methods to quickly update datastreams for a list of DOR objects
+1.5.3  Add more options to the discovery_report to make it useful when running manifest style projects
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -69,11 +70,15 @@ You may also have to move a small batch of test content to a location that is vi
 5. Make sure you have an APO for your object, and that the administrativeMetadata data stream has the <assemblyWF> defined in it.  If it does not, go to https://consul.stanford.edu/display/APO/Home and find the "Current FoXML APO template" link at the bottom of the page.  Download and open the template, find the <assembly> node and copy it.  Go to Fedora admin for each relevant environment (test/production) and this node to the administrativeMetadata stream.  If you don't have this workflow defined in your APO, then the assembly robots will never operate and accessioning will not operate.
 This APO should be defined using the same DRUID in test and production if you intend to run in both locations.
 
-6. If you are not using a manifest, perform a dry discovery run which will enumerate the discovered objects, tell you how many files were 
-discovered in each object, check for filename uniqueness in each object, and confirm objects are registered with an APO (for projects where objects
-are pre-registered).  This is particularly important if you are flattening each object's folder structure during pre-assembly (e.g. each object has
-images in a '00' and '05' directory, but you don't want to retain those folders when accessioning), since you will want to check to make sure each file 
-in a given object has unique filenames.  First log into sul-lyberservices-test or prod as needed, and then cd into the pre-assembly directory, e.g.
+6. You can perform a dry discovery run to test your YAML configuration.  This run will enumerate the discovered objects, 
+tell you how many files were discovered in each object, check for filename uniqueness in each object, and 
+confirm objects are registered with an APO (for projects where objects are pre-registered).  This dry run is particularly important if you are 
+flattening each object's folder structure during pre-assembly (e.g. each object has images in a '00' and '05' directory, but you don't want to
+retain those folders when accessioning), since you will want to check to make sure each file in a given object has unique filenames. 
+For projects that use manifests for object discovery along with checksum files, you can optionally have checksums computed and confirmed.
+This is really only useful if you are staging content and not accessioning immediately (since the accessioning process will reconfirm checksums).
+
+First log into sul-lyberservices-test or prod as needed, and then cd into the pre-assembly directory, e.g.
 
 	 ssh lyberadmin@sul-lyberadmin-test.stanford.edu
 	 cd pre-assembly/current
@@ -83,16 +88,21 @@ You will probably want to run this against a specific environment so it can conn
 
 	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
 	
-You will see a report containing:
+You will see a report containing items such as :
 a) the total number of objects discovered
 b) the names of each discovered object along with the number of files which will be discovered in that object
-c) whether objects are registered and have APOs
+c) whether objects are registered and have APOs (assuming they are registered)
 d) any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
 e) the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
+f) the label (for manifest style projects) along with if all source IDs contained in the manifest are unique (although no check against DOR is made)
 
 To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using normal UNIX syntax, e.g.:
 
 	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
+
+If you want to compute checksums and compare them against provided checksums for manifest style projects, add "true" to the end of the discover report call, e.g.
+
+ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE true
 
 7. To run pre-assembly locally:
 

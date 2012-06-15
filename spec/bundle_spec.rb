@@ -735,8 +735,8 @@ describe PreAssembly::Bundle do
     end
 
     it "should be able to exercise file-dir existence methods" do
-      @b.file_exists(@b.manifest).should == true
-      @b.dir_exists(@b.bundle_dir).should == true
+      @b.file_exists?(@b.manifest).should == true
+      @b.dir_exists?(@b.bundle_dir).should == true
     end
 
     it "dir_glob() should return expected information" do
