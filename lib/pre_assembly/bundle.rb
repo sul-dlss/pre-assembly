@@ -157,12 +157,7 @@ module PreAssembly
       log "discovery_report(#{run_log_msg})"
       puts "\nProject, #{@project_name}"
       puts "Directory, #{@bundle_dir}"
-      if @manifest && @object_discovery[:use_manifest]
-        puts "Object discovery via manifest, #{@manifest}"
-        source_id_message=manifest_sourceids_unique? ? " yes " : " **DUPLICATE SOURCEIDS FOUND** "
-
-        puts "All source IDs unique: #{source_id_message}"
-      end
+      puts "Object discovery via manifest, #{@manifest}" if @manifest && @object_discovery[:use_manifest]
       puts "Confirming checksums in,#{@checksums_file}" if @checksums_file && confirm_checksums
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
@@ -224,13 +219,16 @@ module PreAssembly
       puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
       puts "Total Discovered Objects, #{total_objects}"
       puts "Total Files and Folders in bundle directory, #{total_entries_in_bundle_directory}"
-      
+
       unless @manifest && @object_discovery[:use_manifest]
         if total_entries_in_bundle_directory != total_objects
           puts "List of entries in bundle directory that will not be discovered: " 
           puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
         end
         puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
+      else
+        source_id_message=manifest_sourceids_unique? ? " yes " : " **DUPLICATE SOURCEIDS FOUND** "
+        puts "All source IDs unique: #{source_id_message}"
       end
       return processed_pids      
     end
