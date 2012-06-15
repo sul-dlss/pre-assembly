@@ -184,7 +184,8 @@ module PreAssembly
 
       o2p = objects_to_process
       total_objects_to_process=o2p.size
-
+      source_ids=Hash.new(0)
+      
       o2p.each do |dobj|
          bundle_id=File.basename(dobj.unadjusted_container)
          message="#{bundle_id} , " # obj container
@@ -201,6 +202,8 @@ module PreAssembly
            is_unique=object_filenames_unique?(dobj)
            unique_objects+=1 if is_unique
            message += (is_unique ? " no ," : "**DUPES** ,") # dupe filenames
+         else
+           source_ids[dobj.source_id] += 1
          end
          
          if @project_style[:should_register] == false # objects should already be registered, let's confirm that
@@ -227,8 +230,12 @@ module PreAssembly
         end
         puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
       else
-        source_id_message=manifest_sourceids_unique? ? " yes " : " **DUPLICATE SOURCEIDS FOUND** "
-        puts "All source IDs unique: #{source_id_message}"
+        if manifest_sourceids_unique?
+          puts "All source IDs unique: yes"
+        else
+          puts "**DUPLICATE SOURCEIDS FOUND** "
+          source_ids.each {|k, v| puts "#{k} appears #{v} times" if v.to_i != 1}
+        end
       end
       return processed_pids      
     end
