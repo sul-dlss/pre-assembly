@@ -173,6 +173,7 @@ module PreAssembly
       puts header
       
       unique_objects=0
+      @error_count=0
       entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
       total_entries_in_bundle_directory=entries_in_bundle_directory.count
       discover_objects
@@ -189,19 +190,19 @@ module PreAssembly
       o2p.each do |dobj|
          bundle_id=File.basename(dobj.unadjusted_container)
          message="#{bundle_id} , " # obj container
-         message+= (dobj.object_files.count == 0 ? " **NONE ** ," : "#{dobj.object_files.count} ,")  # of items
+         message+= (dobj.object_files.count == 0 ? report_error_message("none") : "#{dobj.object_files.count} ,")  # of items
          
          if @manifest && @object_discovery[:use_manifest] # if we are using a manifest, let's check to see if the file referenced exists
-           message += (object_files_exist?(dobj) ? " yes ," : " **MISSING FILES** ,") # all files exist
+           message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing files")) # all files exist
            message += "\"#{dobj.label}\" ," # label
          end
          
-         message += confirm_checksums(dobj) ? " confirmed , " : " **FAILED** ," if @checksums_file && confirm_checksums # checksum confirmation
+         message += confirm_checksums(dobj) ? " confirmed , " : report_error_message("failed") if @checksums_file && confirm_checksums # checksum confirmation
              
          unless @manifest && @object_discovery[:use_manifest]
            is_unique=object_filenames_unique?(dobj)
            unique_objects+=1 if is_unique
-           message += (is_unique ? " no ," : "**DUPES** ,") # dupe filenames
+           message += (is_unique ? " no ," : report_error_message("dupes")) # dupe filenames
          else
            source_ids[dobj.source_id] += 1
          end
@@ -212,9 +213,9 @@ module PreAssembly
              obj = Dor::Item.find(druid)
              message += " yes , "
              apos=obj.admin_policy_object_ids.size
-             message += (apos == 0 ? " **NO APO** ," : "#{apos.to_s} ,") # registered and apo
+             message += (apos == 0 ? report_error_message("no APO") : "#{apos.to_s} ,") # registered and apo
            rescue
-             message += " **NO OBJ** , **NO APO** ,"
+             message += report_error_message("no obj") + report_error_message("no APO")
            end
          end
          puts message
@@ -233,10 +234,10 @@ module PreAssembly
         if manifest_sourceids_unique?
           puts "All source IDs unique: yes"
         else
-          puts "**DUPLICATE SOURCEIDS FOUND** "
-          source_ids.each {|k, v| puts "#{k} appears #{v} times" if v.to_i != 1}
+          source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
         end
       end
+      puts "** TOTAL ERRORS FOUND **: #{@error_count}" unless @error_count==0
       return processed_pids      
     end
     
@@ -676,6 +677,12 @@ module PreAssembly
     # Misc utilities.
     ####
 
+    # used to add characters to the reported message and bump up an error count incremeneter
+    def report_error_message(message)
+      @error_count+=1
+      "** #{message.upcase} ** ,"
+    end
+    
     def source_id_suffix
       # Used during development to append a timestamp to source IDs.
       @uniqify_source_ids ? Time.now.strftime('_%s') : ''
