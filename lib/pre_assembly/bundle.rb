@@ -146,13 +146,12 @@ module PreAssembly
       end
     end
 
-
     def discovery_report(confirm_checksums=false)
       # Runs a confirmation for each digital object and confirms:
       # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
       # b) if each object should already be registered, confirms the object exists and has a valid APO
       # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
-      # d) if confirm_checksums is provided, will open up provided checksum file and confirm each checksum
+      # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
       log ""
       log "discovery_report(#{run_log_msg})"
       puts "\nProject, #{@project_name}"
@@ -174,13 +173,13 @@ module PreAssembly
       
       unique_objects=0
       @error_count=0
-      entries_in_bundle_directory=Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
-      total_entries_in_bundle_directory=entries_in_bundle_directory.count
       discover_objects
       load_provider_checksums if @checksums_file && confirm_checksums
       process_manifest
 
       objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
+      all_object_containers=manifest_rows.collect {|r| r.send(@manifest_cols[:object_container])}
+
       total_objects=@digital_objects.size
 
       o2p = objects_to_process
@@ -220,12 +219,21 @@ module PreAssembly
          end
          puts message
       end
+      
+      # now check all files in the bundle directory against the manifest to report on files not referenced
+      if @manifest && @object_discovery[:use_manifest]
+        puts "\nExtra Files/Dir Report (items in bundle directory not in manifest):"
+        entries_in_bundle_directory.each do |dir_item|
+          puts "** #{dir_item}" unless all_object_containers.include?(dir_item)
+        end
+      end
+      
       puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
       puts "Total Discovered Objects, #{total_objects}"
-      puts "Total Files and Folders in bundle directory, #{total_entries_in_bundle_directory}"
+      puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
 
       unless @manifest && @object_discovery[:use_manifest]
-        if total_entries_in_bundle_directory != total_objects
+        if entries_in_bundle_directory.count != total_objects
           puts "List of entries in bundle directory that will not be discovered: " 
           puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
         end
@@ -238,7 +246,7 @@ module PreAssembly
         end
       end
       puts "** TOTAL ERRORS FOUND **: #{@error_count}" unless @error_count==0
-      return processed_pids      
+
     end
     
     ####
@@ -676,7 +684,10 @@ module PreAssembly
     ####
     # Misc utilities.
     ####
-
+    def entries_in_bundle_directory
+      @entries_in_bundle_directory || Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
+    end
+    
     # used to add characters to the reported message and bump up an error count incremeneter
     def report_error_message(message)
       @error_count+=1

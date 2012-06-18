@@ -22,6 +22,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.3  Add more options to the discovery_report to make it useful when running manifest style projects
 1.5.4  bug fixes to discovery report
 1.5.5  Add some more reporting info to the discovery_report (to tell you how many problems were found when running)
+1.5.6  Added additional check to discovery report -- check for any files that are present in the bundle directory but not referenced in the manifest
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -97,6 +98,8 @@ c) whether objects are registered and have APOs (assuming they are registered)
 d) any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
 e) the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
 f) the label (for manifest style projects) along with if all source IDs contained in the manifest are unique (although no check against DOR is made)
+g) for manifest style projects, you will also see a listing of any folders/files present in the bundle directory that are not referenced in the manifest,
+some will be expected (such as a checksum file), but this will let you see if any expected images are missing from the manifest
 
 To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using normal UNIX syntax, e.g.:
 
