@@ -21,6 +21,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.2  Add some utility methods to quickly update datastreams for a list of DOR objects
 1.5.3  Add more options to the discovery_report to make it useful when running manifest style projects
 1.5.4  bug fixes to discovery report
+1.5.5  Add some more reporting info to the discovery_report (to tell you how many problems were found when running)
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
