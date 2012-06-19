@@ -23,6 +23,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.4  bug fixes to discovery report
 1.5.5  Add some more reporting info to the discovery_report (to tell you how many problems were found when running)
 1.5.6  Added additional check to discovery report -- check for any files that are present in the bundle directory but not referenced in the manifest
+1.5.7  Add the ability to check the uniqueness of source IDs to the discovery report
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -91,23 +92,34 @@ You will probably want to run this against a specific environment so it can conn
 
 	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
 	
-You will see a report containing items such as :
+You will see a report containing :
 a) the total number of objects discovered
 b) the names of each discovered object along with the number of files which will be discovered in that object
-c) whether objects are registered and have APOs (assuming they are registered)
-d) any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
-e) the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
-f) the label (for manifest style projects) along with if all source IDs contained in the manifest are unique (although no check against DOR is made)
-g) for manifest style projects, you will also see a listing of any folders/files present in the bundle directory that are not referenced in the manifest,
-some will be expected (such as a checksum file), but this will let you see if any expected images are missing from the manifest
+c) any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
+d) the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
+e) for manifest style projects, the label and source id along with if all source IDs contained in the manifest are unique 
+g) for manifest style projects, a listing of any folders/files present in the bundle directory that are not referenced in the manifest...
+some will be expected (such as a checksum file), but this will let you see if any expected images/data are missing from the manifest
 
 To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using normal UNIX syntax, e.g.:
 
 	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
 
-If you want to compute checksums and compare them against provided checksums for manifest style projects, add "true" to the end of the discover report call, e.g.
+When sending output to a CSV, you will not see any terminal output while the report is running.
 
-ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE true
+Options for discovery report:
+
+You can add the following parameters after the YAML_FILE name.  Note that adding each option may make the report time consuming, especially
+for large number of objects.  Some options only work for certain styles of projects.
+
+confirm_checksums   =  for manifest style projects, will compute and confirm checksums against the checksum file if it exists -- useful it you are not accessioning immediately
+check_sourceids  =  for manifest style projects, will confirm source IDs are globally unique in DOR (sources ids area already checked for local uniqueness in the manifest)
+check_reg = check if objects are registered and have APOs (assuming they are supposed to be registered already)
+
+e.g.
+
+ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE confirm_checksums check_sourceids > report.csv
+
 
 7. To run pre-assembly locally:
 

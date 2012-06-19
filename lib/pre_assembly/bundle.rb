@@ -146,18 +146,25 @@ module PreAssembly
       end
     end
 
-    def discovery_report(confirm_checksums=false)
+    def discovery_report(params={})
       # Runs a confirmation for each digital object and confirms:
       # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
       # b) if each object should already be registered, confirms the object exists and has a valid APO
       # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
       # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
+
+      check_sourceids=params[:check_sourceids] || false
+      check_reg=params[:check_reg] || false
+      confirm_checksums=params[:confirm_checksums] || false
+      
       log ""
       log "discovery_report(#{run_log_msg})"
       puts "\nProject, #{@project_name}"
       puts "Directory, #{@bundle_dir}"
       puts "Object discovery via manifest, #{@manifest}" if @manifest && @object_discovery[:use_manifest]
       puts "Confirming checksums in,#{@checksums_file}" if @checksums_file && confirm_checksums
+      puts "Checking global uniqueness of source IDs" if check_sourceids && @manifest && @object_discovery[:use_manifest] 
+      puts "Checking APO and registration status" if check_reg && @project_style[:should_register] == false
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
         puts "You are processing specific objects only" if @accession_items[:only]
@@ -165,10 +172,11 @@ module PreAssembly
       end
       
       header="\nObject Container , Number of Items , "
-      header+="All Files Exist, Label , " if @manifest && @object_discovery[:use_manifest]
+      header+="All Files Exist, Label , Source ID ," if @manifest && @object_discovery[:use_manifest]
       header+="Checksums , " if @checksums_file && confirm_checksums
       header+="Duplicate Filenames? , " unless @manifest && @object_discovery[:use_manifest]
-      header+="Registered? , APOs" if @project_style[:should_register] == false
+      header+="Registered? , APOs ," if @project_style[:should_register] == false && check_reg
+      header+="SourceID unique in DOR? , " if @manifest && @object_discovery[:use_manifest] && check_sourceids
       puts header
       
       unique_objects=0
@@ -194,6 +202,7 @@ module PreAssembly
          if @manifest && @object_discovery[:use_manifest] # if we are using a manifest, let's check to see if the file referenced exists
            message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing files")) # all files exist
            message += "\"#{dobj.label}\" ," # label
+           message += "\"#{dobj.source_id}\" ," # source ID
          end
          
          message += confirm_checksums(dobj) ? " confirmed , " : report_error_message("failed") if @checksums_file && confirm_checksums # checksum confirmation
@@ -206,7 +215,7 @@ module PreAssembly
            source_ids[dobj.source_id] += 1
          end
          
-         if @project_style[:should_register] == false # objects should already be registered, let's confirm that
+         if @project_style[:should_register] == false && check_reg # objects should already be registered, let's confirm that
            druid = bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}"
            begin
              obj = Dor::Item.find(druid)
@@ -217,7 +226,13 @@ module PreAssembly
              message += report_error_message("no obj") + report_error_message("no APO")
            end
          end
+
+         if @manifest && @object_discovery[:use_manifest] && check_sourceids # let's check for source ID uniqueness
+           message += (PreAssembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
+         end
+         
          puts message
+         
       end
       
       # now check all files in the bundle directory against the manifest to report on files not referenced
@@ -240,7 +255,7 @@ module PreAssembly
         puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
       else
         if manifest_sourceids_unique?
-          puts "All source IDs unique: yes"
+          puts "All source IDs locally unique: yes"
         else
           source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
         end
