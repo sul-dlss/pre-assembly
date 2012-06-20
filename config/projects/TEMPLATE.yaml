@@ -223,9 +223,11 @@ progress_log_file: ~                        # Optional - if left as nil a progre
                                             
 apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
                                            # the objects.  Include druid prefix.
+                                           # NOTE: only valid if should_register = true
 
 set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
                                            # the object with a set in Dor. Include druid prefix.
+                                           # NOTE: only valid if should_register = true
 										   # Note that if you need to attach specific objects in your bundle
 										   # into different sets, you will need to run pre-assembly twice with two different YAML files.
 

@@ -86,7 +86,7 @@ First log into sul-lyberservices-test or prod as needed, and then cd into the pr
 
 	 ssh lyberadmin@sul-lyberadmin-test.stanford.edu
 	 cd pre-assembly/current
-   ROBOT_ENVIRONMENT=test bin/discovery_report YAML_FILE
+   ROBOT_ENVIRONMENT=test bin/H YAML_FILE
 
 You will probably want to run this against a specific environment so it can connect to DOR and confirm registration on the appropriate server, e.g:
 
