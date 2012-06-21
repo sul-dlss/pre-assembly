@@ -1,0 +1,45 @@
+#! /usr/bin/env ruby
+
+n=50 # run 50 druids at a time against solr
+
+require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
+
+def help(error_msg)
+  abort "#{error_msg}\n\nUsage:\n    ./bin/completion_report YAML_CONFIG_FILE\n"
+end
+
+help "Incorrect number of arguments." unless ARGV.size == 1
+
+yaml_config = ARGV[0]
+help "YAML file not found." unless File.file? yaml_config
+
+params = YAML.load(File.read yaml_config)
+params['config_filename'] = yaml_config
+progress_filename=params['progress_log_file']
+
+completed_druids=PreAssembly::Utils.get_druids_from_log(progress_filename,true)
+
+help "no completed druids found in '#{progress_filename}'" if completed_druids.size == 0 
+
+puts "Running report with #{completed_druids.size} objects"
+
+batch_druids=completed_druids.each_slice(n).to_a
+
+report_filename="../log/#{params['project_name']}_completion_report.csv"
+
+CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),report_filename), "wb") do |csv|
+
+	# header row 
+	csv << ["druid", "label", "dc:title", "source_id", "accessioned", "shelved", "purl", "total_files", "files_found"] 
+
+	batch_druids.each do |batch|
+
+    query_tag="id:\"" + batch.join('" OR id:"') + "\""
+		resp = Dor::SearchService.query query_tag, :rows => n, :fl => 'id, public_dc_title_t, wf_wps_facet, source_id_t, objectLabel_t, content_file_t'
+	  resp.docs.each {|doc|	csv << PreAssembly::Utils.solr_doc_parser(doc)}
+
+	end
+		
+	puts "Report written to #{report_filename}"
+		
+end

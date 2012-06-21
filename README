@@ -26,6 +26,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.7  Add the ability to check the uniqueness of source IDs to the discovery report
 1.5.8  bug fixes, update to fix tests
 1.5.9  update generate_collection_report to add more columns
+1.6.0  rename generate_collection_report to project_tag_report and add a new report that uses the progress YAML file to only report on successfully accessioned druids
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -238,17 +239,10 @@ use the --resume flag when you run pre-assembly:
 
     ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE --resume
 
-==Post Accessioning Report
+==Post Accessioning Reports
 
-A reporting script is available until full reporting is complete in Argo.  Run it with:
-
-ROBOT_ENVIRONMENT=production bin/generate_collection_report PROJECT_TAG
-
-where PROJECT_TAG is the Argo project tag (e.g. "Revs").  If your project tag has spaces in it, be sure to use quotes, like this:
-
-ROBOT_ENVIRONMENT=production bin/generate_collection_report "Stanford Oral History Project"
-
-It will create a CSV in the log/ folder of your checked out pre-assembly code.  It will report on up to 50,000 rows and includes the following info:
+Two reports are available.  Both produce the following output, but differ in how they locate objects to report on.  The output for both reports
+is a CSV file in the "log" folder of your checked out pre-assembly code.  Both will report on up to 50,000 rows and includes the following columns:
 
 * druid
 * label
@@ -259,6 +253,25 @@ It will create a CSV in the log/ folder of your checked out pre-assembly code.  
 * PURL url 
 * total files in object
 * number of files by file extension
+
+The first report is called a "project_tag_report" and includes ALL objects in DOR tagged with a specific project tag.  This is useful for a global project overview and
+is cumulative (i.e. as more objects are added with that tag, the report will be bigger if run again).
+
+ROBOT_ENVIRONMENT=production bin/project_tag_report PROJECT_TAG
+
+where PROJECT_TAG is the Argo project tag (e.g. "Revs").  If your project tag has spaces in it, be sure to use quotes, like this:
+
+ROBOT_ENVIRONMENT=production bin/generate_collection_report "Stanford Oral History Project"
+
+The second report is called a "completion_report" and uses the pre-assembly YAML configuration file to determine the successfully accessioned objects.  Only those objects are included
+in the report.  The report is run with:
+
+ROBOT_ENVIRONMENT=production bin/completion_report YAML_FILE
+
+e.g.:
+
+ROBOT_ENVIRONMENT=production bin/completion_report /thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml
+
 
 ==Manifests
 
