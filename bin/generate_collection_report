@@ -8,30 +8,56 @@ end
 
 help "Incorrect number of arguments." unless ARGV.size == 1
 
-project_tag = "\"" << ARGV.shift << "\""
+project_tag = ARGV.shift 
 
-query_tag = "project_tag_facet:#{project_tag}"
+query_tag = "project_tag_facet:\"#{project_tag}\""
 
-resp = Dor::SearchService.query query_tag, :rows => 10000, :fl => 'id, wf_wps_facet, source_id_t, objectLabel_t'
+resp = Dor::SearchService.query query_tag, :rows => 50000, :fl => 'id, public_dc_title_t, wf_wps_facet, source_id_t, objectLabel_t, content_file_t'
 
 project_file_name = project_tag.gsub(' ','_').gsub('"','')
 
-CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),"/../log/#{project_file_name}_report.csv"), "wb") do |csv|
+if resp.docs.size == 0 
+ 	help "no results found for project tag '#{project_tag}'"
+else
 
-  # header row 
-  csv << ["druid", "label", "source_id", "accessioned", "shelved", "purl"] 
-  # data rows 
-  resp.docs.each do |doc|
-    druid = doc[:id]
+	report_filename="../log/#{project_file_name}_report.csv"
+	
+	CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),report_filename), "wb") do |csv|
 
-    label = doc[:objectLabel_t]
-    accessioned = doc[:wf_wps_facet].include? "accessionWF:publish:completed"
-    shelved = doc[:wf_wps_facet].include? "accessionWF:shelve:completed"
-    source_id = doc[:source_id_t]
-    purl_link = ""
-    val = druid.split(/:/).last
-    purl_link = File.join(Dor::Config.purl.base_url, val) if shelved
-    csv << [druid, label, source_id, accessioned, shelved, purl_link]
-  end
+	  # header row 
+	  csv << ["druid", "label", "dc:title", "source_id", "accessioned", "shelved", "purl", "total_files", "files_found"] 
+	  # data rows 
+
+	  resp.docs.each do |doc|
+	    druid = doc[:id]
+
+	    label = doc[:objectLabel_t]
+			title=doc[:public_dc_title_t].nil? ? '' : doc[:public_dc_title_t].first
+	    accessioned = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:publish:completed")
+	    shelved = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:shelve:completed")
+	    source_id = doc[:source_id_t]
+		  files=doc[:content_file_t]
+		  if files.nil?
+				file_type_list=""
+				num_files=0
+			else
+		  	num_files = files.size			
+				# count the amount of each file type
+				file_types=Hash.new(0)
+				unless num_files == 0
+					files.each {|file| file_types[File.extname(file)]+=1}
+					file_type_list=file_types.map{|k,v| "#{k}=#{v}"}.join(' | ')
+				end
+		  end
+		
+	    purl_link = ""
+	    val = druid.split(/:/).last
+	    purl_link = File.join(Dor::Config.purl.base_url, val) if shelved
+			
+			csv << [druid, label, title, source_id, accessioned, shelved, purl_link, num_files,file_type_list]
+	  end
+		
+		puts "Report written to #{report_filename}"
+	end
+
 end
-
