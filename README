@@ -27,6 +27,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.5.8  bug fixes, update to fix tests
 1.5.9  update generate_collection_report to add more columns
 1.6.0  rename generate_collection_report to project_tag_report and add a new report that uses the progress YAML file to only report on successfully accessioned druids
+1.6.1  allow users to specify a manifest file for descriptive metadata purposes even if should_register=false; allow users to bypass image validation
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -275,16 +276,21 @@ ROBOT_ENVIRONMENT=production bin/completion_report /thumpers/dpgthumper2-smpl/SC
 
 ==Manifests
 
-Manifests are a way of indicating which objects you will be accessioning.  A manifest file is a CSV, UTF-8 encoded file and currently only works for projects that have a single file (e.g. image) per object, since each row in the manifest will become an object.  
+Manifests are a way of indicating which objects you will be accessioning.  A manifest file is a CSV, UTF-8 encoded file and works for projects
+which have one file per object (container = one file in this case), or projects with many files per object (container = folder in this case).  
 
-There are three required columns in the manifest:
+There are a few columns required in the manifest depending on if should_register is true or false:
 
-sourceid
-filename
-label
+container = container name (either filename or folder name) -- always required
+sourceid  = source ID used when registering (required if should_register = true)
+label     = label used when registering (required if should_register = true)
+druid     = druid of object (required if should_register = false, used to identify which object the row refers to)
 
-The first line of the manifest is a header and specifies the column names. Column names should not have spaces and it is easiest if they are all lower case. These columns are used to register objects and indicate which file goes with the object.  The filename is relative to the manifest file itself.  You can have additional columns in your
-manifest which can be used to create descriptive metadata for each object.  See the section below for more details on how this works.
+The first line of the manifest is a header and specifies the column names. Column names should not have spaces and it is easiest if they are all lower case. 
+These columns are used to register objects and indicate which file goes with the object.  If the container column specifies a filename, it should be relative to the manifest file itself.  
+You can have additional columns in your manifest which can be used to create descriptive metadata for each object.  See the section below for more details on how this works.
+
+The actual names of the columns above (except for "druid") can be set in the YAML file.
 
 A sample manifest file is located in config/projects/manifest_template/TEMPLATE_manifest.csv for an example.  
 

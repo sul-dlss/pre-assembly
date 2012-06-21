@@ -6,7 +6,8 @@ describe PreAssembly::Bundle do
       :proj_rumsey => 'config/projects/local_dev_rumsey.yaml',
       :proj_sohp2   => 'config/projects/local_dev_sohp2.yaml',
       :proj_sohp3   => 'config/projects/local_dev_sohp3.yaml',      
-      :proj_sohp4   => 'config/projects/local_dev_sohp4.yaml',      
+      :proj_sohp4   => 'config/projects/local_dev_sohp4.yaml',   
+      :proj_folder_manifest   => 'config/projects/local_dev_folder_manifest.yaml',               
     }
     @yaml={}
     @yaml_filenames.each {|key,value| @yaml[key]=File.read(value) }
@@ -47,7 +48,7 @@ describe PreAssembly::Bundle do
       # All keys are present.
       ks = @b.publish_attr.keys.map { |k| k.to_s }
       ks.sort.should == %w(preserve publish shelve)
-      # Keys would nil values should be removed.
+      # Keys with nil values should be removed.
       @b.publish_attr[:preserve] = nil
       @b.publish_attr[:publish]  = nil
       @b.setup_other
@@ -169,6 +170,7 @@ describe PreAssembly::Bundle do
       tests = [
         [ :proj_revs,   3, 1, 1 ],
         [ :proj_rumsey, 3, 2, 2 ],
+        [ :proj_folder_manifest, 3, 2, 2]
       ]
       tests.each do |proj, n_dobj, n_stag, n_file|
         bundle_setup proj

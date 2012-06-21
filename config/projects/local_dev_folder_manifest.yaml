@@ -1,23 +1,24 @@
-# A project which uses a manifest for object discovery, one file per object, but where the objects are already registered.
+# An example of a project which does not have already registered objects, and for which there are multiple files per object organized into folders.
+# Object discovery also occurs via the manifest.
 
 project_style:
   content_structure:  'simple_image'
-  should_register:    false
+  should_register:    true
   get_druid_from:     'suri'
   use_druid_minter:   true
 
-bundle_dir:           'spec/test_data/bundle_input_c'
+bundle_dir:           'spec/test_data/bundle_input_f'
 staging_dir:          'tmp'
 accession_items:       ~
 
 validate_files:       true
 
 manifest:             'manifest.csv'
-checksums_file:       'checksums.txt'
+checksums_file:        ~
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'log/progress_reid_dennis.yaml'
-project_name:         'ReidDennis'
+progress_log_file:    'log/progress_folder_manifest.yaml'
+project_name:         'FolderManifest'
 apo_druid_id:         'druid:qv648vd4392'
 set_druid_id:         ~
 
@@ -26,7 +27,7 @@ publish_attr:
   shelve:             ~
   preserve:           ~
 
-compute_checksum:     true
+compute_checksum:     false
 init_assembly_wf:     false
 
 content_md_creation:
@@ -39,14 +40,14 @@ object_discovery:
   regex:              ~
 
 stageable_discovery:
-  use_container:      true
-  glob:               ~
+  use_container:      false
+  glob:               '**/*'
   regex:              ~
 
 manifest_cols:
-  object_container:   'file_name'
-  source_id:          'stanford_file_id'
-  label:              'title1'
+  object_container:   'folder'
+  source_id:          'sourceid'
+  label:              'label'
 
 content_exclusion:    ~
 

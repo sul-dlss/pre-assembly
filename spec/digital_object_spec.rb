@@ -242,7 +242,7 @@ describe PreAssembly::DigitalObject do
     before(:each) do
       @dobj.druid = @druid
       add_object_files
-      @dobj.create_content_metadata_xml
+      @dobj.create_content_metadata_xml_default
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
         <contentMetadata objectId="ab123cd4567">

@@ -39,7 +39,8 @@ module PreAssembly
       :uniqify_source_ids,
       :cleanup,
       :resume,
-      :config_filename
+      :config_filename,
+      :validate_files
     ]
 
     OTHER_ACCESSORS = [
@@ -88,6 +89,7 @@ module PreAssembly
       @manifest_rows       = nil
       @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
       @publish_attr.delete_if { |k,v| v.nil? }
+      @validate_files = true if @validate_files.nil? # default to validating files if not provided
     end
 
     def load_desc_md_template
@@ -116,7 +118,7 @@ module PreAssembly
     end
 
     def required_user_params
-      YAML_PARAMS-[:config_filename]
+      YAML_PARAMS-[:config_filename]-[:validate_files]
     end
 
     def validate_usage
@@ -580,7 +582,7 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          validate_files(dobj)
+          validate_files(dobj) if @validate_files
           dobj.reaccession=true if !@accession_items.nil? && @accession_items[:reaccession] # if we are reaccessioning items, then go ahead and clear each one out
           dobj.pre_assemble
           # Indicate that we finished.

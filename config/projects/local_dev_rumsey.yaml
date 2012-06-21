@@ -1,3 +1,5 @@
+# A project which uses file sytem crawl for object discovery, where the object folders are named by druid.
+
 project_style:
   content_structure:  'simple_image'
   should_register:    false
@@ -17,10 +19,12 @@ project_name:         'Rumsey'
 apo_druid_id:         ~
 set_druid_id:         ~
 
+validate_files:       true
+
 publish_attr:
-  publish:            'no'
-  shelve:             'no'
-  preserve:           'yes'
+  publish:            ~
+  shelve:             ~
+  preserve:           ~
 
 compute_checksum:     true
 init_assembly_wf:     false
