@@ -71,15 +71,6 @@ module PreAssembly
       @pre_assem_finished = false
       @content_structure  = @project_style[:content_structure]
       @stager             = lambda { |f,d| FileUtils.cp_r f, d }
-      @get_pid_dispatch   = {
-        :suri              => method(:get_pid_from_suri),
-        :container         => method(:get_pid_from_container),
-        :container_barcode => method(:get_pid_from_container_barcode),
-      }
-      @content_md_dispatch = {
-        :default => method(:create_content_metadata_xml),
-        :smpl    => method(:create_content_metadata_xml_smpl),
-      }
     end
 
 
@@ -109,10 +100,14 @@ module PreAssembly
     def determine_druid
       k = @project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
-      @pid   = @get_pid_dispatch[k].call
+      @pid   = method("get_pid_from_#{k}").call
       @druid = Druid.new @pid
     end
 
+    def get_pid_from_manifest()
+      @manifest_row[:druid]
+    end
+    
     def get_pid_from_suri()
       Dor::SuriService.mint_id
     end
@@ -244,14 +239,14 @@ module PreAssembly
     def generate_content_metadata
       # Invoke the contentMetadata creation method used by the
       # project (usually the default), and then write that XML to a file.
-      @content_md_dispatch[@content_md_creation[:style]].call
+      method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
       write_content_metadata
     end
 
-    def create_content_metadata_xml
+    def create_content_metadata_xml_default
       # Default content metadata creation is here.
       # See lib/project_specific.rb for custom code by project.
-      log "    - create_content_metadata_xml()"
+      log "    - create_content_metadata_xml_default()"
       builder = Nokogiri::XML::Builder.new { |xml|
         xml.contentMetadata(node_attr_cm) {
           content_object_files.each_with_index { |object_file, i|

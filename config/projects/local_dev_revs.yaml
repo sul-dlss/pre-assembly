@@ -1,3 +1,5 @@
+# A project which uses a manifest for object discovery, one file per object, and where the objects need to be registered.
+
 project_style:
   content_structure:  'simple_image'
   should_register:    true
@@ -16,6 +18,8 @@ progress_log_file:    'log/progress_revs.yaml'
 project_name:         'Revs'
 apo_druid_id:         'druid:qv648vd4392'
 set_druid_id:         'druid:yt502zj0924'
+
+validate_files:       true
 
 publish_attr:
   publish:            'no'

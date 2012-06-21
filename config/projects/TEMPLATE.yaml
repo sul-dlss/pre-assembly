@@ -1,5 +1,6 @@
 ####
 # General YAML conventions:
+#  You should quote any value that is not nil or boolean to ensure it is treated as a string and not an integer.
 #
 #        ~                nil
 #        true             Boolean.
@@ -7,6 +8,36 @@
 #        'foo'            A string.
 #        # Blah, blah.    A comment (will be ignored by the YAML parser).
 ####
+
+####
+# General project information.
+####
+
+project_name:      'Foo'                   # Required.  If objects are not yet registered, this will be used as a prefix to the sourceID and will also become a project tag in DOR for each object.
+
+progress_log_file: ~                        # Optional - if left as nil a progress log file will be created in the same location as your
+                                            # input yaml file by appending '_progress' to your filename.  If you cannot write to that location
+                                            # or want to specify a different filename, you may do so. 
+                                            #  NOTE: you probably won't be able to write to the thumper drives.  Beware if that's where your config file is.
+                                            # In that case, you can specify /dor/preassembly, which is a good alternative and writable.
+                                            # Typically based on project name.  A fully qualified path.
+                                            # Be sure to keep your progress log file somewhere useful and be aware 
+                                            # if you restart pre-assembly without using the --resume switch, it will be overwritten.
+                                            # You will need the progress log for cleanup and restarting.
+                    '/dor/preassembly/progress_foo.yaml'  # this is an example of specifying an alternate location                       
+                                            
+apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
+                                           # the objects.  Include druid prefix.
+                                           # NOTE: only valid if should_register = true
+
+set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
+                                           # the object with a set in Dor. Include druid prefix.
+                                           # NOTE: only valid if should_register = true
+										   # Note that if you need to attach specific objects in your bundle
+										   # into different sets, you will need to run pre-assembly twice with two different YAML files.
+
+validate_files:    true      # if set to true, then image files will be confirmed as valid before proceeding ... validity ensures they are likely to have jp2 creation suceed, defaults to true if not provided
+                   false     # if set to false, then no image validation is performed -- this can lead to tifs not having jp2s generated during assembly if they do not have valid profiles 
 
 
 ####
@@ -38,11 +69,13 @@ project_style:
 
                   'container_barcode'  # Object is contained in a barcode subdirectory.
                                        # For example: "36105115575834".
+                                       
+                  'manifest'           # Object druid is in a column in the manifest called "druid".  Only used for should_register=false and use_manifest=true
+                                       #   when you want to use a manifest for descriptive metadata instead of for object discovery and registration.
 
   # Whether to mint mock druids (relevant only for developers).
   use_druid_minter: false   # Use this setting for most uses.
-                    true    # Mints a mock druid rather than using Suri.
-                            # Overrides get_druid_from = 'suri'.
+                    true    # Mints a mock druid rather than using Suri.  Really only for development purposes. Overrides get_druid_from paramater.
 
 
 ####
@@ -172,11 +205,11 @@ accession_items:   ~         # Only valid for projects that do *not* use a manif
                             # still specifying a "reaccession: true".  Do not specify both "only" and "except" unless you like flying experimental homebuilt aircraft.
                             # Examples below:
   only:
-    - aa111aa1111
-    - bb222bb2222              # this is an example of two objects that will be accessioned, put them one per line, prefixed by a space, a dash, and space
+    - 'aa111aa1111'
+    - 'bb222bb2222'              # this is an example of two objects that will be accessioned, put them one per line, prefixed by a space, a dash, and space, add quotes around each item
   except:
-    - aa111aa1111
-    - bb222bb2222              # this is an example of two objects that will be ignored, put them one per line, prefixed by a space, a dash, and space
+    - 'aa111aa1111'
+    - 'bb222bb2222'             # this is an example of two objects that will be ignored, put them one per line, prefixed by a space, a dash, and space, add quotes around each item
   reaccession: true            # if running a re-accession, set this to true so that a cleanup will be performed, if this is a first accession attemp for these objects, set it to false or ~ or leave it off                       
 
 
@@ -202,34 +235,6 @@ manifest_cols:
   object_container:   'filename'   # Required, indicates the location of the file relative to the bundle directory.
   source_id:          'sourceid'   # Required if pre-assembly is registering the objects.
   label:              'label'      # Ditto.
-
-
-####
-# General project information.
-####
-
-project_name:      'Foo'                   # Required.  If objects are not yet registered, this will be used as a prefix to the sourceID and will also become a project tag in DOR for each object.
-
-progress_log_file: ~                        # Optional - if left as nil a progress log file will be created in the same location as your
-                                            # input yaml file by appending '_progress' to your filename.  If you cannot write to that location
-                                            # or want to specify a different filename, you may do so. 
-                                            #  NOTE: you probably won't be able to write to the thumper drives.  Beware if that's where your config file is.
-                                            # In that case, you can specify /dor/preassembly, which is a good alternative and writable.
-                                            # Typically based on project name.  A fully qualified path.
-                                            # Be sure to keep your progress log file somewhere useful and be aware 
-                                            # if you restart pre-assembly without using the --resume switch, it will be overwritten.
-                                            # You will need the progress log for cleanup and restarting.
-                    '/dor/preassembly/progress_foo.yaml'  # this is an example of specifying an alternate location                       
-                                            
-apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
-                                           # the objects.  Include druid prefix.
-                                           # NOTE: only valid if should_register = true
-
-set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
-                                           # the object with a set in Dor. Include druid prefix.
-                                           # NOTE: only valid if should_register = true
-										   # Note that if you need to attach specific objects in your bundle
-										   # into different sets, you will need to run pre-assembly twice with two different YAML files.
 
 
 ####

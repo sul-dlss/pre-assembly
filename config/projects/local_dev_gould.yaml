@@ -1,3 +1,5 @@
+# A project which has object discovery via a file system crawl where the object containers are barcodes.
+
 project_style:
   content_structure:  'simple_book'
   should_register:    false
@@ -7,6 +9,8 @@ project_style:
 bundle_dir:           'spec/test_data/bundle_input_d'
 staging_dir:          'tmp'
 accession_items:      ~
+
+validate_files:       true
 
 manifest:             ~
 checksums_file:       ~
@@ -18,9 +22,9 @@ apo_druid_id:         'druid:sr292kr3857'
 set_druid_id:         ~
 
 publish_attr:
-  publish:            'no'
-  shelve:             'no'
-  preserve:           'yes'
+  publish:            ~
+  shelve:             ~
+  preserve:           ~
 
 compute_checksum:     true
 init_assembly_wf:     false
