@@ -3,7 +3,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n    discovery_report YAML_CONFIG_FILE [confirm_checksums]\n"
+  abort "#{error_msg}\n\nUsage:\n    discovery_report YAML_CONFIG_FILE [confirm_checksums check_sourceids check_reg]\n"
 end
 
 # Load YAML config file for the bundle of materials to be pre-assembled.

@@ -275,7 +275,39 @@ module PreAssembly
       response=gets.chomp.downcase
       raise "Exiting" if response != 'y' && response != 'yes'
     end
-        
+
+    # used by the completion_report and project_tag_report in the bin directory
+    def self.solr_doc_parser(doc)
+      
+      druid = doc[:id]
+
+	    label = doc[:objectLabel_t]
+			title=doc[:public_dc_title_t].nil? ? '' : doc[:public_dc_title_t].first
+	    accessioned = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:publish:completed")
+	    shelved = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:shelve:completed")
+	    source_id = doc[:source_id_t]
+		  files=doc[:content_file_t]
+		  if files.nil?
+				file_type_list=""
+				num_files=0
+			else
+		  	num_files = files.size			
+				# count the amount of each file type
+				file_types=Hash.new(0)
+				unless num_files == 0
+					files.each {|file| file_types[File.extname(file)]+=1}
+					file_type_list=file_types.map{|k,v| "#{k}=#{v}"}.join(' | ')
+				end
+		  end
+		
+	    purl_link = ""
+	    val = druid.split(/:/).last
+	    purl_link = File.join(Dor::Config.purl.base_url, val) if shelved
+      
+      return  [druid, label, title, source_id, accessioned, shelved, purl_link, num_files,file_type_list]   
+       
+    end
+    
   end
   
 end
