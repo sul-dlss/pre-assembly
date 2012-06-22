@@ -90,7 +90,7 @@ describe "Pre-assembly integration" do
     # Load the project's YAML config file.
     yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
     yaml      = YAML.load_file yaml_file
-    @params   = PreAssembly::Bundle.symbolize_keys yaml
+    @params   = PreAssembly::Utils.symbolize_keys yaml
     
     # Create a temp dir to serve as the staging area.
     @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'

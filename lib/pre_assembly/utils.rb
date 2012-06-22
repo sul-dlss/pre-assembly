@@ -307,6 +307,22 @@ module PreAssembly
       return  [druid, label, title, source_id, accessioned, shelved, purl_link, num_files,file_type_list]   
        
     end
+
+    def self.symbolize_keys(h)
+      # Takes a data structure and recursively converts all hash keys from strings to symbols.
+      if h.instance_of? Hash
+        h.inject({}) { |hh,(k,v)| hh[k.to_sym] = symbolize_keys(v); hh }
+      elsif h.instance_of? Array
+        h.map { |v| symbolize_keys(v) }
+      else
+        h
+      end
+    end
+
+    def self.values_to_symbols!(h)
+      # Takes a hash and converts its string values to symbols -- not recursively.
+      h.each { |k,v| h[k] = v.to_sym if v.class == String }
+    end    
     
   end
   

@@ -17,8 +17,8 @@ describe PreAssembly::Bundle do
   def bundle_setup(proj)
     @ps = YAML.load @yaml[proj]
     @ps['config_filename']=@yaml_filenames[proj]
+    @ps['show_progress']=false
     @b  = PreAssembly::Bundle.new @ps
-    @b.show_progress = false
   end
 
   ####################
@@ -113,25 +113,25 @@ describe PreAssembly::Bundle do
 
     it "should raise exception if a user parameter is missing" do
       @b.user_params.delete :bundle_dir
-      exp_msg = /^Missing.+bundle_dir/
+      exp_msg = /^Configuration errors found:  Missing parameter: /
       lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
     end
 
     it "should raise exception if required directory not found" do
       @b.bundle_dir = '__foo_bundle_dir###'
-      exp_msg = /^Required directory.+#{@b.bundle_dir}/
+      exp_msg = /^Configuration errors found:  Required directory not found/
       lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
     end
 
     it "should raise exception if required file not found" do
       @b.manifest = '__foo_manifest###'
-      exp_msg = /^Required file.+#{@b.manifest}/
+      exp_msg = /^Configuration errors found:  Required file not found/
       lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
     end
 
     it "should raise exception if use_container and get_druid_from are incompatible" do
       @b.stageable_discovery[:use_container] = true
-      exp_msg = /^Incompatible option values for use_container and get_druid_from/
+      exp_msg = /^Configuration errors found:  If stageable_discovery:use_container=true, you cannot use get_druid_from='container'/
       [:container, :container_barcode].each do |gdf|
         @b.project_style[:get_druid_from] = gdf
         lambda { @b.validate_usage }.should raise_error @exp_err, exp_msg
@@ -534,16 +534,11 @@ describe PreAssembly::Bundle do
 
   describe "manifest_rows()" do
 
-    it "should load the manifest CSV only once" do
+    it "should load the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
       bundle_setup :proj_revs
-      # Stub out a method that reads the manifest CSV.
-      fake_data = [0, 11, 222, 3333]
       meth_name = :load_manifest_rows_from_csv
-      @b.stub(meth_name).and_return fake_data
-      # Our stubbed method should be called only once, even though
-      # we call manifest_rows() multiple times.
-      @b.should_receive(meth_name).once
-      3.times { @b.manifest_rows.should == fake_data }
+      @b.should_not_receive(meth_name)
+      3.times { @b.manifest_rows.size == 3 }
     end
 
     it "should return empty array for bundles that do not use a manifest" do
@@ -809,7 +804,7 @@ describe PreAssembly::Bundle do
 
       ]
       tests.each do |input, exp|
-        PreAssembly::Bundle.symbolize_keys(input).should == exp
+        PreAssembly::Utils.symbolize_keys(input).should == exp
       end
     end
 
@@ -822,7 +817,7 @@ describe PreAssembly::Bundle do
         ],
       ]
       tests.each do |input, exp|
-        PreAssembly::Bundle.values_to_symbols!(input).should == exp
+        PreAssembly::Utils.values_to_symbols!(input).should == exp
       end
     end
 

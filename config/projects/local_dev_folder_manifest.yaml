@@ -4,8 +4,7 @@
 project_style:
   content_structure:  'simple_image'
   should_register:    true
-  get_druid_from:     'suri'
-  use_druid_minter:   true
+  get_druid_from:     'druid_minter'
 
 bundle_dir:           'spec/test_data/bundle_input_f'
 staging_dir:          'tmp'

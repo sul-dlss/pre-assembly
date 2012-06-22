@@ -104,20 +104,23 @@ module PreAssembly
       @druid = Druid.new @pid
     end
 
-    def get_pid_from_manifest()
+    def get_pid_from_manifest
       @manifest_row[:druid]
     end
     
-    def get_pid_from_suri()
+    def get_pid_from_suri
       Dor::SuriService.mint_id
     end
-
+    
+    def get_pid_from_druid_minter
+      DruidMinter.next
+    end
+    
     def get_pid_from_container
       return "druid:#{container_basename}"
     end
 
     def get_pid_from_container_barcode
-      return DruidMinter.next if @project_style[:use_druid_minter]
       barcode = container_basename
       pids    = query_dor_by_barcode(barcode)
       pids.each do |pid|

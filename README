@@ -29,6 +29,8 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.6.0  rename generate_collection_report to project_tag_report and add a new report that uses the progress YAML file to only report on successfully accessioned druids
 1.6.1  allow users to specify a manifest file for descriptive metadata purposes even if should_register=false; allow users to bypass image validation
 1.7.0  allow for 'joined' method of content metadata generation; allow user to specify publish/preserve/shelve attributes by mime-type
+1.7.1  add further validation checks to ensure only compatible values are set in YAML before proceeding, some refactoring to keep bundle class smaller, remove 'use_druid_minter' parameter 
+and set it to a new style of getting druids, show warnings if you set development only parameters
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 

@@ -3,8 +3,7 @@
 project_style:
   content_structure:  'simple_book'
   should_register:    false
-  get_druid_from:     'container_barcode'
-  use_druid_minter:   true
+  get_druid_from:     'druid_minter'
 
 bundle_dir:           'spec/test_data/bundle_input_d'
 staging_dir:          'tmp'
