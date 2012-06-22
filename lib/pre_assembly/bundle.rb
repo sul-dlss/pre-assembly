@@ -9,8 +9,9 @@ module PreAssembly
 
   class Bundle
 
-    include PreAssembly::Logging
     include CsvMapper
+    include PreAssembly::Logging
+    include PreAssembly::Reporting
 
     # Paramaters passed via YAML config files.
     YAML_PARAMS = [
@@ -59,8 +60,8 @@ module PreAssembly
     def initialize(params = {})
       # Unpack the user-supplied parameters, after converting
       # all hash keys and some hash values to symbols.
-      params = Bundle.symbolize_keys params
-      Bundle.values_to_symbols! params[:project_style]
+      params = PreAssembly::Utils.symbolize_keys params
+      PreAssembly::Utils.values_to_symbols! params[:project_style]
       cmc          = params[:content_md_creation]
       cmc[:style]  = cmc[:style].to_sym
       @user_params = params
@@ -70,8 +71,10 @@ module PreAssembly
       setup_paths
       setup_other
       validate_usage
+      show_developer_setting_warning
       load_desc_md_template
       load_skippables
+      
     end
 
     def setup_paths
@@ -109,6 +112,19 @@ module PreAssembly
     # Usage validation.
     ####
 
+    # allowed controlled vocabulary for various configuration paramaters
+    def allowed_values
+      {
+        :project_style=>{
+          :content_structure=>[:simple_image,:simple_book,:book_as_image,:smpl],
+          :get_druid_from=>[:suri,:container,:container_barcode,:manifest,:druid_minter],
+          },
+        :content_md_creation=>{
+          :style=>[:default,:joined,:smpl],
+        }
+      }  
+    end
+    
     def required_dirs
       [@bundle_dir, @staging_dir]
     end
@@ -119,152 +135,97 @@ module PreAssembly
     end
 
     def required_user_params
-      YAML_PARAMS-[:config_filename]-[:validate_files]
+      YAML_PARAMS-non_required_user_params
     end
-
+    
+    def writable_areas
+      [@progress_log_file,@staging_dir]
+    end
+    
+    def non_required_user_params
+      [:config_filename,:validate_files]
+    end
+    
+    def show_developer_setting_warning
+      # spit out some dire warning messages if you set certain parameters that are only applicable for developers
+      warning=[]
+      warning<<'* get_druid_from=druid_minter' if @project_style[:get_druid_from]==:druid_minter
+      warning<<'* init_assembly_wf=false' unless @init_assembly_wf
+      warning<<'* uniqify_source_ids=true' if @uniqify_source_ids             
+      warning<<'* cleanup=true' if @cleanup
+      puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
+    end
+    
     def validate_usage
       # Validate parameters supplied via user script.
       # Unit testing often bypasses such checks.
       return unless @validate_usage
 
+      validation_errors=[]
+      
       required_user_params.each do |p|
         next if @user_params.has_key? p
-        raise BundleUsageError, "Missing parameter: #{p}."
+        validation_errors << "Missing parameter: #{p}."
       end
 
       required_dirs.each do |d|
         next if dir_exists? d
-        raise BundleUsageError, "Required directory not found: #{d}."
+        validation_errors <<  "Required directory not found: #{d}."
       end
 
       required_files.each do |f|
         next if file_exists? f
-        raise BundleUsageError, "Required file not found: #{f}."
+        validation_errors <<  "Required file not found: #{f}."
       end
 
-      if @stageable_discovery[:use_container]
-        gdf = @project_style[:get_druid_from].to_s
-        msg = "Incompatible option values for use_container and get_druid_from."
-        raise BundleUsageError, msg if gdf =~ /^container/
+      writable_areas.each do |f|
+        next if File.writable? f
+        validation_errors <<  "Not writable: #{f}."
       end
-    end
 
-    def discovery_report(params={})
-      # Runs a confirmation for each digital object and confirms:
-      # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
-      # b) if each object should already be registered, confirms the object exists and has a valid APO
-      # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
-      # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
-
-      check_sourceids=params[:check_sourceids] || false
-      check_reg=params[:check_reg] || false
-      confirm_checksums=params[:confirm_checksums] || false
-      
-      log ""
-      log "discovery_report(#{run_log_msg})"
-      puts "\nProject, #{@project_name}"
-      puts "Directory, #{@bundle_dir}"
-      puts "Object discovery via manifest, #{@manifest}" if @manifest && @object_discovery[:use_manifest]
-      puts "Confirming checksums in,#{@checksums_file}" if @checksums_file && confirm_checksums
-      puts "Checking global uniqueness of source IDs" if check_sourceids && @manifest && @object_discovery[:use_manifest] 
-      puts "Checking APO and registration status" if check_reg && @project_style[:should_register] == false
-      if @accession_items        
-        puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
-        puts "You are processing specific objects only" if @accession_items[:only]
-        puts "You are processing all discovered except for specific objects" if @accession_items[:except]
+      if @project_style[:should_register] # if should_register=true, check some stuff
+        validation_errors << "The APO DRUID must be set if should_register = true." if @apo_druid_id.blank? #APO can't be blank
+        validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if @project_style[:get_druid_from]==:manifest # can't use manifest to get druid if not yet registered
+        validation_errors << "If should_register=true, then you must use a manifest." unless @object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
+      else  # if should_register=false, check some stuff
+        validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (@apo_druid_id || @set_druid_id)  # APO and SET should not be set
+        validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if @project_style[:get_druid_from]==:suri # can't use SURI to get druid
+        validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if @project_style[:get_druid_from]==:manifest && @object_discovery[:use_manifest] == false # can't use SURI to get druid
       end
       
-      header="\nObject Container , Number of Items , "
-      header+="All Files Exist, Label , Source ID ," if @manifest && @object_discovery[:use_manifest]
-      header+="Checksums , " if @checksums_file && confirm_checksums
-      header+="Duplicate Filenames? , " unless @manifest && @object_discovery[:use_manifest]
-      header+="Registered? , APOs ," if @project_style[:should_register] == false && check_reg
-      header+="SourceID unique in DOR? , " if @manifest && @object_discovery[:use_manifest] && check_sourceids
-      puts header
       
-      unique_objects=0
-      @error_count=0
-      discover_objects
-      load_provider_checksums if @checksums_file && confirm_checksums
-      process_manifest
+      if @object_discovery[:use_manifest] # if we are using a manifest, check some stuff 
+        validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless @object_discovery[:glob].nil? && @object_discovery[:regex].nil? # glob and regex should be nil
+         if @manifest.blank?
+           validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
+         else # let's see if the columns the user claims are there exist in the actual manifest
+           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.methods.include? @manifest_cols[:object_container]
+           validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
+           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:source_id])
+           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:label])
+           validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.methods.include?('druid')
+         end        
+      else # if we are not using a manifest, check some stuff
+        validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if @object_discovery[:glob].blank? # glob must be set
+        validation_errors << "Manifest and desc_md_template files should be set to nil if object_discovery:use_manifest=false." unless @manifest.blank? && @desc_md_template.blank?
+      end
 
-      objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
-      all_object_containers=manifest_rows.collect {|r| r.send(@manifest_cols[:object_container])}
-
-      total_objects=@digital_objects.size
-
-      o2p = objects_to_process
-      total_objects_to_process=o2p.size
-      source_ids=Hash.new(0)
-      
-      o2p.each do |dobj|
-         bundle_id=File.basename(dobj.unadjusted_container)
-         message="#{bundle_id} , " # obj container
-         message+= (dobj.object_files.count == 0 ? report_error_message("none") : "#{dobj.object_files.count} ,")  # of items
-         
-         if @manifest && @object_discovery[:use_manifest] # if we are using a manifest, let's check to see if the file referenced exists
-           message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing files")) # all files exist
-           message += "\"#{dobj.label}\" ," # label
-           message += "\"#{dobj.source_id}\" ," # source ID
-         end
-         
-         message += confirm_checksums(dobj) ? " confirmed , " : report_error_message("failed") if @checksums_file && confirm_checksums # checksum confirmation
-             
-         unless @manifest && @object_discovery[:use_manifest]
-           is_unique=object_filenames_unique?(dobj)
-           unique_objects+=1 if is_unique
-           message += (is_unique ? " no ," : report_error_message("dupes")) # dupe filenames
-         else
-           source_ids[dobj.source_id] += 1
-         end
-         
-         if @project_style[:should_register] == false && check_reg # objects should already be registered, let's confirm that
-           druid = bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}"
-           begin
-             obj = Dor::Item.find(druid)
-             message += " yes , "
-             apos=obj.admin_policy_object_ids.size
-             message += (apos == 0 ? report_error_message("no APO") : "#{apos.to_s} ,") # registered and apo
-           rescue
-             message += report_error_message("no obj") + report_error_message("no APO")
-           end
-         end
-
-         if @manifest && @object_discovery[:use_manifest] && check_sourceids # let's check for source ID uniqueness
-           message += (PreAssembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
-         end
-         
-         puts message
-         
+      if @stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
+        validation_errors <<  "If stageable_discovery:use_container=true, you cannot use get_druid_from='container'." if @project_style[:get_druid_from].to_s =~ /^container/ # if you are staging the entire container, it doesn't make sense to use the container to get the druid
+      else # if we are not staging the whole container, check some stuff
+        validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if @stageable_discovery[:glob].blank? # glob must be set
       end
       
-      # now check all files in the bundle directory against the manifest to report on files not referenced
-      if @manifest && @object_discovery[:use_manifest]
-        puts "\nExtra Files/Dir Report (items in bundle directory not in manifest):"
-        entries_in_bundle_directory.each do |dir_item|
-          puts "** #{dir_item}" unless all_object_containers.include?(dir_item)
-        end
+       # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values
+       validation_errors << "The project_style:content_structure value of '#{@project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? @project_style[:content_structure]
+       validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
+       validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
+      
+      if !validation_errors.blank?
+        validation_errors = ['Configuration errors found:'] + validation_errors
+        raise BundleUsageError, validation_errors.join('  ') if !validation_errors.blank?
       end
       
-      puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
-      puts "Total Discovered Objects, #{total_objects}"
-      puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
-
-      unless @manifest && @object_discovery[:use_manifest]
-        if entries_in_bundle_directory.count != total_objects
-          puts "List of entries in bundle directory that will not be discovered: " 
-          puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
-        end
-        puts "\nObjects with non unique filenames, #{total_objects_to_process - unique_objects}"
-      else
-        if manifest_sourceids_unique?
-          puts "All source IDs locally unique: yes"
-        else
-          source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
-        end
-      end
-      puts "** TOTAL ERRORS FOUND **: #{@error_count}" unless @error_count==0
-
     end
     
     ####
@@ -520,7 +481,7 @@ module PreAssembly
     end
 
     def manifest_sourceids_unique?
-      all_source_ids=manifest_rows.collect {|r| r.send(@manifest_cols[:source_id]) + source_id_suffix}
+      all_source_ids=manifest_rows.collect {|r| r.send(@manifest_cols[:source_id])}
       all_source_ids.size == all_source_ids.uniq.size
     end
     
@@ -537,8 +498,8 @@ module PreAssembly
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
         # Get label and source_id from column names declared in YAML config.
-        dobj.label         = r.send(@manifest_cols[:label])
-        dobj.source_id     = r.send(@manifest_cols[:source_id]) + source_id_suffix
+        dobj.label         = r.send(@manifest_cols[:label]) if @manifest_cols[:label]
+        dobj.source_id     = (r.send(@manifest_cols[:source_id]) + source_id_suffix) if @manifest_cols[:source_id] 
         # Also store a hash of all values from the manifest row, using column names as keys.
         dobj.manifest_row  = Hash[r.each_pair.to_a]
       end
@@ -715,23 +676,6 @@ module PreAssembly
     def source_id_suffix
       # Used during development to append a timestamp to source IDs.
       @uniqify_source_ids ? Time.now.strftime('_%s') : ''
-    end
-
-    def self.symbolize_keys(h)
-      # Takes a data structure and recursively converts all hash keys
-      # from strings to symbols.
-      if h.instance_of? Hash
-        h.inject({}) { |hh,(k,v)| hh[k.to_sym] = symbolize_keys(v); hh }
-      elsif h.instance_of? Array
-        h.map { |v| symbolize_keys(v) }
-      else
-        h
-      end
-    end
-
-    def self.values_to_symbols!(h)
-      # Takes a hash and converts its string values to symbols -- not recursively.
-      h.each { |k,v| h[k] = v.to_sym if v.class == String }
     end
     
   end

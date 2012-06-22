@@ -57,11 +57,11 @@ describe PreAssembly::DigitalObject do
       @stubbed_return_vals = @druids.map { false }
     end
 
-    it "should retun DruidMinter.next if use_druid_minter is true" do
+    it "should return DruidMinter.next if get_druid_from=druid_minter" do
       exp = PreAssembly::DruidMinter.current
-      @dobj.project_style[:use_druid_minter] = true
+      @dobj.project_style[:get_druid_from] = :druid_minter
       @dobj.should_not_receive :container_basename
-      @dobj.get_pid_from_container_barcode.should == exp.next
+      @dobj.get_pid_from_druid_minter.should == exp.next
     end
 
     it "should return nil whether there are no matches" do
