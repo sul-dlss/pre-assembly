@@ -88,6 +88,7 @@ module PreAssembly
       @skippables          = {}
       @manifest_rows       = nil
       @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
+      @publish_attr={} if @publish_attr.nil?
       @publish_attr.delete_if { |k,v| v.nil? }
       @validate_files = true if @validate_files.nil? # default to validating files if not provided
     end

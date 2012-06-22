@@ -238,7 +238,9 @@ module PreAssembly
 
     def generate_content_metadata
       # Invoke the contentMetadata creation method used by the
-      # project (usually the default), and then write that XML to a file.
+      # project, and then write that XML to a file.  
+      # The name of the method invoked must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
+      # Methods other than the default are defined in the project_specific.rb file
       method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
       write_content_metadata
     end
@@ -263,6 +265,30 @@ module PreAssembly
       @content_md_xml = builder.to_xml
     end
 
+    # similar to default content metadata generation, but joins files with identical filenames, but differing extensions, into the same resource
+    def create_content_metadata_xml_joined
+        log "    - create_content_metadata_xml_joined()"
+        distinct_filenames=content_object_files.collect{|object_file| object_file.relative_path.chomp(File.extname(object_file.relative_path))}.uniq
+        builder = Nokogiri::XML::Builder.new { |xml|
+          xml.contentMetadata(node_attr_cm) {
+            distinct_filenames.each_with_index { |distinct_filename, i|
+              seq = i + 1
+              xml.resource(node_attr_cm_resource seq) {
+                xml.label "Item #{seq}"
+                content_object_files.each do |object_file|
+                  if object_file.relative_path.chomp(File.extname(object_file.relative_path)) == distinct_filename
+                    xml.file(node_attr_cm_file object_file) {
+                      node_provider_checksum(xml, object_file.checksum)
+                    }
+                  end
+                end
+              }
+            }
+          }
+        }
+        @content_md_xml = builder.to_xml
+    end
+    
     def write_content_metadata
       file_name = File.join @druid_tree_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
@@ -300,7 +326,8 @@ module PreAssembly
 
     def node_attr_cm_file(object_file)
       # Returns hash of attributes for a contenteMetadata <file> node.
-      return { :id => object_file.relative_path }.merge @publish_attr
+      node_publish_attr=(@publish_attr[object_file.mimetype.to_sym] || @publish_attr[:default] || @publish_attr).delete_if { |k,v| v.nil? }
+      return { :id => object_file.relative_path }.merge node_publish_attr
     end
 
     def node_provider_checksum(xml, checksum)

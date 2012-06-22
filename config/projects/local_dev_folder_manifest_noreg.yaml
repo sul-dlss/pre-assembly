@@ -18,21 +18,26 @@ manifest:             'manifest.csv'
 checksums_file:        ~
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'log/progress_folder_manifest_desc.yaml'
-project_name:         'FolderManifest'
-apo_druid_id:         'druid:qv648vd4392'
+progress_log_file:    'log/progress_folder_manifest_noreg.yaml'
+project_name:         'FolderManifestNoReg'
+apo_druid_id:         ~
 set_druid_id:         ~
 
 publish_attr:
-  publish:            ~
-  shelve:             ~
-  preserve:           ~
-
+  'image/jp2':
+    publish:            'yes'
+    shelve:             'yes'
+    preserve:           'no'
+  'default':
+    publish:   ~
+    shelve:    ~
+    preserve:  ~
+  
 compute_checksum:     false
 init_assembly_wf:     false
 
 content_md_creation:
-  style:              'default'
+  style:              'joined'
   pre_md_file:        ~
 
 object_discovery:
@@ -43,7 +48,7 @@ object_discovery:
 stageable_discovery:
   use_container:      false
   glob:               '**/*'
-  regex:              ~
+  regex:              '(?ix) \. (tif|jp2) $'
 
 manifest_cols:
   object_container:   'folder'

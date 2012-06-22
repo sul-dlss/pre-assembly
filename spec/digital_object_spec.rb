@@ -9,21 +9,21 @@ describe PreAssembly::DigitalObject do
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
-      :bundle_dir    => 'spec/test_data/bundle_input_a',
+      :bundle_dir    => 'spec/test_data/bundle_input_g',
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
-    @dru          = 'ab123cd4567'
+    @dru          = 'gn330dv6119'
     @pid          = "druid:#{@dru}"
     @druid        = Druid.new @pid
     @tmp_dir_args = [nil, 'tmp']
+    @dobj.object_files = []
   end
 
-  def add_object_files
-    @dobj.object_files = []
+  def add_object_files(extension='tif')
     (1..2).each do |i|
-      f = "image_#{i}.tif"
+      f = "image#{i}.#{extension}"
       @dobj.object_files.push PreAssembly::ObjectFile.new(
-        :path                 => "#{@dobj.bundle_dir}/#{f}",
+        :path                 => "#{@dobj.bundle_dir}/#{@dru}/#{f}",
         :relative_path        => f,
         :exclude_from_content => false,
         :checksum             => "#{i}" * 4
@@ -237,24 +237,37 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  describe "content metadata" do
+  describe "default content metadata" do
 
     before(:each) do
       @dobj.druid = @druid
-      add_object_files
+      add_object_files('tif')
+      add_object_files('jp2')      
       @dobj.create_content_metadata_xml_default
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <contentMetadata objectId="ab123cd4567">
-          <resource sequence="1" id="ab123cd4567_1">
+        <contentMetadata objectId="gn330dv6119">
+          <resource sequence="1" id="gn330dv6119_1">
             <label>Item 1</label>
-            <file preserve="yes" publish="no" shelve="no" id="image_1.tif">
+            <file shelve="no" publish="no" id="image1.jp2" preserve="yes">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
-          <resource sequence="2" id="ab123cd4567_2">
+          <resource sequence="2" id="gn330dv6119_2">
             <label>Item 2</label>
-            <file preserve="yes" publish="no" shelve="no" id="image_2.tif">
+            <file shelve="no" publish="no" id="image1.tif" preserve="yes">
+              <checksum type="md5">1111</checksum>
+            </file>
+          </resource>
+          <resource sequence="3" id="gn330dv6119_3">
+            <label>Item 3</label>
+            <file shelve="no" publish="no" id="image2.jp2" preserve="yes">
+              <checksum type="md5">2222</checksum>
+            </file>
+          </resource>
+          <resource sequence="4" id="gn330dv6119_4">
+            <label>Item 4</label>
+            <file shelve="no" publish="no" id="image2.tif" preserve="yes">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
@@ -325,7 +338,7 @@ describe PreAssembly::DigitalObject do
 
     it "node_attr_cm_file() should return expected value" do
       p           = 'foo/bar.txt'
-      object_file = double 'object_file', :relative_path => p
+      object_file = double 'object_file', :relative_path => p, :mimetype=> 'text/plain'
       exp         = {:id => p}.merge @dobj.publish_attr
       @dobj.node_attr_cm_file(object_file).should == exp
     end
@@ -340,6 +353,47 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
+  describe "joined content metadata" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      add_object_files('tif')
+      add_object_files('jp2')
+      @dobj.create_content_metadata_xml_joined
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <contentMetadata objectId="gn330dv6119">
+          <resource sequence="1" id="gn330dv6119_1">
+            <label>Item 1</label>
+            <file shelve="no" publish="no" id="image1.jp2" preserve="yes">
+              <checksum type="md5">1111</checksum>
+            </file>
+            <file shelve="no" publish="no" id="image1.tif" preserve="yes">
+              <checksum type="md5">1111</checksum>
+            </file>
+          </resource>
+          <resource sequence="2" id="gn330dv6119_2">
+            <label>Item 2</label>
+            <file shelve="no" publish="no" id="image2.jp2" preserve="yes">
+              <checksum type="md5">2222</checksum>
+            </file>
+            <file shelve="no" publish="no" id="image2.tif" preserve="yes">
+              <checksum type="md5">2222</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
+
+    it "should generate the expected xml text" do
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
+    end
+
+  end
+  
+  ####################
+  
   describe "descriptive metadata" do
 
     before(:each) do

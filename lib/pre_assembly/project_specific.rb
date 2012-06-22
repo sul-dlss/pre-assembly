@@ -1,7 +1,10 @@
+# project specific methods that can be invoked by a digital object
+
 module PreAssembly
 
   module ProjectSpecific
 
+      # the name of this method must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
       def create_content_metadata_xml_smpl
         
          # do not include these files in the new content metadata when creating file nodes
@@ -66,7 +69,7 @@ module PreAssembly
         @content_md_xml = builder.to_xml
         
       end
-
+      
   end
 
 end

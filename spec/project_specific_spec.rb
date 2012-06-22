@@ -20,8 +20,7 @@ describe PreAssembly::DigitalObject do
     @dobj.druid = @druid
     @dobj.container = @dru    
   end
-
-
+  
   ####################
 
   describe "SMPL specific methods in project_specific module" do
