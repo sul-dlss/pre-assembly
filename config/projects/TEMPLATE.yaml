@@ -247,7 +247,9 @@ content_exclusion: ~             # Include all staged files in content metadata.
 
 # The method used to generate content metadata.
 content_md_creation:
-  style:       'default'                # Used by most projects.
+  style:       'default'                # Used by most projects, creates one resource per file.
+               'joined'                 # Collects files together into a single resource based on filename -- files with the same name but different extensions will become
+                                          # part of a single resource node.
                'smpl'                   # Only used by SMPL projects.  Will generate a content metadata file using the SMPL preContentMetadata.
   pre_md_file: ~ 						# Name of the pre-content metadata file. Set to nil if style = 'default' (common scenario)
   			   'preContentMetadata.xml' # Currently only use by SMPL. 
@@ -257,12 +259,28 @@ content_md_creation:
 # Attributes related common-accessioning steps.
 ####
 
-publish_attr:
-  publish:  ~      # Most projects should set these values to nil.  If specified here, each file in the contentMetadata will get these attributes.  If not specified or nil, they will be added by the assembly robots based on mimetype.
-  shelve:   ~
-  preserve: ~
+publish_attr:  ~  # Most projects should set this to nil.  If not specified or nil, they will be added by the assembly robots based on mimetype.
 
-
+  # If you want to specify them here, you can do it in two ways.  The fisrt is globally for all files, like this:
+  shelve:   'no'    
+  publish:  'no'      
+  preserve: 'yes'
+  
+  # The second is by mime-type, nesting under each mimetype (which must be quoted), like this.  The attributes will be set according to the
+  #  mime-type of the file.  You must also set a 'default', which will be applied if no mime-type matches.  If any of the default attributes are
+  # set to nil and no mime-type matches, the attributes will be left off and added during assembly according to the defaults.  
+  'image/jp2':
+    publish:            'yes'
+    shelve:             'yes'
+    preserve:           'no'
+  'image/tiff':
+    publish:            'no'
+    shelve:             'no'
+    preserve:           'yes'
+  'default':
+    publish:             'no'
+    shelve:              'no'
+    preserve:            'yes'
 
 ####
 # Run options.
