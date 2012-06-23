@@ -117,7 +117,7 @@ module PreAssembly
     end
     
     def get_pid_from_container
-      return "druid:#{container_basename}"
+      "druid:#{container_basename}"
     end
 
     def get_pid_from_container_barcode

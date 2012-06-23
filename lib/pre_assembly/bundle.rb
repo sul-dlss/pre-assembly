@@ -138,10 +138,6 @@ module PreAssembly
       YAML_PARAMS-non_required_user_params
     end
     
-    def writable_areas
-      [@progress_log_file,@staging_dir]
-    end
-    
     def non_required_user_params
       [:config_filename,:validate_files]
     end
@@ -178,17 +174,20 @@ module PreAssembly
         validation_errors <<  "Required file not found: #{f}."
       end
 
-      writable_areas.each do |f|
-        next if File.writable? f
-        validation_errors <<  "Not writable: #{f}."
-      end
+      validation_errors <<  "Staging directory '#{@staging_dir}' not writable." unless File.writable?(@staging_dir)
+      validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file)) 
 
       if @project_style[:should_register] # if should_register=true, check some stuff
         validation_errors << "The APO DRUID must be set if should_register = true." if @apo_druid_id.blank? #APO can't be blank
         validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if @project_style[:get_druid_from]==:manifest # can't use manifest to get druid if not yet registered
         validation_errors << "If should_register=true, then you must use a manifest." unless @object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
       else  # if should_register=false, check some stuff
-        validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (@apo_druid_id || @set_druid_id)  # APO and SET should not be set
+        if @project_style[:get_druid_from] != :container_barcode
+          validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (@apo_druid_id || @set_druid_id)  # APO and SET should not be set
+        else
+          validation_errors << "The APO DRUID must be set if project_style:get_druid_from = container_barcode." if @apo_druid_id.blank? # APO DRUID must be added for container_barcode projects
+          validation_errors << "The SET DRUID should not be set if project_style:get_druid_from = container_barcode." if @set_druid_id # SET DRUID must not be set for container_barcode projects
+        end
         validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if @project_style[:get_druid_from]==:suri # can't use SURI to get druid
         validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if @project_style[:get_druid_from]==:manifest && @object_discovery[:use_manifest] == false # can't use SURI to get druid
       end

@@ -277,14 +277,20 @@ module PreAssembly
     end
 
     # used by the completion_report and project_tag_report in the bin directory
-    def self.solr_doc_parser(doc)
+    def self.solr_doc_parser(doc,check_status_in_dor=false)
       
       druid = doc[:id]
 
 	    label = doc[:objectLabel_t]
 			title=doc[:public_dc_title_t].nil? ? '' : doc[:public_dc_title_t].first
-	    accessioned = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:publish:completed")
-	    shelved = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:shelve:completed")
+			
+			if check_status_in_dor
+        accessioned = self.get_workflow_status(druid,'accessionWF','publish')=="completed"
+        shelved = self.get_workflow_status(druid,'accessionWF','shelve')=="completed"
+			else
+  	    accessioned = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:publish:completed")
+  	    shelved = doc[:wf_wps_facet].nil? ? false : doc[:wf_wps_facet].include?("accessionWF:shelve:completed")
+      end
 	    source_id = doc[:source_id_t]
 		  files=doc[:content_file_t]
 		  if files.nil?
@@ -302,7 +308,7 @@ module PreAssembly
 		
 	    purl_link = ""
 	    val = druid.split(/:/).last
-	    purl_link = File.join(Dor::Config.purl.base_url, val) if shelved
+	    purl_link = File.join(Dor::Config.purl.base_url, val)
       
       return  [druid, label, title, source_id, accessioned, shelved, purl_link, num_files,file_type_list]   
        

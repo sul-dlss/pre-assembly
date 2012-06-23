@@ -640,8 +640,7 @@ describe PreAssembly::Bundle do
         @b.setup_paths
         @b.staging_dir.should == default_staging_directory
       else
-        exp_msg="Required directory not found: #{default_staging_directory}."
-        lambda {bundle_setup :proj_sohp2}.should raise_error PreAssembly::BundleUsageError,exp_msg
+        lambda {bundle_setup :proj_sohp2}.should raise_error PreAssembly::BundleUsageError
       end
     end
 
