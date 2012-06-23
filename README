@@ -31,6 +31,9 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.7.0  allow for 'joined' method of content metadata generation; allow user to specify publish/preserve/shelve attributes by mime-type
 1.7.1  add further validation checks to ensure only compatible values are set in YAML before proceeding, some refactoring to keep bundle class smaller, remove 'use_druid_minter' parameter 
 and set it to a new style of getting druids, show warnings if you set development only parameters
+1.7.2  set completion_report to check actual workflow states in DOR instead of relying on SOLR, which can be out of date
+1.7.3  small bug fix when checking writable status of directories and files; try and find druids from barcodes when running discovery report
+1.7.4  more validation fixes, to indicate that container barcode projects must have the APO DRUID set
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -58,7 +61,8 @@ If you have multiple collections to associate your objects with, you will need t
 
 The YAML file can be stored anywhere that is accessible to the server you are running the code on.  However, for simplicity, we recommend you
 store the YAML at the root of your bundle directory, or create a new project folder, place your YAML file into it and then place your bundle
-directory into your new project folder.
+directory into your new project folder.  PLEASE DO NOT PLACE YOUR YAML FILE INTO THE PRE-ASSEMBLY DIRECTORY ITSELF ANYWHERE ON THE SERVER.  IT WILL BECOME HARD TO FIND AND 
+BE SUBJECT TO DELETION WHEN NEW CODE IS DEPLOYED.
 
 Example:
 
@@ -93,7 +97,7 @@ First log into sul-lyberservices-test or prod as needed, and then cd into the pr
 
 	 ssh lyberadmin@sul-lyberadmin-test.stanford.edu
 	 cd pre-assembly/current
-   ROBOT_ENVIRONMENT=test bin/H YAML_FILE
+   ROBOT_ENVIRONMENT=test bin/discovery_report YAML_FILE
 
 You will probably want to run this against a specific environment so it can connect to DOR and confirm registration on the appropriate server, e.g:
 

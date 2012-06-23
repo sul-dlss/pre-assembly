@@ -31,6 +31,7 @@ module PreAssembly
       header+="All Files Exist, Label , Source ID ," if @manifest && @object_discovery[:use_manifest]
       header+="Checksums , " if @checksums_file && confirm_checksums
       header+="Duplicate Filenames? , " unless @manifest && @object_discovery[:use_manifest]
+      header+="DRUID from barcode , " if @project_style[:get_druid_from] == :container_barcode
       header+="Registered? , APOs ," if @project_style[:should_register] == false && check_reg
       header+="SourceID unique in DOR? , " if @manifest && @object_discovery[:use_manifest] && check_sourceids
       puts header
@@ -69,6 +70,11 @@ module PreAssembly
            message += (is_unique ? " no ," : report_error_message("dupes")) # dupe filenames
          else
            source_ids[dobj.source_id] += 1
+         end
+         
+         if @project_style[:get_druid_from] == :container_barcode # look up druid by container
+           druid_from_container=dobj.get_pid_from_container_barcode || report_error_message("druid not found")
+           message+=" #{druid_from_container} , "
          end
          
          if @project_style[:should_register] == false && check_reg # objects should already be registered, let's confirm that

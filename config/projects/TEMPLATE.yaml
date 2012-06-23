@@ -24,11 +24,12 @@ progress_log_file: ~                        # Optional - if left as nil a progre
                                             # Be sure to keep your progress log file somewhere useful and be aware 
                                             # if you restart pre-assembly without using the --resume switch, it will be overwritten.
                                             # You will need the progress log for cleanup and restarting.
+                                            # PLEASE DO NOT PLACE THIS IN THE LOG FOLDER OF THE PRE-ASSEMBLY FOLDER ON THE SERVER.  IT MAY BE DELETED IF YOU DO THIS.
                     '/dor/preassembly/progress_foo.yaml'  # this is an example of specifying an alternate location                       
                                             
 apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registering 
                                            # the objects.  Include druid prefix.
-                                           # NOTE: only valid if should_register = true
+                                           # NOTE: only valid if should_register = true OR get_druid_from = container_barcode
 
 set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
                                            # the object with a set in Dor. Include druid prefix.
