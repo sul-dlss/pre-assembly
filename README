@@ -34,6 +34,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.2  set completion_report to check actual workflow states in DOR instead of relying on SOLR, which can be out of date
 1.7.3  small bug fix when checking writable status of directories and files; try and find druids from barcodes when running discovery report
 1.7.4  more validation fixes, to indicate that container barcode projects must have the APO DRUID set
+1.7.5  add another check to discovery_report which confirms readable file permissions on object files
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -125,7 +126,7 @@ for large number of objects.  Some options only work for certain styles of proje
 
 confirm_checksums   =  for manifest style projects, will compute and confirm checksums against the checksum file if it exists -- useful it you are not accessioning immediately
 check_sourceids  =  for manifest style projects, will confirm source IDs are globally unique in DOR (sources ids area already checked for local uniqueness in the manifest)
-check_reg = check if objects are registered and have APOs (assuming they are supposed to be registered already)
+no_check_reg = for projects where objects are to be registered, DONT'T check if objects are registered and have APOs (assuming they are supposed to be registered already)
 
 e.g.
 

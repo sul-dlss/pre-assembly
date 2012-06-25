@@ -265,8 +265,12 @@ module PreAssembly
     end
 
     def object_files_exist?(dobj)
-      all_files_exist = dobj.object_files.map {|objfile| file_exists?(objfile.path) } 
-      !all_files_exist.uniq.include?(false)
+      if dobj.object_files.size == 0 
+        return false
+      else
+        all_files_exist = dobj.object_files.map {|objfile| file_exists?(objfile.path)} 
+        return !all_files_exist.uniq.include?(false)
+      end
     end
 
     ####
@@ -640,11 +644,11 @@ module PreAssembly
     end
 
     def dir_exists?(dir)
-      File.directory? dir
+      File.directory?(dir)
     end
 
     def file_exists?(file)
-      File.exists? file
+      File.readable?(file)
     end
 
     def dir_glob(pattern)
