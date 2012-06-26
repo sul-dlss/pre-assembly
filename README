@@ -37,6 +37,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.5  add another check to discovery_report which confirms readable file permissions on object files
 1.7.6  bug fix in discovery_report for barcode projects
 1.7.7  move the Utils class into it's own gem so it can be used elsewhere ... methods that were PreAssembly::Utils are now Assembly::Utils; refactoring to account for new DruidTools gem usage
+1.7.8  bug fixes; update how configuration is done to make it part of Assembly-utils gem
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 

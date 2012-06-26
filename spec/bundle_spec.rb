@@ -634,7 +634,7 @@ describe PreAssembly::Bundle do
     end
     
     it "should set the staging_dir to the default value if not specified in the YAML" do
-      default_staging_directory=Dor::Config.assembly.assembly_workspace
+      default_staging_directory=Assembly::ASSEMBLY_WORKSPACE
       if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)        
         bundle_setup :proj_sohp2
         @b.setup_paths
