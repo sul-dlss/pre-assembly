@@ -26,7 +26,7 @@ CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),report_filename), "w
 
   # header row 
   csv << ["druid", "label", "dc:title", "source_id", "accessioned", "shelved", "purl", "total_files", "files_found"] 
-  resp.docs.each {|doc|	csv << PreAssembly::Utils.solr_doc_parser(doc)}
+  resp.docs.each {|doc|	csv << Assembly::Utils.solr_doc_parser(doc)}
 	puts "Report written to #{report_filename}"
 	
 end

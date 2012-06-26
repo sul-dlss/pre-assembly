@@ -22,21 +22,20 @@ describe "Pre-assembly integration" do
   ####
 
   before(:all) do
-    conf = Dor::Config.assembly
     @expected  = {
       :revs => {
         :n_objects => 3,
         :exp_files => [
           [1, '*.tif'],
-          [1, conf.content_md_file],
-          [1, conf.desc_md_file],
+          [1, Assembly::CONTENT_MD_FILE],
+          [1, Assembly::DESC_MD_FILE],
         ],
       },
       :gould => {
         :n_objects => 3,
         :exp_files => [
           [3, '00/*.jpg'],
-          [1, conf.content_md_file],
+          [1, Assembly::CONTENT_MD_FILE],
         ],
       },
       :sohp => {
@@ -53,7 +52,7 @@ describe "Pre-assembly integration" do
           [2, '*_sl_techmd.xml'],
           [1, '*.pdf'],
           [1, '*.pdf.md5'],
-          [1, conf.content_md_file],
+          [1, Assembly::CONTENT_MD_FILE],
         ],
       },
     }

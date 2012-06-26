@@ -63,8 +63,8 @@ module PreAssembly
       @source_id           = nil
       @manifest_row        = nil
 
-      @content_md_file     = Dor::Config.assembly.content_md_file
-      @desc_md_file        = Dor::Config.assembly.desc_md_file
+      @content_md_file     = Assembly::CONTENT_MD_FILE
+      @desc_md_file        = Assembly::DESC_MD_FILE
       @content_md_xml      = ''
       @desc_md_xml         = ''
 

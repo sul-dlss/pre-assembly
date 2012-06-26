@@ -11,7 +11,7 @@ gem 'rake'
 gem 'checksum-tools'
 gem 'assembly-objectfile', '~> 1.1.8'
 gem 'assembly-image', '~>1.3.0'
-gem 'assembly-utils'
+gem 'assembly-utils', '>=1.0.4'
 
 group :test do
   gem 'equivalent-xml'

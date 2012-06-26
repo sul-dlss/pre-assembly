@@ -17,7 +17,7 @@ params = YAML.load(File.read yaml_config)
 params['config_filename'] = yaml_config
 progress_filename=params['progress_log_file']
 
-completed_druids=PreAssembly::Utils.get_druids_from_log(progress_filename,true)
+completed_druids=Assembly::Utils.get_druids_from_log(progress_filename,true)
 
 help "no completed druids found in '#{progress_filename}'" if completed_druids.size == 0 
 
@@ -36,7 +36,7 @@ CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),report_filename), "w
 
     query_tag="id:\"" + batch.join('" OR id:"') + "\""
 		resp = Dor::SearchService.query query_tag, :rows => n, :fl => 'id, public_dc_title_t, wf_wps_facet, source_id_t, objectLabel_t, content_file_t'
-	  resp.docs.each {|doc|	csv << PreAssembly::Utils.solr_doc_parser(doc,true)}
+	  resp.docs.each {|doc|	csv << Assembly::Utils.solr_doc_parser(doc,true)}
 
 	end
 		
