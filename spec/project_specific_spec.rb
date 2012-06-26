@@ -15,7 +15,7 @@ describe PreAssembly::DigitalObject do
     @dobj         = PreAssembly::DigitalObject.new @ps
     @dru          = 'aa111aa1111'
     @pid          = "druid:#{@dru}"
-    @druid        = Druid.new @pid
+    @druid        = DruidTools::Druid.new @pid
     @tmp_dir_args = [nil, 'tmp']
     @dobj.druid = @druid
     @dobj.container = @dru    

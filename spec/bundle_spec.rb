@@ -634,7 +634,7 @@ describe PreAssembly::Bundle do
     end
     
     it "should set the staging_dir to the default value if not specified in the YAML" do
-      default_staging_directory=Dor::Config.pre_assembly.assembly_workspace
+      default_staging_directory=Dor::Config.assembly.assembly_workspace
       if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)        
         bundle_setup :proj_sohp2
         @b.setup_paths
@@ -730,11 +730,6 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "should be able to exercise file-dir existence methods" do
-      @b.file_exists?(@b.manifest).should == true
-      @b.dir_exists?(@b.bundle_dir).should == true
-    end
-
     it "dir_glob() should return expected information" do
       exp = [1,2,3].map { |n| @b.path_in_bundle "image#{n}.tif" }
       @b.dir_glob(@b.path_in_bundle "*.tif").should == exp
@@ -803,7 +798,7 @@ describe PreAssembly::Bundle do
 
       ]
       tests.each do |input, exp|
-        PreAssembly::Utils.symbolize_keys(input).should == exp
+        Assembly::Utils.symbolize_keys(input).should == exp
       end
     end
 
@@ -816,7 +811,7 @@ describe PreAssembly::Bundle do
         ],
       ]
       tests.each do |input, exp|
-        PreAssembly::Utils.values_to_symbols!(input).should == exp
+        Assembly::Utils.values_to_symbols!(input).should == exp
       end
     end
 

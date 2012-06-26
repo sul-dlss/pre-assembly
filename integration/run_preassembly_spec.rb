@@ -22,7 +22,7 @@ describe "Pre-assembly integration" do
   ####
 
   before(:all) do
-    conf = Dor::Config.pre_assembly
+    conf = Dor::Config.assembly
     @expected  = {
       :revs => {
         :n_objects => 3,
@@ -90,7 +90,7 @@ describe "Pre-assembly integration" do
     # Load the project's YAML config file.
     yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
     yaml      = YAML.load_file yaml_file
-    @params   = PreAssembly::Utils.symbolize_keys yaml
+    @params   = Assembly::Utils.symbolize_keys yaml
     
     # Create a temp dir to serve as the staging area.
     @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'
@@ -111,14 +111,14 @@ describe "Pre-assembly integration" do
 
   def determine_staged_druid_trees
     # Determine the druid tree paths in the staging directory.
-    @druid_trees = @pids.map { |pid| Druid.new(pid).path(@temp_dir) }
+    @druid_trees = @pids.map { |pid| Assembly::Utils.get_staging_path(pid,@temp_dir) }
   end
 
 
   ####
   # The checks.
   ####
-
+  
   def check_n_of_objects
     # Did we get the expected N of staged objects?
     @pids.size.should == @n_objects
@@ -138,7 +138,7 @@ describe "Pre-assembly integration" do
   def cleanup_dor_objects
     return unless @b.project_style[:should_register]
     @pids.each do |pid| 
-      PreAssembly::Utils.unregister(pid)
+      Assembly::Utils.unregister(pid)
     end
   end
 

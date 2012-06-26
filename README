@@ -35,6 +35,8 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.3  small bug fix when checking writable status of directories and files; try and find druids from barcodes when running discovery report
 1.7.4  more validation fixes, to indicate that container barcode projects must have the APO DRUID set
 1.7.5  add another check to discovery_report which confirms readable file permissions on object files
+1.7.6  bug fix in discovery_report for barcode projects
+1.7.7  move the Utils class into it's own gem so it can be used elsewhere ... methods that were PreAssembly::Utils are now Assembly::Utils; refactoring to account for new DruidTools gem usage
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -349,7 +351,7 @@ For projects with a manifest (e.g. like Revs):
 
 1. Create a new manifest with only the objects you need re-accessioned.
 2. Create a new project config YAML file referencing the new manifest and write to a new progress log file.
-3. "Cleanup" your existing objects that you will be re-accessioning using the "PreAssembly::Utils.cleanup" method on a Ruby console as described below.
+3. "Cleanup" your existing objects that you will be re-accessioning using the "Assembly::Utils.cleanup" method on a Ruby console as described below.
 Since you will be re-registering objects, you will get new DRUIDs, and you should therefore be sure to completely delete your old objects.
 4.  Re-run pre-assembly.
 
@@ -397,7 +399,7 @@ e.g.
 $ ROBOT_ENVIRONMENT=test bin/console
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-PreAssembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
+Assembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
 
 === Loading YAML Configuration
 
@@ -409,7 +411,7 @@ e.g.
 $ ROBOT_ENVIRONMENT=test bin/console
 
 config_filename='/thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml'
-config=PreAssembly::Utils.load_config(config_filename)
+config=Assembly::Utils.load_config(config_filename)
 progress_filename=config['progress_log_file']
 
 You can then use these values in other utility methods as needed.
@@ -423,13 +425,13 @@ e.g.
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-completed_druids=PreAssembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',true)
-failed_druids=PreAssembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',false)
+completed_druids=Assembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',true)
+failed_druids=Assembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',false)
 
 # e.g. get workflow status of failed druids:
-PreAssembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+Assembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
 
-If you want to find druids by source_id, use the utility method PreAssembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this.  You can then
+If you want to find druids by source_id, use the utility method Assembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this.  You can then
 use the array of druids in the other utility methods.
 
 e.g. 
@@ -437,8 +439,8 @@ e.g.
 $ ROBOT_ENVIRONMENT=test bin/console
 
 source_ids=%w{foo:123 bar:456}
-druids=PreAssembly::Utils.get_druids_by_sourceid(source_ids)
-PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
+druids=Assembly::Utils.get_druids_by_sourceid(source_ids)
+Assembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession],:filename=>'output.csv')
 
 === Workflow Status Report
 
@@ -448,7 +450,7 @@ assembly and/or accession workflows (as symbols), and also a filename if you wan
 $ ROBOT_ENVIRONMENT=test bin/console
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-PreAssembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession])  # add :filename=>'output.csv' to get a CSV report
+Assembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accession])  # add :filename=>'output.csv' to get a CSV report
 
 === Updating Datastreams
 
@@ -458,7 +460,7 @@ array of druids, the name of a datastream and some new content:
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 new_content='<xml><more nodes>this should be the whole datastream</more nodes></xml>'
 datastream='rightsMetadata'
-PreAssembly::Utils.replace_datastreams(druids,datastream,new_content)
+Assembly::Utils.replace_datastreams(druids,datastream,new_content)
 
 You can also just replace a part of a datastream instead of the whole thing.  Be careful, this just runs a .gsub on the entire datastream, so it can do damage
 if you aren't careful.
@@ -467,20 +469,20 @@ druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 find_content='FooBarBaz'
 replace_content='Stanford Rules'
 datastream='rightsMetadata'
-PreAssembly::Utils.update_datastreams(druids,datastream,find_content,replace_content)
+Assembly::Utils.update_datastreams(druids,datastream,find_content,replace_content)
 
 A helper method is provided to update rightsMetadata using the default rights contained in an APO.  To do this, supply a list of druids to update and
 the druid of the APO to get default rights from:
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 apo_druid='druid:cc222cc2222'
-PreAssembly::Utils.update_rights_metadata(druids,apo_druid)
+Assembly::Utils.update_rights_metadata(druids,apo_druid)
 
 === Reset Workflow States
 
 If an object fails for some reason and you manually remediate something, you may need to reset the workflow state for certain steps to try again.
 You can reset any workflow steps back to "waiting" for any list of druids you specify and any workflow states.  
-To do this use the PreAssembly::Utils.reset_workflow_states method.
+To do this use the Assembly::Utils.reset_workflow_states method.
 Provide a list of druids in an array, and a hash containing workflow names (e.g. 'assemblyWF' or 'accessionWF') as the keys, and arrays of steps
 as the corresponding values (e.g. ['checksum-compute','jp2-create']) and they will all be reset to "waiting".
 
@@ -490,7 +492,7 @@ $ ROBOT_ENVIRONMENT=test bin/console
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
-PreAssembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
 
 ==Starting Robots
 
@@ -498,11 +500,11 @@ If you are on the test or production server, you can determine if the robots are
 
 $ ROBOT_ENVIRONMENT=test bin/console
 
-PreAssembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
+Assembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
 
 If the robots are not running, you can see how to start them.  It won't execute the commands, you can do that yourself at a unix prompt.
 
-PreAssembly::Utils.start_robots 
+Assembly::Utils.start_robots 
 
 
 ==Assembly Robots

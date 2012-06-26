@@ -1,6 +1,6 @@
 Dor::Config.configure do
 
-  pre_assembly do
+  assembly do
 
     # Default file names when writing metadata streams.
     content_md_file 'contentMetadata.xml'
@@ -33,8 +33,8 @@ require 'pre_assembly/bundle'
 require 'pre_assembly/project_specific'
 require 'pre_assembly/digital_object'
 require 'pre_assembly/object_file'
-require 'pre_assembly/utils'
 
+require 'assembly-utils'
 require 'assembly-image'
 require 'checksum-tools'
 require 'rest_client'

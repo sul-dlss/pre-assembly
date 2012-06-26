@@ -14,7 +14,7 @@ describe PreAssembly::DigitalObject do
     @dobj         = PreAssembly::DigitalObject.new @ps
     @dru          = 'gn330dv6119'
     @pid          = "druid:#{@dru}"
-    @druid        = Druid.new @pid
+    @druid        = DruidTools::Druid.new @pid
     @tmp_dir_args = [nil, 'tmp']
     @dobj.object_files = []
   end
@@ -94,7 +94,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid.should == nil
       @dobj.determine_druid
       @dobj.pid.should   == "druid:#{dru}"
-      @dobj.druid.should be_kind_of Druid
+      @dobj.druid.should be_kind_of DruidTools::Druid
     end
 
     it "get_pid_from_container() extracts druid from basename of object container" do
@@ -183,8 +183,8 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.dor_object = 1234
-      PreAssembly::Utils.stub :delete_from_dor
-      PreAssembly::Utils.stub :set_workflow_step_to_error
+      Assembly::Utils.stub :delete_from_dor
+      Assembly::Utils.stub :set_workflow_step_to_error
     end
 
     it "should do nothing unless the digitial object was registered by pre-assembly" do

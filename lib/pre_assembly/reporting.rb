@@ -25,6 +25,7 @@ module PreAssembly
       log "discovery_report(#{run_log_msg})"
       
       puts "\nProject, #{@project_name}"
+      puts "Config filename, #{@config_filename}"
       puts "Directory, #{@bundle_dir}"
       puts "Object discovery via manifest, #{@manifest}" if using_manifest
       puts "Confirming checksums in,#{@checksums_file}" if confirming_checksums
@@ -90,7 +91,7 @@ module PreAssembly
          end
          
          if confirming_registration # objects should already be registered, let's confirm that
-           druid = bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}"
+           druid = barcode_project ? druid_from_container : (bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}")
            begin
              obj = Dor::Item.find(druid)
              message += " yes , "
@@ -102,7 +103,7 @@ module PreAssembly
          end
 
          if checking_sourceids # let's check for global source ID uniqueness
-           message += (PreAssembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
+           message += (Assembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
          end
          
          puts message
