@@ -60,8 +60,8 @@ module PreAssembly
     def initialize(params = {})
       # Unpack the user-supplied parameters, after converting
       # all hash keys and some hash values to symbols.
-      params = PreAssembly::Utils.symbolize_keys params
-      PreAssembly::Utils.values_to_symbols! params[:project_style]
+      params = Assembly::Utils.symbolize_keys params
+      Assembly::Utils.values_to_symbols! params[:project_style]
       cmc          = params[:content_md_creation]
       cmc[:style]  = cmc[:style].to_sym
       @user_params = params
@@ -81,7 +81,7 @@ module PreAssembly
       @manifest         = path_in_bundle @manifest         unless @manifest.nil?
       @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
       @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
-      @staging_dir = Dor::Config.pre_assembly.assembly_workspace if @staging_dir.nil? # if the user didn't supply a bundle_dir, use the default
+      @staging_dir = Dor::Config.assembly.assembly_workspace if @staging_dir.nil? # if the user didn't supply a bundle_dir, use the default
       @progress_log_file = File.join(File.dirname(@config_filename),File.basename(@config_filename,'.yaml') + '_progress.yaml') if @progress_log_file.nil? # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
     end
 
@@ -97,13 +97,13 @@ module PreAssembly
     end
 
     def load_desc_md_template
-      return nil unless @desc_md_template and file_exists?(@desc_md_template)
+      return nil unless @desc_md_template and File.readable?(@desc_md_template)
       @desc_md_template_xml = IO.read(@desc_md_template)
     end
 
     def load_skippables
       return unless @resume
-      YAML.each_document(PreAssembly::Utils.read_file(@progress_log_file)) do |yd|
+      YAML.each_document(Assembly::Utils.read_file(@progress_log_file)) do |yd|
         skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
       end
     end
@@ -165,12 +165,12 @@ module PreAssembly
       end
 
       required_dirs.each do |d|
-        next if dir_exists? d
+        next if File.directory? d
         validation_errors <<  "Required directory not found: #{d}."
       end
 
       required_files.each do |f|
-        next if file_exists? f
+        next if File.readable? f
         validation_errors <<  "Required file not found: #{f}."
       end
 
@@ -268,7 +268,7 @@ module PreAssembly
       if dobj.object_files.size == 0 
         return false
       else
-        all_files_exist = dobj.object_files.map {|objfile| file_exists?(objfile.path)} 
+        all_files_exist = dobj.object_files.map {|objfile| File.readable?(objfile.path)} 
         return !all_files_exist.uniq.include?(false)
       end
     end
@@ -280,12 +280,12 @@ module PreAssembly
 
       log "cleanup()"
       if File.exists?(@progress_log_file)
-        druids=PreAssembly::Utils.get_druids_from_log(@progress_log_file)
+        druids=Assembly::Utils.get_druids_from_log(@progress_log_file)
       else
         puts "#{@progress_log_file} not found!  Cannot proceed"
         return
       end
-      PreAssembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>dry_run)
+      Assembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>dry_run)
     end
 
     ####
@@ -641,14 +641,6 @@ module PreAssembly
       return bd unless bd == '.'
       err_msg = "Bad arg to get_base_dir(#{path.inspect})"
       raise ArgumentError, err_msg
-    end
-
-    def dir_exists?(dir)
-      File.directory?(dir)
-    end
-
-    def file_exists?(file)
-      File.readable?(file)
     end
 
     def dir_glob(pattern)

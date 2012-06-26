@@ -63,8 +63,8 @@ module PreAssembly
       @source_id           = nil
       @manifest_row        = nil
 
-      @content_md_file     = Dor::Config.pre_assembly.content_md_file
-      @desc_md_file        = Dor::Config.pre_assembly.desc_md_file
+      @content_md_file     = Dor::Config.assembly.content_md_file
+      @desc_md_file        = Dor::Config.assembly.desc_md_file
       @content_md_xml      = ''
       @desc_md_xml         = ''
 
@@ -101,7 +101,7 @@ module PreAssembly
       k = @project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
       @pid   = method("get_pid_from_#{k}").call
-      @druid = Druid.new @pid
+      @druid = DruidTools::Druid.new @pid
     end
 
     def get_pid_from_manifest
@@ -197,7 +197,7 @@ module PreAssembly
       # but will not unregister the object
       log "  - prepare_for_reaccession(#{@druid})"
 
-      PreAssembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
+      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
       
     end
     
@@ -208,7 +208,7 @@ module PreAssembly
 
       log "  - unregister(#{@pid})"
 
-      PreAssembly::Utils.unregister(@pid)
+      Assembly::Utils.unregister(@pid)
       
       @dor_object          = nil
       @reg_by_pre_assembly = false
@@ -221,19 +221,14 @@ module PreAssembly
     def stage_files
       # Create the druid tree within the staging directory,
       # and then copy-recursive all stageable items to that area.
-      @druid_tree_dir = @druid.path(@staging_dir)
+      @druid_tree_dir = Assembly::Utils.get_staging_path(@druid.id,@staging_dir)
       log "    - staging(druid_tree_dir = #{@druid_tree_dir.inspect})"
-      druid_tree_mkdir @druid_tree_dir
+      FileUtils.mkdir_p @druid_tree_dir
       @stageable_items.each do |si_path|
         log "      - staging(#{si_path}, #{@druid_tree_dir})", :debug
         @stager.call si_path, @druid_tree_dir
       end
     end
-
-    def druid_tree_mkdir(dir)
-      FileUtils.mkdir_p dir
-    end
-
 
     ####
     # Content metadata.
