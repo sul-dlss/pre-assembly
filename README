@@ -38,6 +38,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.6  bug fix in discovery_report for barcode projects
 1.7.7  move the Utils class into it's own gem so it can be used elsewhere ... methods that were PreAssembly::Utils are now Assembly::Utils; refactoring to account for new DruidTools gem usage
 1.7.8  bug fixes; update how configuration is done to make it part of Assembly-utils gem
+1.7.9  add time stamps to progress display on screen (or into nohup.out file)
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -159,11 +160,15 @@ Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command to run
     cd /home/lyberadmin/pre-assembly/current
     ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
 
+	If you want to run multiple nohup jobs simultaneously, you can redirect screen output to a different log file:
+	
+		ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
+	
     # Various ways to monitor progress:
     1. The workflow grid in Argo, using your project tag to filter.
     2. grep pid PROGRESS_LOG          # Using the filename defined in YAML progress_log_file.
     3. tail -999f log/production.log  # Detailed logging info for the pre-assembly project itself.
-    4. tail -999f nohup.out           # Errors, etc from unix output.
+    4. tail -999f nohup.out           # Errors, etc from unix output (or "another_nohup_filename.out" in the example above)
 
 Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without using the --resume switch, it will be overwritten.
 You will need the progress log for cleanup and restarting.
