@@ -236,17 +236,23 @@ module PreAssembly
       # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
+      puts "#{Time.now}: Pre-assembly started for #{@project_name}" if @show_progress
+      
       discover_objects
       load_provider_checksums
       process_manifest
       process_digital_objects
       delete_digital_objects
+
+      puts "#{Time.now}: Pre-assembly completed for #{@project_name}" if @show_progress
+
       return processed_pids
     end
 
     def run_log_msg
       log_params = {
         :project_style => @project_style,
+        :project_name  => @project_name,
         :bundle_dir    => @bundle_dir,
         :staging_dir   => @staging_dir,
         :environment   => ENV['ROBOT_ENVIRONMENT'],
@@ -530,7 +536,7 @@ module PreAssembly
       o2p = objects_to_process
       
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
-      puts "#{o2p.size} objects to pre-assemble" if @show_progress
+      puts "#{Time.now}: #{o2p.size} objects to pre-assemble" if @show_progress
       
       n=0
       
@@ -541,8 +547,8 @@ module PreAssembly
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        puts "#{o2p.size-n} objects left" if @show_progress
-        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
+        puts "#{Time.now}: #{o2p.size-n} objects left" if @show_progress
+        puts "#{Time.now}: Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         
         begin
           # Try to pre_assemble the digital object.
@@ -552,7 +558,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          puts "Completed #{dobj.druid.druid}" if @show_progress
+          puts "#{Time.now}: Completed #{dobj.druid.druid}" if @show_progress
 
         rescue
           # For now, just re-raise any exceptions.
