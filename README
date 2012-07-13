@@ -39,6 +39,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.7  move the Utils class into it's own gem so it can be used elsewhere ... methods that were PreAssembly::Utils are now Assembly::Utils; refactoring to account for new DruidTools gem usage
 1.7.8  bug fixes; update how configuration is done to make it part of Assembly-utils gem
 1.7.9  add time stamps to progress display on screen (or into nohup.out file)
+1.8.0  allow the web service call to retry 5 times, sleeping between each call in order to avoid pre-assembly crashing if the dor web service is temporarily unavailable
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -175,11 +176,11 @@ You will need the progress log for cleanup and restarting.
 
 ==Legacy Project Notes
 
-The assembly robots will automatically create jp2 derivates from any TIFFs.  If you are working on a legacy project that has JP2s already that 
+The assembly robots will automatically create jp2 derivates from any TIFFs, JP2s, or JPEGs.  If you are working on a legacy project that has JP2s already that 
 were generated from source TIFFs, you should *not* stage those files during pre-assembly, or else you will end up with two JP2s for each TIFF.
-You can this by using a regex to exclude .JP2 files or by only staging certain subfolders.  If you do stage the JP2 files and they have the same
-filename as the TIFF (but with a different extension) they will be preserved (i.e. they will NOT have JP2s re-generated).  If you do state the
-JP2 files and they have a different basename than the TIFFs, they WILL be re-generated, and you will end up with two copies.
+You can do this by using a regex to exclude .JP2 files or by only staging certain subfolders.  If you do stage the JP2 files and they have the same
+filename as the TIFF (but with a different extension) they will be kept as is (i.e. they will NOT have JP2s re-generated from the source TIFFs).  If you do stage the
+JP2 files and they have a different basename than the TIFFs, they WILL be re-generated, and you will end up with two copies, in two different resources.
 
 ==Environments
 
@@ -525,13 +526,12 @@ If you see only one line, something like below, the assembly robots are  NOT run
 If you see multiple lines, something like below, the assembly robots are running:
 503        782     1  0 10:25 ?        00:00:04 assemblyWF:jp2-create
 503        784     1  0 10:25 ?        00:00:04 assemblyWF:checksum-compute
-503        786     1  0 10:25 ?        00:00:07 assemblyWF:checksum-compare
 503        789     1  0 10:25 ?        00:00:07 assemblyWF:exif-collect
 503        791     1  0 10:25 ?        00:00:10 assemblyWF:accessioning-initiate
 503       9009  8909  0 13:05 pts/0    00:00:00 grep assemblyWF
 
 To start the assembly robots, use the following line.  If you are in production substitute "production" for "test" in the robot_environment variable:
-	cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=test ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:checksum-compare assemblyWF:exif-collect assemblyWF:accessioning-initiate
+	cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=test ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:exif-collect assemblyWF:accessioning-initiate
 
 You can track the progress of each assembly robot by inspecting it's log file on the server.  To see the available log files (one for each robot):
 	ls /home/lyberadmin/assembly/current/log

@@ -380,11 +380,26 @@ module PreAssembly
     ####
 
     def initialize_assembly_workflow
+      
       # Call web service to add assemblyWF to the object in DOR.
       return unless @init_assembly_wf
       log "    - initialize_assembly_workflow()"
       url = assembly_workflow_url
-      RestClient.post url, {}
+      
+      i=0
+      success=false
+      until i == Dor::Config.dor.num_attempts || success do
+        i+=1
+        begin
+          result = RestClient.post url, {}
+          success = true if result && [200,201,202,204].include?(result.code)
+        rescue
+          sleep Dor::Config.dor.sleep_time
+        end
+      end
+      
+      raise "initialize_assembly_workflow failed after #{i} attempts" if success == false
+      
     end
 
     def assembly_workflow_url
