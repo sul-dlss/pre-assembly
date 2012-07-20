@@ -32,7 +32,7 @@ module PreAssembly
         
         # generate content metadata
         builder = Nokogiri::XML::Builder.new { |xml|
-          xml.contentMetadata(node_attr_cm,:type=>'file') {  
+          xml.contentMetadata(:objectId => @druid.id,:type=>'file') {  
             # iterate through each unique label, which will become a resource
             labels.each do |label|
               # grab the resource nodes with this label
@@ -48,7 +48,7 @@ module PreAssembly
                 seq_counter+=1
                 seq=seq_counter
               end
-              xml.resource(node_attr_cm_resource(seq),:type=>'file') {
+              xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}",:type=>'file') {
                 xml.label label
                 # iterate over all file nodes from input CM and create correct file nodes for this resource
                 file_nodes.each do |file_node|
@@ -57,7 +57,7 @@ module PreAssembly
                     file_id=File.basename(file_node.xpath('location')[0].content) 
                     xml.file(:id=>file_id,:preserve=>file_node['preserve'],:publish=>file_node['publish'],:shelve=>file_node['shelve']) {
                       checksum=file_node.xpath('checksum')  
-                      node_provider_checksum(xml, checksum[0].content) unless checksum.blank?
+                      xml.checksum(checksum[0].content, :type => 'md5') if checksum
                     }
                   end
                 end
@@ -66,7 +66,7 @@ module PreAssembly
           }
         }
         
-        @content_md_xml = builder.to_xml
+        return builder.to_xml
         
       end
       

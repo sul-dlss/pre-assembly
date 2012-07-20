@@ -1,46 +1,32 @@
-module PreAssembly
+require 'assembly-objectfile'
 
-  class ObjectFile
+class PreAssembly::ObjectFile < Assembly::ObjectFile
 
-    attr_accessor(
-      :path,
-      :relative_path,
-      :checksum,
-      :exclude_from_content
-    )
+  attr_accessor(
+    :relative_path,
+    :exclude_from_content,
+    :checksum
+  )
 
-    def initialize(params = {})
-      @path                 = params[:path]
-      @relative_path        = params[:relative_path]
-      @checksum             = params[:checksum]
-      @exclude_from_content = params[:exclude_from_content]
-      @ao_file              = nil
-    end
-
-    def assembly_object_file
-      @ao_file ||= Assembly::ObjectFile.new @path
-    end
-
-    def image?
-      assembly_object_file.image?
-    end
-
-    def valid_image?
-      assembly_object_file.valid_image?
-    end
-    
-    def jp2able?
-      assembly_object_file.jp2able?      
-    end
-    
-    def mimetype
-      assembly_object_file.mimetype          
-    end
-      
-    def <=>(other)
-      @relative_path <=> other.relative_path
-    end
-
+  def initialize(params = {})
+    @path                 = params[:path]
+    @relative_path        = params[:relative_path]
+    self.checksum         = params[:checksum]
+    @exclude_from_content = params[:exclude_from_content]
+  end
+     
+  def checksum
+    @checksum
+  end
+  
+  def checksum=(value)
+    @checksum=value
+    self.provider_md5=value # this is an attribute of the Assembly::ObjectFile class
+  end
+       
+  def <=>(other)
+    @relative_path <=> other.relative_path
   end
 
 end
+
