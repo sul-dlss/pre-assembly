@@ -228,16 +228,15 @@ desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML te
 
 
 ####
-# Bundles using a manifest must indicate the column names
-# of certain fields in the CSV file.
-#
-# Bundles not using a manifest should set these values to nil.
+# If object_discovery:use_manifest=true, you must indicate the column names of certain fields in the CSV file.
+# 
+# For object_discovery:use_manifest=false, set these values to nil.
 ####
 
 manifest_cols:
-  object_container:   'filename'   # Required, indicates the location of the file relative to the bundle directory.
-  source_id:          'sourceid'   # Required if pre-assembly is registering the objects.
-  label:              'label'      # Ditto.
+  object_container:   'filename'   # Always required, indicates the column name containing the filename (single file per object) or folder name (multiple files per object) relative to the bundle directory.
+  source_id:          'sourceid'   # Required if project_style:should_register = true
+  label:              'label'      # Required if project_style:should_register = true
 
 
 ####
