@@ -228,7 +228,7 @@ describe PreAssembly::DigitalObject do
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = @dobj.stageable_items[i]
-          cpy = File.join @dobj.druid_tree_dir, f
+          cpy = File.join @dobj.content_dir, f
           File.exists?(src).should == true
           File.exists?(cpy).should == true
         end
@@ -305,7 +305,7 @@ describe PreAssembly::DigitalObject do
     it "should be able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.content_md_file
+        file_name = File.join(tmp_area,"metadata",@dobj.content_md_file)
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
@@ -457,7 +457,7 @@ describe PreAssembly::DigitalObject do
       @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.desc_md_file
+        file_name = File.join(tmp_area, "metadata",@dobj.desc_md_file)
         File.exists?(file_name).should == false
         @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml

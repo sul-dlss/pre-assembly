@@ -40,8 +40,9 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.7.8  bug fixes; update how configuration is done to make it part of Assembly-utils gem
 1.7.9  add time stamps to progress display on screen (or into nohup.out file)
 1.8.0  allow the web service call to retry 5 times, sleeping between each call in order to avoid pre-assembly crashing if the dor web service is temporarily unavailable
-1.8.1  refactor: adjust object_file class to subclass from Assembly::ObjectFile so we don't need to redeclare methods
-1.9.0  use the content metadata generation methods in Assembly::ObjectFile, which expands the possible types of metadata that can be generated, update templates and documentation
+1.8.1  refactor: adjust object_file class to subclass from Assembly::ObjectFile so we don't need to redeclare convenience methods
+1.9.0  use the content metadata generation methods in the updated Assembly::ObjectFile gem, which expands the possible types of metadata that can be generated, update templates and documentation
+1.9.1  use the new DruidTools gem to generate staged content in the druid tree format: /oo/000/oo/0001/oo000oo0001/content
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
