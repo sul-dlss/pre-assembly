@@ -25,7 +25,6 @@ module PreAssembly
     OTHER_ACCESSORS = [
       :pid,
       :druid,
-      :druid_tree_dir,
       :dor_object,
       :reg_by_pre_assembly,
       :label,
@@ -42,8 +41,7 @@ module PreAssembly
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
-
-
+    
     ####
     # Initialization.
     ####
@@ -56,7 +54,6 @@ module PreAssembly
     def setup
       @pid                 = ''
       @druid               = nil
-      @druid_tree_dir      = ''
       @dor_object          = nil
       @reg_by_pre_assembly = false
       @label               = nil
@@ -73,7 +70,25 @@ module PreAssembly
       @stager             = lambda { |f,d| FileUtils.cp_r f, d }
     end
 
-
+    # compute the base druid tree folder for this object 
+    def druid_tree_dir
+      @druid_tree_dir ||= DruidTools::Druid.new(@druid.id,@staging_dir).path()      
+    end
+    
+    def druid_tree_dir=(value)
+      @druid_tree_dir=value
+    end
+    
+    # the content subfolder
+    def content_dir
+      @content_dir ||= File.join(self.druid_tree_dir,'content')
+    end
+    
+    # the metadata subfolder
+    def metadata_dir
+      @metadata_dir ||= File.join(self.druid_tree_dir,'metadata')      
+    end
+    
     ####
     # The main process.
     ####
@@ -221,12 +236,13 @@ module PreAssembly
     def stage_files
       # Create the druid tree within the staging directory,
       # and then copy-recursive all stageable items to that area.
-      @druid_tree_dir = Assembly::Utils.get_staging_path(@druid.id,@staging_dir)
-      log "    - staging(druid_tree_dir = #{@druid_tree_dir.inspect})"
-      FileUtils.mkdir_p @druid_tree_dir
+      log "    - staging(druid_tree_dir = #{self.druid_tree_dir.inspect})"
+      create_object_directories
       @stageable_items.each do |si_path|
-        log "      - staging(#{si_path}, #{@druid_tree_dir})", :debug
-        @stager.call si_path, @druid_tree_dir
+        log "      - staging(#{si_path}, #{self.content_dir})", :debug
+        # determine destination of staged file by looking to see if it is a known datastream XML file or not
+        destination = METADATA_FILES.include?(File.basename(si_path).downcase) ? self.metadata_dir : self.content_dir
+        @stager.call si_path, destination
       end
     end
 
@@ -266,8 +282,9 @@ module PreAssembly
     end
     
     def write_content_metadata
-      file_name = File.join @druid_tree_dir, @content_md_file
+      file_name = File.join self.metadata_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
+      create_object_directories
       File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
     end
 
@@ -310,12 +327,18 @@ module PreAssembly
     end
 
     def write_desc_metadata
-      file_name = File.join @druid_tree_dir, @desc_md_file
+      file_name = File.join self.metadata_dir, @desc_md_file
       log "    - write_desc_metadata_xml(#{file_name})"
+      create_object_directories
       File.open(file_name, 'w') { |fh| fh.puts @desc_md_xml }
     end
 
-
+    def create_object_directories
+      FileUtils.mkdir_p self.druid_tree_dir unless File.directory?(self.druid_tree_dir)
+      FileUtils.mkdir_p self.metadata_dir unless File.directory?(self.metadata_dir)
+      FileUtils.mkdir_p self.content_dir unless File.directory?(self.content_dir)
+    end
+    
     ####
     # Initialize the assembly workflow.
     ####

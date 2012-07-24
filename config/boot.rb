@@ -4,6 +4,9 @@ require 'logger'
 environment  = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 PRE_ASSEMBLY_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 
+# these are the names of special datastream files that will be staged in the 'metadata' folder instead of the 'content' folder
+METADATA_FILES=['descMetadata.xml'].map(&:downcase)
+
 # Override Solrizer logger before it gets a chance to load and pollute STDERR.
 require 'solrizer'
 solr_log        = Logger.new(PRE_ASSEMBLY_ROOT + "/log/solrizer_#{environment}.log")
