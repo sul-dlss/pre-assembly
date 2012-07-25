@@ -76,7 +76,7 @@ GEM
     deprecation (0.0.5)
       activesupport
     diff-lcs (1.1.3)
-    dor-services (3.8.4)
+    dor-services (3.9.0)
       active-fedora (>= 4.0.0)
       active-fedora (>= 4.0.0.rc20)
       confstruct (>= 0.2.2)
@@ -259,7 +259,8 @@ DEPENDENCIES
   druid-tools
   equivalent-xml
   lyber-core
-  lyberteam-devel
+  lyberteam-capistrano-devel (<= 0.9.0)
+  lyberteam-devel (<= 0.8.0)
   nokogiri
   rake
   rest-client
