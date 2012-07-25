@@ -259,7 +259,8 @@ DEPENDENCIES
   druid-tools (>= 0.2.0)
   equivalent-xml
   lyber-core
-  lyberteam-devel
+  lyberteam-capistrano-devel (<= 0.9.0)
+  lyberteam-devel (<= 0.8.0)
   nokogiri
   rake
   rest-client
