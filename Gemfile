@@ -9,7 +9,7 @@ gem 'lyber-core'
 gem 'rest-client'
 gem 'rake'
 gem 'checksum-tools'
-gem 'assembly-objectfile', '>= 1.2.5'
+gem 'assembly-objectfile', '>= 1.2.6'
 gem 'assembly-image', '>= 1.3.0'
 gem 'assembly-utils', '>= 1.0.5'
 
