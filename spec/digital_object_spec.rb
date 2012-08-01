@@ -9,9 +9,11 @@ describe PreAssembly::DigitalObject do
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
+      :content_md_creation => {},
       :bundle_dir    => 'spec/test_data/bundle_input_g',
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
+    
     @dru          = 'gn330dv6119'
     @pid          = "druid:#{@dru}"
     @druid        = DruidTools::Druid.new @pid
@@ -226,7 +228,7 @@ describe PreAssembly::DigitalObject do
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = @dobj.stageable_items[i]
-          cpy = File.join @dobj.druid_tree_dir, f
+          cpy = File.join @dobj.content_dir, f
           File.exists?(src).should == true
           File.exists?(cpy).should == true
         end
@@ -241,37 +243,39 @@ describe PreAssembly::DigitalObject do
 
     before(:each) do
       @dobj.druid = @druid
+      @dobj.content_md_creation[:style]='default'
+      @dobj.project_style[:content_structure]='simple_image'
       add_object_files('tif')
       add_object_files('jp2')      
-      @dobj.create_content_metadata_xml_default
+      @dobj.create_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
-        <contentMetadata objectId="gn330dv6119">
-          <resource sequence="1" id="gn330dv6119_1">
-            <label>Item 1</label>
-            <file shelve="no" publish="no" id="image1.jp2" preserve="yes">
+        <contentMetadata type="image" objectId="gn330dv6119">
+          <resource type="image" id="gn330dv6119_1" sequence="1">
+            <label>Image 1</label>
+            <file publish="yes" shelve="yes" id="image1.jp2" preserve="no">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
-          <resource sequence="2" id="gn330dv6119_2">
-            <label>Item 2</label>
-            <file shelve="no" publish="no" id="image1.tif" preserve="yes">
+          <resource type="image" id="gn330dv6119_2" sequence="2">
+            <label>Image 2</label>
+            <file publish="no" shelve="no" id="image1.tif" preserve="yes">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
-          <resource sequence="3" id="gn330dv6119_3">
-            <label>Item 3</label>
-            <file shelve="no" publish="no" id="image2.jp2" preserve="yes">
+          <resource type="image" id="gn330dv6119_3" sequence="3">
+            <label>Image 3</label>
+            <file publish="yes" shelve="yes" id="image2.jp2" preserve="no">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
-          <resource sequence="4" id="gn330dv6119_4">
-            <label>Item 4</label>
-            <file shelve="no" publish="no" id="image2.tif" preserve="yes">
+          <resource type="image" id="gn330dv6119_4" sequence="4">
+            <label>Image 4</label>
+            <file publish="no" shelve="no" id="image2.tif" preserve="yes">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
-        </contentMetadata>
+        </contentMetadata>          
       END
       @exp_xml = noko_doc @exp_xml
     end
@@ -301,7 +305,7 @@ describe PreAssembly::DigitalObject do
     it "should be able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.content_md_file
+        file_name = File.join(tmp_area,"metadata",@dobj.content_md_file)
 
         File.exists?(file_name).should == false
         @dobj.write_content_metadata
@@ -309,79 +313,41 @@ describe PreAssembly::DigitalObject do
       end
     end
 
-    it "node_attr_cm() should return correct value based on @content_structure" do
-      base_exp = { :objectId => @dru }
-      tests = {
-        :simple_image => { :type => 'image' },
-        :simple_book  => { :type => 'book' },
-        :book_as_image => { :type => 'book' }        
-      }
-      tests.each do |cs, other_attr|
-        @dobj.content_structure = cs
-        @dobj.node_attr_cm.should == base_exp.merge(other_attr)
-      end
-    end
-
-    it "node_attr_cm_resource() should return correct value based on @content_structure" do
-      seq = 123
-      base_exp = { :sequence => seq, :id => "#{@dru}_#{seq}" }
-      tests = {
-        :simple_image => { :type => 'image' },
-        :simple_book  => { :type => 'page' },
-        :book_as_image => { :type => 'image' }
-      }
-      tests.each do |cs, other_attr|
-        @dobj.content_structure = cs
-        @dobj.node_attr_cm_resource(seq).should == base_exp.merge(other_attr)
-      end
-    end
-
-    it "node_attr_cm_file() should return expected value" do
-      p           = 'foo/bar.txt'
-      object_file = double 'object_file', :relative_path => p, :mimetype=> 'text/plain'
-      exp         = {:id => p}.merge @dobj.publish_attr
-      @dobj.node_attr_cm_file(object_file).should == exp
-    end
-
-    it "node_provider_checksum() should do nothing if given a nil checksum" do
-      xml_builder = double('xml_builder')
-      xml_builder.should_not_receive(:provider_checksum)
-      @dobj.node_provider_checksum(xml_builder, nil)
-    end
-
   end
 
   ####################
 
-  describe "joined content metadata" do
+  describe "bundled by filename, simple book content metadata without file attributes" do
 
     before(:each) do
       @dobj.druid = @druid
+      @dobj.content_md_creation[:style]='filename'
+      @dobj.project_style[:content_structure]='simple_book'
+      @dobj.publish_attr=nil      
       add_object_files('tif')
       add_object_files('jp2')
-      @dobj.create_content_metadata_xml_joined
+      @dobj.create_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
-        <?xml version="1.0"?>
-        <contentMetadata objectId="gn330dv6119">
-          <resource sequence="1" id="gn330dv6119_1">
-            <label>Item 1</label>
-            <file shelve="no" publish="no" id="image1.jp2" preserve="yes">
-              <checksum type="md5">1111</checksum>
-            </file>
-            <file shelve="no" publish="no" id="image1.tif" preserve="yes">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource sequence="2" id="gn330dv6119_2">
-            <label>Item 2</label>
-            <file shelve="no" publish="no" id="image2.jp2" preserve="yes">
-              <checksum type="md5">2222</checksum>
-            </file>
-            <file shelve="no" publish="no" id="image2.tif" preserve="yes">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-        </contentMetadata>
+      <contentMetadata type="book" objectId="gn330dv6119">
+        <resource type="page" sequence="1" id="gn330dv6119_1">
+          <label>Page 1</label>
+          <file id="image1.jp2">
+            <checksum type="md5">1111</checksum>
+          </file>
+          <file id="image1.tif">
+            <checksum type="md5">1111</checksum>
+          </file>
+        </resource>
+        <resource type="page" sequence="2" id="gn330dv6119_2">
+          <label>Page 2</label>
+          <file id="image2.jp2">
+            <checksum type="md5">2222</checksum>
+          </file>
+          <file id="image2.tif">
+            <checksum type="md5">2222</checksum>
+          </file>
+        </resource>
+      </contentMetadata>
       END
       @exp_xml = noko_doc @exp_xml
     end
@@ -491,7 +457,7 @@ describe PreAssembly::DigitalObject do
       @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join tmp_area, @dobj.desc_md_file
+        file_name = File.join(tmp_area, "metadata",@dobj.desc_md_file)
         File.exists?(file_name).should == false
         @dobj.write_desc_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
