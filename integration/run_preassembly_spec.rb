@@ -26,33 +26,33 @@ describe "Pre-assembly integration" do
       :revs => {
         :n_objects => 3,
         :exp_files => [
-          [1, '*.tif'],
-          [1, Assembly::CONTENT_MD_FILE],
-          [1, Assembly::DESC_MD_FILE],
+          [1, 'content/*.tif'],
+          [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
+          [1, "metadata/#{Assembly::DESC_MD_FILE}"],
         ],
       },
       :gould => {
         :n_objects => 3,
         :exp_files => [
-          [3, '00/*.jpg'],
-          [1, Assembly::CONTENT_MD_FILE],
+          [3, 'content/00/*.jpg'],
+          [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
         ],
       },
       :sohp => {
         :n_objects => 2,
         :exp_files => [
-          [2, '*.jpg'],
-          [2, '*.jpg.md5'],
-          [2, '*_pm.wav'],
-          [2, '*_pm.wav.md5'],
-          [2, '*_sh.wav'],
-          [2, '*_sh.wav.md5'],
-          [2, '*_sl.mp3'],
-          [2, '*_sl.mp3.md5'],
-          [2, '*_sl_techmd.xml'],
-          [1, '*.pdf'],
-          [1, '*.pdf.md5'],
-          [1, Assembly::CONTENT_MD_FILE],
+          [2, 'content/*.jpg'],
+          [2, 'content/*.jpg.md5'],
+          [2, 'content/*_pm.wav'],
+          [2, 'content/*_pm.wav.md5'],
+          [2, 'content/*_sh.wav'],
+          [2, 'content/*_sh.wav.md5'],
+          [2, 'content/*_sl.mp3'],
+          [2, 'content/*_sl.mp3.md5'],
+          [2, 'content/*_sl_techmd.xml'],
+          [1, 'content/*.pdf'],
+          [1, 'content/*.pdf.md5'],
+          [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
         ],
       },
     }
@@ -110,7 +110,7 @@ describe "Pre-assembly integration" do
 
   def determine_staged_druid_trees
     # Determine the druid tree paths in the staging directory.
-    @druid_trees = @pids.map { |pid| Assembly::Utils.get_staging_path(pid,@temp_dir) }
+    @druid_trees = @pids.map { |pid| DruidTools::Druid.new(pid,@temp_dir).path() }
   end
 
 

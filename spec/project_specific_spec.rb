@@ -27,6 +27,9 @@ describe PreAssembly::DigitalObject do
 
     it "should convert SMPL content metadata into valid base content metadata" do
 
+      @dobj.content_md_creation[:style]='smpl'
+      @dobj.project_style[:content_structure]='simple_book'
+      
       @exp_xml = <<-END.gsub(/^ {8}/, '')
       <?xml version="1.0"?>
       <contentMetadata objectId="aa111aa1111" type="file">
@@ -70,6 +73,7 @@ describe PreAssembly::DigitalObject do
       END
       @exp_xml = noko_doc @exp_xml
       noko_doc(@dobj.create_content_metadata_xml_smpl).should be_equivalent_to @exp_xml
+      noko_doc(@dobj.create_content_metadata).should be_equivalent_to @exp_xml      
     end
 
   end
