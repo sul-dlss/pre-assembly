@@ -3,7 +3,7 @@ source 'http://sulair-rails-dev.stanford.edu'
 
 gem 'nokogiri'
 gem 'csv-mapper'
-gem 'dor-services', '>=3.8.0'
+gem 'dor-services', '>=3.9.0'
 gem 'druid-tools', '>=0.2.0'
 gem 'lyber-core'
 gem 'rest-client'
@@ -11,7 +11,7 @@ gem 'rake'
 gem 'checksum-tools'
 gem 'assembly-objectfile', '>= 1.2.6'
 gem 'assembly-image', '>= 1.3.2'
-gem 'assembly-utils', '>= 1.0.5'
+gem 'assembly-utils', '>= 1.0.6'
 
 group :test do
   gem 'equivalent-xml'
