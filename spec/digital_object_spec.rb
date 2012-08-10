@@ -173,8 +173,10 @@ describe PreAssembly::DigitalObject do
 
     it "add_relationship() returns expected data structure" do
       @dobj.druid = @druid
-      exp = [:is_member_of, "info:fedora/druid:mm111nn2222"]
-      arps = @dobj.add_relationship_params.should == exp
+      exp1 = [:is_member_of, "info:fedora/druid:mm111nn2222"]
+      exp2 = [:is_member_of_collection, "info:fedora/druid:mm111nn2222"]
+      arps = @dobj.add_member_relationship_params.should == exp1
+      arps = @dobj.add_collection_relationship_params.should == exp2
     end
 
   end

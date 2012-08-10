@@ -199,12 +199,17 @@ module PreAssembly
       # Add the object to a set (a sub-collection).
       return unless @set_druid_id && @project_style[:should_register]
       log "    - add_dor_object_to_set(#{@set_druid_id})"
-      @dor_object.add_relationship *add_relationship_params
+      @dor_object.add_relationship *add_member_relationship_params
+      @dor_object.add_relationship *add_collection_relationship_params
       @dor_object.save
     end
 
-    def add_relationship_params
+    def add_member_relationship_params
       [:is_member_of, "info:fedora/#{@set_druid_id}"]
+    end
+
+    def add_collection_relationship_params
+      [:is_member_of_collection, "info:fedora/#{@set_druid_id}"]
     end
 
     def prepare_for_reaccession
