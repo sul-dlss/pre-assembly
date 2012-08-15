@@ -578,6 +578,9 @@ module PreAssembly
         end
         n+=1
       end
+   
+      puts "#{Time.now}: #{o2p.size} objects pre-assembled" if @show_progress
+    
     end
 
     def objects_to_process
