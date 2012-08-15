@@ -37,11 +37,10 @@ GEM
     akami (1.2.0)
       gyoku (>= 0.4.0)
       nokogiri (>= 1.4.0)
-    assembly-image (1.3.2)
-      assembly-objectfile (~> 1.2.1)
+    assembly-image (1.3.3)
+      assembly-objectfile (>= 1.2.7)
       uuidtools
-    assembly-objectfile (1.2.6)
-      checksum-tools
+    assembly-objectfile (1.3.0)
       mime-types
       mini_exiftool
       nokogiri
@@ -249,7 +248,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image (>= 1.3.2)
-  assembly-objectfile (>= 1.2.6)
+  assembly-objectfile (>= 1.3.0)
   assembly-utils (>= 1.0.6)
   awesome_print
   capistrano

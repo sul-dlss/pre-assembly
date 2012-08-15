@@ -44,6 +44,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.0  use the content metadata generation methods in the updated Assembly::ObjectFile gem, which expands the possible types of metadata that can be generated, update templates and documentation
 1.9.1  use the new DruidTools gem to generate staged content in the druid tree format: /oo/000/oo/0001/oo000oo0001/content
 1.9.2  update how set relationships are stored in an object -- add both an isMemberOf and an isMemberOfRelationship
+1.9.3  small updates to force new usage of assembly-objectfile gem for latest contentmetadata generation; additional output at end of preassembly
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
