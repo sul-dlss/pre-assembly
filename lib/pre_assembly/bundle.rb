@@ -141,7 +141,7 @@ module PreAssembly
     def non_required_user_params
       [:config_filename,:validate_files]
     end
-    
+        
     def show_developer_setting_warning
       # spit out some dire warning messages if you set certain parameters that are only applicable for developers
       warning=[]
@@ -457,7 +457,7 @@ module PreAssembly
     end
     
     def md5(file_path)
-      Checksum::Tools.new({}, :md5).digest_file(file_path)[:md5]  
+      Digest::MD5.file(file_path).hexdigest
     end
     
 

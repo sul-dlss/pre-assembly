@@ -10,5 +10,4 @@ require 'pre_assembly/object_file'
 
 require 'assembly-utils'
 require 'assembly-image'
-require 'checksum-tools'
 require 'rest_client'
