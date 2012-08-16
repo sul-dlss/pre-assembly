@@ -45,6 +45,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.1  use the new DruidTools gem to generate staged content in the druid tree format: /oo/000/oo/0001/oo000oo0001/content
 1.9.2  update how set relationships are stored in an object -- add both an isMemberOf and an isMemberOfRelationship
 1.9.3  small updates to force new usage of assembly-objectfile gem for latest contentmetadata generation; additional output at end of preassembly
+1.9.4  update discovery_report to include checks for APO existence and existence of assemblyWF workflow definition
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -386,7 +387,7 @@ location of the progress log file.  If the progress log file has been moved or c
 confirm that your YAML configuration file still correctly specifies the location of "progress_log_file". The script will open the YAML configuration, find the progress log,
 read it to find the actual completed objects, and will then execute cleanup on those objects.  Use the following script to perform a cleanup:
 
-		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_FILE steps
+		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
 		
 where steps is a comma delimited list of any or all of the following steps defined below:
 
@@ -411,7 +412,8 @@ e.g.
 $ ROBOT_ENVIRONMENT=test bin/console
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-Assembly::Utils.cleanup(:druids=>druids,:steps=>[:symlinks,:stage,:dor,:stacks],:dry_run=>true)
+steps=[:symlinks,:stage,:dor,:stacks]
+Assembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>true)
 
 === Loading YAML Configuration
 

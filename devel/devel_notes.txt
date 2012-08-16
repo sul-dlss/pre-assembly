@@ -122,7 +122,7 @@ Before pre-assembling individual digital objects:
       Some steps are fast; others take some time:
       
         - discover_objects   # Full crawl of bundle directory.
-        - load_checksums     # If no provider checksums, call to Checksum::Tools.
+        - load_checksums     # If no provider checksums, create them
         - process_manifest   # Fast.
         - validate_files     # Gets info from Assembly::ObjectFile.exif for every file.
 
