@@ -442,24 +442,19 @@ module PreAssembly
       # sets the checksum attribute.
       log "  - load_checksums()"
       dobj.object_files.each do |file|
-        file.checksum = retrieve_checksum(file.path)
+        file.checksum = retrieve_checksum(file)
       end
     end
 
-    def retrieve_checksum(file_path)
+    def retrieve_checksum(file)
       # Takes a path to a file. Returns md5 checksum, which either (a) came
       # from a provider-supplied checksums file, or (b) is computed here.
-      @provider_checksums[file_path] ||= compute_checksum(file_path)
+      @provider_checksums[file.path] ||= compute_checksum(file)
     end
 
-    def compute_checksum(file_path)
-      @compute_checksum ? md5(file_path) : nil
-    end
-    
-    def md5(file_path)
-      Digest::MD5.file(file_path).hexdigest
-    end
-    
+    def compute_checksum(file)
+      @compute_checksum ? file.md5 : nil
+    end    
 
     ####
     # Object file validation.
@@ -485,10 +480,11 @@ module PreAssembly
     def confirm_checksums(dobj)
       log "  - confirm_checksums()"
       result=false
-      dobj.object_files.each { |f| result=(md5(f.path) == @provider_checksums[File.basename(f.path)]) }
+      dobj.object_files.each { |f| result=(f.md5 == @provider_checksums[File.basename(f.path)]) }
       return result
     end
-
+    
+    # confirm that the all of the source IDs supplied within a manifest are locally unique
     def manifest_sourceids_unique?
       all_source_ids=manifest_rows.collect {|r| r.send(@manifest_cols[:source_id])}
       all_source_ids.size == all_source_ids.uniq.size

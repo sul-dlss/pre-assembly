@@ -46,6 +46,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.2  update how set relationships are stored in an object -- add both an isMemberOf and an isMemberOfRelationship
 1.9.3  small updates to force new usage of assembly-objectfile gem for latest contentmetadata generation; additional output at end of preassembly
 1.9.4  update discovery_report to include checks for APO existence and existence of assemblyWF workflow definition
+1.9.5  more additions to discovery_report to provide total size and count by mimetype of discovered files; eliminate need to directly compute md5; this is now done via the assembly-objectfile gem
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
