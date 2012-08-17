@@ -468,6 +468,7 @@ describe PreAssembly::Bundle do
     before(:each) do
       bundle_setup :proj_revs
       @file_path = @b.path_in_bundle 'image1.tif'
+      @file = Assembly::ObjectFile.new(@file_path)
       @checksum_type = :md5
     end
 
@@ -475,22 +476,22 @@ describe PreAssembly::Bundle do
       fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
       @b.provider_checksums = { @file_path => fake_md5 }
       @b.should_not_receive :compute_checksum
-      @b.retrieve_checksum(@file_path).should == fake_md5
+      @b.retrieve_checksum(@file).should == fake_md5
     end
 
     it "retrieve_checksum() should compute checksum when checksum is not available" do
       @b.provider_checksums = {}
       @b.should_receive :compute_checksum
-      @b.retrieve_checksum @file_path
+      @b.retrieve_checksum @file
     end
 
     it "compute_checksum() should return nil if @compute_checksum is false" do
       @b.compute_checksum = false
-      @b.compute_checksum(@file_path).should == nil
+      @b.compute_checksum(@file).should == nil
     end
 
     it "compute_checksum() should return an md5 checksum" do
-      c = @b.compute_checksum @file_path
+      c = @b.compute_checksum @file
       c.should be_kind_of String
       c.should =~ @md5_regex
     end

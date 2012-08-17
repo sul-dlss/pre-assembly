@@ -45,7 +45,7 @@ module PreAssembly
           puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO")
         end
       end
-      header="\nObject Container , Number of Items , Files Readable , "
+      header="\nObject Container , Number of Items , Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
@@ -68,6 +68,8 @@ module PreAssembly
       total_objects_to_process=o2p.size
       
       source_ids=Hash.new(0) if using_manifest # hash to keep track of local source_id uniqueness
+      total_size_all_files=0
+      mimetypes=Hash.new(0) # hash to keep track of mimetypes
       
       o2p.each do |dobj|
         
@@ -77,11 +79,15 @@ module PreAssembly
          if dobj.object_files.count == 0
            message+=report_error_message("none") + " N/A ," # no items found and therefore existence gets an N/A
          else
-           message+="#{dobj.object_files.count} ,"  # of items         
+           message+="#{dobj.object_files.count} ,"  # of items   
+           total_size=(dobj.object_files.inject(0){|sum,obj| sum+obj.filesize})/1048576.0 # compute total size of all files in this object in MB
+           total_size_all_files+=total_size # keep running tally of sizes of all discovered files
+           dobj.object_files.each{|obj| mimetypes[obj.mimetype]+=1} # keep a running tally of number of files by mimetype
+           message+=" %.3f" % total_size.to_s + " MB , " # total size of all files in MB      
            message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
          end
        
-         if using_manifest # if we are using a manifest, let's add label and source ID from manifest to report
+         if using_manifest # if we are using a manifest, let's add label and source ID from manifest to the report
            message += "\"#{dobj.label}\" , " # label
            message += "\"#{dobj.source_id}\" ," # source ID
          end
@@ -127,9 +133,14 @@ module PreAssembly
       end
       
       puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
-      puts "Total Discovered Objects, #{total_objects}"
       puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
-
+      puts "Total Discovered Objects, #{total_objects}"
+      puts "Total Size of all discovered objects, " + "%.3f" % total_size_all_files.to_s + " MB"
+      puts "Total Number of files by mimetype in all discovered objects:"
+      mimetypes.each do |mimetype,num|
+        puts "#{mimetype} , #{num}"
+      end
+      
       if using_manifest
         if manifest_sourceids_unique?
           puts "All source IDs locally unique: yes"
