@@ -85,9 +85,9 @@ Move your content (if you can) into /thumpers/dpgthumper-staging/Hummel/content
 
 If you cannot move your content, be sure your YAML bundle discovery glob and/or regex are specific enough to correctly ignore your YAML file during discovery.  Or, alternatively, place your YAML file in a location other than the bundle.
 
-   See config/projects/TEMPLATE.yaml for a documented example of a configuration file.
-   See config/projects/local_dev_revs.yaml for a specific example using a manifest.
-   See config/projects/local_dev_gould.yaml for a specific example using a file system crawl.
+   See config/projects/TEMPLATE.yaml for a fully documented example of a configuration file.
+   See config/projects/manifest_noreg_example.yaml for a specific example using a manifest.
+   See config/projects/reg_example.yaml for a specific example using a file system crawl.
 
 3. Check the permissions on the bundle directory, iteratively. You need read permissions on all the bundle directory folders and files.  You need to have write permissions in the location you
 plan to write the log file too (often this cannot be the thumper drives since it is mounted as read-only).
@@ -124,6 +124,8 @@ d) the total number and listing of any objects which have duplicate filenames.  
 e) for manifest style projects, the label and source id along with if all source IDs contained in the manifest are unique 
 g) for manifest style projects, a listing of any folders/files present in the bundle directory that are not referenced in the manifest...
 some will be expected (such as a checksum file), but this will let you see if any expected images/data are missing from the manifest
+
+If any errors occur, they will be displayed and a total error count is shown at the bottom.
 
 To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using normal UNIX syntax, e.g.:
 
