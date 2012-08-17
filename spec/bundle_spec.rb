@@ -2,12 +2,12 @@ describe PreAssembly::Bundle do
 
   before(:all) do
     @yaml_filenames= {
-      :proj_revs   => 'config/projects/local_dev_revs.yaml',
-      :proj_rumsey => 'config/projects/local_dev_rumsey.yaml',
-      :proj_sohp2   => 'config/projects/local_dev_sohp2.yaml',
-      :proj_sohp3   => 'config/projects/local_dev_sohp3.yaml',      
-      :proj_sohp4   => 'config/projects/local_dev_sohp4.yaml',   
-      :proj_folder_manifest   => 'config/projects/local_dev_folder_manifest.yaml',               
+      :proj_revs   => 'spec/test_data/project_config_files/local_dev_revs.yaml',
+      :proj_rumsey => 'spec/test_data/project_config_files/local_dev_rumsey.yaml',
+      :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
+      :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',      
+      :proj_sohp4   => 'spec/test_data/project_config_files/local_dev_sohp4.yaml',   
+      :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',               
     }
     @yaml={}
     @yaml_filenames.each {|key,value| @yaml[key]=File.read(value) }
@@ -631,7 +631,7 @@ describe PreAssembly::Bundle do
     it "should set the progress log file to match the input yaml file if no progress log is specified in YAML" do
       bundle_setup :proj_sohp3
       @b.setup_paths
-      @b.progress_log_file.should == 'config/projects/local_dev_sohp3_progress.yaml'
+      @b.progress_log_file.should == 'spec/test_data/project_config_files/local_dev_sohp3_progress.yaml'
     end
     
     it "should set the staging_dir to the default value if not specified in the YAML" do

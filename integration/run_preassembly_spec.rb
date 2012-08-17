@@ -87,7 +87,7 @@ describe "Pre-assembly integration" do
 
   def setup_bundle(proj)
     # Load the project's YAML config file.
-    yaml_file = "#{PRE_ASSEMBLY_ROOT}/config/projects/local_dev_#{proj}.yaml"
+    yaml_file = "#{PRE_ASSEMBLY_ROOT}/spec/test_data/project_config_files/local_dev_#{proj}.yaml"
     yaml      = YAML.load_file yaml_file
     @params   = Assembly::Utils.symbolize_keys yaml
     
