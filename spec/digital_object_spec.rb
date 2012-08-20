@@ -11,6 +11,7 @@ describe PreAssembly::DigitalObject do
       :project_style => {},
       :content_md_creation => {},
       :bundle_dir    => 'spec/test_data/bundle_input_g',
+      :new_druid_tree_format => true
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
     
@@ -313,6 +314,27 @@ describe PreAssembly::DigitalObject do
         @dobj.write_content_metadata
         noko_doc(File.read file_name).should be_equivalent_to @exp_xml
       end
+    end
+
+  end
+
+  #########
+  describe "check the druid tree directories and content and metadata locations using both the new style and the old style" do
+
+    it "should have the correct druid tree folders using the new style" do
+      @dobj.druid = @druid
+      @dobj.new_druid_tree_format = true
+      @dobj.druid_tree_dir.should == 'gn/330/dv/6119/gn330dv6119'
+      @dobj.metadata_dir.should == 'gn/330/dv/6119/gn330dv6119/metadata'
+      @dobj.content_dir.should == 'gn/330/dv/6119/gn330dv6119/content'
+    end
+
+    it "should have the correct druid tree folders using the old style" do
+      @dobj.druid = @druid
+      @dobj.new_druid_tree_format = false
+      @dobj.druid_tree_dir.should == 'gn/330/dv/6119'
+      @dobj.metadata_dir.should == 'gn/330/dv/6119'
+      @dobj.content_dir.should == 'gn/330/dv/6119'
     end
 
   end

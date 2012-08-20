@@ -313,16 +313,21 @@ init_assembly_wf: true   # Whether pre-assembly should initiate the assembly
 # The typical values used in production are shown.
 ####
 
-compute_checksum:   true   # Whether pre-assembly should compute checksums.
+new_druid_tree_format:  false # Determines druid tree directory format (defaults to "false").
+                              # Check with Lyberteam to determine appropriate style to use.  As of August 20, 2012, only old style is supported in production.
+                              # old style: /oo/000/oo/0001
+                              # new style  /oo/000/oo/0001/oo000oo0001/content and /oo/000/oo/0001/oo000oo0001/metadata
 
-validate_usage:     true   # Whether pre-assembly should confirm that all expected
+compute_checksum:       true   # Whether pre-assembly should compute checksums.
+
+validate_usage:         true   # Whether pre-assembly should confirm that all expected
                            # YAML parameters have been supplied.
 
-show_progress:      true   # Whether to print druids as they are pre-assembled on the command line.
+show_progress:          true   # Whether to print druids as they are pre-assembled on the command line.
 
-uniqify_source_ids: false  # If true, pre-assembly attacheds a timestamp to source
+uniqify_source_ids:     false  # If true, pre-assembly attacheds a timestamp to source
                            # IDs. Used during integration testing to avoid duplicate source ID errors that come from DOR.
 
-cleanup:            false  # If true, pre-assembly deletes objects from DOR after
+cleanup:                 false  # If true, pre-assembly deletes objects from DOR after
                            # pre-assembly finishes. Relevant only during development.
 

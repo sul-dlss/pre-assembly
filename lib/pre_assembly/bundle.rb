@@ -41,7 +41,8 @@ module PreAssembly
       :cleanup,
       :resume,
       :config_filename,
-      :validate_files
+      :validate_files,
+      :new_druid_tree_format
     ]
 
     OTHER_ACCESSORS = [
@@ -70,6 +71,7 @@ module PreAssembly
       # Other setup work.
       setup_paths
       setup_other
+      setup_defaults
       validate_usage
       show_developer_setting_warning
       load_desc_md_template
@@ -93,9 +95,13 @@ module PreAssembly
       @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
       @publish_attr={} if @publish_attr.nil?
       @publish_attr.delete_if { |k,v| v.nil? }
-      @validate_files = true if @validate_files.nil? # default to validating files if not provided
     end
-
+    
+    def setup_defaults
+      @validate_files = true if @validate_files.nil? # default to validating files if not provided     
+      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
+    end
+    
     def load_desc_md_template
       return nil unless @desc_md_template and File.readable?(@desc_md_template)
       @desc_md_template_xml = IO.read(@desc_md_template)
@@ -139,7 +145,7 @@ module PreAssembly
     end
     
     def non_required_user_params
-      [:config_filename,:validate_files]
+      [:config_filename,:validate_files,:new_druid_tree_format]
     end
         
     def show_developer_setting_warning
@@ -321,6 +327,7 @@ module PreAssembly
           :unadjusted_container => c,
           :stageable_items      => stageables,
           :object_files         => object_files,
+          :new_druid_tree_format => @new_druid_tree_format 
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
