@@ -6,6 +6,7 @@ describe "Pre-assembly integration" do
 
   PROJECTS = [
     'revs',
+    'revs_old_druid_style',
     'rumsey',
     'reid_dennis',
     'gould',
@@ -15,7 +16,6 @@ describe "Pre-assembly integration" do
   PROJECTS.each do |p|
     it(p) { run_integration_tests p }
   end
-
 
   ####
   # Define expectations for the projects.
@@ -31,6 +31,14 @@ describe "Pre-assembly integration" do
           [1, "metadata/#{Assembly::DESC_MD_FILE}"],
         ],
       },
+      :revs_old_druid_style => {
+        :n_objects => 3,
+        :exp_files => [
+          [1, '*.tif'],
+          [1, "#{Assembly::CONTENT_MD_FILE}"],
+          [1, "#{Assembly::DESC_MD_FILE}"],
+        ],
+      },      
       :gould => {
         :n_objects => 3,
         :exp_files => [
@@ -66,18 +74,18 @@ describe "Pre-assembly integration" do
   ####
 
   def run_integration_tests(proj)
-    
+  
     # Setup the bundle for a project and run pre-assembly.
     setup_bundle proj
     @pids = @b.run_pre_assembly
-    determine_staged_druid_trees
+    determine_staged_druid_trees(@b.new_druid_tree_format)
 
     # Run checks.
     check_n_of_objects
     check_for_expected_files
     check_dor_objects
     cleanup_dor_objects
-    
+  
   end
 
 
@@ -90,7 +98,7 @@ describe "Pre-assembly integration" do
     yaml_file = "#{PRE_ASSEMBLY_ROOT}/spec/test_data/project_config_files/local_dev_#{proj}.yaml"
     yaml      = YAML.load_file yaml_file
     @params   = Assembly::Utils.symbolize_keys yaml
-    
+  
     # Create a temp dir to serve as the staging area.
     @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'
 
@@ -108,16 +116,20 @@ describe "Pre-assembly integration" do
     @exp_files = exp[:exp_files]
   end
 
-  def determine_staged_druid_trees
+  def determine_staged_druid_trees(new_druid_tree_format)
     # Determine the druid tree paths in the staging directory.
-    @druid_trees = @pids.map { |pid| DruidTools::Druid.new(pid,@temp_dir).path() }
+    if new_druid_tree_format
+      @druid_trees = @pids.map { |pid| DruidTools::Druid.new(pid,@temp_dir).path() }
+    else
+      @druid_trees = @pids.map { |pid| Assembly::Utils.get_staging_path(pid,@temp_dir) }        
+    end
   end
 
 
   ####
   # The checks.
   ####
-  
+
   def check_n_of_objects
     # Did we get the expected N of staged objects?
     @pids.size.should == @n_objects
