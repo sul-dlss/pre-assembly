@@ -7,6 +7,7 @@ describe "Pre-assembly integration" do
   PROJECTS = [
     'revs',
     'revs_old_druid_style',
+    'revs_no_contentMetadata',
     'rumsey',
     'reid_dennis',
     'gould',
@@ -38,7 +39,15 @@ describe "Pre-assembly integration" do
           [1, "#{Assembly::CONTENT_MD_FILE}"],
           [1, "#{Assembly::DESC_MD_FILE}"],
         ],
-      },      
+      },  
+      :revs_no_contentMetadata => {
+        :n_objects => 3,
+        :exp_files => [
+          [1, '*.tif'],
+          [0, "#{Assembly::CONTENT_MD_FILE}"],
+          [1, "#{Assembly::DESC_MD_FILE}"],
+        ],
+      },          
       :gould => {
         :n_objects => 3,
         :exp_files => [

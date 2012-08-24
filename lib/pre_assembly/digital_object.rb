@@ -102,7 +102,7 @@ module PreAssembly
       register
       add_dor_object_to_set
       stage_files
-      generate_content_metadata
+      generate_content_metadata unless @content_md_creation[:style].to_s == 'none'
       generate_desc_metadata
       initialize_assembly_workflow
       log "    - pre_assemble(#{@pid}) finished"
@@ -263,11 +263,11 @@ module PreAssembly
       # Custom methods are defined in the project_specific.rb file
 
       # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
-      if !['default','filename','dpg'].include? @content_md_creation[:style].to_s
+      if !['default','filename','dpg','none'].include? @content_md_creation[:style].to_s
         
         @content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
       
-      else
+      elsif @content_md_creation[:style].to_s != 'none'
         
         # otherwise use the content metadata generation gem
         params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>@project_style[:content_structure].to_sym}
@@ -283,15 +283,16 @@ module PreAssembly
     def generate_content_metadata
     
       create_content_metadata
-      write_content_metadata
+      write_content_metadata 
       
     end
     
     def write_content_metadata
+      return if @content_md_creation[:style].to_s == 'none'
       file_name = File.join self.metadata_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
-      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
+      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml } 
     end
 
     def content_object_files

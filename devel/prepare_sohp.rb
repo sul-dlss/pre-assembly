@@ -1,7 +1,9 @@
-# Convert incoming spreadsheet from SMPL into XML file that will be produced.  
-# Should only be temporarily needed until final XML is delivered.
-# run with
-# $ ruby devel/prepare_sohp.rb
+# Convert incoming spreadsheet from SMPL into pre-content metadata XML file.
+# Should only be temporarily needed until final XML scripts are delivered.
+# June 2012
+# Peter Mangiafico
+# run with ruby devel/prepare_sohp.rb
+
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP/new' # the folder where the content exists (the actual productin content)
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
 csv_filename='devel/sohp_preaccessioning_sorted_v7.csv' # an input spreadsheet defining the files to find (latest version of CSV from Geoff)
