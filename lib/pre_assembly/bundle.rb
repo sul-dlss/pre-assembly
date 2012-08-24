@@ -126,7 +126,7 @@ module PreAssembly
           :get_druid_from=>[:suri,:container,:container_barcode,:manifest,:druid_minter],
           },
         :content_md_creation=>{
-          :style=>[:default,:filename,:dpg,:smpl],
+          :style=>[:default,:filename,:dpg,:smpl,:none],
         }
       }  
     end

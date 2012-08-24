@@ -341,6 +341,28 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
+  describe "no content metadata generated" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.content_md_creation[:style]='none'
+      @dobj.project_style[:content_structure]='simple_book'
+      @dobj.publish_attr=nil      
+      add_object_files('tif')
+      add_object_files('jp2')
+      @dobj.create_content_metadata
+    end
+
+    it "should not generate any xml text" do
+      @dobj.content_md_xml.should == ""
+    end
+
+  end
+  
+  ####################
+  
+  ####################
+
   describe "bundled by filename, simple book content metadata without file attributes" do
 
     before(:each) do
