@@ -374,7 +374,7 @@ module PreAssembly
     end
 
     def assembly_workflow_url
-      "#{Dor::Config.dor.service_root}/dor/v1/objects/#{@pid}/apo_workflows/assemblyWF"
+      "#{Dor::Config.dor.service_root}/dor/objects/#{@pid}/apo_workflows/assemblyWF"
     end
 
   end
