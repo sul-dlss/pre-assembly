@@ -29,6 +29,14 @@ set :application,     'pre-assembly'
 set :git_subdir,      "lyberteam/#{application}.git"
 set :rvm_ruby_string, "1.8.7@#{application}"
 
+set :branch do
+  default_tag = `git tag`.split("\n").last
+
+  tag = Capistrano::CLI.ui.ask "Tag to deploy (make sure to push the tag first): [#{default_tag}] "
+  tag = default_tag if tag.empty?
+  tag
+end
+
 task :dev do
   role :app, 'sul-lyberservices-dev.stanford.edu'
   set :deploy_env, 'development'
