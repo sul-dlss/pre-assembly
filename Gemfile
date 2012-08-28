@@ -3,7 +3,7 @@ source 'http://sulair-rails-dev.stanford.edu'
 
 gem 'nokogiri'
 gem 'csv-mapper'
-gem 'dor-services', '>=3.9.0'
+gem 'dor-services', '>=3.11.4'
 gem 'druid-tools', '>=0.2.0'
 gem 'lyber-core'
 gem 'rest-client'
