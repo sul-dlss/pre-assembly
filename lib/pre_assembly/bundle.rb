@@ -99,7 +99,7 @@ module PreAssembly
     
     def setup_defaults
       @validate_files = true if @validate_files.nil? # default to validating files if not provided     
-      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
+      @new_druid_tree_format = false if @new_druid_tree_format.nil? # default to old style druid tree format 
     end
     
     def load_desc_md_template
