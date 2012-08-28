@@ -69,8 +69,22 @@ module PreAssembly
       @pre_assem_finished = false
       @content_structure  = @project_style[:content_structure]
       @stager             = lambda { |f,d| FileUtils.cp_r f, d }
+            
     end
 
+    def default_content_md_creation_style
+       @project_style[:content_structure].to_sym
+    end
+    
+    def content_md_creation_style
+      # set this object's content_md_creation_style
+      if @project_style[:should_register] || content_type_tag.blank? # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
+        default_content_md_creation_style
+      else # if the object is already registered and there is a content type tag, use it if we know what it means
+        CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
+      end
+    end
+    
     # compute the base druid tree folder for this object 
     def druid_tree_dir
       @druid_tree_dir ||=  (@new_druid_tree_format ? DruidTools::Druid.new(@druid.id,@staging_dir).path() : Assembly::Utils.get_staging_path(@druid.id,@staging_dir)) 
@@ -112,7 +126,7 @@ module PreAssembly
     ####
     # Determining the druid.
     ####
-
+    
     def determine_druid
       k = @project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
@@ -151,14 +165,23 @@ module PreAssembly
     end
 
     def get_dor_item_apos(pid)
-      begin
-        item = Dor::Item.find pid
-        return item.admin_policy_object
-      rescue ActiveFedora::ObjectNotFoundError
-        return []
-      end
+      get_dor_object
+      @dor_object.nil? ? [] : @dor_object.admin_policy_object
     end
 
+    def get_dor_object
+      begin
+        @dor_object ||= Dor::Item.find pid
+      rescue ActiveFedora::ObjectNotFoundError
+        @dor_object = nil
+      end      
+    end
+    
+    def content_type_tag
+      get_dor_object
+      @dor_object.nil? ? "" : @dor_object.content_type_tag
+    end
+    
     def apo_matches_exactly_one?(apo_pids)
       n = 0
       apo_pids.each { |pid| n += 1 if pid == @apo_druid_id }
@@ -270,7 +293,7 @@ module PreAssembly
       elsif @content_md_creation[:style].to_s != 'none'
         
         # otherwise use the content metadata generation gem
-        params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>@project_style[:content_structure].to_sym}
+        params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}
         
         params.merge!(:add_file_attributes=>true,:file_attributes=>@publish_attr) unless @publish_attr.nil?
         

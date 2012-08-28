@@ -48,7 +48,9 @@ validate_files:    true      # if set to true, then image files will be confirme
 
 project_style:
 
-  # Defines the structure of content metadata.  Set content_md_creation[:style] below if you want to bundle files into resources.
+  # Defines the default structure of content metadata.  Set content_md_creation[:style] below if you want to bundle files into resources.
+  # If should_register = false, the 'Process : Content Type' tag for each existing object will be examined.  If a known type is set in this tag,
+  #  it will be used instead of the default below.
   content_structure: 'simple_image'  # Every file in the digital object will appear as a <file> node with <contentMetadata type="image"> and <resource type="image">
 
                      'file'          # Like simple_image, but with <contentMetadata type="file"> and <resource type="file">.
