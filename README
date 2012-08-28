@@ -49,6 +49,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.5  more additions to discovery_report to provide total size and count by mimetype of discovered files; eliminate need to directly compute md5; this is now done via the assembly-objectfile gem
 1.9.6  add a new configuration parameter that determines if items are staged using the new style of druid trees or the old style of druid trees in the dor workspace
 1.9.7  provide the option to have no contentMetadata.xml file generated during pre-assembly.  Useful if you have a current custom created one ready to stage.
+
 1.9.9  allow the content metadata creation style to be discovered from already registered objects by inspecting the 'Process : Content Type' tag.  The default is used if not found or mapping incomplete.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
