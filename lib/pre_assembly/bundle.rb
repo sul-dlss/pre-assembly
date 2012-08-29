@@ -155,6 +155,7 @@ module PreAssembly
       warning<<'* init_assembly_wf=false' unless @init_assembly_wf
       warning<<'* uniqify_source_ids=true' if @uniqify_source_ids             
       warning<<'* cleanup=true' if @cleanup
+      warning<<"* limit=#{@limit_n}" if @limit_n      
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
     end
     
