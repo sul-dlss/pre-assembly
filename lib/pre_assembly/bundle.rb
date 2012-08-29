@@ -539,7 +539,9 @@ module PreAssembly
       o2p = objects_to_process
       
       log "process_digital_objects(#{o2p.size} non-skipped objects)"
-      puts "#{Time.now}: #{o2p.size} objects to pre-assemble" if @show_progress
+      message="#{o2p.size} objects to pre-assemble"
+      log message
+      puts "#{Time.now}: #{message}" if @show_progress
       
       n=0
       
@@ -550,7 +552,9 @@ module PreAssembly
       o2p.each do |dobj|
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        puts "#{Time.now}: #{o2p.size-n} objects left" if @show_progress
+        message="#{o2p.size-n} objects left"
+        log message
+        puts "#{Time.now}: #{message}" if @show_progress
         puts "#{Time.now}: Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         
         begin
@@ -615,9 +619,9 @@ module PreAssembly
     end
 
     def delete_digital_objects
+      return unless @cleanup
       # During development, delete objects that we register.
       log "delete_digital_objects()"
-      return unless @cleanup
       @digital_objects.each { |dobj| dobj.unregister }
     end
 
