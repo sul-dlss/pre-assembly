@@ -49,6 +49,7 @@ manifest_cols:
 
 content_exclusion:    '(?ix) descMetadata\.xml $'
 
+new_druid_tree_format: true
 validate_usage:       true
 show_progress:        true
 limit_n:              10

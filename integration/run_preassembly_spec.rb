@@ -107,7 +107,6 @@ describe "Pre-assembly integration" do
     yaml_file = "#{PRE_ASSEMBLY_ROOT}/spec/test_data/project_config_files/local_dev_#{proj}.yaml"
     yaml      = YAML.load_file yaml_file
     @params   = Assembly::Utils.symbolize_keys yaml
-  
     # Create a temp dir to serve as the staging area.
     @temp_dir = Dir.mktmpdir "#{proj}_integ_test_", 'tmp'
 
