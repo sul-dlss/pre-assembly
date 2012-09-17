@@ -6,9 +6,9 @@
 
 current_path = File.dirname(File.expand_path(__FILE__))
 
-content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP/new' # the folder where the content exists (the actual productin content)
+content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
-csv_filename=File.join(current_path,'sohp_preaccessioning_sorted_v7.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
+csv_filename=File.join(current_path,'sohp_preaccessioning_sorted_v8.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated
 
