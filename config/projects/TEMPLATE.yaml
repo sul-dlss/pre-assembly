@@ -334,3 +334,11 @@ uniqify_source_ids:     false  # If true, pre-assembly attacheds a timestamp to 
 cleanup:                 false  # If true, pre-assembly deletes objects from DOR after
                            # pre-assembly finishes. Relevant only during development.
 
+# These options provides a means to use the dir_validator gem to validate
+# the contents of the bundle directory. Supply the path to the Ruby code that will
+# perform the validation (see spec/test_data/project_config_files/local_dev_rumsey.rb
+# for an example). Also supply the path to the file to be used to report any
+# validation warnings. If warnings are generated, pre-assembly won't run.
+validate_bundle_dir:
+  code:   'some/path/validation_code.rb'
+  report: 'some/path/validation_warnings.csv'

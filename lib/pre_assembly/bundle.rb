@@ -42,7 +42,8 @@ module PreAssembly
       :resume,
       :config_filename,
       :validate_files,
-      :new_druid_tree_format
+      :new_druid_tree_format,
+      :validate_bundle_dir,
     ]
 
     OTHER_ACCESSORS = [
@@ -88,12 +89,13 @@ module PreAssembly
     end
 
     def setup_other
-      @provider_checksums  = {}
-      @digital_objects     = []
-      @skippables          = {}
-      @manifest_rows       = nil
-      @content_exclusion   = Regexp.new(@content_exclusion) if @content_exclusion
-      @publish_attr={} if @publish_attr.nil?
+      @provider_checksums     = {}
+      @digital_objects        = []
+      @skippables             = {}
+      @manifest_rows          = nil
+      @content_exclusion      = Regexp.new(@content_exclusion) if @content_exclusion
+      @validate_bundle_dir  ||= {}
+      @publish_attr           = {} if @publish_attr.nil?
       @publish_attr.delete_if { |k,v| v.nil? }
     end
     
@@ -137,15 +139,25 @@ module PreAssembly
 
     def required_files
       # If a file parameter from the YAML is non-nil, the file must exist.
-      [@manifest, @checksums_file, @desc_md_template].compact
+      [
+        @manifest,
+        @checksums_file,
+        @desc_md_template,
+        @validate_bundle_dir[:code],
+      ].compact
     end
 
     def required_user_params
-      YAML_PARAMS-non_required_user_params
+      YAML_PARAMS - non_required_user_params
     end
     
     def non_required_user_params
-      [:config_filename,:validate_files,:new_druid_tree_format]
+      [
+        :config_filename,
+        :validate_files,
+        :new_druid_tree_format,
+        :validate_bundle_dir,
+      ]
     end
         
     def show_developer_setting_warning
@@ -245,6 +257,7 @@ module PreAssembly
       log "run_pre_assembly(#{run_log_msg})"
       puts "#{Time.now}: Pre-assembly started for #{@project_name}" if @show_progress
       
+      return unless bundle_directory_is_valid?
       discover_objects
       load_provider_checksums
       process_manifest
@@ -290,7 +303,6 @@ module PreAssembly
     # Cleanup of objects and associated files in specified environment using logfile as input
     ####
     def cleanup(steps=[],dry_run=false)
-
       log "cleanup()"
       if File.exists?(@progress_log_file)
         druids=Assembly::Utils.get_druids_from_log(@progress_log_file)
@@ -299,6 +311,39 @@ module PreAssembly
         return
       end
       Assembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>dry_run)
+    end
+
+    ####
+    # Validate the bundle_dir directory structure, if the client supplied
+    # validating code.
+    ####
+
+    def bundle_directory_is_valid?(io = STDOUT)
+      # Do nothing if no validation code was supplied.
+      return true unless @validate_bundle_dir[:code]
+      # Run validations and return true/false accordingly.
+      dv = run_dir_validation_code()
+      dv.validate
+      if dv.warnings.size == 0
+        return true
+      else
+        write_validation_warnings(dv)
+        return false
+      end
+    end
+
+    def run_dir_validation_code
+      # Require the DirValidator code, run it, and return the validator.
+      require @validate_bundle_dir[:code]
+      dv = PreAssembly.validate_bundle_directory(@bundle_dir)
+      return dv
+    end
+
+    def write_validation_warnings(validator, io = STDOUT)
+      r  = @validate_bundle_dir[:report]
+      fh = File.open(r, 'w')
+      validator.report(fh)
+      io.puts("Bundle directory failed validation: see #{r}")
     end
 
     ####
