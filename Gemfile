@@ -21,7 +21,7 @@ end
 
 group :development do
 	gem 'lyberteam-devel', '>= 1.0.1'
-	gem 'lyberteam-capistrano-devel', '>= 1.0.8'
+	gem 'lyberteam-capistrano-devel', '>= 1.1.0'
   gem 'capistrano'
   gem 'awesome_print'
 end
