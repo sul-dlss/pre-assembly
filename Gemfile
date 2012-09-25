@@ -20,8 +20,8 @@ group :test do
 end
 
 group :development do
-	gem 'lyberteam-devel', '<= 0.8.0'  # we need to stay on older versions for now until we can fix the deployment capistrano issues, 7/25/2012, Peter Mangiafico
-	gem 'lyberteam-capistrano-devel', '<= 0.9.0'
+	gem 'lyberteam-devel', '>= 1.0.0'
+	gem 'lyberteam-capistrano-devel', '>= 1.0.0'
   gem 'capistrano'
   gem 'awesome_print'
 end
