@@ -15,7 +15,7 @@ require 'csv-mapper'
 content_path="/sdr-ingest/mjf-tape-all" # TODO replace with actual mounted input folder
 output_path=content_path # TODO replace with actual output folder
 
-csv_filename=File.join(current_path,'mjf_list.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
+csv_filename=File.join(current_path,'mjf_manifest.csv') # TODO replace with actual input spreadsheet defining the files to find
 content_xml_filename = "contentMetadata.xml" 
 descriptive_xml_filename = "descriptiveMetadata.xml"
 
@@ -92,15 +92,18 @@ Dir.chdir(content_path)
               files=filegroup.search('file')
           
               files.each do |file|
-            
-                xml_file_params={:id=>file.attributes['ID'].value.gsub("FILE_",""),:mimetype=>file.attributes['MIMETYPE'].value,:size=>file.attributes['SIZE'].value}
+                
+                id=file.attributes['ID'].value.gsub("FILE_","")
+                xml_file_params={:id=>id}
+                xml_file_params.merge!({:mimetype=>file.attributes['MIMETYPE'].value}) unless file.attributes['MIMETYPE'].nil?
+                xml_file_params.merge!({:size=>file.attributes['SIZE'].value}) unless file.attributes['SIZE'].nil?
                   case file_type
                     when 'archive masters'
                       xml_file_params.merge!({:preserve => 'yes',:publish  => 'no',:shelve   => 'no'})
                     when 'auxiliary application'
                       xml_file_params.merge!({:preserve => 'yes',:publish  => 'no',:shelve   => 'no'})      
                     when 'service high'
-                      xml_file_params.merge!({:preserve => 'yes',:publish  => 'yes',:shelve   => 'yes'})      
+                      xml_file_params.merge!({:preserve => 'yes',:publish  => 'no',:shelve   => 'no'})      
                   end # end case file_type
             
                   xml.file(xml_file_params) {
@@ -112,7 +115,13 @@ Dir.chdir(content_path)
              end # end loop over all filegroups in a filesec node
       
           } # end builder resource node
-      
+          
+          # add METs resource node
+          xml.resource(:id => "#{pid}-2",:sequence => "2",:type => "object") {
+             xml.label "Descriptive Metadata"
+             xml.file(:mimetype=>"application/tei+xml",:shelve=>"yes",:format=>"XML",:publish=>"yes",:preserve=>"yes",:id=>xml_file.first)
+          }
+          
         } # end builder contentMetadata node
       
       end # end builder for output content metadata
