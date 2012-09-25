@@ -1,3 +1,4 @@
+.rvmrc
 *.gem
 .DS_Store
 .bundle
