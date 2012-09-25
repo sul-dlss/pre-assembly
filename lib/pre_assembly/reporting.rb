@@ -49,8 +49,7 @@ module PreAssembly
       header+="Label , Source ID , " if using_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
-      header+="DRUID from barcode , " if barcode_project
-      header+="Registered? , APOs , assemblyWF in APO ," if confirming_registration
+      header+="DRUID, Registered? , APOs , assemblyWF in APO ," if confirming_registration
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
       
@@ -104,7 +103,10 @@ module PreAssembly
          end
          
          if confirming_registration # objects should already be registered, let's confirm that
-           druid = barcode_project ? druid_from_container : (bundle_id.include?('druid') ? bundle_id : "druid:#{bundle_id}")
+           dobj.determine_druid
+           pid = dobj.pid
+           druid = pid.include?('druid') ? pid : "druid:#{pid}"
+           message += "#{druid} , " 
            begin
              obj = Dor::Item.find(druid)
              message += " yes , "
