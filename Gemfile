@@ -1,5 +1,5 @@
 source :rubygems
-source 'http://sulair-rails-dev.stanford.edu'
+source 'http://sul-gems.stanford.edu'
 
 gem 'nokogiri'
 gem 'csv-mapper'
@@ -20,8 +20,8 @@ group :test do
 end
 
 group :development do
-	gem 'lyberteam-devel', '>= 1.0.0'
-	gem 'lyberteam-capistrano-devel', '>= 1.0.0'
+	gem 'lyberteam-devel', '>= 1.0.1'
+	gem 'lyberteam-capistrano-devel', '>= 1.0.8'
   gem 'capistrano'
   gem 'awesome_print'
 end
