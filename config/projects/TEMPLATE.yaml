@@ -235,6 +235,8 @@ desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML te
 # For object_discovery:use_manifest=false, set these values to nil.
 ####
 
+# These should always be lowercase.  Note that if your project is using a manifest for object discovery and has objects already registered, you will
+# need a column called "druid" in addition to the columns below.  The "source_id" and "label" columns must exist in this case but can be blank (since objects are already registered).
 manifest_cols:
   object_container:   'filename'   # Always required, indicates the column name containing the filename (single file per object) or folder name (multiple files per object) relative to the bundle directory.
   source_id:          'sourceid'   # Required if project_style:should_register = true
@@ -334,3 +336,11 @@ uniqify_source_ids:     false  # If true, pre-assembly attacheds a timestamp to 
 cleanup:                 false  # If true, pre-assembly deletes objects from DOR after
                            # pre-assembly finishes. Relevant only during development.
 
+# These options provides a means to use the dir_validator gem to validate
+# the contents of the bundle directory. Supply the path to the Ruby code that will
+# perform the validation (see spec/test_data/project_config_files/local_dev_rumsey.rb
+# for an example). Also supply the path to the file to be used to report any
+# validation warnings. If warnings are generated, pre-assembly won't run.
+validate_bundle_dir:
+  code:   'some/path/validation_code.rb'
+  report: 'some/path/validation_warnings.csv'

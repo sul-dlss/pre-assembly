@@ -158,7 +158,51 @@ describe PreAssembly::Bundle do
       @b.processed_pids.should == exp_pids
     end
 
+  end
 
+  ####################
+
+  describe "bundle directory validation using DirValidator" do
+
+    before(:each) do
+      bundle_setup :proj_rumsey
+    end
+
+    it "run_pre_assembly() should short-circuit if the bundle directory is invalid" do
+      @b.stub('bundle_directory_is_valid?').and_return(false)
+      methods = [
+        :discover_objects,
+        :load_provider_checksums,
+        :process_manifest,
+        :process_digital_objects,
+        :delete_digital_objects,
+      ]
+      methods.each { |m| @b.should_not_receive(m) }
+      @b.run_pre_assembly()
+    end
+
+    describe "bundle_directory_is_valid?" do  
+
+      it "should return true when no validation is requested by client" do  
+        @b.validate_bundle_dir = {}
+        @b.bundle_directory_is_valid?.should == true
+      end
+
+      it "should return true if there are no validation errors, otherwise false" do  
+        @b.validate_bundle_dir = { :code => 'some_validation_code.rb' }
+        @b.stub(:write_validation_warnings)
+        tests = {
+          []    => true,
+          [1,2] => false,
+        }
+        tests.each do |ws, exp|
+          v = double('mock_validator', :validate => nil, :warnings => ws)
+          @b.stub(:run_dir_validation_code).and_return(v)
+          @b.bundle_directory_is_valid?.should == exp
+        end
+      end
+
+    end
 
   end
 

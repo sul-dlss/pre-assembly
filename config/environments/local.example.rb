@@ -1,4 +1,4 @@
-cert_dir = File.join(File.dirname(__FILE__), "..", "certs")
+CERT_DIR = File.join(File.dirname(__FILE__), "..", "certs")
 
 Dor::Config.configure do
 
@@ -7,8 +7,8 @@ Dor::Config.configure do
   end
   
   ssl do
-    cert_file File.join(cert_dir,"dlss-dev-test.crt")
-    key_file  File.join(cert_dir,"dlss-dev-test.key")
+    cert_file File.join(CERT_DIR,"dlss-dev-test.crt")
+    key_file  File.join(CERT_DIR,"dlss-dev-test.key")
     key_pass ''
   end
   
