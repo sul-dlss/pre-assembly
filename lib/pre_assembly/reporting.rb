@@ -9,6 +9,7 @@ module PreAssembly
       # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
       # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
       # e) if show_staged is true, will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
+      # f) if show_other is true, will show all files/folders in source directory that will NOT be discovered/pre-assembled (warning: will produce a lot of output if you have lots of ignored objects in your directory!)
 
       @error_count=0
 
@@ -17,7 +18,8 @@ module PreAssembly
       check_sourceids=params[:check_sourceids] || false
       confirm_checksums=params[:confirm_checksums] || false
       show_staged=params[:show_staged] || false
-            
+      show_other=params[:show_other] || false
+              
       # determine checks to actually be performed, based on user parameters and configuration setings
       using_manifest=@manifest && @object_discovery[:use_manifest]
       confirming_checksums=@checksums_file && confirm_checksums
@@ -158,7 +160,7 @@ module PreAssembly
           source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
         end
       else
-        if entries_in_bundle_directory.count != total_objects
+        if show_other && entries_in_bundle_directory.count != total_objects
           puts "List of entries in bundle directory that will not be discovered: " 
           puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
         end
