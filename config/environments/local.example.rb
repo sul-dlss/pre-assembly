@@ -25,8 +25,7 @@ Dor::Config.configure do
     catalog.url 'http://lyberservices-prod.stanford.edu/catalog/mods'
   end
  
-  gsearch.url  'https://dor-dev.stanford.edu/solr/gsearch'
-  solrizer.url 'https://dor-dev.stanford.edu/solr/solrizer'
+  solrizer.url 'https://dor-dev.stanford.edu/solr/'
   workflow.url 'http://lyberservices-dev.stanford.edu/workflow/'
 
   dor do

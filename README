@@ -52,6 +52,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.9  allow the content metadata creation style to be discovered from already registered objects by inspecting the 'Process : Content Type' tag.  The default is used if not found or mapping incomplete.
 1.10.0 added support for the dir_validator gem
 1.10.1 updated discovery report to fetch druids; add files needed for mjf
+1.10.2. update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -146,6 +147,7 @@ for large number of objects.  Some options only work for certain styles of proje
 confirm_checksums   =  for manifest style projects, will compute and confirm checksums against the checksum file if it exists -- useful it you are not accessioning immediately
 check_sourceids  =  for manifest style projects, will confirm source IDs are globally unique in DOR (sources ids area already checked for local uniqueness in the manifest)
 no_check_reg = for projects where objects are to be registered, DONT'T check if objects are registered and have APOs (assuming they are supposed to be registered already)
+show_staged = will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
 
 e.g.
 

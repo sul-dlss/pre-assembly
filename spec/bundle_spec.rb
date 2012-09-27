@@ -7,6 +7,8 @@ describe PreAssembly::Bundle do
       :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
       :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',      
       :proj_sohp4   => 'spec/test_data/project_config_files/local_dev_sohp4.yaml',   
+      :proj_sohp_files_only   => 'spec/test_data/project_config_files/local_dev_sohp_files_only.yaml',   
+      :proj_sohp_files_and_folders   => 'spec/test_data/project_config_files/local_dev_sohp_files_and_folders.yaml',   
       :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',               
     }
     @yaml={}
@@ -214,7 +216,9 @@ describe PreAssembly::Bundle do
       tests = [
         [ :proj_revs,   3, 1, 1 ],
         [ :proj_rumsey, 3, 2, 2 ],
-        [ :proj_folder_manifest, 3, 2, 2]
+        [ :proj_folder_manifest, 3, 2, 2],
+        [ :proj_sohp_files_only, 2, 21, 21], 
+        [ :proj_sohp_files_and_folders, 2, 26, 41]
       ]
       tests.each do |proj, n_dobj, n_stag, n_file|
         bundle_setup proj
