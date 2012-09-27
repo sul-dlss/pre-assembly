@@ -3,7 +3,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n    discovery_report YAML_CONFIG_FILE [confirm_checksums check_sourceids no_check_reg]\n"
+  abort "#{error_msg}\n\nUsage:\n    discovery_report YAML_CONFIG_FILE [confirm_checksums check_sourceids no_check_reg show_staged]\n"
 end
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
@@ -14,6 +14,7 @@ report_params={}
 report_params[:confirm_checksums] = ARGV.include? 'confirm_checksums'
 report_params[:check_sourceids] = ARGV.include? 'check_sourceids'
 report_params[:no_check_reg] = ARGV.include? 'no_check_reg'
+report_params[:show_staged] = ARGV.include? 'show_staged'
 
 help "YAML file not found." unless File.file? yaml_config
 params = YAML.load(File.read yaml_config)
