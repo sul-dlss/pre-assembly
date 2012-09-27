@@ -51,7 +51,7 @@ manifest_cols:
 
 content_exclusion:    '(?ix) ( \.md5 | _techmd\.xml ) $'
 
-validate_usage:       true
+validate_usage:       false
 show_progress:        true
 limit_n:              10
 uniqify_source_ids:   true

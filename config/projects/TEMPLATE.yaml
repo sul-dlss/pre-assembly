@@ -190,6 +190,9 @@ stageable_discovery:
          
   regex:  ~                       # No filtering.
          '(?ix) \. (tif|xml) $'  # Stage only items with .tif and .xml extentions.
+  files_only:  true     # if set to true, then only files will be staged, regardless of glob specified above (i.e. any folders that match the glob will 
+                        #  be ignored) -- this is useful to avoid duplication of staged files
+                        #  if set to false or left off, then anything that matches the glob (and not filtered by regex) will be staged       
 
 ####
 # Restrict objects to be accessioned when using the discovery method

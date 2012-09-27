@@ -8,6 +8,7 @@ module PreAssembly
       # b) if each object should already be registered, confirms the object exists and has a valid APO
       # c) if using a manifest, confirms that it can locate an object for each entry in the manifest
       # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
+      # e) if show_staged is true, will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
 
       @error_count=0
 
@@ -15,11 +16,13 @@ module PreAssembly
       no_check_reg=params[:no_check_reg] || false
       check_sourceids=params[:check_sourceids] || false
       confirm_checksums=params[:confirm_checksums] || false
-      
+      show_staged=params[:show_staged] || false
+            
       # determine checks to actually be performed, based on user parameters and configuration setings
       using_manifest=@manifest && @object_discovery[:use_manifest]
       confirming_checksums=@checksums_file && confirm_checksums
       checking_sourceids=check_sourceids && using_manifest
+
       confirming_registration=(no_check_reg == false && @project_style[:should_register] == false)
       barcode_project=@project_style[:get_druid_from] == :container_barcode
       
@@ -33,6 +36,7 @@ module PreAssembly
       puts "Confirming checksums in,#{@checksums_file}" if confirming_checksums
       puts "Checking global uniqueness of source IDs" if checking_sourceids
       puts "Checking APO and registration status" if confirming_registration
+      puts "Show all staged files" if show_staged
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
         puts "You are processing specific objects only" if @accession_items[:only]
@@ -96,13 +100,11 @@ module PreAssembly
          message += (object_filenames_unique?(dobj) ? " no ," : report_error_message("dupes")) # check for dupe filenames, important in a nested object that will be flattened
 
          source_ids[dobj.source_id] += 1 if using_manifest # keep track of source_id uniqueness
-         
-         if barcode_project # look up druid by container and confirm we can find one
-           druid_from_container=dobj.get_pid_from_container_barcode || report_error_message("druid not found")
-           message+=" #{druid_from_container} , "
-         end
-         
+           
          if confirming_registration # objects should already be registered, let's confirm that
+           if barcode_project # look up druid by container and confirm we can find one
+             druid_from_container=dobj.get_pid_from_container_barcode || report_error_message("druid not found from barcode")
+           end
            dobj.determine_druid
            pid = dobj.pid
            druid = pid.include?('druid') ? pid : "druid:#{pid}"
@@ -125,6 +127,12 @@ module PreAssembly
          end
          
          puts message
+         
+         if show_staged # let's show all files that will be staged
+           dobj.object_files.each do |objfile|
+              puts "-- #{objfile.relative_path}"
+           end 
+         end
          
       end
       
