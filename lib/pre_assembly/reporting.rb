@@ -39,6 +39,8 @@ module PreAssembly
       puts "Checking global uniqueness of source IDs" if checking_sourceids
       puts "Checking APO and registration status" if confirming_registration
       puts "Show all staged files" if show_staged
+      puts "Show non-discovered objects in directory" if show_other
+
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
         puts "You are processing specific objects only" if @accession_items[:only]
@@ -139,7 +141,7 @@ module PreAssembly
       end
       
       # now check all files in the bundle directory against the manifest to report on files not referenced
-      if using_manifest
+      if using_manifest && show_other
         puts "\nExtra Files/Dir Report (items in bundle directory not in manifest):"
         entries_in_bundle_directory.each { |dir_item| puts "** #{dir_item}" unless all_object_containers.include?(dir_item)}
       end
@@ -160,7 +162,7 @@ module PreAssembly
           source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
         end
       else
-        if show_other && entries_in_bundle_directory.count != total_objects
+        if show_other && (entries_in_bundle_directory.count != total_objects)
           puts "List of entries in bundle directory that will not be discovered: " 
           puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
         end
