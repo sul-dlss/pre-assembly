@@ -420,7 +420,9 @@ module PreAssembly
       items   = []
       dir_glob(pattern).each do |item|
         rel_path = relative_path root, item
-        items.push(item) if regex.nil? or rel_path =~ regex
+        next unless regex.nil? or rel_path =~ regex
+        next if discovery_info[:files_only] && File.directory?(item)
+        items.push(item) 
       end
       return items.sort
     end
