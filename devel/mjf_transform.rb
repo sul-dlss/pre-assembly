@@ -126,8 +126,8 @@ Dir.chdir(content_path)
       
       end # end builder for output content metadata
 
-      output_xml_directory=File.join(output_path,folder)
-      Dir.mkdir(output_xml_directory) unless File.directory? output_xml_directory      
+      output_xml_directory=content_sub_folder # File.join(output_path,folder)
+      #Dir.mkdir(output_xml_directory) unless File.directory? output_xml_directory      
 
       # write output contentMetadata     
       File.open(File.join(output_xml_directory, content_xml_filename),'w') { |fh| fh.puts builder.to_xml }
