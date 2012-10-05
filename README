@@ -53,7 +53,8 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.9  allow the content metadata creation style to be discovered from already registered objects by inspecting the 'Process : Content Type' tag.  The default is used if not found or mapping incomplete.
 1.10.0 added support for the dir_validator gem
 1.10.1 updated discovery report to fetch druids; add files needed for mjf
-1.10.2. update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
+1.10.2 update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
+1.10.3 show detailed exception messages if initiate_accessioning_workflow step fails after several attempts (useful for debugging)
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 

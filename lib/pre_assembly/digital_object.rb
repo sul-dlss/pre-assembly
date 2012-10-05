@@ -382,17 +382,26 @@ module PreAssembly
       
       i=0
       success=false
+      backtrace=""
+      exception_message=""
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
         begin
           result = RestClient.post url, {}
           success = true if result && [200,201,202,204].include?(result.code)
-        rescue
+        rescue Exception => e
+          backtrace=e.backtrace
+          exception_message=e.message
           sleep Dor::Config.dor.sleep_time
         end
       end
       
-      raise "initialize_assembly_workflow failed after #{i} attempts" if success == false
+      if success == false
+        error_message = "initialize_assembly_workflow failed after #{i} attempts; with URL of #{url} \n"
+        error_message += "exception: #{exception_message}\n"
+        error_message += "backtrace: #{backtrace}" 
+        raise error_message
+      end
       
     end
 
