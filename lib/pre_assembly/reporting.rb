@@ -46,18 +46,14 @@ module PreAssembly
         puts "You are processing specific objects only" if @accession_items[:only]
         puts "You are processing all discovered except for specific objects" if @accession_items[:except]
       end
-      if @project_style[:should_register] # confirm the supplied APO and the existence of the assemblyWF workflow
-        begin
-          puts report_error_message("Specified APO #{@apo_druid_id} does not have the assemblyWF workflow defined in it") unless Assembly::Utils.apo_workflow_defined?(@apo_druid_id,'assemblyWF')
-        rescue
-          puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO")
-        end
+      if @project_style[:should_register] # confirm the supplied APO
+        puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO") if Assembly::Utils.is_apo?(@apo_druid_id) == false
       end
       header="\nObject Container , Number of Items , Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
-      header+="DRUID, Registered? , APOs , assemblyWF in APO ," if confirming_registration
+      header+="DRUID, Registered? , APOs , " if confirming_registration
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
       
@@ -115,16 +111,13 @@ module PreAssembly
            message += "#{druid} , " 
            begin
              obj = Dor::Item.find(druid)
-             message += " yes , "
+             message += " yes , " # obj exists
              apos=obj.admin_policy_object_ids
-             # confirm that the registered object's APO has the assemblyWF defined
-             assembly_wf_defined = (apos.size == 0 ? "no APO" : Assembly::Utils.apo_workflow_defined?(apos.first,'assemblyWF'))
-             message += (apos.size == 0 ? report_error_message("no APO") + report_error_message("no assemblyWF in APO") : "#{apos.size} , #{assembly_wf_defined}") # registered and apo
+             message += (apos.size == 0 ? report_error_message("no APO") : "#{apos.size}") # apo
            rescue
-             message += report_error_message("no obj") + report_error_message("no APO") + report_error_message("no assemblyWF in APO")
+             message += report_error_message("no obj") + report_error_message("no APO")
            end
          end
-
            
          if checking_sourceids # let's check for global source ID uniqueness
            message += (Assembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
