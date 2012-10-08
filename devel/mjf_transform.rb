@@ -10,14 +10,15 @@ require 'rubygems'
 require 'csv'
 require 'nokogiri'
 require 'assembly-objectfile'
+require 'assembly-utils'
 require 'csv-mapper'
 
-content_path="/sdr-ingest/mjf-tape-all" # TODO replace with actual mounted input folder
-output_path=content_path # TODO replace with actual output folder
+content_path="/sdr-ingest/mjf-tape-all" 
+output_path=content_path
 
-csv_filename=File.join(current_path,'mjf_manifest.csv') # TODO replace with actual input spreadsheet defining the files to find
-content_xml_filename = "contentMetadata.xml" 
-descriptive_xml_filename = "descriptiveMetadata.xml"
+csv_filename=File.join(current_path,'mjf_manifest.csv') 
+content_xml_filename = Assembly::CONTENT_MD_FILE
+descriptive_xml_filename = Assembly::DESC_MD_FILE
 
 # for output content metadata
 content_type_description="file"
@@ -51,6 +52,14 @@ Dir.chdir(content_path)
 
     content_sub_folder=File.join(data_folder,sub_folder.first)  
     Dir.chdir(content_sub_folder)
+    puts "...Found #{content_sub_folder}"
+    
+    existing_files_to_remove=["descriptiveMetadata.xml",Assembly::CONTENT_MD_FILE,Assembly::DESC_MD_FILE]
+    existing_files_to_remove.each do |filename|
+      puts "...Deleting #{filename}"
+      full_path=File.join(content_sub_folder, filename)
+      File.delete(full_path) if File.exists?(full_path)
+    end
     
     # now find the XML file 
     xml_file=Dir.glob("*.xml")
@@ -58,7 +67,6 @@ Dir.chdir(content_path)
     if xml_file.size == 1 # ok we found one, grab a handle to it
 
       input_xml_file=File.join(content_sub_folder,xml_file.first)
-
       puts "...Reading #{input_xml_file}"
                
       f = File.open(input_xml_file)
@@ -136,6 +144,7 @@ Dir.chdir(content_path)
       # write output descriptiveMetadata, removing blank lines
       File.open(File.join(output_xml_directory, descriptive_xml_filename),'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "")  }
       puts "...Writing #{descriptive_xml_filename}"
+
       
     end # end finding XML file
   
