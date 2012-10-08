@@ -55,6 +55,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.1 updated discovery report to fetch druids; add files needed for mjf
 1.10.2 update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
 1.10.3 show detailed exception messages if initiate_accessioning_workflow step fails after several attempts (useful for debugging)
+1.10.4 update discovery report
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
