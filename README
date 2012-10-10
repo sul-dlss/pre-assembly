@@ -56,6 +56,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.2 update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
 1.10.3 show detailed exception messages if initiate_accessioning_workflow step fails after several attempts (useful for debugging)
 1.10.4 update discovery report
+1.10.5 update README to indicate new convenience methods available in assembly-utils, update required version of assembly-utils
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -509,6 +510,30 @@ the druid of the APO to get default rights from:
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 apo_druid='druid:cc222cc2222'
 Assembly::Utils.update_rights_metadata(druids,apo_druid)
+
+=== Finding Errored Out Objects
+
+You can get a hash containing objects that have errored out in a specific workflow and step, including the error message.  Note that if you
+don't supply a tag, both of the following commands work for *ALL* objects in DOR, they are not specific to your project.
+If you do supply a tag, it should be exact (e.g. 'Project : Revs'), and if you have a lot of objects in DOR in a specific error state, the call
+may take a long time, since it will need to look up each object in DOR.
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+result=Assembly::Utils.get_errored_objects_for_workstep('accessionWF','content-metadata')
+
+To filter to a specific project, supply a tag:
+
+result=Assembly::Utils.get_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
+
+You can also automatically reset all of those objects to waiting:
+
+result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata')
+
+You can also supply a tag here:
+
+result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
+
 
 === Reset Workflow States
 

@@ -10,7 +10,7 @@ gem 'rest-client'
 gem 'rake'
 gem 'assembly-objectfile', '>= 1.3.3'
 gem 'assembly-image', '>= 1.3.2'
-gem 'assembly-utils', '>= 1.1.0'
+gem 'assembly-utils', '>= 1.1.1'
 gem 'dir_validator'
 
 group :test do
