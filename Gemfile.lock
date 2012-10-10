@@ -92,6 +92,11 @@ GEM
       systemu
       uuidtools
       validatable
+    dor-workflow-service (1.0.0)
+      activesupport
+      confstruct
+      nokogiri
+      rest-client
     druid-tools (0.2.0)
     equivalent-xml (0.2.9)
       nokogiri (>= 1.4.3)
@@ -248,6 +253,7 @@ DEPENDENCIES
   csv-mapper
   dir_validator
   dor-services (>= 3.11.4)
+  dor-workflow-service
   druid-tools (>= 0.2.0)
   equivalent-xml
   lyber-core
