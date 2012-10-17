@@ -6,9 +6,10 @@ CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 environment  = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 PRE_ASSEMBLY_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
+CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 # these are the names of special datastream files that will be staged in the 'metadata' folder instead of the 'content' folder
-METADATA_FILES=['descMetadata.xml'].map(&:downcase)
+METADATA_FILES=['descMetadata.xml','contentMetadata.xml'].map(&:downcase)
 
 # Override Solrizer logger before it gets a chance to load and pollute STDERR.
 require 'solrizer'
@@ -23,6 +24,8 @@ require 'lyber_core'
 # Environment.
 ENV_FILE = PRE_ASSEMBLY_ROOT + "/config/environments/#{environment}.rb"
 require ENV_FILE
+
+Dor::WorkflowService.configure(Dor::Config.workflow.url)
 
 # Project dir in load path.
 $LOAD_PATH.unshift(PRE_ASSEMBLY_ROOT + '/lib')

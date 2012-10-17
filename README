@@ -49,10 +49,15 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.9.5  more additions to discovery_report to provide total size and count by mimetype of discovered files; eliminate need to directly compute md5; this is now done via the assembly-objectfile gem
 1.9.6  add a new configuration parameter that determines if items are staged using the new style of druid trees or the old style of druid trees in the dor workspace
 1.9.7  provide the option to have no contentMetadata.xml file generated during pre-assembly.  Useful if you have a current custom created one ready to stage.
+1.9.8  update web service call to remove "v1" from URL
 1.9.9  allow the content metadata creation style to be discovered from already registered objects by inspecting the 'Process : Content Type' tag.  The default is used if not found or mapping incomplete.
 1.10.0 added support for the dir_validator gem
 1.10.1 updated discovery report to fetch druids; add files needed for mjf
-1.10.2. update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
+1.10.2 update discovery report to optionally show all staged files; add new parameter to stageable discovery to optionally stage files only
+1.10.3 show detailed exception messages if initiate_accessioning_workflow step fails after several attempts (useful for debugging)
+1.10.4 update discovery report
+1.10.5 update README to indicate new convenience methods available in assembly-utils, update required version of assembly-utils
+1.10.6 Update service_root configuration to allow different service URLs (e.g. with or without v1) for test and production
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -506,6 +511,30 @@ the druid of the APO to get default rights from:
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 apo_druid='druid:cc222cc2222'
 Assembly::Utils.update_rights_metadata(druids,apo_druid)
+
+=== Finding Errored Out Objects
+
+You can get a hash containing objects that have errored out in a specific workflow and step, including the error message.  Note that if you
+don't supply a tag, both of the following commands work for *ALL* objects in DOR, they are not specific to your project.
+If you do supply a tag, it should be exact (e.g. 'Project : Revs'), and if you have a lot of objects in DOR in a specific error state, the call
+may take a long time, since it will need to look up each object in DOR.
+
+$ ROBOT_ENVIRONMENT=test bin/console
+
+result=Assembly::Utils.get_errored_objects_for_workstep('accessionWF','content-metadata')
+
+To filter to a specific project, supply a tag:
+
+result=Assembly::Utils.get_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
+
+You can also automatically reset all of those objects to waiting:
+
+result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata')
+
+You can also supply a tag here:
+
+result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
+
 
 === Reset Workflow States
 
