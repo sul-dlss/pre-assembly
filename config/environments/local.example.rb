@@ -26,8 +26,12 @@ Dor::Config.configure do
   solrizer.url 'https://dor-dev.stanford.edu/solr/'
   workflow.url 'http://lyberservices-dev.stanford.edu/workflow/'
 
+  purl do
+     base_url 'http://purl.stanford.edu/'
+   end
+   
   dor do
-    service_root 'http://USERNAME:PASSWORD@lyberservices-dev.stanford.edu'
+    service_root 'http://USERNAME:PASSWORD@lyberservices-dev.stanford.edu/dor'
     num_attempts  5  # the number of attempts to contact the dor web service before throwing an exception
     sleep_time    10  # sleep time in seconds between attempts to contact the dor service    
   end
