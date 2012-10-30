@@ -44,6 +44,7 @@ module PreAssembly
       :validate_files,
       :new_druid_tree_format,
       :validate_bundle_dir,
+      :throttle_time
     ]
 
     OTHER_ACCESSORS = [
@@ -102,6 +103,7 @@ module PreAssembly
     def setup_defaults
       @validate_files = true if @validate_files.nil? # default to validating files if not provided     
       @new_druid_tree_format = false if @new_druid_tree_format.nil? # default to old style druid tree format 
+      @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
     end
     
     def load_desc_md_template
@@ -157,6 +159,7 @@ module PreAssembly
         :validate_files,
         :new_druid_tree_format,
         :validate_bundle_dir,
+        :throttle_time
       ]
     end
         
@@ -598,6 +601,12 @@ module PreAssembly
 
       # Start processing.
       o2p.each do |dobj|
+        
+        if @throttle_time.to_i > 0 
+          log "sleeping for #{@throttle_time.to_i} seconds"
+          sleep @throttle_time.to_i
+        end
+          
         log "#{o2p.size-n} objects left"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
