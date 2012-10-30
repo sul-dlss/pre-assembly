@@ -218,6 +218,7 @@ module PreAssembly
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
+          log "      ** REGISTER FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
@@ -417,6 +418,7 @@ module PreAssembly
           result = RestClient.post url, {}
           success = true if result && [200,201,202,204].include?(result.code)
         rescue Exception => e
+          log "      ** INITIALIZE ASSEMBLY WORKFLOW FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
