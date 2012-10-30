@@ -205,7 +205,34 @@ module PreAssembly
     end
 
     def register_in_dor(params)
-      Dor::RegistrationService.register_object params
+      
+      i=0
+      success=false
+      backtrace=""
+      exception_message=""
+      result=nil
+      
+      until i == Dor::Config.dor.num_attempts || success do
+        i+=1
+        begin
+          result = Dor::RegistrationService.register_object params
+          success = (result.class == Dor::Item)
+        rescue Exception => e
+          backtrace=e.backtrace
+          exception_message=e.message
+          sleep Dor::Config.dor.sleep_time
+        end
+      end
+      
+      if success == false || result.nil?
+        error_message = "register_in_dor failed after #{i} attempts; with params of #{params} \n"
+        error_message += "exception: #{exception_message}\n"
+        error_message += "backtrace: #{backtrace}" 
+        raise error_message
+      else 
+        return result
+      end     
+      
     end
 
     def registration_params

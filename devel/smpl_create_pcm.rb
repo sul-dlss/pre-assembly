@@ -2,13 +2,13 @@
 # Should only be temporarily needed until final XML scripts are delivered.
 # June 2012
 # Peter Mangiafico
-# run with ruby devel/prepare_sohp.rb
+# run with ruby devel/smpl_create_pcm.rb
 
 current_path = File.dirname(File.expand_path(__FILE__))
 
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
-csv_filename=File.join(current_path,'sohp_preaccessioning_sorted_v8.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
+csv_filename=File.join(current_path,'smpl_csv','faf_preaccessioning_v1.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated
 
@@ -19,7 +19,7 @@ require 'assembly-objectfile'
 require 'csv-mapper'
 include CsvMapper
 
-def prepare_sohp_content(content_path,csv_filename,output_path,content_xml_filename)
+def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename)
     
   file_attributes={}
   file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
@@ -269,6 +269,6 @@ end
 
 
 
-prepare_sohp_content(content_path,csv_filename,output_path,content_xml_filename)
+prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename)
 
     
