@@ -598,10 +598,9 @@ module PreAssembly
 
       # Start processing.
       o2p.each do |dobj|
+        log "#{o2p.size-n} objects left"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        message="#{o2p.size-n} objects left"
-        log message
         puts "#{Time.now}: #{message}" if @show_progress
         puts "#{Time.now}: Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         
