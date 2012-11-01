@@ -60,6 +60,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.6 Update service_root configuration to allow different service URLs (e.g. with or without v1) for test and production
 1.10.7 Allow the dor register call to retry 5 (configurable) times, sleeping between each call in order to avoid pre-assembly crashing if the dor web service is temporarily unavailable
 1.10.8 Add a new parameter to allow pre-assembly to be throttled (add a sleep time between objects)
+1.10.9 Catch errors on register_object_in_set method call, and allow for retries before raising an exception
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 

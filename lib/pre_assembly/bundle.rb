@@ -607,7 +607,8 @@ module PreAssembly
           sleep @throttle_time.to_i
         end
           
-        log "#{o2p.size-n} objects left"
+        message="#{o2p.size-n} objects left"
+        log message
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
         puts "#{Time.now}: #{message}" if @show_progress

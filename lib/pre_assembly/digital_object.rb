@@ -251,9 +251,33 @@ module PreAssembly
       # Add the object to a set (a sub-collection).
       return unless @set_druid_id && @project_style[:should_register]
       log "    - add_dor_object_to_set(#{@set_druid_id})"
-      @dor_object.add_relationship *add_member_relationship_params
-      @dor_object.add_relationship *add_collection_relationship_params
-      @dor_object.save
+      
+      i=0
+      success=false
+      backtrace=""
+      exception_message=""
+      
+      until i == Dor::Config.dor.num_attempts || success do
+        i+=1
+        begin      
+          @dor_object.add_relationship *add_member_relationship_params
+          @dor_object.add_relationship *add_collection_relationship_params
+          success = @dor_object.save
+        rescue Exception => e
+          log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          backtrace=e.backtrace
+          exception_message=e.message
+          sleep Dor::Config.dor.sleep_time
+        end
+      end
+      
+      if success == false
+        error_message = "add_dor_object_to_set failed after #{i} attempts; for druid=#{pid} and set=#{@set_druid_id} \n"
+        error_message += "exception: #{exception_message}\n"
+        error_message += "backtrace: #{backtrace}" 
+        raise error_message
+      end
+
     end
 
     def add_member_relationship_params
