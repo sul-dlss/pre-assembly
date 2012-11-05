@@ -49,7 +49,7 @@ module PreAssembly
       if @project_style[:should_register] # confirm the supplied APO
         puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO") if Assembly::Utils.is_apo?(@apo_druid_id) == false
       end
-      header="\nObject Container , Number of Items , Total Size, Files Readable , "
+      header="\nObject Container , Number of Items , Files Have Spaces, Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
@@ -86,7 +86,9 @@ module PreAssembly
            total_size=(dobj.object_files.inject(0){|sum,obj| sum+obj.filesize})/1048576.0 # compute total size of all files in this object in MB
            total_size_all_files+=total_size # keep running tally of sizes of all discovered files
            dobj.object_files.each{|obj| mimetypes[obj.mimetype]+=1} # keep a running tally of number of files by mimetype
-           message+=" %.3f" % total_size.to_s + " MB , " # total size of all files in MB      
+           filenames_have_spaces=dobj.object_files.collect{|obj| obj.path.include?(' ')}.include?(true)
+           message += (filenames_have_spaces ? report_error_message("filenames have spaces") : " no , ") 
+           message += " %.3f" % total_size.to_s + " MB , " # total size of all files in MB      
            message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
          end
        
