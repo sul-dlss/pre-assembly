@@ -123,7 +123,10 @@ Dir.chdir(content_path)
           
               files.each do |file|
                 
-                id=file.attributes['ID'].value.gsub("FILE_","")
+                file_location=file.search('FLocat')
+                relative_path_to_file=file_location[0].attributes['href'].value.gsub('file:','') # this is the relative path to the file in the original folder structure
+                
+                id=File.basename(relative_path_to_file) # this is just the filename, used in our new contentMetadata, since we will flatten folder structure when staging during pre-assembly
                 xml_file_params={:id=>id}
                 xml_file_params.merge!({:mimetype=>file.attributes['MIMETYPE'].value}) unless file.attributes['MIMETYPE'].nil?
                 xml_file_params.merge!({:size=>file.attributes['SIZE'].value}) unless file.attributes['SIZE'].nil?
@@ -135,11 +138,13 @@ Dir.chdir(content_path)
                     when 'service high'
                       xml_file_params.merge!({:preserve => 'yes',:publish  => 'no',:shelve   => 'no'})      
                   end # end case file_type
-            
-                  xml.file(xml_file_params) {
-                      xml.checksum(file.attributes['CHECKSUM'].value, :type => 'md5')                                
-                    } # end builder file node
-                
+                   
+                  if File.exists?(File.join(content_sub_folder,relative_path_to_file)) # this confirms the existence of the file on the original file system before adding the new node to the contentMetadata
+                    xml.file(xml_file_params) {
+                        xml.checksum(file.attributes['CHECKSUM'].value, :type => 'md5')                                
+                      } # end builder file node
+                  end
+                  
                end # loop over all files in a filegroup
            
              end # end loop over all filegroups in a filesec node
@@ -161,12 +166,12 @@ Dir.chdir(content_path)
  
       # write output contentMetadata     
       f=File.open(File.join(output_xml_directory, content_xml_filename),'w') { |fh| fh.puts builder.to_xml }
-      f.chmod(0644)
+      #f.chmod(0644)
       puts "...Writing #{content_xml_filename}"
  
       # write output descriptiveMetadata, removing blank lines
       f=File.open(File.join(output_xml_directory, descriptive_xml_filename),'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "")  }
-      f.chmod(0644)
+    #  f.chmod(0644)
       puts "...Writing #{descriptive_xml_filename}"
       
     end # end finding XML file
