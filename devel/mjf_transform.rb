@@ -165,13 +165,15 @@ Dir.chdir(content_path)
       #Dir.mkdir(output_xml_directory) unless File.directory? output_xml_directory      
  
       # write output contentMetadata     
-      f=File.open(File.join(output_xml_directory, content_xml_filename),'w') { |fh| fh.puts builder.to_xml }
-      #f.chmod(0644)
+      output_cm=File.join(output_xml_directory, content_xml_filename)
+      f=File.open(output_cm,'w') { |fh| fh.puts builder.to_xml }
+      FileUtils.chmod(0644,output_cm)
       puts "...Writing #{content_xml_filename}"
  
       # write output descriptiveMetadata, removing blank lines
-      f=File.open(File.join(output_xml_directory, descriptive_xml_filename),'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "")  }
-    #  f.chmod(0644)
+      output_dm=File.join(output_xml_directory, descriptive_xml_filename)
+      f=File.open(output_dm,'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "")  }
+      FileUtils.chmod(0644,output_dm)
       puts "...Writing #{descriptive_xml_filename}"
       
     end # end finding XML file
