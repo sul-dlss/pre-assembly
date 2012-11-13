@@ -218,8 +218,10 @@ accession_items:   ~         # Only valid for projects that do *not* use a manif
   except:
     - 'aa111aa1111'
     - 'bb222bb2222'             # this is an example of two objects that will be ignored, put them one per line, prefixed by a space, a dash, and space, add quotes around each item
-  reaccession: true            # if running a re-accession, set this to true so that a cleanup will be performed, if this is a first accession attemp for these objects, set it to false or ~ or leave it off                       
-
+ 
+  reaccession: true            # If running a re-accession, set this to true so that a cleanup will be performed, if this is a first accession attempt for these objects, set it to false or ~ or leave it off                       
+                               # If set to true, the the files will be removed for /dor/assembly, /dor/workspace and the stacks before accessioning again.  Objects will *not* be re-registered, so this only works with
+                               #  should_register=false
 
 ####
 # Additional materials accompaning the bundle.
