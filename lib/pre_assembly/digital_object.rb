@@ -139,7 +139,35 @@ module PreAssembly
     end
     
     def get_pid_from_suri
-      Dor::SuriService.mint_id
+
+      i=0
+      success=false
+      backtrace=""
+      exception_message=""
+      result=nil
+      
+      until i == Dor::Config.dor.num_attempts || success do
+        i+=1
+        begin
+          result = Dor::SuriService.mint_id
+          success = (result.class == String)
+        rescue Exception => e
+          log "      ** GET_PID_FROM_SURI FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          backtrace=e.backtrace
+          exception_message=e.message
+          sleep Dor::Config.dor.sleep_time
+        end
+      end
+      
+      if success == false || result.nil?
+        error_message = "get_pid_from_suri failed after #{i} attempts\n"
+        error_message += "exception: #{exception_message}\n"
+        error_message += "backtrace: #{backtrace}" 
+        raise error_message
+      else 
+        return result
+      end          
+          
     end
     
     def get_pid_from_druid_minter
