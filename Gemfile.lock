@@ -43,7 +43,7 @@ GEM
     assembly-image (1.3.5)
       assembly-objectfile (>= 1.4.1)
       uuidtools
-    assembly-objectfile (1.4.2)
+    assembly-objectfile (1.4.5)
       mime-types
       mini_exiftool
       nokogiri
@@ -263,7 +263,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image (>= 1.3.2)
-  assembly-objectfile (>= 1.4.2)
+  assembly-objectfile (>= 1.4.5)
   assembly-utils (>= 1.1.1)
   awesome_print
   capistrano
