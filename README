@@ -62,6 +62,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.8 Add a new parameter to allow pre-assembly to be throttled (add a sleep time between objects)
 1.10.9 Catch errors on register_object_in_set method call, and allow for retries before raising an exception
 1.10.10 Add spaces in filenames checks to discovery report
+1.10.11 Catch errors on get_pid_from_suri method call, and allow for retries before raising an exception
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
