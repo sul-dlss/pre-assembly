@@ -10,7 +10,7 @@ gem 'rest-client'
 gem 'rake'
 gem 'assembly-objectfile', '>= 1.4.5'
 gem 'assembly-image', '>= 1.3.2'
-gem 'assembly-utils', '>= 1.1.6'
+gem 'assembly-utils', '>= 1.1.7'
 gem 'dir_validator'
 gem 'dor-workflow-service'
 
