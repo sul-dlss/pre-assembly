@@ -317,11 +317,11 @@ module PreAssembly
     end
 
     def prepare_for_reaccession
-      # Used during a re-accession, will remove symlinks in /dor/workspace, files from the stacks and content in /dor/assembly
+      # Used during a re-accession, will remove symlinks in /dor/workspace, files from the stacks and content in /dor/assembly, workflows
       # but will not unregister the object
       log "  - prepare_for_reaccession(#{@druid})"
 
-      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
+      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks,:workflows])
       
     end
     
