@@ -161,6 +161,7 @@ module PreAssembly
       
       if success == false || result.nil?
         error_message = "get_pid_from_suri failed after #{i} attempts\n"
+        log error_message
         error_message += "exception: #{exception_message}\n"
         error_message += "backtrace: #{backtrace}" 
         raise error_message
@@ -255,6 +256,7 @@ module PreAssembly
       
       if success == false || result.nil?
         error_message = "register_in_dor failed after #{i} attempts; with params of #{params} \n"
+        log error_message
         error_message += "exception: #{exception_message}\n"
         error_message += "backtrace: #{backtrace}" 
         raise error_message
@@ -301,6 +303,7 @@ module PreAssembly
       
       if success == false
         error_message = "add_dor_object_to_set failed after #{i} attempts; for druid=#{pid} and set=#{@set_druid_id} \n"
+        log error_message
         error_message += "exception: #{exception_message}\n"
         error_message += "backtrace: #{backtrace}" 
         raise error_message
@@ -479,6 +482,7 @@ module PreAssembly
       
       if success == false
         error_message = "initialize_assembly_workflow failed after #{i} attempts; with URL of #{url} \n"
+        log error_message
         error_message += "exception: #{exception_message}\n"
         error_message += "backtrace: #{backtrace}" 
         raise error_message

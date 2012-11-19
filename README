@@ -422,6 +422,7 @@ stage    == removed staged files (typically stored in /dor/assembly, but the spe
 dor      == remove objects from Fedora
 stacks   == remove files from the stacks that were shelved during accessioning ... note this step must be run from a server
 (such as sul-lyberservices-test) and you must be able to authenticate to the relevant stacks server
+workflows == remove the assemblyWF and accessionWF workflows for the objects
 
 You can also specify the environment using ROBOT_ENVIRONMENT, just as with a pre-assembly run.  Since this script is destructive, you will need
 to confirm each step.  It is always best to run this script on the test (or production) server, since then it will have full access to the stacks.
@@ -438,7 +439,7 @@ e.g.
 $ ROBOT_ENVIRONMENT=test bin/console
 
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-steps=[:symlinks,:stage,:dor,:stacks]
+steps=[:symlinks,:stage,:dor,:stacks,:workflows]
 Assembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>true)
 
 === Loading YAML Configuration
