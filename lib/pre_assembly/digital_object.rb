@@ -378,7 +378,7 @@ module PreAssembly
         # otherwise use the content metadata generation gem
         params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}
         
-        params.merge!(:add_file_attributes=>true,:file_attributes=>@publish_attr) unless @publish_attr.nil?
+        params.merge!(:add_file_attributes=>true,:file_attributes=>@publish_attr.stringify_keys) unless @publish_attr.nil?
         
         @content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
         

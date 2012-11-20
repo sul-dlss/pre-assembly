@@ -64,6 +64,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.10 Add spaces in filenames checks to discovery report
 1.10.11 Catch errors on get_pid_from_suri method call, and allow for retries before raising an exception
 1.10.12 Delete assemblyWF and accessionWF workflows from objects when re-accessioning using updated assembly-utils gem  
+1.11.1  Bump up to latest versions of assembly gems; fix bug in publish attributing adding during content metadata generation
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -274,6 +275,8 @@ b. The image was not a mimetype of 'image/jpeg' or 'image/tiff'.  Any other mime
 c. Your input image was corrupt or missing a color space profile.  This will usually cause the jp2-create robot to fail and throw an error in that workflow step.
 
 d. You had an existing JP2 in the directory that matched a tiff or jpeg.  In this case the jp2-create robot will not overwrite any existing files just to be safe.
+
+e. You had an existing JP2 in the directory that matched a DPG style filename (e.g. if you had existing tiff called xx000yy1111_00_01.tif and a jp2 called xx000yy1111_05_01.jp2), you will not get another jp2 from that tiff even though there would not be a filename clash, under the principle that it refers to the same image).
  
 7. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing
 object will be examined.  If a known type is set in this tag, it will be used to create content metadata instead of the default set in
@@ -558,19 +561,6 @@ $ ROBOT_ENVIRONMENT=test bin/console
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
 Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
-
-==Starting Robots
-
-If you are on the test or production server, you can determine if the robots are running and you can print out the command to start them.
-
-$ ROBOT_ENVIRONMENT=test bin/console
-
-Assembly::Utils.robot_status # check to see if the assembly and accession robots are running and print out status report
-
-If the robots are not running, you can see how to start them.  It won't execute the commands, you can do that yourself at a unix prompt.
-
-Assembly::Utils.start_robots 
-
 
 ==Assembly Robots
 
