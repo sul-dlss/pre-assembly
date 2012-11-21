@@ -5,7 +5,7 @@ project_style:
   should_register:    true
   get_druid_from:     'suri'
 
-bundle_dir:           'spec/test_data/bundle_input_a'
+bundle_dir:           'spec/test_data/bundle_input_a/'
 staging_dir:          'tmp'
 accession_items:       ~
 
