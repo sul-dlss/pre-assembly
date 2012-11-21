@@ -324,7 +324,7 @@ module PreAssembly
       # but will not unregister the object
       log "  - prepare_for_reaccession(#{@druid})"
 
-      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks,:workflows])
+      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
       
     end
     
