@@ -65,6 +65,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.10.11 Catch errors on get_pid_from_suri method call, and allow for retries before raising an exception
 1.10.12 Delete assemblyWF and accessionWF workflows from objects when re-accessioning using updated assembly-utils gem  
 1.11.1  Bump up to latest versions of assembly gems; fix bug in publish attributing adding during content metadata generation
+1.11.2  If user had a trailing slash on the bundle_dir parameter, object discovery might fail.  Remove any trailing slashes during setup.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -596,7 +597,12 @@ corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/assembly.git
 
 ==Deployment
 
-See Capfile.
+cap testing deploy  # for test
+cap production deploy # for production
+
+Enter the branch or tag you want deployed.
+
+See the Capfile for more info
 
 ==Setting up code for local development
 

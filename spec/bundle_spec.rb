@@ -35,6 +35,10 @@ describe PreAssembly::Bundle do
       @b.should be_kind_of PreAssembly::Bundle
     end
 
+    it "should trim the trailing slash from the bundle directory" do
+      @b.bundle_dir.should == 'spec/test_data/bundle_input_a'
+    end
+  
     it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_md_template = nil
