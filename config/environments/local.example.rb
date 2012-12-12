@@ -31,7 +31,7 @@ Dor::Config.configure do
    end
    
   dor do
-    service_root 'http://USERNAME:PASSWORD@lyberservices-dev.stanford.edu/dor'
+    service_root 'http://USERNAME:PASSWORD@lyberservices-dev.stanford.edu/dor/v1'
     num_attempts  5  # the number of attempts to contact the dor web service before throwing an exception
     sleep_time    10  # sleep time in seconds between attempts to contact the dor service    
   end
