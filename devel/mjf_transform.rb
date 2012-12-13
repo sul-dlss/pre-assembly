@@ -86,8 +86,8 @@ Dir.chdir(content_path)
       mods=doc.search('//mods:mods')
       
       # clean up table of contents and nodes that have return characters
-      mods.search('//mods:tableOfContents').each {|node| node.content=node.content.gsub!('\n','&#10;')} if mods.search('//mods:tableOfContents').size !=0 
-      mods.search('//mods:note').each {|node| node.content=node.content.gsub!('\n','&#10;')} if mods.search('//mods:note').size !=0           
+      mods.search('//mods:tableOfContents').each {|node| node.content=node.content.gsub('\n','&#10;')} if mods.search('//mods:tableOfContents').size !=0 
+      mods.search('//mods:note').each {|node| node.content=node.content.gsub('\n','&#10;')} if mods.search('//mods:note').size !=0           
       
       # get start date and end date to see if they are the same
       start_date=mods.search('//mods:dateCreated[@point="start"]')
