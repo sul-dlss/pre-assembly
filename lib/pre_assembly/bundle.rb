@@ -625,7 +625,7 @@ module PreAssembly
           dobj.pre_assem_finished = true
           puts "#{Time.now}: Completed #{dobj.druid.druid}" if @show_progress
 
-        rescue
+        rescue Exception => e
           # For now, just re-raise any exceptions.
           #
           # Later, we might decide to do the following:
@@ -633,7 +633,7 @@ module PreAssembly
           #   - from that point, raise a PreAssembly::PreAssembleError
           #   - then catch such errors here, allowing the current
           #     digital object to fail but the remaining objects to be processed.
-          raise
+          raise e
 
         ensure
           # Log the outcome no matter what.
