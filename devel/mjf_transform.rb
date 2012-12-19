@@ -1,4 +1,4 @@
-# Used to transform Monterey Jazz Festival METs and MODs to contentMetadata.xml and descriptiveMetadata.xml files to prepare for pre-assembly
+# Used to transform Monterey Jazz Festival METs and MODs to contentMetadata.xml and descMetadata.xml files to prepare for pre-assembly
 # August 2012
 # Peter Mangiafico
 
@@ -170,7 +170,7 @@ Dir.chdir(content_path)
       FileUtils.chmod(0644,output_cm)
       puts "...Writing #{content_xml_filename}"
  
-      # write output descriptiveMetadata, removing blank lines
+      # write output descMetadata, removing blank lines
       output_dm=File.join(output_xml_directory, descriptive_xml_filename)
       f=File.open(output_dm,'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "")  }
       FileUtils.chmod(0644,output_dm)
