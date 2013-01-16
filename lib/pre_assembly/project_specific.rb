@@ -57,7 +57,7 @@ module PreAssembly
                     file_id=File.basename(file_node.xpath('location')[0].content) 
                     xml.file(:id=>file_id,:preserve=>file_node['preserve'],:publish=>file_node['publish'],:shelve=>file_node['shelve']) {
                       checksum=file_node.xpath('checksum')  
-                      xml.checksum(checksum[0].content, :type => 'md5') if checksum
+                      xml.checksum(checksum[0].content, :type => 'md5') if checksum && checksum[0]
                     }
                   end
                 end
