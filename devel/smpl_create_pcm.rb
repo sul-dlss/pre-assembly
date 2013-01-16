@@ -8,6 +8,7 @@ current_path = File.dirname(File.expand_path(__FILE__))
 
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
 #content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
+base_path = 'http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP' # the base path of the content as it is to be listed in the preContentMetadata.xml files  -- could be irrelevant -- and should be removed if so
 csv_filename=File.join(current_path,'smpl_csv','faf_preaccessioning_v1.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated
@@ -19,7 +20,7 @@ require 'assembly-objectfile'
 require 'csv-mapper'
 include CsvMapper
 
-def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename)
+def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename,base_path)
     
   file_attributes={}
   file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
@@ -54,7 +55,7 @@ def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filen
 
       if previous_druid != '' # finish up by looking for images and transcripts for this druid and then write out the previous XML file (except for the first druid)
         
-        look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid)
+        look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid,base_path)
       
         write_out_xml(@output_folder,content_xml_filename,@cm)
 
@@ -99,7 +100,7 @@ def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filen
       @object_node << resource_node
     
       # create the file node and attach it to the resource node, along with supplemenatry md5 and techMD nodes
-      create_file_node(resource_node,:filename=>row.filename,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>file_attributes[role.downcase])
+      create_file_node(resource_node,:filename=>row.filename,:base_path=>base_path,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>file_attributes[role.downcase])
     end
     
     # set the previous druid so we know when we are starting a new one 
@@ -107,7 +108,7 @@ def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filen
         
   end
 
-  look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid)
+  look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid,base_path)
   
   write_out_xml(@output_folder,content_xml_filename,@cm) # write out last XML file
   
@@ -143,7 +144,7 @@ def write_out_xml(output_folder,content_xml_filename,cm)
   
 end
 
-def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
+def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid,base_path)
 
   # check to see if images folder exists, and if so, iterate and add all images as new resource nodes   
   images_folder=File.join(content_folder,'Images')
@@ -160,7 +161,7 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
         label_node = Nokogiri::XML::Node.new("label", cm)
         label_node.content=get_image_label(image_file)
         resource_node << label_node
-        create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
+        create_file_node(resource_node,:base_path=>base_path,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
         object_node << resource_node        
       end
     end
@@ -180,7 +181,7 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
       label_node = Nokogiri::XML::Node.new("label", cm)
       label_node.content='Transcript'
       resource_node << label_node
-      create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
+      create_file_node(resource_node,:base_path=>base_path,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
       object_node << resource_node        
     end
   end
@@ -188,9 +189,7 @@ def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
 end
 
 def create_file_node(resource_node,params={})
-    
-  base_path = 'http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP'
-  
+      
   filename=params[:filename]
   file_attributes=params[:file_attributes] || {}
   filetype=params[:filetype] || 'content'
@@ -198,6 +197,7 @@ def create_file_node(resource_node,params={})
   filerole=params[:filerole] || ''
   druid=params[:druid]
   content_folder=params[:content_folder]
+  base_path=params[:base_path]
   
   file_node = Nokogiri::XML::Node.new("file", @cm)
   file_node['type']=filetype
@@ -221,13 +221,13 @@ def create_file_node(resource_node,params={})
       checksum_node['type']='md5'  
       checksum_node.content=get_checksum(md5_file)
       file_node << checksum_node
-      create_file_node(resource_node,:filename=>md5_filename,:druid=>druid,:role=>role,:filetype=>'metadata',:filerole=>'checksum',:content_folder=>content_folder)
+      create_file_node(resource_node,:base_path=>base_path,:filename=>md5_filename,:druid=>druid,:role=>role,:filetype=>'metadata',:filerole=>'checksum',:content_folder=>content_folder)
     end
 
     techmd_filename=File.basename(filename,'.*') + '_techmd.xml'
     techmd_file=File.join(content_folder,role,techmd_filename)
     if File.exists? techmd_file
-      create_file_node(resource_node,:filename=>techmd_filename,:druid=>druid,:role=>role,:filetype=>'metadata',:filerole=>'techMD',:content_folder=>content_folder)
+      create_file_node(resource_node,:base_path=>base_path,:filename=>techmd_filename,:druid=>druid,:role=>role,:filetype=>'metadata',:filerole=>'techMD',:content_folder=>content_folder)
     end
 
   end
@@ -269,6 +269,6 @@ end
 
 
 
-prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename)
+prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename,base_path)
 
     
