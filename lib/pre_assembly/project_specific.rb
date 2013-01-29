@@ -32,7 +32,7 @@ module PreAssembly
         
         # generate content metadata
         builder = Nokogiri::XML::Builder.new { |xml|
-          xml.contentMetadata(:objectId => @druid.id,:type=>'file') {  
+          xml.contentMetadata(:objectId => @druid.id,:type=>'media') {  
             # iterate through each unique label, which will become a resource
             labels.each do |label|
               # grab the resource nodes with this label
@@ -48,7 +48,7 @@ module PreAssembly
                 seq_counter+=1
                 seq=seq_counter
               end
-              xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}",:type=>'file') {
+              xml.resource(:sequence => seq, :id => "#{@druid.id}_#{seq}",:type=>'media') {
                 xml.label label
                 # iterate over all file nodes from input CM and create correct file nodes for this resource
                 file_nodes.each do |file_node|

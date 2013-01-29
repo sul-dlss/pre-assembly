@@ -67,6 +67,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.11.1  Bump up to latest versions of assembly gems; fix bug in publish attributing adding during content metadata generation
 1.11.2  If user had a trailing slash on the bundle_dir parameter, object discovery might fail.  Remove any trailing slashes during setup.
 1.11.3  Make SMPL contentMetadata generation more robust so it doesn't crash if the checksum is missing from the preContentMetadata file.
+1.11.4 Changed the object type and resource type from 'file' to 'media' for SMPL conntent metadata. 
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
