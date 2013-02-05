@@ -44,6 +44,12 @@ task :dev do
   set :bundle_without, []         # Deploy all gem groups on the dev VM.
 end
 
+task :argo do
+  role :app, 'argo.stanford.edu'
+  set :deploy_env, 'production'
+  set :rails_env,  'production'  # TEMPORARY: needed until lyberteam-gems-devel is fixed.
+end
+
 task :testing do
   role :app, 'sul-lyberservices-test.stanford.edu'
   set :deploy_env, 'test'
