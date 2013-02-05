@@ -13,6 +13,8 @@ gem 'assembly-image', '>= 1.3.9'
 gem 'assembly-utils', '>= 1.2.1'
 gem 'dir_validator'
 gem 'dor-workflow-service'
+gem 'actionpack', '>= 3.2.11'
+gem 'actionmailer', '>= 3.2.11'
 
 group :test do
   gem 'equivalent-xml'
