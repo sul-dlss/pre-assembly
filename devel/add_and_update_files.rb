@@ -5,14 +5,20 @@
 ENV['ROBOT_ENVIRONMENT']='production'  # environment to run under (i.e. which fedora instance to hit)
 @dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
 
+@base_path = '/dor/preassembly/ap_tei' # path where new files are located
+
+@log_path = @base_path + 'logs/'
+@log = Logger.new( @log_path + 'add_and_update_files.log', 'daily' )
+
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-@base_path = '/dor/preassembly/ap_tei' # path where new files are located
 @publish="yes"  # values for new files that need to be added
 @preserve="yes"
 @shelve="yes"
 
 objects=parse_directory
+
+puts objects
 
 require 'rubygems'
 require 'dor-services'
@@ -42,12 +48,14 @@ def add_or_replace_files(objects)
     file_name=object[:filename]   # name of file to add or replace
 
     puts "Working on #{druid} and #{file_name}"
+    @log.info "Working on #{druid} and #{file_name}"
   
     path_to_new_file=File.join(@base_path,file_name)
 
     unless File.exists? path_to_new_file
     
       puts "*****New file '#{path_to_new_file}' not found" 
+      @log.error "*****New file '#{path_to_new_file}' not found"
   
     else # we have our new file
     
@@ -70,14 +78,17 @@ def add_or_replace_files(objects)
 
         # replace it
         puts "Replacing '#{file_name}'"
-      
+        @log.info "Replacing '#{file_name}'"
+        
         existing_file=content_file(druid,Dor::Config.content.content_base_dir,file_name)
         unless existing_file.nil? 
           puts "Deleting #{existing_file}"
+          @log.info "Deleting #{existing_file}"
           FileUtils.rm(existing_file) unless @dry_run
         end
         
         puts "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
+        @log.info "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
       
         item.contentMetadata.update_file(file_hash, file_name) unless @dry_run
@@ -92,6 +103,7 @@ def add_or_replace_files(objects)
         file_hash.merge!({:publish=>@publish,:shelve=> @shelve,:preserve => @preserve,:mime_type => objectfile.mimetype})
 
         puts "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
+        @log.info "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
 
         # find object type resource
