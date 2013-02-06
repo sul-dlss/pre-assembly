@@ -1,29 +1,33 @@
 # run with ruby devel/add_and_update_files.rb
 # must be run from lyberservices-prod to have access to all mounts and configuration
 
-# TODO do we need to support the remote file location being old style?  this assumes all content files are in the base of druid tree
-
 #!/usr/bin/env ruby
-ENV['ROBOT_ENVIRONMENT']='test'  # environment to run under (i.e. which fedora instance to hit)
+ENV['ROBOT_ENVIRONMENT']='production'  # environment to run under (i.e. which fedora instance to hit)
 @dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-@base_path = '/tmp' # path where new files are located
+@base_path = '/dor/preassembly/ap_tei' # path where new files are located
 @publish="yes"  # values for new files that need to be added
 @preserve="yes"
 @shelve="yes"
 
-objects=[
-  {:druid=>'druid:bc001rm4583',:filename=>'2011-014HEWI-1955-b1_10.11_0001.tif'},
-  {:druid=>'druid:bc104bp6427',:filename=>'2011-014HEWI-1954-b1_4.4_0002.tif'},
-  {:druid=>'druid:bc104yg4412',:filename=>'bogus_name.tif'}
-  ] # list of druids and filesnames to act on
+objects=parse_directory
 
 require 'rubygems'
 require 'dor-services'
 require 'assembly-utils'
 require 'logger'
+
+def parse_directory
+  Dir.chdir(@base_path)
+  files=Dir.glob('*/*')
+  objects={}
+  files.each do |file|
+    objects[:filename=>file,:druid=>file.split("/").first]
+  end
+  return objects
+end
 
 def add_or_replace_files(objects)
   
@@ -77,8 +81,8 @@ def add_or_replace_files(objects)
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
       
         item.contentMetadata.update_file(file_hash, file_name) unless @dry_run
-        item.publish_metadata unless @dry_run
-        item.shelve unless @dry_run
+        
+        publish_and_shelve item unless @dry_run
       
       else # file does not exist in object
 
@@ -90,13 +94,25 @@ def add_or_replace_files(objects)
         puts "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
 
-        # TODO Get resource ID to add new file node in
-        resource="bc104yg4412_1"
-      
-        item.contentMetadata.add_file(file_hash,resource) unless @dry_run
-  
-        item.publish_metadata unless @dry_run
-        item.shelve unless @dry_run
+        # find object type resource
+        resources=item.contentMetadata.ng_xml.search("//resource[@type='object']")
+        if resources.length > 0 # found at least one object resource we can add the file too
+
+          # get resource ID to add new file node in or add resource
+          resource_id=resources[0]['id']
+
+          item.contentMetadata.add_file(file_hash,resource_id) unless @dry_run
+          
+        elsif resources.length == 0 # we need to add a new object resource
+
+          # create resource ID to add new file node in or add resource
+          resource_id="#{item.pid.delete('druid:')}_object1"
+          
+          item.contentMetadata.add_resource([file_hash],resource_id,1,'object') unless @dry_run
+                    
+        end
+        
+        publish_and_shelve item unless @dry_run
             
       end
   
@@ -155,5 +171,9 @@ def old_path_to_file(druid,root_dir,file_name)
   File.join path_to_object(druid,root_dir), file_name
 end
 
+def publish_and_shelve(item)
+  item.publish_metadata 
+  item.shelve
+end
 
 add_or_replace_files(objects)
