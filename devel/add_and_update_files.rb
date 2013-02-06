@@ -3,34 +3,34 @@
 
 #!/usr/bin/env ruby
 ENV['ROBOT_ENVIRONMENT']='production'  # environment to run under (i.e. which fedora instance to hit)
-@dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
-
-@base_path = '/dor/preassembly/ap_tei' # path where new files are located
-
-@log_path = @base_path + 'logs/'
-@log = Logger.new( @log_path + 'add_and_update_files.log', 'daily' )
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
-
-@publish="yes"  # values for new files that need to be added
-@preserve="yes"
-@shelve="yes"
-
-objects=parse_directory
-
-puts objects
 
 require 'rubygems'
 require 'dor-services'
 require 'assembly-utils'
 require 'logger'
 
+@dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
+
+@base_path = '/dor/preassembly/ap_tei' # path where new files are located
+
+@log_path = File.join(@base_path,'logs','add_and_update_files.log')
+@log = Logger.new( @log_path, 'daily' )
+
+
+@publish="yes"  # values for new files that need to be added
+@preserve="yes"
+@shelve="yes"
+
 def parse_directory
   Dir.chdir(@base_path)
-  files=Dir.glob('*/*')
-  objects={}
+  files=Dir.glob('*/*.xml')
+  puts "Found #{files.size} files"
+  objects=[]
   files.each do |file|
-    objects[:filename=>file,:druid=>file.split("/").first]
+    druid=file.split("/").first
+    objects << {:filename=>file,:druid=>druid}
   end
   return objects
 end
@@ -45,12 +45,13 @@ def add_or_replace_files(objects)
   objects.each do |object|
 
     druid=object[:druid]
-    file_name=object[:filename]   # name of file to add or replace
+    file_path=object[:filename]   # name of file to add or replace
 
-    puts "Working on #{druid} and #{file_name}"
-    @log.info "Working on #{druid} and #{file_name}"
+    puts "Working on #{druid} and #{file_path}"
+    @log.info "Working on #{druid} and #{file_path}"
   
-    path_to_new_file=File.join(@base_path,file_name)
+    path_to_new_file=File.join(@base_path,file_path)
+    base_filename=File.basename(file_path)
 
     unless File.exists? path_to_new_file
     
@@ -65,22 +66,23 @@ def add_or_replace_files(objects)
       md5=objectfile.md5
       sha1=objectfile.sha1
       size=objectfile.filesize
-      file_hash={:name=>file_name,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
+      file_hash={:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
     
-      item=Dor::Item.find(druid)
+      item=Dor::Item.find("druid:#{druid}")
+      
       
       object_location=path_to_object(druid,Dor::Config.content.content_base_dir) # get the path of this object in the workspace
-      replacement_file_location=path_to_content_file(druid,Dor::Config.content.content_base_dir,file_name)
+      replacement_file_location=path_to_content_file(druid,Dor::Config.content.content_base_dir,base_filename)
     
-      file_nodes=item.contentMetadata.ng_xml.search("//file[@id='#{file_name}']")
+      file_nodes=item.contentMetadata.ng_xml.search("//file[@id='#{base_filename}']")
 
       if file_nodes.size == 1 # file already exists in object
 
         # replace it
-        puts "Replacing '#{file_name}'"
-        @log.info "Replacing '#{file_name}'"
+        puts "Replacing '#{base_filename}'"
+        @log.info "Replacing '#{base_filename}'"
         
-        existing_file=content_file(druid,Dor::Config.content.content_base_dir,file_name)
+        existing_file=content_file(druid,Dor::Config.content.content_base_dir,base_filename)
         unless existing_file.nil? 
           puts "Deleting #{existing_file}"
           @log.info "Deleting #{existing_file}"
@@ -91,14 +93,14 @@ def add_or_replace_files(objects)
         @log.info "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
       
-        item.contentMetadata.update_file(file_hash, file_name) unless @dry_run
+        item.contentMetadata.update_file(file_hash, base_filename) unless @dry_run
         
         publish_and_shelve item unless @dry_run
       
       else # file does not exist in object
 
         # add it 
-        puts "Adding '#{file_name}'"
+        puts "Adding '#{base_filename}'"
      
         file_hash.merge!({:publish=>@publish,:shelve=> @shelve,:preserve => @preserve,:mime_type => objectfile.mimetype})
 
@@ -187,5 +189,7 @@ def publish_and_shelve(item)
   item.publish_metadata 
   item.shelve
 end
+
+objects=parse_directory
 
 add_or_replace_files(objects)
