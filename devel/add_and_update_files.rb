@@ -40,8 +40,11 @@ def add_or_replace_files(objects)
   puts ""
   puts "Environment: #{ENV['ROBOT_ENVIRONMENT']}"
   puts "Dry run" if @dry_run
-  puts ""
+  puts "Number of objects: #{objects.size}"
 
+  added=0
+  replaced=0
+  
   objects.each do |object|
 
     druid=object[:druid]
@@ -62,14 +65,16 @@ def add_or_replace_files(objects)
     
       file=File.new(path_to_new_file)
     
+      file_hash={}
       objectfile=Assembly::ObjectFile.new(path_to_new_file)
-      md5=objectfile.md5
-      sha1=objectfile.sha1
-      size=objectfile.filesize
-      file_hash={:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
-    
-      item=Dor::Item.find("druid:#{druid}")
+      unless @dry_run
+        md5=objectfile.md5
+        sha1=objectfile.sha1
+        size=objectfile.filesize
+        file_hash.merge!{:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
+      end
       
+      item=Dor::Item.find("druid:#{druid}")
       
       object_location=path_to_object(druid,Dor::Config.content.content_base_dir) # get the path of this object in the workspace
       replacement_file_location=path_to_content_file(druid,Dor::Config.content.content_base_dir,base_filename)
@@ -97,6 +102,8 @@ def add_or_replace_files(objects)
         
         publish_and_shelve item unless @dry_run
       
+        added+=1
+        
       else # file does not exist in object
 
         # add it 
@@ -127,12 +134,16 @@ def add_or_replace_files(objects)
         end
         
         publish_and_shelve item unless @dry_run
+
+        replaced+=1
             
       end
   
     end
   
     puts ""
+    puts "Files added: #{added}"
+    puts "Files replaced: #{replaced}"
   
   end
 end
