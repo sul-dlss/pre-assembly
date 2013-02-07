@@ -12,6 +12,8 @@ require 'assembly-utils'
 require 'logger'
 
 @dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
+start_limit=nil # objects to run from input array (set start_limit to nil for all)
+end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is not null)
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
@@ -71,7 +73,7 @@ def add_or_replace_files(objects)
         md5=objectfile.md5
         sha1=objectfile.sha1
         size=objectfile.filesize
-        file_hash.merge!{:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1}
+        file_hash.merge!({:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1})
       end
       
       item=Dor::Item.find("druid:#{druid}")
@@ -142,10 +144,11 @@ def add_or_replace_files(objects)
     end
   
     puts ""
-    puts "Files added: #{added}"
-    puts "Files replaced: #{replaced}"
   
   end
+  puts "Files added: #{added}"
+  puts "Files replaced: #{replaced}"
+  
 end
 
 # search possible locations for object (new and old style)
@@ -203,4 +206,11 @@ end
 
 objects=parse_directory
 
-add_or_replace_files(objects)
+if start_limit
+  end_limit=objects.size - 1 unless end_limit
+  objects_to_run=objects[start_limit..end_limit]
+else
+  objects_to_run=objects
+end
+
+add_or_replace_files(objects_to_run)
