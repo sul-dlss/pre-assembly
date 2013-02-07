@@ -11,9 +11,9 @@ require 'dor-services'
 require 'assembly-utils'
 require 'logger'
 
-@dry_run=true # if set to true, then no operations are actually carried out, you only get notices of what will happen
-start_limit=nil # objects to run from input array (set start_limit to nil for all)
-end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is not null)
+@dry_run=false # if set to true, then no operations are actually carried out, you only get notices of what will happen
+start_limit=0 # objects to run from input array (set start_limit to nil for all)
+end_limit=1  # set end_limit to nil for all (or remainder if start_limit is not null)
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
@@ -101,9 +101,7 @@ def add_or_replace_files(objects)
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
       
         item.contentMetadata.update_file(file_hash, base_filename) unless @dry_run
-        
-        publish_and_shelve item unless @dry_run
-      
+              
         added+=1
         
       else # file does not exist in object
@@ -135,19 +133,22 @@ def add_or_replace_files(objects)
                     
         end
         
-        publish_and_shelve item unless @dry_run
-
         replaced+=1
             
       end
   
+      publish_and_shelve("druid:#{druid}") unless @dry_run
+      
     end
   
     puts ""
   
   end
+  
   puts "Files added: #{added}"
+  @log.info "Files added: #{added}"
   puts "Files replaced: #{replaced}"
+  @log.info "Files replaced: #{replaced}"
   
 end
 
@@ -199,9 +200,11 @@ def old_path_to_file(druid,root_dir,file_name)
   File.join path_to_object(druid,root_dir), file_name
 end
 
-def publish_and_shelve(item)
-  item.publish_metadata 
-  item.shelve
+def publish_and_shelve(druid)
+  puts "Resetting publishing and shelving robots..."
+  @log.info "Resetting publishing and shelving robots..."
+  steps={'accessionWF' => ['publish','shelve']}
+  Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
 end
 
 objects=parse_directory
