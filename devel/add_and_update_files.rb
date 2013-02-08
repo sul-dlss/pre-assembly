@@ -12,14 +12,14 @@ require 'assembly-utils'
 require 'logger'
 
 @dry_run=false # if set to true, then no operations are actually carried out, you only get notices of what will happen
-start_limit=0 # objects to run from input array (set start_limit to nil for all)
-end_limit=1  # set end_limit to nil for all (or remainder if start_limit is not null)
+start_limit=nil # objects to run from input array (set start_limit to nil for all)
+end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is not null)
+limit_to_druids=%w{tq270ry8164 gc161fd9389 bm916nx5550 dh941mm7815 vj818xc6811 wg983ft3682 wx067jz0783 yb570xw0261 yc460db1075 mh338cj3700 nz125bh9048 pk200tz2188 pz516hw4711 hp160sk3414 gb869zk5570} # limit to these druids (set to nil to do all druids)
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
 @log_path = File.join(@base_path,'logs','add_and_update_files.log')
 @log = Logger.new( @log_path, 'daily' )
-
 
 @publish="yes"  # values for new files that need to be added
 @preserve="yes"
@@ -40,10 +40,12 @@ end
 def add_or_replace_files(objects)
   
   puts ""
+  puts Time.now
+  @log.info Time.now
   puts "Environment: #{ENV['ROBOT_ENVIRONMENT']}"
   puts "Dry run" if @dry_run
   puts "Number of objects: #{objects.size}"
-
+  @log.info "Number of objects: #{objects.size}"
   added=0
   replaced=0
   
@@ -51,22 +53,22 @@ def add_or_replace_files(objects)
 
     druid=object[:druid]
     file_path=object[:filename]   # name of file to add or replace
-
+          
     puts "Working on #{druid} and #{file_path}"
     @log.info "Working on #{druid} and #{file_path}"
-  
+
     path_to_new_file=File.join(@base_path,file_path)
     base_filename=File.basename(file_path)
 
     unless File.exists? path_to_new_file
-    
+  
       puts "*****New file '#{path_to_new_file}' not found" 
       @log.error "*****New file '#{path_to_new_file}' not found"
-  
+
     else # we have our new file
-    
+  
       file=File.new(path_to_new_file)
-    
+  
       file_hash={}
       objectfile=Assembly::ObjectFile.new(path_to_new_file)
       unless @dry_run
@@ -75,12 +77,12 @@ def add_or_replace_files(objects)
         size=objectfile.filesize
         file_hash.merge!({:name=>base_filename,:md5 => md5, :size=>size.to_s, :sha1=>sha1})
       end
-      
+    
       item=Dor::Item.find("druid:#{druid}")
-      
+    
       object_location=path_to_object(druid,Dor::Config.content.content_base_dir) # get the path of this object in the workspace
       replacement_file_location=path_to_content_file(druid,Dor::Config.content.content_base_dir,base_filename)
-    
+  
       file_nodes=item.contentMetadata.ng_xml.search("//file[@id='#{base_filename}']")
 
       if file_nodes.size == 1 # file already exists in object
@@ -88,27 +90,27 @@ def add_or_replace_files(objects)
         # replace it
         puts "Replacing '#{base_filename}'"
         @log.info "Replacing '#{base_filename}'"
-        
+      
         existing_file=content_file(druid,Dor::Config.content.content_base_dir,base_filename)
         unless existing_file.nil? 
           puts "Deleting #{existing_file}"
           @log.info "Deleting #{existing_file}"
           FileUtils.rm(existing_file) unless @dry_run
         end
-        
+      
         puts "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         @log.info "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
         FileUtils.cp(path_to_new_file,replacement_file_location) unless @dry_run
-      
+    
         item.contentMetadata.update_file(file_hash, base_filename) unless @dry_run
-              
+            
         added+=1
-        
+      
       else # file does not exist in object
 
         # add it 
         puts "Adding '#{base_filename}'"
-     
+   
         file_hash.merge!({:publish=>@publish,:shelve=> @shelve,:preserve => @preserve,:mime_type => objectfile.mimetype})
 
         puts "Copying from '#{path_to_new_file}' to '#{replacement_file_location}'"
@@ -123,26 +125,26 @@ def add_or_replace_files(objects)
           resource_id=resources[0]['id']
 
           item.contentMetadata.add_file(file_hash,resource_id) unless @dry_run
-          
+        
         elsif resources.length == 0 # we need to add a new object resource
 
           # create resource ID to add new file node in or add resource
           resource_id="#{item.pid.delete('druid:')}_object1"
-          
-          item.contentMetadata.add_resource([file_hash],resource_id,1,'object') unless @dry_run
-                    
-        end
         
-        replaced+=1
-            
-      end
-  
-      publish_and_shelve("druid:#{druid}") unless @dry_run
+          item.contentMetadata.add_resource([file_hash],resource_id,1,'object') unless @dry_run
+                  
+        end
       
+        replaced+=1
+          
+      end
+
+      publish_and_shelve("druid:#{druid}") unless @dry_run
+    
     end
-  
+
     puts ""
-  
+        
   end
   
   puts "Files added: #{added}"
@@ -216,4 +218,8 @@ else
   objects_to_run=objects
 end
 
+objects_to_run.reject!{|obj| !limit_to_druids.include? obj[:druid]} unless limit_to_druids.nil?
+
+puts "Running #{objects_to_run.size} objects"
+  
 add_or_replace_files(objects_to_run)
