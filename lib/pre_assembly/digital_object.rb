@@ -435,7 +435,7 @@ module PreAssembly
       # double brackets: "blah [[column_name]] blah".
       # Here we replace those placeholders with the corresponding value
       # from the manifest row.
-      @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s }
+      @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
       return true
     end
 
