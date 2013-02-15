@@ -30,9 +30,10 @@ set :git_subdir,      "lyberteam/#{application}.git"
 set :rvm_ruby_string, "1.8.7-p358@#{application}"
 
 set :branch do
-  default_tag = `git tag`.split("\n").last
-
-  tag = Capistrano::CLI.ui.ask "Tag to deploy (make sure to push the tag first): [#{default_tag}] "
+  last_tag = `git tag`.split("\n").last
+  default_tag = 'master'
+  
+  tag = Capistrano::CLI.ui.ask "Tag to deploy (make sure to push the tag first): [default: #{default_tag}, last tag: #{last_tag}] "
   tag = default_tag if tag.empty?
   tag
 end
