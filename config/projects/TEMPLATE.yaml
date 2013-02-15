@@ -98,6 +98,9 @@ staging_dir: ~               # Where to put the pre-assembled materials. This is
                              # Developers and tests may use this in special circumstances.
 							               # A fully qualified path.
 
+staging_style:    'copy'     # the staging style, can be "copy" or "symlink", defaults to "copy" if not specified or nil
+                             #  if set to "copy" then all discovered files that need to be staged will be copied from the bundle directory to the staging directory
+                             #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the bundle directory
 ####
 # Specify how pre-assembly should locate objects within the bundle_dir.
 # Here we are discovering the object containers. An object container

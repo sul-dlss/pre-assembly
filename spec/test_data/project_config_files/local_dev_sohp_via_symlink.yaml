@@ -6,7 +6,7 @@ project_style:
 bundle_dir:           'spec/test_data/bundle_input_e'
 staging_dir:          'tmp'
 accession_items:   ~
-staging_style:        'copy'
+staging_style:        'symlink'
 
 validate_files:       true
 

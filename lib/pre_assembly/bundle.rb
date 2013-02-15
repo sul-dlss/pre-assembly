@@ -44,7 +44,8 @@ module PreAssembly
       :validate_files,
       :new_druid_tree_format,
       :validate_bundle_dir,
-      :throttle_time
+      :throttle_time,
+      :staging_style
     ]
 
     OTHER_ACCESSORS = [
@@ -105,6 +106,7 @@ module PreAssembly
       @validate_files = true if @validate_files.nil? # default to validating files if not provided     
       @new_druid_tree_format = false if @new_druid_tree_format.nil? # default to old style druid tree format 
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
+      @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
     end
     
     def load_desc_md_template
@@ -159,6 +161,7 @@ module PreAssembly
         :config_filename,
         :validate_files,
         :new_druid_tree_format,
+        :staging_style,
         :validate_bundle_dir,
         :throttle_time
       ]
@@ -377,7 +380,8 @@ module PreAssembly
           :unadjusted_container => c,
           :stageable_items      => stageables,
           :object_files         => object_files,
-          :new_druid_tree_format => @new_druid_tree_format 
+          :new_druid_tree_format => @new_druid_tree_format,
+          :staging_style        => @staging_style
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj

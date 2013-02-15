@@ -68,6 +68,8 @@ and set it to a new style of getting druids, show warnings if you set developmen
 1.11.2  If user had a trailing slash on the bundle_dir parameter, object discovery might fail.  Remove any trailing slashes during setup.
 1.11.3  Make SMPL contentMetadata generation more robust so it doesn't crash if the checksum is missing from the preContentMetadata file.
 1.11.4 Changed the object type and resource type from 'file' to 'media' for SMPL conntent metadata. 
+2.0.0  Allow user to stage items via symlink instead of copy -- useful when source bundle directory contains large files.  New YAML config parameter is called "staging_style" and
+can be set to "copy" or "symlink" (default is "copy").
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -297,7 +299,9 @@ use the --resume flag when you run pre-assembly:
 
 ==Post Accessioning Reports
 
-Two reports are available.  Both produce the following output, but differ in how they locate objects to report on.  The output for both reports
+Two reports are available, but you should really use Argo for reporting at this point.
+
+If you wish to use these reports, both produce the following output, but differ in how they locate objects to report on.  The output for both reports
 is a CSV file in the "log" folder of your checked out pre-assembly code.  Both will report on up to 50,000 rows and includes the following columns:
 
 * druid
