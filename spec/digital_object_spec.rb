@@ -11,7 +11,8 @@ describe PreAssembly::DigitalObject do
       :project_style => {},
       :content_md_creation => {},
       :bundle_dir    => 'spec/test_data/bundle_input_g',
-      :new_druid_tree_format => true
+      :new_druid_tree_format => true,
+      :staging_style=>'copy'
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
     
@@ -216,15 +217,15 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
 
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-        # Add some stageable items to the digital object, and
-        # create those files.
+        # Add some stageable items to the digital object, and create those files.
         files                 = [1,2,3].map { |n| "image#{n}.tif" }
         @dobj.bundle_dir      = tmp_area
         @dobj.staging_dir     = "#{tmp_area}/target"
-        @dobj.stageable_items = files.map { |f| "#{tmp_area}/#{f}" }
+        @dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         @dobj.stageable_items.each { |si| FileUtils.touch si }
-
-        # Stage the files.
+        @dobj.staging_style='copy'
+        
+        # Stage the files via copy.
         FileUtils.mkdir @dobj.staging_dir
         @dobj.stage_files
 
@@ -236,6 +237,33 @@ describe PreAssembly::DigitalObject do
           File.exists?(cpy).should == true
         end
       end
+    end
+    
+    it "should be able to symlink stageable items successfully" do
+      @dobj.druid = @druid
+      
+       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+        #Add some stageable items to the digital object, and create those files.
+        files                 = [1,2,3].map { |n| "image#{n}.tif" }
+        @dobj.bundle_dir      = tmp_area
+        @dobj.staging_dir     = "#{tmp_area}/target"
+        @dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
+        @dobj.stageable_items.each { |si| FileUtils.touch si }
+        @dobj.staging_style='symlink'
+
+        # Stage the files via symlink.
+        FileUtils.mkdir @dobj.staging_dir
+        @dobj.stage_files
+
+        # Check outcome: both source and copy should exist.
+        files.each_with_index do |f, i|
+          src = @dobj.stageable_items[i]
+          cpy = File.join @dobj.content_dir, f
+          File.exists?(src).should == true
+          File.exists?(cpy).should == true
+          File.symlink?(cpy).should == true
+        end
+     end
     end
 
   end

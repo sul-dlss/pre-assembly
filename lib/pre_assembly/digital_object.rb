@@ -20,7 +20,8 @@ module PreAssembly
       :desc_md_template_xml,
       :init_assembly_wf,
       :content_md_creation,
-      :new_druid_tree_format
+      :new_druid_tree_format,
+      :staging_style
     ]
 
     OTHER_ACCESSORS = [
@@ -38,7 +39,6 @@ module PreAssembly
       :desc_md_xml,
       :pre_assem_finished,
       :content_structure,
-      :stager,
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -68,10 +68,16 @@ module PreAssembly
 
       @pre_assem_finished = false
       @content_structure  = @project_style[:content_structure]
-      @stager             = lambda { |f,d| FileUtils.cp_r f, d }
-            
     end
 
+    def stager(source,destination)
+      if @staging_style.nil? || @staging_style == 'copy'
+        FileUtils.cp_r source, destination        
+      else
+        FileUtils.ln_s source, destination, :force=>true
+      end
+    end
+    
     def default_content_md_creation_style
        @project_style[:content_structure].to_sym
     end
@@ -354,7 +360,7 @@ module PreAssembly
         log "      - staging(#{si_path}, #{self.content_dir})", :debug
         # determine destination of staged file by looking to see if it is a known datastream XML file or not
         destination = METADATA_FILES.include?(File.basename(si_path).downcase) ? self.metadata_dir : self.content_dir
-        @stager.call si_path, destination
+        stager si_path, destination
       end
     end
 

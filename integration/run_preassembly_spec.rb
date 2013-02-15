@@ -12,6 +12,7 @@ describe "Pre-assembly integration" do
     'reid_dennis',
     'gould',
     'sohp',
+    'sohp_via_symlink'
   ]
 
   PROJECTS.each do |p|
@@ -75,6 +76,7 @@ describe "Pre-assembly integration" do
     }
     @expected[:rumsey]      = @expected[:revs]
     @expected[:reid_dennis] = @expected[:revs]
+    @expected[:sohp_via_symlink] = @expected[:sohp]
   end
 
 
