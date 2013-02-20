@@ -253,7 +253,14 @@ module PreAssembly
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
-          log "      ** REGISTER FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          log "      ** REGISTER FAILED **, deleting object #{@pid} and trying again in #{Dor::Config.dor.sleep_time} seconds"
+          begin
+            Dor::SearchService.solr.delete_by_id(@pid)
+            Dor::SearchService.solr.commit
+            Dor::Config.fedora.client["objects/#{@pid}"].delete
+          rescue
+            log "      ... could not delete, object did not exist ..."
+          end
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
