@@ -286,13 +286,25 @@ e. You had an existing JP2 in the directory that matched a DPG style filename (e
 
 7. If 6b or 6c above, it is possible to spot check images to assess the problem:
 
+$ ssh lyberadmin@lyberservices-prod
 $ cd ~/pre-assembly/current
 $ ROBOT_ENVIRONMENT=production bin/console
 > a=Assembly::Image.new('/full/path/to/image')
-> a.jp2able? (if "false" then diagnose the problem further)
-> a.exif['profiledescription'] (if "nil" then missing color profile)
-> a.mimetype
+> a.jp2able? # (if "false" then diagnose the problem further)
+> a.exif['profiledescription'] # (if "nil" then it is missing color profile)
+> a.mimetype # (should be "image/tiff" or "image/jpeg")
+> a.width # should give you the image width
+> a.height # should give you image height
+
+It is possible to force add color profiles to a single image or all of the images in a given directory:
+
+source_img=Assembly::Image.new('/input/path_to_file.tif') # add to a single image
+source_img.add_exif_profile_description('Adobe RGB 1998')
  
+or
+
+Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    # add to multiple images
+
 8. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing
 object will be examined.  If a known type is set in this tag, it will be used to create content metadata instead of the default set in
 project_style[:content_structure].  Check the tag for each object if the style is not matching what you have set in the YAML configuration file.
