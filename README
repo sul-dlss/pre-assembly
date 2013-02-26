@@ -283,8 +283,17 @@ c. Your input image was corrupt or missing a color space profile.  This will usu
 d. You had an existing JP2 in the directory that matched a tiff or jpeg.  In this case the jp2-create robot will not overwrite any existing files just to be safe.
 
 e. You had an existing JP2 in the directory that matched a DPG style filename (e.g. if you had existing tiff called xx000yy1111_00_01.tif and a jp2 called xx000yy1111_05_01.jp2), you will not get another jp2 from that tiff even though there would not be a filename clash, under the principle that it refers to the same image).
+
+7. If 6b or 6c above, it is possible to spot check images to assess the problem:
+
+$ cd ~/pre-assembly/current
+$ ROBOT_ENVIRONMENT=production bin/console
+> a=Assembly::Image.new('/full/path/to/image')
+> a.jp2able? (if "false" then diagnose the problem further)
+> a.exif['profiledescription'] (if "nil" then missing color profile)
+> a.mimetype
  
-7. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing
+8. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing
 object will be examined.  If a known type is set in this tag, it will be used to create content metadata instead of the default set in
 project_style[:content_structure].  Check the tag for each object if the style is not matching what you have set in the YAML configuration file.
 Also note that if content_md_creation[:style] is set to 'none', then no content metadata will be generated.
