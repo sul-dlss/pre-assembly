@@ -16,8 +16,8 @@ start_limit=nil # objects to run from input array (set start_limit to nil for al
 end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is not null)
 #limit_to_druids=%w{tq270ry8164 gc161fd9389 bm916nx5550 dh941mm7815 vj818xc6811 wg983ft3682 wx067jz0783 yb570xw0261 yc460db1075 mh338cj3700 nz125bh9048 pk200tz2188 pz516hw4711 hp160sk3414 gb869zk5570} # limit to these druids (set to nil to do all druids)
 limit_to_druids=%w{wg983ft3682}
-@shelve=true # set to false if you will shelve the file(s) manually
-@publish=true # set to false if you will publish the metadata file
+@shelve_object=true # set to false if you will shelve the file(s) manually
+@publish_object=true # set to false if you will publish the metadata file
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
@@ -142,8 +142,8 @@ def add_or_replace_files(objects)
           
       end
 
-      publish("druid:#{druid}") if @publish && !@dry_run
-      shelve("druid:#{druid}") if @shelve && !@dry_run
+      publish("druid:#{druid}") if @publish_object && !@dry_run
+      shelve("druid:#{druid}") if @shelve_object && !@dry_run
     
     end
 
