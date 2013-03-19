@@ -489,6 +489,9 @@ progress_filename=config['progress_log_file']
 
 You can then use these values in other utility methods as needed.
 
+NOTE:  It is also necessary to remove the PURL information from purl-prod.stanford.edu:/home/lyberadmin/document_cache/xx/111/xx/1111 .  There are multiple files sitting at the bottom of that path and the broken PURL will continue to appear until this directory is cleared out.
+
+
 === Finding Druids 
 
 If you want to find the druids from your progress log file that are either completed or not completed, you can use a method that will give you
