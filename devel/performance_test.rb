@@ -3,6 +3,8 @@
 #!/usr/bin/env ruby
 ENV['ROBOT_ENVIRONMENT']='test'  # environment to run under (i.e. which fedora instance to hit)
 
+ENABLE_SOLR_UPDATES = false
+
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 require 'rubygems'
@@ -60,6 +62,7 @@ end_time=Time.now
 puts ""
 puts "Run finished at #{end_time}"
 puts "Total time for #{num_objects}: #{(end_time-start_time).round(2)} seconds"
+puts "Average time per object: #{((end_time-start_time)/num_objects).round(2)} seconds/per object"
 puts "Load time total: #{load_times.round(2)} seconds"
 puts "Parse time total: #{parse_times.round(2)} seconds"
 puts "Save time total: #{save_times.round(2)} seconds"
