@@ -104,7 +104,7 @@ module PreAssembly
     
     def setup_defaults
       @validate_files = true if @validate_files.nil? # default to validating files if not provided     
-      @new_druid_tree_format = false if @new_druid_tree_format.nil? # default to old style druid tree format 
+      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
       @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
     end
@@ -224,11 +224,17 @@ module PreAssembly
          if @manifest.blank?
            validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
          else # let's see if the columns the user claims are there exist in the actual manifest
-           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.methods.include? @manifest_cols[:object_container]
-           validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
-           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:source_id])
-           validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:label])
-           validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.methods.include?('druid')
+           if manifest_rows.size==0
+             validation_errors << "Manifest does not have any rows!"
+           elsif @manifest_cols.blank? || @manifest_cols[:object_container].blank?
+             validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
+           else
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.methods.include? @manifest_cols[:object_container]
+             validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:source_id])
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:label])
+             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.methods.include?('druid')
+            end
          end        
       else # if we are not using a manifest, check some stuff
         validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if @object_discovery[:glob].blank? # glob must be set

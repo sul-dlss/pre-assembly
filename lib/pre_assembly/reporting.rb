@@ -150,7 +150,7 @@ module PreAssembly
         puts "#{mimetype} , #{num}"
       end
       
-      if using_manifest
+      if using_manifest && !@manifest_cols[:source_id].blank? && manifest_rows.first.methods.include?(@manifest_cols[:source_id])
         if manifest_sourceids_unique?
           puts "All source IDs locally unique: yes"
         else
