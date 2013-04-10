@@ -328,7 +328,7 @@ init_assembly_wf: true   # Whether pre-assembly should initiate the assembly
 throttle_time        :  ~     # The number of seconds to sleep between each object.  Can be used to throttle the speed at which
                               #  pre-assembly runs.  If set to nil (or not set at all), no throttling is performed.
                               
-new_druid_tree_format:  false # Determines druid tree directory format (defaults to "false").
+new_druid_tree_format:  true # Determines druid tree directory format (defaults to "true").
                               # Check with Lyberteam to determine appropriate style to use.  As of August 20, 2012, only old style is supported in production.
                               # old style: /oo/000/oo/0001
                               # new style  /oo/000/oo/0001/oo000oo0001/content and /oo/000/oo/0001/oo000oo0001/metadata

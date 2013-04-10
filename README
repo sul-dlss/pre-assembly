@@ -71,6 +71,7 @@ and set it to a new style of getting druids, show warnings if you set developmen
 2.0.0  Allow user to stage items via symlink instead of copy -- useful when source bundle directory contains large files.  New YAML config parameter is called "staging_style" and
 can be set to "copy" or "symlink" (default is "copy").
 2.0.1  Attempt cleanup if registration step fails -- try to delete object and purge from solr before trying again
+2.0.2  Add some more intelligence to the validate_usage step to better indicate errors in YAML configuration; default to new druid tree format
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
