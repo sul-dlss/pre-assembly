@@ -626,6 +626,13 @@ describe PreAssembly::DigitalObject do
       url.include?(@pid).should == true
     end
 
+    it "assembly_workflow_url() should add the druid: prefix to the pid if it is missing, like it might be in the manifest" do
+      @dobj.pid = @pid.gsub('druid:','')
+      url = @dobj.assembly_workflow_url
+      url.should =~ /^http.+assemblyWF$/
+      url.include?(@pid).should == true
+    end
+
   end
 
 end
