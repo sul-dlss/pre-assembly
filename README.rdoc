@@ -200,6 +200,26 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    using the <tt>--resume</tt> switch, it will be overwritten. You will need the progress log for cleanup
    and restarting.
 
+== Expert Cheatsheet
+
+Here's a quick summary of the basic execution steps:
+
+ # Goto VM and select environment
+ % ssh lyberadmin@lyberservices-prod
+ % export ROBOT_ENVIRONMENT=production 
+
+ # Goto project directory and copy YAML and related files
+ % cd MyProject
+ % YAML=MyProject_$ROBOT_ENVIRONMENT.yaml
+ % BUNDLEDIR=`grep bundle_dir: $YAML | cut -d \' -f2`
+ % cp $YAML $BUNDLEDIR
+ # optionally copy other required files to $BUNDLEDIR
+
+ # Execute the pre-assembly
+ % cd $HOME/pre-assembly/current
+ % bin/discovery_report $BUNDLEDIR/$YAML
+ % bin/pre-assemble $BUNDLEDIR/$YAML
+
 =Legacy Project Notes
 
 The assembly robots will automatically create jp2 derivates from any TIFFs, JP2s, or JPEGs. If you are
