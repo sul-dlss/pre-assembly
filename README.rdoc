@@ -72,8 +72,8 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
-	cd /home/lyberadmin/pre-assembly/current
-	more VERSION
+  cd /home/lyberadmin/pre-assembly/current
+  more VERSION
 
 ==Project Location
 
@@ -123,14 +123,14 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
 
    First log into sul-lyberservices-test or prod as needed, and then cd into the pre-assembly directory, e.g.
 
-	ssh lyberadmin@sul-lyberadmin-test.stanford.edu
-	cd pre-assembly/current
-	ROBOT_ENVIRONMENT=test bin/discovery_report YAML_FILE
+     ssh lyberadmin@sul-lyberadmin-test.stanford.edu
+     cd pre-assembly/current
+     ROBOT_ENVIRONMENT=test bin/discovery_report YAML_FILE
 
    You will probably want to run this against a specific environment so it can connect to DOR and confirm registration on the appropriate server, e.g:
 
-	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
-	
+     ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
+  
    You will see a report containing:
    * the total number of objects discovered
    * the names of each discovered object along with the number of files which will be discovered in that object
@@ -144,7 +144,7 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using
    normal UNIX syntax, e.g.:
 
-	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
+     ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
 
    When sending output to a CSV, you will not see any terminal output while the report is running.
 
@@ -159,16 +159,16 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
 
    e.g.
 
-	ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE confirm_checksums check_sourceids > report.csv
+     ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE confirm_checksums check_sourceids > report.csv
 
 
 7. To run pre-assembly locally:
 
-	# Normal run.  Will restart and crete a new log file, overwriting any existing log file for that project.
-	bin/pre-assemble YAML_FILE
+     # Normal run.  Will restart and crete a new log file, overwriting any existing log file for that project.
+     bin/pre-assemble YAML_FILE
 
-	# Run in resume mode, which will automatically pick up where left off based on the log file.
-	bin/pre-assemble YAML_FILE --resume
+     # Run in resume mode, which will automatically pick up where left off based on the log file.
+     bin/pre-assemble YAML_FILE --resume
 
    Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command to run in test, production or
    other modes as needed.
@@ -179,17 +179,17 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    - Set the ROBOT_ENVIRONMENT=production.
    - Run pre-assembly with nohup and in the background (&).
    - Optionally, include the <tt>--resume</tt> option.
-	
+  
    See the example below:
 
-	ssh lyberadmin@sul-lyberservices-prod.stanford.edu
-	cd /home/lyberadmin/pre-assembly/current
-	ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
+     ssh lyberadmin@sul-lyberservices-prod.stanford.edu
+     cd /home/lyberadmin/pre-assembly/current
+     ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
 
    If you want to run multiple nohup jobs simultaneously, you can redirect screen output to a different log file:
-	
-	ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
-	
+  
+     ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
+  
    Various ways to monitor progress:
    1. The workflow grid in Argo, using your project tag to filter.
    2. grep pid PROGRESS_LOG          # Using the filename defined in YAML progress_log_file.
@@ -197,8 +197,8 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    4. tail -999f nohup.out           # Errors, etc from unix output (or "another_nohup_filename.out" in the example above)
 
    Be sure to keep your progress log file somewhere useful and be aware if you restart pre-assembly without
-   using the <tt>--resume</tt> switch, it will be overwritten. You will need the progress log for cleanup and
-   restarting.
+   using the <tt>--resume</tt> switch, it will be overwritten. You will need the progress log for cleanup
+   and restarting.
 
 =Legacy Project Notes
 
@@ -276,26 +276,26 @@ For more info on screen, see http://kb.iu.edu/data/acuy.html
 
 7. If 6b or 6c above, it is possible to spot check images to assess the problem:
 
-		 $ ssh lyberadmin@lyberservices-prod
-		 $ cd ~/pre-assembly/current
-		 $ ROBOT_ENVIRONMENT=production bin/console
-		 > a=Assembly::Image.new('/full/path/to/image')
-		 > a.jp2able? # (if "false" then diagnose the problem further)
-		 > a.exif['profiledescription'] # (if "nil" then it is missing color profile)
-		 > a.mimetype # (should be "image/tiff" or "image/jpeg")
-		 > a.width # should give you the image width
-		 > a.height # should give you image height
+     $ ssh lyberadmin@lyberservices-prod
+     $ cd ~/pre-assembly/current
+     $ ROBOT_ENVIRONMENT=production bin/console
+     > a=Assembly::Image.new('/full/path/to/image')
+     > a.jp2able? # (if "false" then diagnose the problem further)
+     > a.exif['profiledescription'] # (if "nil" then it is missing color profile)
+     > a.mimetype # (should be "image/tiff" or "image/jpeg")
+     > a.width # should give you the image width
+     > a.height # should give you image height
 
    It is possible to force add color profiles to a single image or all of the images in a given directory:
 
-		source_img=Assembly::Image.new('/input/path_to_file.tif') # add to a single image
-		source_img.add_exif_profile_description('Adobe RGB 1998')
+    source_img=Assembly::Image.new('/input/path_to_file.tif') # add to a single image
+    source_img.add_exif_profile_description('Adobe RGB 1998')
  
    or
 
-		Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    # add to multiple images
+    Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    # add to multiple images
 
-8. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing object will be examined. If a known type is set in this tag, it will be used to create content metadata instead of the default set in project_style[:content_structure]. Check the tag for each object if the style is not matching what you have set in the YAML configuration file. Also note that if content_md_creation[:style] is set to 'none', then no content metadata will be generated.
+8. If you see incorrect content metadata being generated, note that if should_register = false, the 'Process : Content Type' tag for each existing object will be examined. If a known type is set in this tag, it will be used to create content metadata instead of the default set in project_style[:content_structure]. Check the tag for each object if the style is not matching what you have set in the YAML configuration file. Also note that if <tt>content_md_creation[:style]</tt> is set to 'none', then no content metadata will be generated.
 
 ==Restarting a job
 
@@ -438,8 +438,8 @@ configuration file still correctly specifies the location of "progress_log_file"
 YAML configuration, find the progress log, read it to find the actual completed objects, and will then
 execute cleanup on those objects. Use the following script to perform a cleanup:
 
-		ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
-		
+    ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
+    
 where steps is a comma delimited list of any or all of the following steps defined below:
 
 symlinks:: remove symlinks from the /dor/workspace
@@ -584,54 +584,54 @@ Provide a list of druids in an array, and a hash containing workflow names (e.g.
 
 e.g. 
 
-	$ ROBOT_ENVIRONMENT=test bin/console
+  $ ROBOT_ENVIRONMENT=test bin/console
 
-	druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-	steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
-	Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+  druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+  steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
+  Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
 
 ==Assembly Robots
 
 The last step of pre-assembly is the initiation of the assembly workflow for a given object.  This assumes the assemblyWF is defined in the APO referenced by the project, and it also assumes the assembly robots are running on the server.  If the assembly robots are not running, then JP2 creation and all follow up steps will not occur.  You can determine if the robots are running on the server with:
 
-	ps -ef | grep assemblyWF
+  ps -ef | grep assemblyWF
 
 If you see only one line, something like below, the assembly robots are  NOT running:
 
-	501 26382 26097   0  1:04PM ttys001    0:00.00 grep assemblyWF
+  501 26382 26097   0  1:04PM ttys001    0:00.00 grep assemblyWF
 
 If you see multiple lines, something like below, the assembly robots are running:
 
-	503        782     1  0 10:25 ?        00:00:04 assemblyWF:jp2-create
-	503        784     1  0 10:25 ?        00:00:04 assemblyWF:checksum-compute
-	503        789     1  0 10:25 ?        00:00:07 assemblyWF:exif-collect
-	503        791     1  0 10:25 ?        00:00:10 assemblyWF:accessioning-initiate
-	503       9009  8909  0 13:05 pts/0    00:00:00 grep assemblyWF
+  503        782     1  0 10:25 ?        00:00:04 assemblyWF:jp2-create
+  503        784     1  0 10:25 ?        00:00:04 assemblyWF:checksum-compute
+  503        789     1  0 10:25 ?        00:00:07 assemblyWF:exif-collect
+  503        791     1  0 10:25 ?        00:00:10 assemblyWF:accessioning-initiate
+  503       9009  8909  0 13:05 pts/0    00:00:00 grep assemblyWF
 
 To start the assembly robots, use the following line.  If you are in production substitute "production" for "test" in the robot_environment variable:
-	
-	cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=test ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:exif-collect assemblyWF:accessioning-initiate
+  
+  cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=test ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:exif-collect assemblyWF:accessioning-initiate
 
 You can track the progress of each assembly robot by inspecting it's log file on the server.  To see the available log files (one for each robot):
-	
-	ls /home/lyberadmin/assembly/current/log
-	
+  
+  ls /home/lyberadmin/assembly/current/log
+  
 Tail a file to watch it's output, e.g.
-	
-	tail -f /home/lyberadmin/assembly/current/log/jp2-create.log
+  
+  tail -f /home/lyberadmin/assembly/current/log/jp2-create.log
 
 Or inspect it for a more complete history, e.g.
-	
-	less /home/lyberadmin/assembly/current/log/jp2-create.log
+  
+  less /home/lyberadmin/assembly/current/log/jp2-create.log
 
 More information on the assembly robots is found in the assembly project here:
 
-	corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/assembly.git
+  corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/assembly.git
 
 ==Deployment
 
-	cap testing deploy  # for test
-	cap production deploy # for production
+  cap testing deploy  # for test
+  cap production deploy # for production
 
 Enter the branch or tag you want deployed.
 
@@ -659,7 +659,7 @@ See the Capfile for more info
 
 For local testing, it's easiest to put this in your bash profile:
 
-	export ROBOT_ENVIRONMENT=local
+  export ROBOT_ENVIRONMENT=local
 
 Running tests:
 
