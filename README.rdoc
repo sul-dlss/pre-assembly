@@ -69,6 +69,8 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 1.11.4:: Changed the object type and resource type from 'file' to 'media' for SMPL conntent metadata. 
 2.0.0::  Allow user to stage items via symlink instead of copy -- useful when source bundle directory contains large files.  New YAML config parameter is called "staging_style" and can be set to "copy" or "symlink" (default is "copy").
 2.0.1::  Attempt cleanup if registration step fails -- try to delete object and purge from solr before trying again
+2.0.2:: Add some more intelligence to the validate_usage step to better indicate errors in YAML configuration; default to new druid tree
+2.0.3:: Verify that pid starts with druid: when initializing the assembly workflow
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -408,10 +410,10 @@ In addition, the entire MODs template is passed through an ERB parser, allowing 
  
 will provide the same output as the previous example.  A full example of a MODs template is provided at config/projects/manifest_template/TEMPLATE_mods.xml
 
-To use a different character encoding in your ERB template, put the following at the top of your <tt>template.xml</tt>:
+To use a different character encoding in your ERB template, put the following at the top of your <em>template.xml</em>:
 
   <%#-*- coding: UTF-8 -*-%>
-  <?xml version="1.0" encoding="<%= \_\_ENCODING\_\_ %>"?>
+  <?xml version="1.0" encoding="UTF-8"?>
 
 
 == Accession of Specific Objects
