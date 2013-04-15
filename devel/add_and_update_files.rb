@@ -18,7 +18,7 @@ end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is no
 #limit_to_druids=%w{tq270ry8164 gc161fd9389 bm916nx5550 dh941mm7815 vj818xc6811 wg983ft3682 wx067jz0783 yb570xw0261 yc460db1075 mh338cj3700 nz125bh9048 pk200tz2188 pz516hw4711 hp160sk3414 gb869zk5570} # limit to these druids (set to nil to do all druids)
 limit_to_druids=%w{wg983ft3682}
 
-@on_server = true # if true, then an attempt will be made to publish directly and SSH the file to the stacks; if false, this is not possible, so robots will be used
+@on_server = true # if true, then an attempt will be made to publish directly and SCP the file to the stacks; if false, this is not possible, so robots will be used
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
@@ -220,13 +220,12 @@ def publish(druid,item)
 end
 
 def shelve(druid,path_to_new_file)
-  message= @on_server ? "Shelving files" : "Resetting shelving robot..."
+  message= @on_server ? "Shelving file" : "Resetting shelving robot..."
   puts message
   @log.info message
   if @on_server
     path_to_content= Dor::DigitalStacksService.stacks_storage_dir(druid)
     command="scp #{path_to_new_file} lyberadmin@stacks.stanford.edu:#{path_to_content}"
-    puts command
     system command
   else
     steps={'accessionWF' => ['shelve']}
