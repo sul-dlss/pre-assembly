@@ -10,14 +10,15 @@ require 'rubygems'
 require 'dor-services'
 require 'assembly-utils'
 require 'logger'
+require 'net/ssh'
 
 @dry_run=false # if set to true, then no operations are actually carried out, you only get notices of what will happen
 start_limit=nil # objects to run from input array (set start_limit to nil for all)
 end_limit=nil  # set end_limit to nil for all (or remainder if start_limit is not null)
 #limit_to_druids=%w{tq270ry8164 gc161fd9389 bm916nx5550 dh941mm7815 vj818xc6811 wg983ft3682 wx067jz0783 yb570xw0261 yc460db1075 mh338cj3700 nz125bh9048 pk200tz2188 pz516hw4711 hp160sk3414 gb869zk5570} # limit to these druids (set to nil to do all druids)
 limit_to_druids=%w{wg983ft3682}
-@shelve_object=true # set to false if you will shelve the file(s) manually
-@publish_object=true # set to false if you will publish the metadata file
+
+@on_server = true # if true, then an attempt will be made to publish directly and SSH the file to the stacks; if false, this is not possible, so robots will be used
 
 @base_path = '/dor/preassembly/ap_tei' # path where new files are located
 
@@ -141,9 +142,9 @@ def add_or_replace_files(objects)
         added+=1
           
       end
-
-      publish("druid:#{druid}") if @publish_object && !@dry_run
-      shelve("druid:#{druid}") if @shelve_object && !@dry_run
+      
+      publish("druid:#{druid}",item) if !@dry_run
+      shelve("druid:#{druid}",path_to_new_file) if !@dry_run
     
     end
 
@@ -206,18 +207,31 @@ def old_path_to_file(druid,root_dir,file_name)
   File.join path_to_object(druid,root_dir), file_name
 end
 
-def publish(druid)
-  puts "Resetting publishing robot..."
-  @log.info "Resetting publishing robots.."
-  steps={'accessionWF' => ['publish']}  
-  Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
+def publish(druid,item)
+  message=@on_server ? "Publishing metadata" : "Resetting publishing robot..."
+  puts message
+  @log.info message
+  if @on_server
+    item.publish_metadata
+  else
+    steps={'accessionWF' => ['publish']}  
+    Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
+  end
 end
 
-def shelve(druid)
-  puts "Resetting shelving robot..."
-  @log.info "Resetting shelving robot..."
-  steps={'accessionWF' => ['shelve']}
-  Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
+def shelve(druid,path_to_new_file)
+  message= @on_server ? "Shelving files" : "Resetting shelving robot..."
+  puts message
+  @log.info message
+  if @on_server
+    ssh_session=Net::SSH.start('stacks','lyberadmin')
+    path_to_content= Dor::DigitalStacksService.stacks_storage_dir(druid)
+    ssh_session.exec!("put #{path_to_new_file} #{path_to_content}")
+    ssh_session.close if ssh_session
+  else
+    steps={'accessionWF' => ['shelve']}
+    Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
+  end
 end
 
 objects=parse_directory
