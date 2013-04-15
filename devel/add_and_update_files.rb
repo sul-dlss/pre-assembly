@@ -224,10 +224,10 @@ def shelve(druid,path_to_new_file)
   puts message
   @log.info message
   if @on_server
-    ssh_session=Net::SSH.start('stacks','lyberadmin')
     path_to_content= Dor::DigitalStacksService.stacks_storage_dir(druid)
-    ssh_session.exec!("put #{path_to_new_file} #{path_to_content}")
-    ssh_session.close if ssh_session
+    command="scp #{path_to_new_file} lyberadmin@stacks.stanford.edu:#{path_to_content}"
+    puts command
+    system command
   else
     steps={'accessionWF' => ['shelve']}
     Assembly::Utils.reset_workflow_states(:druids=>[druid],:steps=>steps)
