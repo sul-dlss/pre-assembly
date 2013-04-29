@@ -63,6 +63,8 @@ task :production do
   set :rails_env,  'production' # TEMPORARY: see above
 end
 
+after "deploy:update", "deploy:cleanup" 
+
 set :sunet_id,   Capistrano::CLI.ui.ask('SUNetID: ') { |q| q.default =  `whoami`.chomp }
 set :rvm_type,   :system
 set :user,       'lyberadmin' 
