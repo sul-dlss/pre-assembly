@@ -20,5 +20,6 @@ CONTENT_TYPE_TAG_MAPPING = {
   'Book (flipbook, ltr)'=>:book_with_pdf,
   'Book (image-only)'=>:book_as_image,
   'Manuscript (flipbook, ltr)'=>:book_with_pdf,
-  'Manuscript (image-only)'=>:book_as_image
+  'Manuscript (image-only)'=>:book_as_image,
+  'Map'=>:map
 }
