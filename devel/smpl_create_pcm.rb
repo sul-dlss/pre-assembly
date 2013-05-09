@@ -6,10 +6,12 @@
 
 current_path = File.dirname(File.expand_path(__FILE__))
 
+################################# TODO -- UPDATE THE PATHS BELOW
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
-#content_path='/Users/peter/Sites/development/pre-assembly/tmp' # the folder where the content exists (test content)
-base_path = 'http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP' # the base path of the content as it is to be listed in the preContentMetadata.xml files  -- could be irrelevant -- and should be removed if so
-csv_filename=File.join(current_path,'smpl_csv','faf_preaccessioning_v1.csv') # TODO replace with actual input spreadsheet defining the files to find (latest version of CSV from Geoff)
+base_path = 'http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP' # the optional path of the content as it is to be added to each file listed in the preContentMetadata.xml files  -- CAN BE SET TO BLANK IF THE PRE-CONTENT METADATA IS NOT RELEVANT OR USEFUL TO SMPL
+csv_filename=File.join(current_path,'smpl_csv','faf_preaccessioning_v1.csv') # the location of the actual input spreadsheet defining the files to find -- CAN BE A FULL PATH TO THE CSV IF YOU DON'T WANT PUT THE CSV INTO THE PRE-ASSEMBLY CODEBASE
+##################################
+
 output_path = content_path # the location where the output files will be generated
 content_xml_filename = "preContentMetadata.xml" # the name of the file generated
 
