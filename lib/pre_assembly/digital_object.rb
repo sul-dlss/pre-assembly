@@ -444,7 +444,7 @@ module PreAssembly
       @desc_md_xml = template.result(binding)
 
       # The @manifest_row is a hash, with column names as the key.
-      # In the template, users can specific placeholders inside
+      # In the template, as a conviennce we allow users to put specific column placeholders inside
       # double brackets: "blah [[column_name]] blah".
       # Here we replace those placeholders with the corresponding value
       # from the manifest row.
