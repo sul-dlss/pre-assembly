@@ -508,13 +508,13 @@ describe PreAssembly::DigitalObject do
     before(:each) do
       @dobj.druid = @druid
       @dobj.manifest_row = {
-        'sourceid'    => 'foo-1',
-        'label'       => 'this is < a label with an & that will break XML unless it is escaped',
-        'year'        => '2012',
-        'description' => 'this is a description > another description < other stuff',
-        'format'      => 'film',
-        'foo'         =>  '123',
-        'bar'         =>  '456',
+        :sourceid    => 'foo-1',
+        :label       => 'this is < a label with an & that will break XML unless it is escaped',
+        :year        => '2012',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'film',
+        :foo         =>  '123',
+        :bar         =>  '456',
       }
       @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
@@ -543,7 +543,7 @@ describe PreAssembly::DigitalObject do
             <title>'[[label]]' is the label!</title>
           </titleInfo>
           <note>[[description]]</note>
-          <note>ERB Test: <%=manifest_row['description']%></note>
+          <note>ERB Test: <%=manifest_row[:description]%></note>
           <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
           <note type="source note" ID="foo">[[foo]]</note>
           <note type="source note" ID="bar">[[bar]]</note>

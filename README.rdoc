@@ -71,6 +71,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.0.1::  Attempt cleanup if registration step fails -- try to delete object and purge from solr before trying again
 2.0.2:: Add some more intelligence to the validate_usage step to better indicate errors in YAML configuration; default to new druid tree
 2.0.3:: Verify that pid starts with druid: when initializing the assembly workflow
+2.0.4:: Restructure project specific folder to be more generalizable.  Add new "revs" project specific file that does LC term lookups when generating MODs.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
