@@ -1,16 +1,3 @@
-# TODO: Simple book with multiple image types per page (like AP and Hummel).
-
-# TODO: Set init_assembly_wf = true in local_dev_*.yaml [waiting on Willy to deploy].
-
-# TODO: Modify assembly robots to handle different types of content metadata.
-
-# TODO: Set up pre-assembly under Hudson.
-# TODO: Set up assembly under Hudson.
-
-# TODO: YARD documentation.
-# TODO: WorkflowService should provide a way to delete a workflow.
-
-
 -------------------
 Project Differences
 -------------------

@@ -15,6 +15,7 @@ gem 'dir_validator'
 gem 'dor-workflow-service'
 gem 'actionpack', '>= 3.2.11'
 gem 'actionmailer', '>= 3.2.11'
+gem 'rdf'
 
 group :test do
   gem 'equivalent-xml'

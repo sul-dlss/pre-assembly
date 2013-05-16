@@ -3,8 +3,10 @@ module PreAssembly
   class DigitalObject
 
     include PreAssembly::Logging
-    include PreAssembly::ProjectSpecific
     
+    # include any project specific files
+    Dir[File.dirname(__FILE__) + '/project/*.rb'].each {|file| include "PreAssembly::Project::#{File.basename(file).gsub('.rb','').camelize}".constantize }
+        
     INIT_PARAMS = [
       :container,
       :unadjusted_container,
