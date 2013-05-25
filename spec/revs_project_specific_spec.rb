@@ -153,7 +153,284 @@ describe PreAssembly::DigitalObject do
        @dobj.create_desc_metadata_xml
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
      end
+     
+     it "should lookup the country correctly" do
+       @dobj.revs_get_country('USA').should == "United States"
+       @dobj.revs_get_country('US').should == "United States"
+       @dobj.revs_get_country('United States').should == "United States"
+       @dobj.revs_get_country('italy').should == "Italy"
+       @dobj.revs_get_country('Bogus').should be_false
+     end
 
+     it "should parse a city/state correctly" do
+       @dobj.revs_get_city_state('San Mateo (Calif.)').should == ['San Mateo','Calif.']
+       @dobj.revs_get_city_state('San Mateo').should be_false
+       @dobj.revs_get_city_state('Indianapolis (Ind.)').should == ['Indianapolis','Ind.']
+     end
+
+     it "should lookup a state correctly" do
+       @dobj.revs_get_state_name('Calif').should == "California"
+       @dobj.revs_get_state_name('Calif.').should == "California"
+       @dobj.revs_get_state_name('calif').should == "California"       
+       @dobj.revs_get_state_name('Ind').should == "Indiana"       
+       @dobj.revs_get_state_name('Bogus').should == "Bogus"
+     end
+     
    end
-  
+
+   describe "revs specific descriptive metadata using other lookup methods for location tags with just the country known" do
+
+     before(:each) do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :year        => '9/2/2012',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'film',
+         :location    => 'Raceway | Rome | Italy'
+       }
+       @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
+         <?xml version="1.0"?>
+         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+           <typeOfResource>still image</typeOfResource>
+           <genre authority="att">digital image</genre>
+           <subject authority="lcsh">
+             <topic>Automobile</topic>
+             <topic>History</topic>
+           </subject>
+           <% if manifest_row[:location] %>
+          		<subject id="location" displayLabel="Location" authority="local">
+         	    <hierarchicalGeographic>
+         		<% manifest_row[:location].split('|').reverse.each do |location| %>
+         		  <% country=revs_get_country(location) 
+         				 city_state=revs_get_city_state(location)
+         		     if country %>
+         			     	<country><%=country.strip%></country>
+             	   <% elsif city_state %>
+         	         <state><%=revs_get_state_name(city_state[1].strip)%></state>
+         	         <city><%=city_state[0].strip%></city>
+         				<% else %>
+         					<citySection><%=location.strip%></citySection>
+         				<% end %>           		  
+         		<% end %>
+         			</hierarchicalGeographic>
+         		</subject>
+         	<% end %>
+         	<% if manifest_row[:marque] %>
+         		<% manifest_row[:marque].split('|').each do |marque| %>
+         			<% lc_term=revs_lookup_marque(marque.strip)
+         			 if lc_term %>
+         			    <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
+                    <topic valueURI="<%=lc_term['url']%>"><%=lc_term['value']%></topic>
+                  </subject>
+       			   <% else %>
+            			<subject displayLabel="Marque" authority="local">
+            				<topic><%=marque.strip%></topic>
+            			</subject>         			   
+       			   <% end %>
+         		<% end %>
+           <% end %>           
+           <relatedItem type="host">
+             <titleInfo>
+               <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+             </titleInfo>
+             <typeOfResource collection="yes"/>
+           </relatedItem>
+           <relatedItem type="original">
+             <physicalDescription>
+               <form authority="att">[[format]]</form>
+             </physicalDescription>
+           </relatedItem>
+           <originInfo>
+             <dateCreated>[[year]]</dateCreated>
+           </originInfo>
+           <titleInfo>
+             <title>'[[label]]' is the label!</title>
+           </titleInfo>
+           <note>[[description]]</note>
+           <note>ERB Test: <%=manifest_row[:description]%></note>
+           <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+           <note type="source note" ID="foo">[[foo]]</note>
+           <note type="source note" ID="bar">[[bar]]</note>
+         </mods>
+       END
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="att">digital image</genre>
+         <subject authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="location" displayLabel="Location" authority="local">
+           <hierarchicalGeographic>
+             <country>Italy</country>
+             <citySection>Rome</citySection>
+             <citySection>Raceway</citySection>
+           </hierarchicalGeographic>
+         </subject>
+         <relatedItem type="host">
+           <titleInfo>
+             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+           </titleInfo>
+           <typeOfResource collection="yes"/>
+         </relatedItem>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="att">film</form>
+           </physicalDescription>
+         </relatedItem>
+         <originInfo>
+           <dateCreated>9/2/2012</dateCreated>
+         </originInfo>
+         <titleInfo>
+           <title>'a label' is the label!</title>
+         </titleInfo>
+         <note>this is a description  another description  other stuff</note>
+         <note>ERB Test: this is a description  another description  other stuff</note>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note type="source note" ID="foo">[[foo]]</note>
+         <note type="source note" ID="bar">[[bar]]</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+     end
+
+     it "create_desc_metadata_xml() should generate the expected xml text" do
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
+
+   end 
+
+   describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities" do
+
+     before(:each) do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :year        => '9/2/2012',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'film',
+         :location    => 'Raceway | Random City | Random Country'
+       }
+       @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
+         <?xml version="1.0"?>
+         <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+           <typeOfResource>still image</typeOfResource>
+           <genre authority="att">digital image</genre>
+           <subject authority="lcsh">
+             <topic>Automobile</topic>
+             <topic>History</topic>
+           </subject>
+           <% if manifest_row[:location] %>
+          		<subject id="location" displayLabel="Location" authority="local">
+         	    <hierarchicalGeographic>
+         		<% manifest_row[:location].split('|').reverse.each do |location| %>
+         		  <% country=revs_get_country(location) 
+         				 city_state=revs_get_city_state(location)
+         		     if country %>
+         			     	<country><%=country.strip%></country>
+             	   <% elsif city_state %>
+         	         <state><%=revs_get_state_name(city_state[1].strip)%></state>
+         	         <city><%=city_state[0].strip%></city>
+         				<% else %>
+         					<citySection><%=location.strip%></citySection>
+         				<% end %>           		  
+         		<% end %>
+         			</hierarchicalGeographic>
+         		</subject>
+         	<% end %>
+         	<% if manifest_row[:marque] %>
+         		<% manifest_row[:marque].split('|').each do |marque| %>
+         			<% lc_term=revs_lookup_marque(marque.strip)
+         			 if lc_term %>
+         			    <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
+                    <topic valueURI="<%=lc_term['url']%>"><%=lc_term['value']%></topic>
+                  </subject>
+       			   <% else %>
+            			<subject displayLabel="Marque" authority="local">
+            				<topic><%=marque.strip%></topic>
+            			</subject>         			   
+       			   <% end %>
+         		<% end %>
+           <% end %>           
+           <relatedItem type="host">
+             <titleInfo>
+               <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+             </titleInfo>
+             <typeOfResource collection="yes"/>
+           </relatedItem>
+           <relatedItem type="original">
+             <physicalDescription>
+               <form authority="att">[[format]]</form>
+             </physicalDescription>
+           </relatedItem>
+           <originInfo>
+             <dateCreated>[[year]]</dateCreated>
+           </originInfo>
+           <titleInfo>
+             <title>'[[label]]' is the label!</title>
+           </titleInfo>
+           <note>[[description]]</note>
+           <note>ERB Test: <%=manifest_row[:description]%></note>
+           <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
+           <note type="source note" ID="foo">[[foo]]</note>
+           <note type="source note" ID="bar">[[bar]]</note>
+         </mods>
+       END
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="att">digital image</genre>
+         <subject authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="location" displayLabel="Location" authority="local">
+           <hierarchicalGeographic>
+             <citySection>Random Country</citySection>
+             <citySection>Random City</citySection>
+             <citySection>Raceway</citySection>
+           </hierarchicalGeographic>
+         </subject>
+         <relatedItem type="host">
+           <titleInfo>
+             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+           </titleInfo>
+           <typeOfResource collection="yes"/>
+         </relatedItem>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="att">film</form>
+           </physicalDescription>
+         </relatedItem>
+         <originInfo>
+           <dateCreated>9/2/2012</dateCreated>
+         </originInfo>
+         <titleInfo>
+           <title>'a label' is the label!</title>
+         </titleInfo>
+         <note>this is a description  another description  other stuff</note>
+         <note>ERB Test: this is a description  another description  other stuff</note>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note type="source note" ID="foo">[[foo]]</note>
+         <note type="source note" ID="bar">[[bar]]</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+     end
+
+     it "create_desc_metadata_xml() should generate the expected xml text" do
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
+
+   end    
 end
