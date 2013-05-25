@@ -1,15 +1,7 @@
 describe PreAssembly::DigitalObject do
 
   before(:each) do
-    @ps = {
-      :apo_druid_id  => 'druid:qq333xx4444',
-      :set_druid_id  => 'druid:mm111nn2222',
-      :source_id     => 'SourceIDFoo',
-      :project_name  => 'ProjectBar',
-      :label         => 'LabelQuux',
-      :project_style => {},
-      :content_md_creation => {}
-    }
+    @ps = {:apo_druid_id  => 'druid:qq333xx4444',:set_druid_id  => 'druid:mm111nn2222',:source_id => 'SourceIDFoo',:project_name => 'ProjectBar',:label=> 'LabelQuux',:project_style => {},:content_md_creation => {}}
     @dobj         = PreAssembly::DigitalObject.new @ps
     
     @dru          = 'gn330dv6119'
@@ -34,6 +26,7 @@ describe PreAssembly::DigitalObject do
          :format      => 'film',
          :foo         =>  '123',
          :bar         =>  '456',
+         :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States'
        }
        @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
          <?xml version="1.0"?>
@@ -44,6 +37,24 @@ describe PreAssembly::DigitalObject do
              <topic>Automobile</topic>
              <topic>History</topic>
            </subject>
+           <% if manifest_row[:location] %>
+          		<subject id="location" displayLabel="Location" authority="local">
+         	    <hierarchicalGeographic>
+         		<% manifest_row[:location].split('|').reverse.each do |location| %>
+         		  <% country=revs_get_country(location) 
+         				 city_state=revs_get_city_state(location)
+         		     if country %>
+         			     	<country><%=country.strip%></country>
+             	   <% elsif city_state %>
+         	         <state><%=revs_get_state_name(city_state[1].strip)%></state>
+         	         <city><%=city_state[0].strip%></city>
+         				<% else %>
+         					<citySection><%=location.strip%></citySection>
+         				<% end %>           		  
+         		<% end %>
+         			</hierarchicalGeographic>
+         		</subject>
+         	<% end %>
          	<% if manifest_row[:marque] %>
          		<% manifest_row[:marque].split('|').each do |marque| %>
          			<% lc_term=revs_lookup_marque(marque.strip)
@@ -91,6 +102,14 @@ describe PreAssembly::DigitalObject do
              <topic>Automobile</topic>
              <topic>History</topic>
            </subject>
+           <subject id="location" displayLabel="Location" authority="local">
+             <hierarchicalGeographic>
+               <country>United States</country>
+               <state>California</state>
+               <city>San Mateo</city>
+               <citySection>Bay Motor Speedway</citySection>
+             </hierarchicalGeographic>
+           </subject>           
            <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
              <topic valueURI="http://id.loc.gov/authorities/subjects/sh85050464">Ford automobile</topic>
            </subject>

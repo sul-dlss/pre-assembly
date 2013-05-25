@@ -1,3 +1,5 @@
+require 'countries'
+
 module PreAssembly
 
   module Project
@@ -27,10 +29,48 @@ module PreAssembly
           end
         end
         return result
-      end
+      end # revs_lookup_marque
       
-    end
+      # check if the string passed is a country name or code -- if so, return the country name, if not a recognized country, return false
+      def revs_get_country(name)
+        name='US' if name=='USA' # special case; USA is not recognized by the country gem, but US is
+        country=Country.find_country_by_name(name.strip) # find it by name
+        code=Country.new(name.strip) # find it by code
+        if country.nil? && code.data.nil? 
+          return false
+        else
+          return (code.data.nil? ? country.name : code.name)
+        end
+      end # revs_get_country
+      
+      # parse a string like this: "San Mateo (Calif.)" to try and figure out if there is any state in there; if found, return the city and state as an array, if none found, return false
+      def revs_get_city_state(name)
+        state_match=name.match(/[(]\S+[)]/)
+        if state_match.nil?
+          return false
+        else
+          first_match=state_match[0]
+          state=first_match.gsub(/[()]/,'').strip # remove parens and strip
+          city=name.gsub(first_match,'').strip # remove state name from input string and strip
+          return [city,state]
+        end
+      end # revs_get_city_state
+      
+      # given an abbreviated state name (e.g. "Calif." or "CA") return the full state name (e.g. "California")
+      def revs_get_state_name(name)
+        test_name=name.gsub('.','').strip.downcase
+        us=Country.new('US')
+        us.states.each do |key,value|
+          if value['name'].downcase.start_with?(test_name) || key.downcase == test_name
+            return value['name']
+            break
+          end
+        end
+        return name
+      end # revs_get_state_name
+
+    end # Revs Module
     
-  end
+  end # Project Module
   
-end
+end # PreAssembly Module
