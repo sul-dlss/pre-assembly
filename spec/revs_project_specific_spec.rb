@@ -257,7 +257,6 @@ describe PreAssembly::DigitalObject do
        END
        @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
-       <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
          <genre authority="att">digital image</genre>
