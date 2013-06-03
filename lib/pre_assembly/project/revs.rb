@@ -12,6 +12,28 @@ module PreAssembly
       #  This cached set of terms can be re-generated with "ruby devel/revs_lc_automobile_terms.rb"
       AUTOMOBILE_LC_TERMS= File.open(REVS_LC_TERMS_FILENAME,'rb'){|io| Marshal.load(io)}
       
+      # check the incoming format and fix some common issues
+      def revs_check_formats(format)
+        case format.strip
+          when "black-and-white negative"
+            "black-and-white negatives"
+          when "color negative"
+            "color negatives"
+          when "slides/color transparency"
+            "color transparencies"
+          when "color negatives/slides"
+            "color negatives"
+          when "black-and-white negative strips"
+            "black-and-white negatives"
+          when "color transparency"
+            "color transparencies"
+          when "slide"
+            "slides"
+          else
+            format.strip
+        end
+      end
+      
       # lookup the marque sent to see if it matches any known LC terms, trying a few varieties; returns a hash of the term and its ID if match is found, else returns false
       def revs_lookup_marque(marque)
         result=false
