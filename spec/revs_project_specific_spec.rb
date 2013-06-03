@@ -23,7 +23,7 @@ describe PreAssembly::DigitalObject do
          :year        => '2012',
          :marque      => 'Ford|Jaguar|Pegaso automobile|Suzuki automobiles',
          :description => 'this is a description > another description < other stuff',
-         :format      => 'film',
+         :format      => 'color transparency',
          :foo         =>  '123',
          :bar         =>  '456',
          :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States'
@@ -32,7 +32,7 @@ describe PreAssembly::DigitalObject do
          <?xml version="1.0"?>
          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
            <typeOfResource>still image</typeOfResource>
-           <genre authority="att">digital image</genre>
+           <genre authority="aat">digital image</genre>
            <subject authority="lcsh">
              <topic>Automobile</topic>
              <topic>History</topic>
@@ -77,7 +77,7 @@ describe PreAssembly::DigitalObject do
            </relatedItem>
            <relatedItem type="original">
              <physicalDescription>
-               <form authority="att">[[format]]</form>
+               <form authority="aat"><%=revs_check_formats(manifest_row[:format])%></form>
              </physicalDescription>
            </relatedItem>
            <originInfo>
@@ -97,7 +97,7 @@ describe PreAssembly::DigitalObject do
          <?xml version="1.0"?>
          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
            <typeOfResource>still image</typeOfResource>
-           <genre authority="att">digital image</genre>
+           <genre authority="aat">digital image</genre>
            <subject authority="lcsh">
              <topic>Automobile</topic>
              <topic>History</topic>
@@ -130,7 +130,7 @@ describe PreAssembly::DigitalObject do
            </relatedItem>
            <relatedItem type="original">
              <physicalDescription>
-               <form authority="att">film</form>
+               <form authority="aat">color transparencies</form>
              </physicalDescription>
            </relatedItem>
            <originInfo>
@@ -194,7 +194,7 @@ describe PreAssembly::DigitalObject do
          <?xml version="1.0"?>
          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
            <typeOfResource>still image</typeOfResource>
-           <genre authority="att">digital image</genre>
+           <genre authority="aat">digital image</genre>
            <subject authority="lcsh">
              <topic>Automobile</topic>
              <topic>History</topic>
@@ -239,8 +239,8 @@ describe PreAssembly::DigitalObject do
            </relatedItem>
            <relatedItem type="original">
              <physicalDescription>
-               <form authority="att">[[format]]</form>
-             </physicalDescription>
+              <form authority="aat"><%=revs_check_formats(manifest_row[:format])%></form>
+            </physicalDescription>
            </relatedItem>
            <originInfo>
              <dateCreated>[[year]]</dateCreated>
@@ -259,7 +259,7 @@ describe PreAssembly::DigitalObject do
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
-         <genre authority="att">digital image</genre>
+         <genre authority="aat">digital image</genre>
          <subject authority="lcsh">
            <topic>Automobile</topic>
            <topic>History</topic>
@@ -279,7 +279,7 @@ describe PreAssembly::DigitalObject do
          </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
-             <form authority="att">film</form>
+             <form authority="aat">film</form>
            </physicalDescription>
          </relatedItem>
          <originInfo>
@@ -314,14 +314,14 @@ describe PreAssembly::DigitalObject do
          :label       => 'a label',
          :year        => '9/2/2012',
          :description => 'this is a description > another description < other stuff',
-         :format      => 'film',
+         :format      => 'black-and-white negative',
          :location    => 'Raceway | Random City | Random Country'
        }
        @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
          <?xml version="1.0"?>
          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
            <typeOfResource>still image</typeOfResource>
-           <genre authority="att">digital image</genre>
+           <genre authority="aat">digital image</genre>
            <subject authority="lcsh">
              <topic>Automobile</topic>
              <topic>History</topic>
@@ -366,7 +366,7 @@ describe PreAssembly::DigitalObject do
            </relatedItem>
            <relatedItem type="original">
              <physicalDescription>
-               <form authority="att">[[format]]</form>
+                <form authority="aat"><%=revs_check_formats(manifest_row[:format])%></form>
              </physicalDescription>
            </relatedItem>
            <originInfo>
@@ -387,7 +387,7 @@ describe PreAssembly::DigitalObject do
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
-         <genre authority="att">digital image</genre>
+         <genre authority="aat">digital image</genre>
          <subject authority="lcsh">
            <topic>Automobile</topic>
            <topic>History</topic>
@@ -407,7 +407,7 @@ describe PreAssembly::DigitalObject do
          </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
-             <form authority="att">film</form>
+             <form authority="aat">black-and-white negatives</form>
            </physicalDescription>
          </relatedItem>
          <originInfo>
