@@ -70,8 +70,8 @@ describe PreAssembly::DigitalObject do
         <note>[[description]]</note>
         <note>ERB Test: <%=manifest_row[:description]%></note>
         <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
-        <note type="source note" ID="foo">[[foo]]</note>
-        <note type="source note" ID="bar">[[bar]]</note>
+        <%if manifest_row[:foo]%><note type="source note" ID="foo"><%=manifest_row[:foo]%></note><% end %>
+        <%if manifest_row[:bar]%><note type="source note" ID="bar"><%=manifest_row[:bar]%></note><% end %>
       </mods>
     END
     
@@ -227,8 +227,6 @@ describe PreAssembly::DigitalObject do
          <note>this is a description  another description  other stuff</note>
          <note>ERB Test: this is a description  another description  other stuff</note>
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
-         <note type="source note" ID="foo">[[foo]]</note>
-         <note type="source note" ID="bar">[[bar]]</note>
        </mods>
         END
        @exp_xml = noko_doc @exp_xml
@@ -254,7 +252,6 @@ describe PreAssembly::DigitalObject do
          :location    => 'Raceway | Random City | Random Country'
        }
        @exp_xml = <<-END.gsub(/^ {8}/, '')
-       <?xml version="1.0"?>
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -290,8 +287,6 @@ describe PreAssembly::DigitalObject do
          <note>this is a description  another description  other stuff</note>
          <note>ERB Test: this is a description  another description  other stuff</note>
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
-         <note type="source note" ID="foo">[[foo]]</note>
-         <note type="source note" ID="bar">[[bar]]</note>
        </mods>
         END
        @exp_xml = noko_doc @exp_xml

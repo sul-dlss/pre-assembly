@@ -214,6 +214,10 @@ module PreAssembly
       end      
     end
     
+    def is_ingested?
+
+    end
+    
     def content_type_tag
       get_dor_object
       @dor_object.nil? ? "" : @dor_object.content_type_tag
