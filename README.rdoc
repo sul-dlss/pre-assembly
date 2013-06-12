@@ -74,6 +74,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.0.4:: Restructure project specific folder to be more generalizable.  Add new "revs" project specific file that does LC term lookups when generating MODs.
 2.0.5:: Add new "revs" project specific files with country and state parsing for location nodes on MODs.
 2.0.6:: Add some new "revs" project specific methods to check format field
+2.1.0:: Add a basic remediation framework for mass remediating objects.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -602,6 +603,38 @@ You can also automatically reset all of those objects to waiting:
 You can also supply a tag here:
 
  result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
+
+=== Object Remediation
+
+A basic object remediation framework is provided for mass remediating objects.  
+
+To use it:
+
+1. Create a TXT file containing a list of druids you wish to remediate, one line per druid.  These should be full druids, e.g.
+"druid:oo000oo0001".  Save it as a .CSV file with only this single druid column (and no header) and save it somewhere the pre-assembly
+code can read it.
+
+2. Create a ruby file that defines exactly how you need to remediate each object.  The ruby file will define a method that has access to the
+fedora object and can perform any actions needed on the object.  The actual loading, saving, and versioning of objects is handled by the
+framework - you just need to define the actual logic needed to operate on the object.  The file needs to have a specific format with
+two specific methods that must be defined, one that determines if remediation will occur at all, and the second indicates the type
+of remediation to perform.  An example file and its format is shown in the file 'lib/remediation/remediate_project_example.rb'  
+Don't edit that file - copy it, and edit it somewhere the script can read it.
+
+3. Run with the command below (presumably on the lyberservices-prod server, which has access to Fedora production, although you can also
+run in test or development mode if you can access those environments).  Pass in the CSV file with DRUIDs and the Ruby file you generated
+in steps 1 and 2.  Note that the CSV file will be updated, so it should in be a location where the script will have read/write access to it
+(i.e. not on a thumper drive). 
+
+ROBOT_ENVIRONMENT=production bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb
+
+For long running actions, you can run in nohup mode
+
+ROBOT_ENVIRONMENT=production nohup bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb &
+
+The result will be some screen output and a detailed log file in .YML format in the same location and with the same name as the input CSV file.
+The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
+You can re-run the remediation with the same CSV file and it will automatically skip already completed objects - SO KEEP THE CSV FILE.
 
 
 === Reset Workflow States
