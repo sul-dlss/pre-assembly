@@ -42,35 +42,28 @@ help "REMEDIATE_LOGIC_FILE file not found." unless File.file?(remediate_logic_fi
 require remediate_logic_file
 
 source_path=File.dirname(csv_in)
-source_name=File.basename(csv_in)
+source_name=File.basename(csv_in,File.extname(csv_in))
 progress_log_file=File.join(source_path,source_name + '_log.yml')
-csv_out=File.join(source_path, SecureRandom.hex + '_' + source_name)
+csv_out=File.join(source_path, source_name + "_output.csv")
 
-# generate output CSV in same location as source CSV; we'll rename and remove original later
-csv_file_out = CSV::Writer.generate(File.open(csv_out,'wb'))
+# read in completed druids so we don't reprocess them
+completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 
 # read input CSV
 csv_file_in = CSV::Reader.parse(File.open(csv_in))
 csv_file_in.each_with_index  do |row, x|
   pid=row[0].to_s.strip
-  done = false if row.size == 1  # if there is no second column in the input csv for this row, this must mean it has not been done
-  if done || row[1].to_s.strip.downcase=="true"
+  done=completed_druids.include?(pid)
+  if done 
     puts "#{pid} : skipping, already completed"
-    csv_file_out << row
   else
     item=PreAssembly::Remediation::Item.new(pid)
-    item.extend(RemediationLogic) # add in our specific methods
+    item.description=File.basename(remediate_logic_file) # added to the version description
+    item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
-    message=success ? item.message : "ERROR : #{item.message}"
-    output_row=[pid,success,message] # output csv
-    csv_file_out << output_row
+    item.log_to_progress_file(progress_log_file)
+    item.log_to_csv(csv_out)
     puts "#{pid} : #{success}"    
-    File.open(progress_log_file, 'a') { |f| f.puts item.log_info.to_yaml } # complete log to output file
   end
 end
-
 csv_file_in.close
-csv_file_out.close
- 
-File.delete(csv_in) # remove the input file
-File.rename(csv_out,csv_in) # rename the output to the input file

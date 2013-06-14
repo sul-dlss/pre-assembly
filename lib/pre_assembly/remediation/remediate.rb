@@ -7,7 +7,26 @@ module PreAssembly
       WFS  = Dor::WorkflowService
       REPO = 'dor'
     
-      attr_accessor :pid,:fobj,:message,:object_type,:success
+      attr_accessor :pid,:fobj,:message,:object_type,:success,:description
+  
+      def self.get_druids(progress_log_file,completed=true)
+        druids=[]
+        if File.readable? progress_log_file 
+          YAML.each_document(IO.read(progress_log_file)) { |obj| druids << obj[:pid] if obj[:remediate_completed] == completed}  
+        end
+        return druids  
+      end
+      
+      def log_to_csv(csv_out)
+        csv_file_out = CSV::Writer.generate(File.open(csv_out,'ab'))
+        output_row=[pid,success,message,Time.now]
+        csv_file_out << output_row
+        csv_file_out.close
+      end
+      
+      def log_to_progress_file(progress_log_file)
+        File.open(progress_log_file, 'a') { |f| f.puts log_info.to_yaml } # complete log to output file
+      end
       
       def initialize(pid)
         @pid=pid
@@ -72,33 +91,30 @@ module PreAssembly
           @fobj.save
           WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
           @success=true
-          return true
         rescue Exception => e  
           @success=false
           @message="Updating object failed: #{e.message}"
-          return false
         end
       end
      
      def open_version
        begin # try and open the version
-         @fobj.open_version
-         return true
+         @fobj.open_new_version
+         @fobj.versionMetadata.update_current_version({:description => "auto remeditation #{@description}",:significance => :admin})
+         @success=true
        rescue Exception => e  
          @success=false
          @message="Opening object failed: #{e.message}"
-         return false
        end
      end
 
      def close_version
        begin # try and close the version and ensure ingest is not on hold
          @fobj.close_version
-         return true
+         @success=true
        rescue Exception => e  
          @success=false
          @message="Closing object failed: #{e.message}"
-         return false
        end
      end
      

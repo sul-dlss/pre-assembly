@@ -623,8 +623,13 @@ Don't edit that file - copy it, and edit it somewhere the script can read it.
 
 3. Run with the command below (presumably on the lyberservices-prod server, which has access to Fedora production, although you can also
 run in test or development mode if you can access those environments).  Pass in the CSV file with DRUIDs and the Ruby file you generated
-in steps 1 and 2.  Note that the CSV file will be updated, so it should in be a location where the script will have read/write access to it
-(i.e. not on a thumper drive). 
+in steps 1 and 2.  You will get two output files -- the first is a CSV file which includes columns indicating if remediation succeeded, a message
+and a timestamp.  You will also get a .log file.  Each file is named in the same way as the input file with _output.csv or _log appended to the
+filename and is placed in the same location.  This means you should place the input CSV in be a location where the script will have write access
+to that location (i.e. not on a thumper drive if you are on lyberservices-prod).  
+
+Note that the _log.yml file is used to ensure that objects are not run through remediation twice, so you should keep that file in the
+same location as the input CSV if you need to resume a large remediation.  In each case, the file will always be appended to.
 
 ROBOT_ENVIRONMENT=production bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb
 
@@ -636,6 +641,36 @@ The result will be some screen output and a detailed log file in .YML format in 
 The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
 You can re-run the remediation with the same CSV file and it will automatically skip already completed objects - SO KEEP THE CSV FILE.
 
+=== Custom Object Remediation With Your Own DRUID lookup and logging
+
+You can also build a fully customized remediation script that does not require input DRUIDs in a CSV.  To do this, you will need to implement
+any logging  or resume capability you will need.  You will also still implement your own project specific Ruby file (as in step 2 above) 
+but you will implement your own mechanism for generating druids to remediate and for logging their completion. 
+
+Within the pre-assembly codebase, you will have access to the following remediation class.   Pass it a druid and your remediation logic Ruby
+file, and it will return you success or failure and a message:
+
+ project_file='my_remediation.rb'
+ pid='druid:oo000oo0001'
+ require project_file
+
+ item=PreAssembly::Remediation::Item.new(pid)
+ item.extend(RemediationLogic) # add in our project specific methods
+ item.description='some description that will be added to any versions which are opened' # optional
+ success=item.remediate # returns true or false
+ puts item.message # some more info about what was done
+
+Loop over your PIDs and log results as needed.  You can log to an output CSV and/or a YML file if you wish, using the following methods
+
+ item.log_to_progress_file(progress_log_file)  # pass in a fully qualified path to a YML file to append to
+ item.log_to_csv(csv_out)   # pass in a fully qualified path to a CSV file to append to
+
+You can read in completed druids from a progress_log_file you have previously created using a class level method if you wish to 
+check if a druid is already completed.  Each of these calls gives you an array of druids.
+
+ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
+ failed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file,false)
+ done if completed_druids.include?(pid)  # will give you a true or false if your current pid is already done
 
 === Reset Workflow States
 
