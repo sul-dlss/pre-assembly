@@ -6,7 +6,7 @@
 # June 14, 2013
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_update_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+# ROBOT_ENVIRONMENT=test ruby devel/revs_update_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 # this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
 
@@ -39,9 +39,8 @@ mods_template_xml=IO.read(mods_template_file)
   
 @items.each_with_index do |row, x|
   manifest_row  = Hash[row.each_pair.to_a]
-#  pid=Dor.find_by_sourceid("Revs:#{manifest_row[:sourceid]}") # grab the PID given the sourceID
-  pid='druid:qh202yd6550'
-  
+  pid=Dor.find_by_sourceid("Revs:#{manifest_row[:sourceid]}") # grab the PID given the sourceID
+#  pid='druid:qh202yd6550'  
   done=completed_druids.include?(pid)
    if done 
      puts "#{pid} : skipping, already completed"
