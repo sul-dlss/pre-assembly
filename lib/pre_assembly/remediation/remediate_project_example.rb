@@ -31,6 +31,9 @@ module RemediationLogic
     # this method MUST be defined and can peform any action you need to on @fobj    
     def remediate_logic 
     	@fobj.datastreams['rightsMetadata'].content=revs_new_rights_metadata
+    	# for custom remedations; the instance variable @data will be set for you with any object you passed in to the initialize method
+    	#  so you can use it here
+    	return true # if you have logic that determines if you have succeeded or not, you can decide to return false instead if there is a problem
     end
 
     # you can add any other methods you might need to access in your 'remediate_logic' method, namespaces the methods your project to prevent any potential clashes with existing methods (e.g. 'revs_do_stuff' instead of just 'do_stuff')

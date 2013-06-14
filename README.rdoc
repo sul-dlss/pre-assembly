@@ -76,6 +76,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.0.6:: Add some new "revs" project specific methods to check format field
 2.1.0:: Add a basic remediation framework for mass remediating objects.
 2.1.1:: More updates to remediation framework
+2.1.2:: Yet more updates to remediation framework
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -605,7 +606,7 @@ You can also supply a tag here:
 
  result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
 
-=== Object Remediation
+=== Basic Object Remediation
 
 A basic object remediation framework is provided for mass remediating objects.  
 
@@ -625,7 +626,7 @@ Don't edit that file - copy it, and edit it somewhere the script can read it.
 3. Run with the command below (presumably on the lyberservices-prod server, which has access to Fedora production, although you can also
 run in test or development mode if you can access those environments).  Pass in the CSV file with DRUIDs and the Ruby file you generated
 in steps 1 and 2.  You will get two output files -- the first is a CSV file which includes columns indicating if remediation succeeded, a message
-and a timestamp.  You will also get a .log file.  Each file is named in the same way as the input file with _output.csv or _log appended to the
+and a timestamp.  You will also get a .log file.  Each file is named in the same way as the input file with _log.csv and _log.yml appended to the
 filename and is placed in the same location.  This means you should place the input CSV in be a location where the script will have write access
 to that location (i.e. not on a thumper drive if you are on lyberservices-prod).  
 
@@ -642,20 +643,24 @@ The result will be some screen output and a detailed log file in .YML format in 
 The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
 You can re-run the remediation with the same CSV file and it will automatically skip already completed objects - SO KEEP THE CSV FILE.
 
-=== Custom Object Remediation With Your Own DRUID lookup and logging
+=== Custom Object Remediation 
 
-You can also build a fully customized remediation script that does not require input DRUIDs in a CSV.  To do this, you will need to implement
-any logging  or resume capability you will need.  You will also still implement your own project specific Ruby file (as in step 2 above) 
-but you will implement your own mechanism for generating druids to remediate and for logging their completion. 
+You can also build a fully customized remediation script that does not require input DRUIDs in a CSV and can pass data to
+individual druids for more specific remediation.  To do this, you will need to implement the logging or resume capability you will need.  
+You will also still implement your own project specific Ruby file (as in step 2 above) but you will also implement your own mechanism for 
+generating druids to remediate and for logging their completion. 
 
 Within the pre-assembly codebase, you will have access to the following remediation class.   Pass it a druid and your remediation logic Ruby
-file, and it will return you success or failure and a message:
+file, and it will return you success or failure and a message.  You can also use the built in logging methods to record success/failure
+to help with resuming.  You can also optionally pass any data structure or object you need and have that available in your custom method.
 
  project_file='my_remediation.rb'
  pid='druid:oo000oo0001'
  require project_file
 
- item=PreAssembly::Remediation::Item.new(pid)
+ item=PreAssembly::Remediation::Item.new(pid,optionalDataStructure) # optionalDataStructure is some kind of object, string, hash, etc.
+                                                                    # it will be made available to your "remediate_logic" method in 
+  	                                                                # the instance variable @data
  item.extend(RemediationLogic) # add in our project specific methods
  item.description='some description that will be added to any versions which are opened' # optional
  success=item.remediate # returns true or false

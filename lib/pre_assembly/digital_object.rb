@@ -69,7 +69,8 @@ module PreAssembly
       @desc_md_xml         = ''
 
       @pre_assem_finished = false
-      @content_structure  = @project_style[:content_structure]
+      @content_structure  = (@project_style ? @project_style[:content_structure] : 'file')
+      
     end
 
     def stager(source,destination)
@@ -456,6 +457,7 @@ module PreAssembly
       # from the manifest row.
       @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
       return true
+      
     end
 
     def write_desc_metadata
