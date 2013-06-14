@@ -7,8 +7,13 @@ module PreAssembly
       WFS  = Dor::WorkflowService
       REPO = 'dor'
     
-      attr_accessor :pid,:fobj,:message,:object_type,:success,:description
-  
+      attr_accessor :pid,:fobj,:message,:object_type,:success,:description,:data
+      
+      def initialize(pid,data=nil)
+        @pid=pid
+        @data=data
+      end
+        
       def self.get_druids(progress_log_file,completed=true)
         druids=[]
         if File.readable? progress_log_file 
@@ -26,10 +31,6 @@ module PreAssembly
       
       def log_to_progress_file(progress_log_file)
         File.open(progress_log_file, 'a') { |f| f.puts log_info.to_yaml } # complete log to output file
-      end
-      
-      def initialize(pid)
-        @pid=pid
       end
       
       # gets and caches the Dor Item
@@ -87,10 +88,11 @@ module PreAssembly
       
       def update_object
         begin
-          remediate_logic # this method must be defined for your specific remediation and passed in
-          @fobj.save
-          WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
-          @success=true
+          @success=remediate_logic # this method must be defined for your specific remediation passed in
+          if @success
+            @fobj.save
+            WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
+          end
         rescue Exception => e  
           @success=false
           @message="Updating object failed: #{e.message}"

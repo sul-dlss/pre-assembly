@@ -7,6 +7,8 @@
 # Run with
 # ROBOT_ENVIRONMENT=production bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb
 
+# eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /thumpers/dpgthumper-staging/Revs/revs_rights_remediate.rb
+
 # CSV_FILE_WITH_DRUIDS has the format of one column with a list of druids -- no other columns should be present. An example is below.
 # This file should be in a location where the script has read/write access to it.
 #druid:oo000oo0001
@@ -26,7 +28,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'rubygems'
 require 'csv'
-require 'pre_assembly/remediation/remediate'
 
 def help(error_msg)
   abort "#{error_msg}\n\nUsage:\n  ROBOT_ENVIRONMENT=XXXXX remediate CSV_FILE_WITH_DRUIDS REMEDIATE_LOGIC_FILENAME\n"
@@ -44,7 +45,7 @@ require remediate_logic_file
 source_path=File.dirname(csv_in)
 source_name=File.basename(csv_in,File.extname(csv_in))
 progress_log_file=File.join(source_path,source_name + '_log.yml')
-csv_out=File.join(source_path, source_name + "_output.csv")
+csv_out=File.join(source_path, source_name + "_log.csv")
 
 # read in completed druids so we don't reprocess them
 completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
