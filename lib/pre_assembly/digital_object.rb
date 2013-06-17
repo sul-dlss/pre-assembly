@@ -215,10 +215,6 @@ module PreAssembly
       end      
     end
     
-    def is_ingested?
-
-    end
-    
     def content_type_tag
       get_dor_object
       @dor_object.nil? ? "" : @dor_object.content_type_tag
@@ -383,8 +379,7 @@ module PreAssembly
     ####
 
     def create_content_metadata
-      # Invoke the contentMetadata creation method used by the
-      # project, and then write that XML to a file.  
+      # Invoke the contentMetadata creation method used by the project
       # The name of the method invoked must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
       # Custom methods are defined in the project_specific.rb file
 
@@ -414,6 +409,7 @@ module PreAssembly
     end
     
     def write_content_metadata
+      # write content metadata out to a file
       return if @content_md_creation[:style].to_s == 'none'
       file_name = File.join self.metadata_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
