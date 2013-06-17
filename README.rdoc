@@ -75,8 +75,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.0.5:: Add new "revs" project specific files with country and state parsing for location nodes on MODs.
 2.0.6:: Add some new "revs" project specific methods to check format field
 2.1.0:: Add a basic remediation framework for mass remediating objects.
-2.1.1:: More updates to remediation framework
-2.1.2:: Yet more updates to remediation framework; revs metadata updating specific code.
+2.1.1 - 2.1.3:: More updates to remediation framework; revs metadata and image updating specific code
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
