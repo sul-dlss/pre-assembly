@@ -28,7 +28,7 @@ module RemediationLogic
       # return true # or just return true if you always want to operate!
     end
     
-    # this method MUST be defined and can peform any action you need to on @fobj    
+    # this method MUST be defined and can peform any action you need to on @fobj - YOU MUST RETURN TRUE OR FALSE TO INDICATE SUCCESS  
     def remediate_logic 
     	@fobj.datastreams['rightsMetadata'].content=revs_new_rights_metadata
     	# for custom remedations; the instance variable @data will be set for you with any object you passed in to the initialize method
