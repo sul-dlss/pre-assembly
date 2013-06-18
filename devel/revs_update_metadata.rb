@@ -33,27 +33,30 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 # read in MODs template
 mods_template_xml=IO.read(mods_template_file)
 
-
 # read input manifest
 @items=CsvMapper.import(csv_in) do read_attributes_from_file end
   
 @items.each_with_index do |row, x|
   manifest_row  = Hash[row.each_pair.to_a]
-  pid=Dor.find_by_sourceid("Revs:#{manifest_row[:sourceid]}") # grab the PID given the sourceID
-#  pid='druid:qh202yd6550'  
-  done=completed_druids.include?(pid)
-   if done 
-     puts "#{pid} : skipping, already completed"
-   else
-     # create data structure we will pass into remediation code
-     data={:desc_md_template_xml=>mods_template_xml,:manifest_row=>manifest_row}
-     item=PreAssembly::Remediation::Item.new(pid,data)
-     item.description="Updating metadata from #{csv_in}" # added to the version description
-     item.extend(RemediationLogic) # add in our project specific methods
-     success=item.remediate
-     item.log_to_progress_file(progress_log_file)
-     item.log_to_csv(csv_out)
-     puts "#{pid} : #{success}"    
+  pids=Dor::SearchService.query_by_id("Revs:#{manifest_row[:sourceid]}")
+  if pids.size != 1
+    puts "cannot find single pid for source id #{row.sourceid}"
+  else
+    pid=pids.first  
+    done=completed_druids.include?(pid)
+     if done 
+       puts "#{pid} : skipping, already completed"
+     else
+       # create data structure we will pass into remediation code
+       data={:desc_md_template_xml=>mods_template_xml,:manifest_row=>manifest_row}
+       item=PreAssembly::Remediation::Item.new(pid,data)
+       item.description="Updating metadata from #{csv_in}" # added to the version description
+       item.extend(RemediationLogic) # add in our project specific methods
+       success=item.remediate
+       item.log_to_progress_file(progress_log_file)
+       item.log_to_csv(csv_out)
+       puts "#{pid} : #{success}"    
+     end
    end
    
 end

@@ -45,7 +45,7 @@ module PreAssembly
 
         begin
         
-          DruidTools::Druid.new(pid) # this will confirm the druid is valid, if not, we get an exception which is caught below and logged
+          DruidTools::Druid.new(@pid) # this will confirm the druid is valid, if not, we get an exception which is caught below and logged
           get_object  
           
           if should_remediate? # should_remediate? == true              
