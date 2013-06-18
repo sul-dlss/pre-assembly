@@ -128,7 +128,16 @@ module PreAssembly
          :timestamp            => Time.now.to_s
        }       
      end
-            
+
+    
+    def run_assembly_robot(name)
+      `ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} ~/assembly/current/bin/run_robot run assemblyWF:#{name} -d #{@pid}`
+    end
+
+    def run_accession_robot(name)
+      `ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} ~/common-accessioning/current/bin/run_robot run accessionWF:#{name} -d #{@pid}`
+    end
+                
      # Check if the object is full accessioned and ingested.
      def is_ingested?
        WFS.get_lifecycle(REPO, @pid, 'accessioned') ? true : false

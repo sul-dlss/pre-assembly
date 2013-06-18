@@ -44,7 +44,7 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
      if done 
        puts "#{pid} : skipping, already completed"
      else
-       data={:source_path=>source_path,:filename=>row.filename,:environment=>ENV['ROBOT_ENVIRONMENT']}
+       data={:source_path=>source_path,:filename=>row.filename}
        item=PreAssembly::Remediation::Item.new(pid,data)
        item.description="Updating image from #{csv_in}" # added to the version description
        item.extend(RemediationLogic) # add in our project specific methods
