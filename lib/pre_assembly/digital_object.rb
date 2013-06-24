@@ -59,7 +59,7 @@ module PreAssembly
       @druid               = nil
       @dor_object          = nil
       @reg_by_pre_assembly = false
-      @label               = nil
+      @label               = Dor::Config.dor.default_label
       @source_id           = nil
       @manifest_row        = nil
 
@@ -256,7 +256,7 @@ module PreAssembly
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
-          log "      ** REGISTER FAILED **, deleting object #{@pid} and trying again in #{Dor::Config.dor.sleep_time} seconds"
+          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and trying again in #{Dor::Config.dor.sleep_time} seconds"
           begin
             Dor::SearchService.solr.delete_by_id(@pid)
             Dor::SearchService.solr.commit
