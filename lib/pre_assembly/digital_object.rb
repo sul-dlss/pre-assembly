@@ -161,7 +161,7 @@ module PreAssembly
           result = Dor::SuriService.mint_id
           success = (result.class == String)
         rescue Exception => e
-          log "      ** GET_PID_FROM_SURI FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          log "      ** GET_PID_FROM_SURI FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
@@ -256,14 +256,19 @@ module PreAssembly
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
-          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and trying again in #{Dor::Config.dor.sleep_time} seconds"
-          begin
-            Dor::SearchService.solr.delete_by_id(@pid)
-            Dor::SearchService.solr.commit
-            Dor::Config.fedora.client["objects/#{@pid}"].delete
-          rescue
-            log "      ... could not delete, object did not exist ..."
+          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
+          source_id="#{@project_name}:#{@source_id}" 
+          sourceid_pids=Dor::SearchService.query_by_id(source_id)
+          all_pids=sourceid_pids << @pid
+          all_pids.each do |pid|
+            begin
+              Dor::SearchService.solr.delete_by_id(pid)
+              Dor::Config.fedora.client["objects/#{pid}"].delete
+            rescue Exception => e
+              log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
+            end
           end
+          Dor::SearchService.solr.commit
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
@@ -310,7 +315,7 @@ module PreAssembly
           @dor_object.add_relationship *add_collection_relationship_params
           success = @dor_object.save
         rescue Exception => e
-          log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
@@ -490,7 +495,7 @@ module PreAssembly
           result = RestClient.post url, {}
           success = true if result && [200,201,202,204].include?(result.code)
         rescue Exception => e
-          log "      ** INITIALIZE ASSEMBLY WORKFLOW FAILED **, trying again in #{Dor::Config.dor.sleep_time} seconds"
+          log "      ** INITIALIZE ASSEMBLY WORKFLOW FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
