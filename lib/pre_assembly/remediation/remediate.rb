@@ -24,7 +24,7 @@ module PreAssembly
       
       def log_to_csv(csv_out)
         csv_file_out = CSV::Writer.generate(File.open(csv_out,'ab'))
-        output_row=[pid,success,message,Time.now]
+        output_row=[pid,success,message.truncate(100),Time.now]
         csv_file_out << output_row
         csv_file_out.close
       end
@@ -125,7 +125,7 @@ module PreAssembly
        return {
          :pid                  => @pid,
          :remediate_completed  => @success,
-         :message              => @message,
+         :message              => @message.truncate(300),
          :timestamp            => Time.now.to_s
        }       
      end
