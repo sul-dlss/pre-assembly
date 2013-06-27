@@ -91,7 +91,8 @@ module PreAssembly
           @success=remediate_logic # this method must be defined for your specific remediation passed in
           if @success
             @fobj.save
-            WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
+            @fobj.publish_metadata
+#            WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
           end
         rescue Exception => e  
           @success=false
