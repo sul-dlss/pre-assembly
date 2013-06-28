@@ -72,6 +72,7 @@ describe PreAssembly::DigitalObject do
         <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
         <%if manifest_row[:foo]%><note type="source note" ID="foo"><%=manifest_row[:foo]%></note><% end %>
         <%if manifest_row[:bar]%><note type="source note" ID="bar"><%=manifest_row[:bar]%></note><% end %>
+        <%if manifest_row[:hide] %><note type="source note" displayLabel="Visibility" ID="visibility">hidden</note><% end %>  
       </mods>
     END
     
@@ -92,7 +93,8 @@ describe PreAssembly::DigitalObject do
          :format      => 'color transparency',
          :foo         =>  '123',
          :bar         =>  '456',
-         :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States'
+         :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States',
+         :hide        =>  'X'
        }
        @exp_xml = <<-END.gsub(/^ {8}/, '')
          <?xml version="1.0"?>
@@ -145,6 +147,7 @@ describe PreAssembly::DigitalObject do
            <note>ERB Test: this is a description &gt; another description &lt; other stuff</note>
            <note type="source note" ID="foo">123</note>
            <note type="source note" ID="bar">456</note>
+           <note type="source note" displayLabel="Visibility" ID="visibility">hidden</note>
          </mods>
        END
        @exp_xml = noko_doc @exp_xml
