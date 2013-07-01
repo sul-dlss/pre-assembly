@@ -92,7 +92,6 @@ module PreAssembly
           if @success
             @fobj.save
             @fobj.publish_metadata
-#            WFS.update_workflow_status(REPO, @pid, 'accessionWF','publish','waiting') # set publish step back to waiting to be sure we republish public XML
           end
         rescue Exception => e  
           @success=false
@@ -112,7 +111,7 @@ module PreAssembly
      end
 
      def close_version
-       begin # try and close the version and ensure ingest is not on hold
+       begin # try and close the version 
          @fobj.close_version
          @success=true
        rescue Exception => e  

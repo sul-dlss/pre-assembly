@@ -80,7 +80,7 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-   describe "revs specific descriptive metadata using special lookup methods" do
+   describe "revs specific descriptive metadata using special lookup methods, with a hidden image" do
 
      before(:each) do
        @dobj.druid = @druid

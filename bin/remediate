@@ -55,9 +55,7 @@ csv_file_in = CSV::Reader.parse(File.open(csv_in))
 csv_file_in.each_with_index  do |row, x|
   pid=row[0].to_s.strip
   done=completed_druids.include?(pid)
-  if done 
-    puts "#{pid} : skipping, already completed"
-  else
+  unless done 
     item=PreAssembly::Remediation::Item.new(pid)
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
