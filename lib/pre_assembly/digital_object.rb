@@ -192,7 +192,8 @@ module PreAssembly
       barcode = container_basename
       pids    = query_dor_by_barcode(barcode)
       pids.each do |pid|
-        apo_pids = get_dor_item_apos(pid).map { |apo| apo.pid }
+        @pid=pid
+        apo_pids = get_dor_item_apos.map { |apo| apo.pid }
         return pid if apo_matches_exactly_one?(apo_pids)
       end
       return nil
