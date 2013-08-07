@@ -19,7 +19,7 @@ module PreAssembly
         if File.readable? progress_log_file 
           YAML.each_document(IO.read(progress_log_file)) { |obj| druids << obj[:pid] if obj[:remediate_completed] == completed}  
         end
-        return druids  
+        return druids.uniq
       end
       
       def log_to_csv(csv_out)
@@ -105,8 +105,12 @@ module PreAssembly
          @fobj.versionMetadata.update_current_version({:description => "auto remeditation #{@description}",:significance => :admin})
          @success=true
        rescue Exception => e  
-         @success=false
-         @message="Opening object failed: #{e.message}"
+         if e.message.downcase.include?('already opened')
+           @success=true # an already opened version is fine, just proceed as normal
+         else
+           @success=false
+           @message="Opening object failed: #{e.message}"
+         end
        end
      end
 
