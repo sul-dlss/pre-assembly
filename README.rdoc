@@ -78,6 +78,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.1.1 - 2.1.3:: More updates to remediation framework; revs metadata and image updating specific code
 2.1.4:: Allow DOR items to be registered even when a label is not provided in the manifest, by using a default label instead
 2.1.5:: If registration fails, try to delete object by source ID as well as by druid
+2.1.6:: Update remediation to allow you to skip workflow checks for in accessioning and versioning required when testing in development and production.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 

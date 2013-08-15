@@ -37,6 +37,11 @@ Dor::Config.configure do
     default_label 'Untitled' # the default label for an object that is registered when no label is provided in the manifest
   end
 
+  remediation do
+    check_for_versioning_required true  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks 
+    check_for_in_accessioning true  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks 
+  end
+  
   content do
      content_user 'lyberadmin'
      content_base_dir '/dor/workspace/'
