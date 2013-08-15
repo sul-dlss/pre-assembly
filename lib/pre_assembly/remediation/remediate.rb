@@ -50,10 +50,10 @@ module PreAssembly
           
           if should_remediate? # should_remediate? == true              
             
-            if (!is_ingested? && ingest_hold?) || (!is_ingested? && !is_submitted?) # object can be updated directly, no versioning needed
+            if versioning_not_required? # object can be updated directly, no versioning needed
               update_object
               @message='remediated directly (versioning not required)' if @success
-            elsif (!is_ingested? && !ingest_hold?) # object in accessioning, cannot be remediated right now
+            elsif in_accessioning? # object in accessioning, cannot be remediated right now
               @success=false
               @message='currently in accessioning, cannot remediate'
             else # object fully ingested, remediate with versioning
@@ -142,6 +142,22 @@ module PreAssembly
       `ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} ~/common-accessioning/current/bin/run_robot run accessionWF:#{name} -d #{@pid}`
     end
                 
+     def in_accessioning?
+        if Dor::Config.remediation.check_for_in_accessioning
+           return (!is_ingested? && !ingest_hold?)
+        else
+          return false
+        end
+     end
+     
+     def versioning_not_required?
+       if Dor::Config.remediation.check_for_versioning_required 
+         return (!is_ingested? && ingest_hold?) || (!is_ingested? && !is_submitted?)
+      else
+        return true 
+      end
+     end   
+                   
      # Check if the object is full accessioned and ingested.
      def is_ingested?
        WFS.get_lifecycle(REPO, @pid, 'accessioned') ? true : false
