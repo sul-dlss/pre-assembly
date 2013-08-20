@@ -79,6 +79,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.1.4:: Allow DOR items to be registered even when a label is not provided in the manifest, by using a default label instead
 2.1.5:: If registration fails, try to delete object by source ID as well as by druid
 2.1.6:: Update remediation to allow you to skip workflow checks for in accessioning and versioning required when testing in development and production.
+2.1.7:: Update remediation script to allow you to pass in a pre-assembly log file as well as a CSV with druids
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -608,15 +609,35 @@ You can also supply a tag here:
 
  result=Assembly::Utils.reset_errored_objects_for_workstep('accessionWF','content-metadata','Project : Revs')
 
+=== Reset Workflow States
+
+If an object fails for some reason and you manually remediate something, you may need to reset the workflow
+state for certain steps to try again. You can reset any workflow steps back to "waiting" for any list of
+druids you specify and any workflow states. To do this use the Assembly::Utils.reset_workflow_states method.
+Provide a list of druids in an array, and a hash containing workflow names (e.g. 'assemblyWF' or
+'accessionWF') as the keys, and arrays of steps as the corresponding values (e.g.
+['checksum-compute','jp2-create']) and they will all be reset to "waiting".
+
+e.g. 
+
+  $ ROBOT_ENVIRONMENT=test bin/console
+
+  druids=%w{druid:aa111aa1111 druid:bb222bb2222}
+  steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
+  Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
+
+== Remediation
+
 === Basic Object Remediation
 
 A basic object remediation framework is provided for mass remediating objects.  
 
-To use it:
+To use it, first decide how you will specify the list of druids.  You can either manually specify with a CSV (see step 1 below), or
+use the pre-assembly YAML log file if you are remediated a run from pre-assembly. 
 
-1. Create a TXT file containing a list of druids you wish to remediate, one line per druid.  These should be full druids, e.g.
-"druid:oo000oo0001".  Save it as a .CSV file with only this single druid column (and no header) and save it somewhere the pre-assembly
-code can read it.
+1. For running a specific list of druids, create a CSV file containing a list of druids you wish to remediate, one line per druid, with a header column called "druid".  
+There can be other columns too -- they will be ignored.  These should be full druids, e.g.
+"druid:oo000oo0001".  Save it somewhere the pre-assembly code can read it.
 
 2. Create a ruby file that defines exactly how you need to remediate each object.  The ruby file will define a method that has access to the
 fedora object and can perform any actions needed on the object.  The actual loading, saving, and versioning of objects is handled by the
@@ -626,8 +647,8 @@ of remediation to perform.  An example file and its format is shown in the file 
 Don't edit that file - copy it, and edit it somewhere the script can read it.
 
 3. Run with the command below (presumably on the lyberservices-prod server, which has access to Fedora production, although you can also
-run in test or development mode if you can access those environments).  Pass in the CSV file with DRUIDs and the Ruby file you generated
-in steps 1 and 2.  You will get two output files -- the first is a CSV file which includes columns indicating if remediation succeeded, a message
+run in test or development mode if you can access those environments).  Pass in the either the CSV file with DRUIDs or the pre-assembly YAML file
+and the Ruby file you generated in steps 1 and 2.  You will get two output files -- the first is a CSV file which includes columns indicating if remediation succeeded, a message
 and a timestamp.  You will also get a .log file.  Each file is named in the same way as the input file with _log.csv and _log.yml appended to the
 filename and is placed in the same location.  This means you should place the input CSV in be a location where the script will have write access
 to that location (i.e. not on a thumper drive if you are on lyberservices-prod).  
@@ -635,11 +656,11 @@ to that location (i.e. not on a thumper drive if you are on lyberservices-prod).
 Note that the _log.yml file is used to ensure that objects are not run through remediation twice, so you should keep that file in the
 same location as the input CSV if you need to resume a large remediation.  In each case, the file will always be appended to.
 
-ROBOT_ENVIRONMENT=production bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb
+ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.CSV[or LOG_FILE.YAML] REMEDIATE_LOGIC_FILENAME.rb
 
 For long running actions, you can run in nohup mode
 
-ROBOT_ENVIRONMENT=production nohup bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb &
+ROBOT_ENVIRONMENT=production nohup bin/remediate INPUT_FILE.CSV[or LOG_FILE.YAML] REMEDIATE_LOGIC_FILENAME.rb &
 
 The result will be some screen output and a detailed log file in .YML format in the same location and with the same name as the input CSV file.
 The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
@@ -679,24 +700,7 @@ check if a druid is already completed.  Each of these calls gives you an array o
  completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
  failed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file,false)
  done if completed_druids.include?(pid)  # will give you a true or false if your current pid is already done
-
-=== Reset Workflow States
-
-If an object fails for some reason and you manually remediate something, you may need to reset the workflow
-state for certain steps to try again. You can reset any workflow steps back to "waiting" for any list of
-druids you specify and any workflow states. To do this use the Assembly::Utils.reset_workflow_states method.
-Provide a list of druids in an array, and a hash containing workflow names (e.g. 'assemblyWF' or
-'accessionWF') as the keys, and arrays of steps as the corresponding values (e.g.
-['checksum-compute','jp2-create']) and they will all be reset to "waiting".
-
-e.g. 
-
-  $ ROBOT_ENVIRONMENT=test bin/console
-
-  druids=%w{druid:aa111aa1111 druid:bb222bb2222}
-  steps={'assemblyWF'  => ['checksum-compute'],'accessionWF' => ['content-metadata','descriptive-metadata']}
-  Assembly::Utils.reset_workflow_states(:druids=>druids,:steps=>steps)
-
+   
 ==Assembly Robots
 
 The last step of pre-assembly is the initiation of the assembly workflow for a given object.  This assumes the assemblyWF is defined in the APO referenced by the project, and it also assumes the assembly robots are running on the server.  If the assembly robots are not running, then JP2 creation and all follow up steps will not occur.  You can determine if the robots are running on the server with:
