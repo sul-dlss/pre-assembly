@@ -71,6 +71,8 @@ end
 total_druids=druids.size
 puts "Found #{total_druids} total druids to remediate **"
 puts "Started at #{Time.now}"
+$stdout.flush
+
 start_time=Time.now
 total_success=0
 total_failure=0
@@ -89,6 +91,8 @@ druids.each do |druid|
     status = "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out,status)
+    puts status
+    $stdout.flush
   else
     total_skipped += 1
   end
@@ -96,3 +100,4 @@ end
 
 puts "Total druids: #{total_druids}.  Successfuk: #{total_success}.  Skipped: #{total_skipped}.  Failed: #{total_failure}"
 puts "Ended at #{Time.now}.  Total time: #{((Time.now-start_time) / 1.hour).round(2)} hours"
+$stdout.flush
