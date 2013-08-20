@@ -69,7 +69,7 @@ else # this must be a YAML progress log file
 end
 
 total_druids=druids.size
-puts "** Found #{total_druids} total druids to remediate **"
+puts "Found #{total_druids} total druids to remediate **"
 puts "Started at #{Time.now}"
 start_time=Time.now
 total_success=0
@@ -86,9 +86,9 @@ druids.each do |druid|
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
     success ? total_success += 1 : total_failure += 1
+    status = "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
     item.log_to_progress_file(progress_log_file)
-    item.log_to_csv(csv_out)
-    puts "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
+    item.log_to_csv(csv_out,status)
   else
     total_skipped += 1
   end

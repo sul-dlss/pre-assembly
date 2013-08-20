@@ -22,9 +22,9 @@ module PreAssembly
         return druids.uniq
       end
       
-      def log_to_csv(csv_out)
+      def log_to_csv(csv_out,status)
         csv_file_out = CSV::Writer.generate(File.open(csv_out,'ab'))
-        output_row=[pid,success,message.truncate(100),Time.now]
+        output_row=[pid,success,message.truncate(300),Time.now,status]
         csv_file_out << output_row
         csv_file_out.close
       end
