@@ -5,14 +5,19 @@
 # The code handles all logging and versioning as needed.
 
 # Run with
-# ROBOT_ENVIRONMENT=production bin/remediate CSV_FILE_WITH_DRUIDS.csv REMEDIATE_LOGIC_FILENAME.rb
+# ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb
 
 # eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /thumpers/dpgthumper-staging/Revs/revs_rights_remediate.rb
 
-# CSV_FILE_WITH_DRUIDS has the format of one column with a list of druids -- no other columns should be present. An example is below.
+# INPUT_FILE can be either a pre-assembly generated YAML log file or a CSV file with one column containing at least a list of druids
+# If a pre-assembly YAML log file is passed in, the successfully accessioned druids will be used.
+# For a CSV file, there should be a header with a column labeled "druid" which indicates which column contains the druid
 # This file should be in a location where the script has read/write access to it.
-#druid:oo000oo0001
-#druid:oo000oo0002
+
+# e.g.
+#druid,another_column
+#druid:oo000oo0001,other stuff
+#druid:oo000oo0002,ignored
 
 # REMEDIATE_LOGIC_FILENAME is a reference to a Ruby code file that defines what you want the remediation to do.  An example of this 
 # file is in lib/remediation/remediate_project_example.rb  Copy that file, and edit it somewhere the script can read it and then pass 
@@ -28,41 +33,51 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'rubygems'
 require 'csv'
+require 'csv-mapper'
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n  ROBOT_ENVIRONMENT=XXXXX remediate CSV_FILE_WITH_DRUIDS REMEDIATE_LOGIC_FILENAME\n"
+  abort "#{error_msg}\n\nUsage:\n  ROBOT_ENVIRONMENT=XXXXX remediate INPUT_FILE REMEDIATE_LOGIC_FILENAME\n"
 end
 
 help "Incorrect N of arguments." if ARGV.size < 2
-csv_in = ARGV[0]
+input_file = ARGV[0]
 remediate_logic_file = ARGV[1]
 
-help "CSV file not found." unless File.file?(csv_in)
+help "Input file not found." unless File.file?(input_file)
 help "REMEDIATE_LOGIC_FILE file not found." unless File.file?(remediate_logic_file)
 
 require remediate_logic_file
 
-source_path=File.dirname(csv_in)
-source_name=File.basename(csv_in,File.extname(csv_in))
+source_path=File.dirname(input_file)
+source_ext=File.extname(input_file)
+source_name=File.basename(input_file,source_ext)
+
+help "Input file not a CSV or YAML/YML file." unless ['.csv','.yml','.yaml'].include? source_ext.downcase
+
 progress_log_file=File.join(source_path,source_name + '_log.yml')
 csv_out=File.join(source_path, source_name + "_log.csv")
 
 # read in completed druids so we don't reprocess them
 completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 
-# read input CSV
-csv_file_in = CSV::Reader.parse(File.open(csv_in))
-csv_file_in.each_with_index  do |row, x|
-  pid=row[0].to_s.strip
-  done=completed_druids.include?(pid)
+# read input druids
+if source_ext == '.csv' # read from CSV file
+  rows=CsvMapper.import(input_file){read_attributes_from_file}
+  druids=rows.collect{|row| row.druid}
+else # this must be a YAML progress log file
+  druids=Assembly::Utils.get_druids_from_log(input_file,true)
+end
+
+druids.each do |druid|
+  done=completed_druids.include?(druid)
   unless done 
-    item=PreAssembly::Remediation::Item.new(pid)
+    item=PreAssembly::Remediation::Item.new(druid)
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
-    puts "#{pid} : #{success}"    
+    puts "#{druid} : #{success}"    
   end
 end
 csv_file_in.close
