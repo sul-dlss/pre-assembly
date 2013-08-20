@@ -90,7 +90,6 @@ druids.each do |druid|
     puts "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
   end
 end
-csv_file_in.close
 
 puts "Total druids attempted: #{druids.size}.  #{total_success} completed successfully, #{total_failure} failed"
 puts "Ended at #{Time.now}.  Total time: #{((Time.now-start_time) / 1.hour).round(2)} hours"
