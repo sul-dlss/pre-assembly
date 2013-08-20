@@ -74,6 +74,7 @@ puts "Started at #{Time.now}"
 start_time=Time.now
 total_success=0
 total_failure=0
+total_skipped=0
 count=0
 
 druids.each do |druid|
@@ -88,8 +89,10 @@ druids.each do |druid|
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
     puts "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
+  else
+    total_skipped += 1
   end
 end
 
-puts "Total druids attempted: #{druids.size}.  #{total_success} completed successfully, #{total_failure} failed"
+puts "Total druids: #{total_druids}.  Successfuk: #{total_success}.  Skipped: #{total_skipped}.  Failed: #{total_failure}"
 puts "Ended at #{Time.now}.  Total time: #{((Time.now-start_time) / 1.hour).round(2)} hours"
