@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 source 'http://sul-gems.stanford.edu'
 
 gem 'nokogiri', '1.5.10' # v1.6 does not work in Ruby 1.8.7
+gem 'equivalent-xml'
 gem 'csv-mapper'
 gem 'dor-services', '~>3.21.1'
 gem 'druid-tools', '>=0.2.0'
