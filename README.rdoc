@@ -80,6 +80,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.1.5:: If registration fails, try to delete object by source ID as well as by druid
 2.1.6:: Update remediation to allow you to skip workflow checks for in accessioning and versioning required when testing in development and production.
 2.1.7:: Update remediation script to allow you to pass in a pre-assembly log file as well as a CSV with druids
+2.1.8:: Show total number of objects and remaining in remediation output
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -645,6 +646,9 @@ framework - you just need to define the actual logic needed to operate on the ob
 two specific methods that must be defined, one that determines if remediation will occur at all, and the second indicates the type
 of remediation to perform.  An example file and its format is shown in the file 'lib/remediation/remediate_project_example.rb'  
 Don't edit that file - copy it, and edit it somewhere the script can read it.
+
+Note that you have access to 'equivalent-xml' (https://github.com/mbklein/equivalent-xml) for comparing xml when deciding if you need to
+remediate.  You also can use nokogiri. If you use equivalent-xml be sure to require it at the top of your script.
 
 3. Run with the command below (presumably on the lyberservices-prod server, which has access to Fedora production, although you can also
 run in test or development mode if you can access those environments).  Pass in the either the CSV file with DRUIDs or the pre-assembly YAML file
