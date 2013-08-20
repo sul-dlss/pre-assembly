@@ -68,16 +68,29 @@ else # this must be a YAML progress log file
   druids=Assembly::Utils.get_druids_from_log(input_file,true)
 end
 
+total_druids=druids.size
+puts "** Found #{total_druids} total druids to remediate **"
+puts "Started at #{Time.now}"
+start_time=Time.now
+total_success=0
+total_failure=0
+count=0
+
 druids.each do |druid|
   done=completed_druids.include?(druid)
   unless done 
+    count+=1
     item=PreAssembly::Remediation::Item.new(druid)
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
+    success ? total_success += 1 : total_failure += 1
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
-    puts "#{druid} : #{success}"    
+    puts "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
   end
 end
 csv_file_in.close
+
+puts "Total druids attempted: #{druids.size}.  #{total_success} completed successfully, #{total_failure} failed"
+puts "Ended at #{Time.now}.  Total time: #{((Time.now-start_time) / 1.hour).round(2)} hours"
