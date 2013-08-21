@@ -69,7 +69,9 @@ else # this must be a YAML progress log file
 end
 
 total_druids=druids.size
-puts "Found #{total_druids} total druids to remediate **"
+total_completed=completed_druids.size
+
+puts "Found #{total_druids-total_completed} to remediate.  Total in file: #{total_druids}.  Already completed: #{total_completed}"
 puts "Started at #{Time.now}"
 $stdout.flush
 
@@ -98,6 +100,9 @@ druids.each do |druid|
   end
 end
 
-puts "Total druids: #{total_druids}.  Successfuk: #{total_success}.  Skipped: #{total_skipped}.  Failed: #{total_failure}"
-puts "Ended at #{Time.now}.  Total time: #{((Time.now-start_time) / 1.hour).round(2)} hours"
+end_time=Time.now
+total_time=((end_time-start_time) / 1.hour).round(2)
+
+puts "Total druids: #{total_druids}.  Successful: #{total_success}.  Skipped: #{total_skipped}.  Failed: #{total_failure}"
+puts "Ended at #{end_time}.  Total time: #{total_time} hours.  Average time per object: #{total_time*3600/total_success} seconds"
 $stdout.flush
