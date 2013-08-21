@@ -90,7 +90,7 @@ druids.each do |druid|
     success ? total_success += 1 : total_failure += 1
     status = "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining"    
     item.log_to_progress_file(progress_log_file)
-    item.log_to_csv(csv_out,status)
+    item.log_to_csv(csv_out)
     puts status
     $stdout.flush
   else
