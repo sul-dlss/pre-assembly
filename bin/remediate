@@ -89,8 +89,14 @@ druids.each do |druid|
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
-    success ? total_success += 1 : total_failure += 1
-    status = "#{druid} : #{success} : #{count} of #{total_to_process} : #{total_to_process-count} remaining : #{Time.now}"    
+    if success
+      total_success += 1
+      result="success"
+    else
+      result="FAILURE"
+      total_failure += 1
+    end
+    status = "#{druid} : #{result} : #{count} of #{total_to_process} (#{total_to_process-count} remaining) : #{Time.now}"    
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
     puts status

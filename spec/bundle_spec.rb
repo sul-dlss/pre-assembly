@@ -3,6 +3,7 @@ describe PreAssembly::Bundle do
   before(:all) do
     @yaml_filenames= {
       :proj_revs   => 'spec/test_data/project_config_files/local_dev_revs.yaml',
+      :proj_revs_no_cm   => 'spec/test_data/project_config_files/local_dev_revs_no_contentMetadata.yaml',
       :proj_rumsey => 'spec/test_data/project_config_files/local_dev_rumsey.yaml',
       :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
       :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',      
@@ -38,7 +39,7 @@ describe PreAssembly::Bundle do
     it "should trim the trailing slash from the bundle directory" do
       @b.bundle_dir.should == 'spec/test_data/bundle_input_a'
     end
-  
+    
     it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_md_template = nil
@@ -61,6 +62,27 @@ describe PreAssembly::Bundle do
       @b.publish_attr.keys.should == [:shelve]
     end
 
+  end
+
+  ####################
+
+  describe "setting set_druid_id() correctly" do
+  
+    it "should set the set_druid_id to an array" do
+      bundle_setup :proj_revs
+      @b.set_druid_id.should == ['druid:yt502zj0924','druid:nt028fd5773']
+    end
+    
+    it "should set the set_druid_id to nil" do
+      bundle_setup :proj_rumsey
+      @b.set_druid_id.should be_nil
+    end
+
+    it "should set the set_druid_id to a single value arrayed if one value is passed in a string" do
+      bundle_setup :proj_revs_no_cm
+      @b.set_druid_id.should == ['druid:yt502zj0924']
+    end
+    
   end
 
   ####################

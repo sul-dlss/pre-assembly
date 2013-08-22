@@ -100,6 +100,7 @@ module PreAssembly
       @validate_bundle_dir  ||= {}
       @publish_attr           = {} if @publish_attr.nil?
       @publish_attr.delete_if { |k,v| v.nil? }
+      @set_druid_id = [@set_druid_id] if @set_druid_id && @set_druid_id.class == String # convert set_druid_id to 1 element array if its single valued and exists
     end
     
     def setup_defaults
