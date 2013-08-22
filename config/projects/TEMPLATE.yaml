@@ -34,8 +34,11 @@ apo_druid_id:      'druid:aa111bb2222'     # Required if pre-assembly is registe
 set_druid_id:      'druid:yy888xx9999'     # If supplied, pre-assembly will associate
                                            # the object with a set in Dor. Include druid prefix.
                                            # NOTE: only valid if should_register = true
-										   # Note that if you need to attach specific objects in your bundle
-										   # into different sets, you will need to run pre-assembly twice with two different YAML files.
+# If you need to associate each object with more than one set, you can pass in a list of set druids, like this:
+set_druid_id:
+  - 'druid:oo000oo0001'  # first set
+  - 'druid:oo000oo0002'  # second set		
+  								              
 
 validate_files:    true      # if set to true, then image files will be confirmed as valid before proceeding ... validity ensures they are likely to have jp2 creation suceed, defaults to true if not provided
                    false     # if set to false, then no image validation is performed -- this can lead to tifs not having jp2s generated during assembly if they do not have valid profiles 
