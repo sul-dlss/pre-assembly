@@ -8,7 +8,7 @@ describe PreAssembly::DigitalObject do
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
-      :project_style => {},
+      :project_style => {:should_register=>true},
       :content_md_creation => {},
       :bundle_dir    => 'spec/test_data/bundle_input_g',
       :new_druid_tree_format => true,
@@ -164,10 +164,33 @@ describe PreAssembly::DigitalObject do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
       @dobj.set_druid_id = nil
+      @dobj.should_not_receive(:add_member_relationship_params)
+      @dobj.should_not_receive(:add_collection_relationship_params)
       fake.should_not_receive :add_relationship
       @dobj.add_dor_object_to_set
     end
 
+    it "should call add_relationship when not null the correct number of times for a single set druid passed in" do
+      fake = double('dor_object', :add_relationship => 11, :save => 22)
+      @dobj.dor_object = fake
+      @dobj.should_receive(:add_member_relationship_params).with('druid:mm111nn2222').exactly(1).times
+      @dobj.should_receive(:add_collection_relationship_params).with('druid:mm111nn2222').exactly(1).times
+      fake.should_receive(:add_relationship).exactly(2).times
+      @dobj.add_dor_object_to_set
+    end
+
+    it "should call add_relationship when not null the correct number of times for more than one set druids passed in" do
+      fake = double('dor_object', :add_relationship => 11, :save => 22)
+      @dobj.dor_object = fake
+      @dobj.set_druid_id = ['druid:oo000oo0001','druid:oo000oo0002']
+      @dobj.should_receive(:add_member_relationship_params).with('druid:oo000oo0001').exactly(1).times
+      @dobj.should_receive(:add_collection_relationship_params).with('druid:oo000oo0001').exactly(1).times
+      @dobj.should_receive(:add_member_relationship_params).with('druid:oo000oo0002').exactly(1).times
+      @dobj.should_receive(:add_collection_relationship_params).with('druid:oo000oo0002').exactly(1).times
+      fake.should_receive(:add_relationship).exactly(4).times
+      @dobj.add_dor_object_to_set
+    end
+    
     it "can exercise method using stubbed exernal calls" do
       @dobj.dor_object = double('dor_object', :add_relationship => nil, :save => nil)
       @dobj.add_dor_object_to_set
@@ -177,8 +200,8 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       exp1 = [:is_member_of, "info:fedora/druid:mm111nn2222"]
       exp2 = [:is_member_of_collection, "info:fedora/druid:mm111nn2222"]
-      arps = @dobj.add_member_relationship_params.should == exp1
-      arps = @dobj.add_collection_relationship_params.should == exp2
+      arps = @dobj.add_member_relationship_params('druid:mm111nn2222').should == exp1
+      arps = @dobj.add_collection_relationship_params('druid:mm111nn2222').should == exp2
     end
 
   end

@@ -312,8 +312,10 @@ module PreAssembly
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
         begin      
-          @dor_object.add_relationship *add_member_relationship_params
-          @dor_object.add_relationship *add_collection_relationship_params
+          @set_druid_id.each do |druid|
+            @dor_object.add_relationship *add_member_relationship_params(druid)
+            @dor_object.add_relationship *add_collection_relationship_params(druid)
+          end
           success = @dor_object.save
         rescue Exception => e
           log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
@@ -333,12 +335,12 @@ module PreAssembly
 
     end
 
-    def add_member_relationship_params
-      [:is_member_of, "info:fedora/#{@set_druid_id}"]
+    def add_member_relationship_params(druid)
+      [:is_member_of, "info:fedora/#{druid}"]
     end
 
-    def add_collection_relationship_params
-      [:is_member_of_collection, "info:fedora/#{@set_druid_id}"]
+    def add_collection_relationship_params(druid)
+      [:is_member_of_collection, "info:fedora/#{druid}"]
     end
 
     def prepare_for_reaccession
