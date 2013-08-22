@@ -70,15 +70,15 @@ end
 
 total_druids=druids.size
 total_completed=completed_druids.size
+total_to_process=total_druids-total_completed
 
-puts "Found #{total_druids-total_completed} to remediate.  Total in file: #{total_druids}.  Already completed: #{total_completed}"
+puts "Found #{total_to_process} to remediate.  Total in file: #{total_druids}.  Already completed: #{total_completed}"
 puts "Started at #{Time.now}"
 $stdout.flush
 
 start_time=Time.now
 total_success=0
 total_failure=0
-total_skipped=0
 count=0
 
 druids.each do |druid|
@@ -90,20 +90,18 @@ druids.each do |druid|
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
     success ? total_success += 1 : total_failure += 1
-    status = "#{druid} : #{success} : #{count} of #{total_druids} : #{total_druids-count} remaining : #{Time.now}"    
+    status = "#{druid} : #{success} : #{count} of #{total_to_process} : #{total_to_process-count} remaining : #{Time.now}"    
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
     puts status
     $stdout.flush
-  else
-    total_skipped += 1
   end
 end
 
 end_time=Time.now
 total_time=((end_time-start_time) / 1.hour).round(2)
 
-puts "Ended at #{end_time}.  Total time: #{total_time} hours.  Average time per object: #{total_time*3600/total_success} seconds"
-puts "Total druids: #{total_druids}.  Successful: #{total_success}.  Skipped: #{total_skipped}.  Failed: #{total_failure}"
+puts "Ended at #{end_time}.  Total time: #{total_time} hours.  Average time per object: #{(total_time*3600/total_to_process).round(2)} seconds"
+puts "Total in file: #{total_druids}. Total processed: #{total_to_process}. Successful: #{total_success}. Completed previously: #{total_completed}.  Failed: #{total_failure}"
 
 $stdout.flush
