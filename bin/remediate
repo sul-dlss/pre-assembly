@@ -72,6 +72,7 @@ total_druids=druids.size
 total_completed=completed_druids.size
 total_to_process=total_druids-total_completed
 
+puts "Input file: #{input_file}"
 puts "Found #{total_to_process} to remediate.  Total in file: #{total_druids}.  Already completed: #{total_completed}"
 puts "Started at #{Time.now}"
 $stdout.flush
@@ -107,6 +108,7 @@ end
 end_time=Time.now
 total_time=((end_time-start_time) / 1.hour).round(2)
 
+puts "Input file: #{input_file}"
 puts "Ended at #{end_time}.  Total time: #{total_time} hours.  Average time per object: #{(total_time*3600/total_to_process).round(2)} seconds"
 puts "Total in file: #{total_druids}. Total processed: #{total_to_process}. Successful: #{total_success}. Completed previously: #{total_completed}.  Failed: #{total_failure}"
 

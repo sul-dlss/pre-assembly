@@ -2,16 +2,16 @@ GEM
   remote: https://rubygems.org/
   remote: http://sul-gems.stanford.edu/
   specs:
-    actionmailer (3.2.11)
-      actionpack (= 3.2.11)
-      mail (~> 2.4.4)
-    actionpack (3.2.11)
-      activemodel (= 3.2.11)
-      activesupport (= 3.2.11)
+    actionmailer (3.2.14)
+      actionpack (= 3.2.14)
+      mail (~> 2.5.4)
+    actionpack (3.2.14)
+      activemodel (= 3.2.14)
+      activesupport (= 3.2.14)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
-      rack (~> 1.4.0)
+      rack (~> 1.4.5)
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
@@ -27,44 +27,45 @@ GEM
       rsolr
       rubydora (~> 0.5.13)
       solrizer (~> 1.2.0)
-    activemodel (3.2.11)
-      activesupport (= 3.2.11)
+    activemodel (3.2.14)
+      activesupport (= 3.2.14)
       builder (~> 3.0.0)
-    activeresource (3.2.11)
-      activemodel (= 3.2.11)
-      activesupport (= 3.2.11)
-    activesupport (3.2.11)
-      i18n (~> 0.6)
+    activeresource (3.2.14)
+      activemodel (= 3.2.14)
+      activesupport (= 3.2.14)
+    activesupport (3.2.14)
+      i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    addressable (2.3.4)
+    addressable (2.3.5)
     akami (1.2.0)
       gyoku (>= 0.4.0)
       nokogiri (>= 1.4.0)
-    assembly-image (1.3.9)
+    assembly-image (1.4.0)
       assembly-objectfile (>= 1.4.1)
       uuidtools
-    assembly-objectfile (1.4.9)
+    assembly-objectfile (1.5.3)
+      activesupport (~> 3)
       mime-types
-      mini_exiftool
-      nokogiri
-    assembly-utils (1.2.4)
-      activeresource (>= 3.2.6)
-      activesupport (>= 3.2.6)
+      mini_exiftool (~> 1.6)
+      nokogiri (~> 1.5.6)
+    assembly-utils (1.2.6)
+      activeresource (~> 3.2.6)
+      activesupport (~> 3.2.6)
       csv-mapper
-      dor-services (~> 3.21.1)
+      dor-services (~> 3.25.1)
       dor-workflow-service (>= 1.3.1)
       druid-tools
       fastercsv
       lyber-core
       net-ssh-gateway
       net-ssh-kerberos
-      nokogiri (= 1.5.10)
+      nokogiri (~> 1.5.6)
     awesome_print (1.1.0)
-    bagit (0.3.1)
+    bagit (0.3.2)
       docopt (~> 0.5.0)
       validatable (~> 1.6)
     builder (3.0.4)
-    capistrano (2.14.1)
+    capistrano (2.15.5)
       highline
       net-scp (>= 1.0.0)
       net-sftp (>= 2.0.0)
@@ -75,17 +76,17 @@ GEM
       currencies (>= 0.4.0)
     csv-mapper (0.5.1)
       fastercsv
-    currencies (0.4.1)
+    currencies (0.4.2)
     daemons (1.1.9)
     deprecation (0.0.5)
       activesupport
-    diff-lcs (1.1.3)
+    diff-lcs (1.2.4)
     dir_validator (0.14.6)
     docopt (0.5.0)
-    dor-services (3.21.1)
+    dor-services (3.25.2)
       active-fedora (~> 4.5)
       confstruct (>= 0.2.2)
-      dor-workflow-service (>= 1.2.1)
+      dor-workflow-service (~> 1.3)
       druid-tools (>= 0.2.3)
       equivalent-xml (>= 0.2.2)
       json
@@ -93,7 +94,7 @@ GEM
       moab-versioning (>= 1.2.1)
       net-sftp
       net-ssh
-      nokogiri (~> 1.5.6)
+      nokogiri (= 1.5.6)
       om (>= 1.5.0)
       progressbar
       rest-client
@@ -104,7 +105,7 @@ GEM
       systemu
       uuidtools
       validatable
-    dor-workflow-service (1.3.1)
+    dor-workflow-service (1.3.2)
       activesupport
       confstruct
       nokogiri
@@ -118,20 +119,24 @@ GEM
       diff-lcs (~> 1.1)
       mime-types (~> 1.15)
       posix-spawn (~> 0.3.6)
-    gyoku (1.0.0)
+    gyoku (1.1.0)
       builder (>= 2.1.2)
     happymapper (0.4.0)
       libxml-ruby (~> 2.0)
-    hashery (2.1.0)
-    highline (1.6.15)
+    hashery (2.1.1)
+    highline (1.6.19)
     hike (1.2.3)
+    holepicker (0.3.1)
+      json (>= 1.7.7)
+      rainbow (>= 1.1.4)
     hooks (0.3.1)
-    httpi (2.0.2)
+    httpi (2.1.0)
       rack
-    i18n (0.6.4)
+      rubyntlm (~> 0.3.2)
+    i18n (0.6.5)
     journey (1.0.4)
     json (1.8.0)
-    libxml-ruby (2.6.0)
+    libxml-ruby (2.7.0)
     lyber-core (2.3.0)
       actionpack
       activeresource (>= 3.2.6)
@@ -148,11 +153,11 @@ GEM
       nokogiri (>= 1.4.3.1)
       systemu (>= 1.2.0)
       validatable
-    lyberteam-capistrano-devel (1.1.1)
+    lyberteam-capistrano-devel (1.3.0)
       actionmailer
       capistrano (>= 2.11.0)
       grit
-      net-ssh-kerberos
+      holepicker
       rake (>= 0.8.7)
       rest-client
     lyberteam-devel (1.0.1)
@@ -161,13 +166,12 @@ GEM
     lyberteam-gems-devel (1.0.1)
       rake (>= 0.8.7)
       rest-client
-    mail (2.4.4)
-      i18n (>= 0.4.0)
+    mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mediashelf-loggable (0.4.9)
-    mime-types (1.23)
-    mini_exiftool (1.6.0)
+    mime-types (1.24)
+    mini_exiftool (1.7.0)
     moab-versioning (1.2.7)
       confstruct
       happymapper
@@ -175,18 +179,18 @@ GEM
       json
       nokogiri
       systemu
-    multi_json (1.7.6)
-    net-scp (1.0.4)
-      net-ssh (>= 1.99.1)
+    multi_json (1.7.9)
+    net-scp (1.1.2)
+      net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.7)
+    net-ssh (2.6.8)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     net-ssh-kerberos (0.2.7)
       net-ssh (>= 2.0)
-    nokogiri (1.5.10)
-    nori (2.1.0)
+    nokogiri (1.5.6)
+    nori (2.3.0)
     om (1.6.1)
       mediashelf-loggable
       nokogiri (>= 1.4.2)
@@ -198,8 +202,9 @@ GEM
       rack (>= 0.4)
     rack-test (0.6.2)
       rack (>= 1.0)
-    rake (10.0.3)
-    rdf (1.0.6)
+    rainbow (1.1.4)
+    rake (10.1.0)
+    rdf (1.0.7)
       addressable (>= 2.2)
     rdf-rdfxml (0.3.9)
       rdf (>= 0.3.11)
@@ -216,14 +221,14 @@ GEM
       rsolr
     rsolr-ext (1.0.3)
       rsolr (>= 1.0.2)
-    rspec (2.12.0)
-      rspec-core (~> 2.12.0)
-      rspec-expectations (~> 2.12.0)
-      rspec-mocks (~> 2.12.0)
-    rspec-core (2.12.2)
-    rspec-expectations (2.12.1)
-      diff-lcs (~> 1.1.3)
-    rspec-mocks (2.12.2)
+    rspec (2.14.1)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
+    rspec-core (2.14.5)
+    rspec-expectations (2.14.2)
+      diff-lcs (>= 1.1.3, < 2.0)
+    rspec-mocks (2.14.3)
     ruby-cache (0.3.0)
     ruby-graphviz (1.0.9)
     rubydora (0.5.13)
@@ -236,14 +241,15 @@ GEM
       nokogiri
       rest-client
       savon
-    savon (2.2.0)
+    rubyntlm (0.3.4)
+    savon (2.3.0)
       akami (~> 1.2.0)
       builder (>= 2.1.2)
-      gyoku (~> 1.0.0)
-      httpi (~> 2.0.2)
-      nokogiri (>= 1.4.0)
-      nori (~> 2.1.0)
-      wasabi (~> 3.1.0)
+      gyoku (~> 1.1.0)
+      httpi (~> 2.1.0)
+      nokogiri (>= 1.4.0, < 1.6)
+      nori (~> 2.3.0)
+      wasabi (~> 3.2.0)
     solrizer (1.2.2)
       daemons
       mediashelf-loggable (~> 0.4.7)
@@ -256,17 +262,17 @@ GEM
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    stomp (1.2.9)
+    stomp (1.2.14)
     systemu (2.5.2)
     tilt (1.4.1)
-    treetop (1.4.12)
+    treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
     uuidtools (2.1.4)
     validatable (1.6.7)
-    wasabi (3.1.0)
+    wasabi (3.2.0)
       httpi (~> 2.0)
-      nokogiri (>= 1.4.0)
+      nokogiri (>= 1.4.0, < 1.6)
     xml-simple (1.1.2)
 
 PLATFORMS
@@ -276,21 +282,21 @@ DEPENDENCIES
   actionmailer (>= 3.2.11)
   actionpack (>= 3.2.11)
   assembly-image (>= 1.3.9)
-  assembly-objectfile (>= 1.4.9)
-  assembly-utils (>= 1.2.4)
+  assembly-objectfile (>= 1.5.3)
+  assembly-utils (>= 1.2.6)
   awesome_print
   capistrano
   countries
   csv-mapper
   dir_validator
-  dor-services (~> 3.21.1)
+  dor-services (~> 3.25)
   dor-workflow-service (>= 1.3.1)
   druid-tools (>= 0.2.0)
   equivalent-xml
   lyber-core
   lyberteam-capistrano-devel (>= 1.1.0)
   lyberteam-devel (>= 1.0.1)
-  nokogiri (= 1.5.10)
+  nokogiri (~> 1.5)
   rake
   rdf
   rest-client
