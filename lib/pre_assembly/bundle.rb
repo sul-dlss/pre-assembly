@@ -88,7 +88,6 @@ module PreAssembly
       @desc_md_template = path_in_bundle @desc_md_template unless @desc_md_template.nil?
       @staging_dir = Assembly::ASSEMBLY_WORKSPACE if @staging_dir.nil? # if the user didn't supply a staging_dir, use the default
       @progress_log_file = File.join(File.dirname(@config_filename),File.basename(@config_filename,'.yaml') + '_progress.yaml') if @progress_log_file.nil? # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
-      @bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
     end
 
     def setup_other
@@ -201,6 +200,9 @@ module PreAssembly
         validation_errors <<  "Required file not found: #{f}."
       end
 
+      validation_errors <<  "Bundle directory not specified." if @bundle_dir.nil? || @bundle_dir == ''
+      @bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
+      
       validation_errors <<  "Staging directory '#{@staging_dir}' not writable." unless File.writable?(@staging_dir)
       validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file)) 
 

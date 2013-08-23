@@ -464,7 +464,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='default'
       @dobj.project_style[:content_structure]='simple_image' # this is the default
-      @dobj.stub!(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
+      @dobj.stub(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
       @dobj.project_style[:should_register]=false
       add_object_files('tif')
       add_object_files('jp2')      
