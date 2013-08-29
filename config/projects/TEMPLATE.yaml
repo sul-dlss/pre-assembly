@@ -40,8 +40,8 @@ set_druid_id:
   - 'druid:oo000oo0002'  # second set		
   								              
 
-validate_files:    true      # if set to true, then image files will be confirmed as valid before proceeding ... validity ensures they are likely to have jp2 creation suceed, defaults to true if not provided
-                   false     # if set to false, then no image validation is performed -- this can lead to tifs not having jp2s generated during assembly if they do not have valid profiles 
+validate_files:    true      # if set to true, then image files will be confirmed as valid before proceeding ... validity ensures they are of the correct mimetype and have color profiles
+                   false     # if set to false, then no image validation is performed -- since color profiles are no longer required, this is less critical to check
 
 
 ####

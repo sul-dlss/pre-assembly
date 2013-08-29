@@ -538,7 +538,7 @@ module PreAssembly
       dobj.object_files.each do |f|
         if not f.image?
           tally[:skipped] += 1
-        elsif f.valid_image?
+        elsif f.valid_image? && f.has_color_profile?
           tally[:valid] += 1
         else
           msg = "File validation failed: #{f.path}"
