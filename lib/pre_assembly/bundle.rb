@@ -107,6 +107,7 @@ module PreAssembly
       @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
       @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
+      @project_style[:content_tag_override] = false if @project_style[:content_tag_override].nil? # default to false
     end
     
     def load_desc_md_template
@@ -210,6 +211,7 @@ module PreAssembly
         validation_errors << "The APO DRUID must be set if should_register = true." if @apo_druid_id.blank? #APO can't be blank
         validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if @project_style[:get_druid_from]==:manifest # can't use manifest to get druid if not yet registered
         validation_errors << "If should_register=true, then you must use a manifest." unless @object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
+        validation_errors << "If should_register=true, it does not make sense to have project_style:content_tag_override=true since objects are not registered yet." if @project_style[:content_tag_override]
       else  # if should_register=false, check some stuff
         if @project_style[:get_druid_from] != :container_barcode
           validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (@apo_druid_id || @set_druid_id)  # APO and SET should not be set

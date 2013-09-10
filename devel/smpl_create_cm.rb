@@ -8,12 +8,9 @@ current_path = File.dirname(File.expand_path(__FILE__))
 
 ################################# TODO -- UPDATE THE PATHS BELOW
 content_path='/thumpers/dpgthumper2-smpl/SC1017_SOHP' # the folder where the content exists (the actual productin content)
-base_path = 'http://dpgthumper2.stanford.edu/~pool0/smpl/SC1017_SOHP' # the optional path of the content as it is to be added to each file listed in the preContentMetadata.xml files  -- CAN BE SET TO BLANK IF THE PRE-CONTENT METADATA IS NOT RELEVANT OR USEFUL TO SMPL
 csv_filename=File.join(current_path,'smpl_csv','sohp_preaccessioning_sorted_v8.csv') # the location of the actual input spreadsheet defining the files to find -- CAN BE A FULL PATH TO THE CSV IF YOU DON'T WANT PUT THE CSV INTO THE PRE-ASSEMBLY CODEBASE
 ##################################
 
-output_path = content_path # the location where the output files will be generated
-content_xml_filename = "preContentMetadata.xml" # the name of the file generated
 
 require 'rubygems'
 require 'csv'
@@ -22,7 +19,10 @@ require 'assembly-objectfile'
 require 'csv-mapper'
 include CsvMapper
 
-def prepare_smpl_content(content_path,csv_filename,output_path,content_xml_filename,base_path)
+def prepare_smpl_content(content_path,csv_filename)
+    
+  output_path = content_path # the location where the output files will be generated
+  content_xml_filename = "contentMetadata.xml" # the name of the file generated
     
   file_attributes={}
   file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}

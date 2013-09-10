@@ -28,9 +28,9 @@ require 'rest_client'
 CONTENT_TYPE_TAG_MAPPING = {
   'Image'=>:simple_image,
   'File'=>:file,
-  'Book (flipbook, ltr)'=>:book_with_pdf,
+  'Book (flipbook, ltr)'=>:simple_book,
   'Book (image-only)'=>:book_as_image,
-  'Manuscript (flipbook, ltr)'=>:book_with_pdf,
+  'Manuscript (flipbook, ltr)'=>:simple_book,
   'Manuscript (image-only)'=>:book_as_image,
   'Map'=>:map
 }
