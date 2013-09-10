@@ -695,7 +695,7 @@ describe PreAssembly::Bundle do
 
   ####################
 
-  describe "setup_paths()" do
+  describe "setup_paths and defaults" do
 
     it "should set the staging_dir to the value specified in YAML" do
       bundle_setup :proj_revs
@@ -707,6 +707,12 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_sohp3
       @b.setup_paths
       @b.progress_log_file.should == 'spec/test_data/project_config_files/local_dev_sohp3_progress.yaml'
+    end
+    
+    it "should set the content_tag_override to the default value when not specified" do
+      bundle_setup :proj_revs
+      @ps['project_style'][:content_tag_override].should be_nil
+      @b.project_style[:content_tag_override].should be_false      
     end
     
     it "should set the staging_dir to the default value if not specified in the YAML" do

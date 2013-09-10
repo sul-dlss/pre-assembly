@@ -80,18 +80,18 @@ module PreAssembly
         FileUtils.ln_s source, destination, :force=>true
       end
     end
+
+    def content_md_creation_style
+      # set this object's content_md_creation_style      
+      if (@project_style[:should_register]) || (!@project_style[:content_tag_override]) || (@project_style[:content_tag_override] && content_type_tag.blank?) # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
+        default_content_md_creation_style
+      else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
+        CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
+      end
+    end
     
     def default_content_md_creation_style
        @project_style[:content_structure].to_sym
-    end
-    
-    def content_md_creation_style
-      # set this object's content_md_creation_style
-      if @project_style[:should_register] || content_type_tag.blank? # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
-        default_content_md_creation_style
-      else # if the object is already registered and there is a content type tag, use it if we know what it means
-        CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
-      end
     end
     
     # compute the base druid tree folder for this object 
@@ -385,7 +385,13 @@ module PreAssembly
     ####
     # Content metadata.
     ####
-
+    def generate_content_metadata
+    
+      create_content_metadata
+      write_content_metadata 
+      
+    end
+    
     def create_content_metadata
       # Invoke the contentMetadata creation method used by the project
       # The name of the method invoked must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
@@ -407,13 +413,6 @@ module PreAssembly
         
       end
 
-    end
-
-    def generate_content_metadata
-    
-      create_content_metadata
-      write_content_metadata 
-      
     end
     
     def write_content_metadata

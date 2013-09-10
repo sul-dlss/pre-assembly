@@ -65,6 +65,11 @@ project_style:
                      'book_as_image' # Like simple_book, but with <contentMetadata type="book"> and <resource type="image"> instead of "page".
                                                 
                      'smpl'          # Used for SMPL projects
+                     
+  content_tag_override:   false      # DEFAULT if not supplied -- content_structure as defined above is always used even if the object is registered with a content type tag             
+                          true       # if set to true; then content_structure type is deteremined from registered object content type tag using mappings defined in pre-assembly if possible;
+                                    #   this is only applicable when should_register == false since objects need to be pre-registered to have content tags;
+                                    #   if no content tag is available or an unknown mapping occurs, the default content_structure defined in the YAML is used
                                                       
   # Whether the pre-assembly process should register the objects.
   should_register: true   # Use if the objects are not yet registered

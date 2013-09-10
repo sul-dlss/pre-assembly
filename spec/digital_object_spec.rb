@@ -457,13 +457,13 @@ describe PreAssembly::DigitalObject do
   
   ####################
 
-
-  describe "content metadata generated from object tag in DOR if present" do
+  describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
 
     before(:each) do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='default'
       @dobj.project_style[:content_structure]='simple_image' # this is the default
+      @dobj.project_style[:content_tag_override]=true        # this allows override of content structure
       @dobj.stub(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
       @dobj.project_style[:should_register]=false
       add_object_files('tif')
@@ -520,11 +520,89 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should generate the expected xml text" do
+      @dobj.content_md_creation_style.should == :file
       noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
     end
   end
 
   ####################
+  describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
+
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.content_md_creation[:style]='default'
+      @dobj.project_style[:content_structure]='simple_image' # this is the default
+      @dobj.stub(:content_type_tag).and_return('File')       # this is what the object tag says, but it should be ignored since overriding is not allowed
+      @dobj.project_style[:should_register]=false
+      add_object_files('tif')
+      add_object_files('jp2')      
+      @dobj.create_content_metadata
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
+        <?xml version="1.0"?>
+        <contentMetadata type="image" objectId="gn330dv6119">
+          <resource type="image" sequence="1" id="gn330dv6119_1">
+            <label>Image 1</label>
+            <file publish="yes" preserve="no" shelve="yes" id="image1.jp2">
+              <checksum type="md5">1111</checksum>
+            </file>
+          </resource>
+          <resource type="image" sequence="2" id="gn330dv6119_2">
+            <label>Image 2</label>
+            <file publish="no" preserve="yes" shelve="no" id="image1.tif">
+              <checksum type="md5">1111</checksum>
+            </file>
+          </resource>
+          <resource type="image" sequence="3" id="gn330dv6119_3">
+            <label>Image 3</label>
+            <file publish="yes" preserve="no" shelve="yes" id="image2.jp2">
+              <checksum type="md5">2222</checksum>
+            </file>
+          </resource>
+          <resource type="image" sequence="4" id="gn330dv6119_4">
+            <label>Image 4</label>
+            <file publish="no" preserve="yes" shelve="no" id="image2.tif">
+              <checksum type="md5">2222</checksum>
+            </file>
+          </resource>
+        </contentMetadata>       
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
+
+    it "content_object_files() should filter @object_files correctly" do
+      # Generate some object_files.
+      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      n = files.size
+      m = n / 2
+      @dobj.object_files = files.map do |f|
+        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
+      end
+      # All of them are included in content.
+      @dobj.content_object_files.size.should == n
+      # Now exclude some. Make sure we got correct N of items.
+      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      ofiles = @dobj.content_object_files
+      ofiles.size.should == m
+      # Also check their ordering.
+      ofiles.map { |f| f.relative_path }.should == files[m .. -1].sort
+    end
+
+    it "should generate the expected xml text when overriding is explicitly not allowed" do
+      @dobj.project_style[:content_tag_override]=false       # this prevents override of content structure
+      @dobj.content_md_creation_style.should == :simple_image
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
+    end
+
+    it "should generate the expected xml text when overriding is not specified" do
+      @dobj.project_style[:content_tag_override]=nil       # this prevents override of content structure
+      @dobj.content_md_creation_style.should == :simple_image
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to @exp_xml
+    end
+
+  end
+
+  ####################
+
   
   describe "descriptive metadata" do
 
