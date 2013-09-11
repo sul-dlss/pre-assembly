@@ -1,9 +1,9 @@
 # Run with
-# cm=PreAssembly::Smpl.new(:csv_filename=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP/manifest.csv',:bundle_dir=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP',:pre_md_file=>'preContentMetadata.xml',:verbose=>true)
+# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP',:csv_filename=>'smpl_manifest.csv')
 # cm.prepare_smpl_content
 
 # or in the context of a bundle object:
-# cm=PreAssembly::Smpl.new(:csv_filename=>File.join(@bundle_dir,@content_md_creation[:smpl_manifest]),:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file])
+# cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file],:verbose=>false)
 # cm.prepare_smpl_content
 
 module PreAssembly
@@ -11,10 +11,11 @@ module PreAssembly
     class Smpl       
        
        def initialize(params)
-         @pre_md_file=params[:pre_md_file]
+         @pre_md_file=params[:pre_md_file] || 'preContentMetadata.xml'
          @bundle_dir=params[:bundle_dir]
-         @csv_filename=params[:csv_filename]
-         @verbose=params[:verbose] || false
+         csv_file=params[:csv_filename] || 'smpl_manifest.csv'
+         @csv_filename=File.join(@bundle_dir,csv_file)
+         @verbose=params[:verbose] || true
        end
        
        def prepare_smpl_content
@@ -135,44 +136,49 @@ module PreAssembly
        def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
 
          # check to see if images folder exists, and if so, iterate and add all images as new resource nodes   
-         images_folder=File.join(content_folder,'Images')
-         puts "looking in #{images_folder}" if @verbose
-         if File.exists? images_folder
-           puts "found #{images_folder}" if @verbose
-           FileUtils.cd(images_folder)
-           Dir.glob('*').each do |image_file|
-             # create the resource node for the file
-             if File.extname(image_file) == '.tif' || File.extname(image_file) == '.jpg'
-               puts "found #{image_file}" if @verbose
-               resource_node = Nokogiri::XML::Node.new("resource", cm)
-               resource_node['type']='image'
-               label_node = Nokogiri::XML::Node.new("label", cm)
-               label_node.content=get_image_label(image_file)
-               resource_node << label_node
-               create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
-               object_node << resource_node        
-             end
-           end
-         end
-
+         folders=['Images','images','image','Image']
+         folders.each do |folder|
+           images_folder=File.join(content_folder,folder) 
+           if File.exists? images_folder
+             puts "found #{images_folder}" if @verbose
+             FileUtils.cd(images_folder)
+             Dir.glob('*').each do |image_file|
+               # create the resource node for the file
+               if ['.tif','.jpg','.tiff','.jpeg'].include? File.extname(image_file).downcase
+                 puts "found #{image_file}" if @verbose
+                 resource_node = Nokogiri::XML::Node.new("resource", cm)
+                 resource_node['type']='image'
+                 label_node = Nokogiri::XML::Node.new("label", cm)
+                 label_node.content=get_image_label(image_file)
+                 resource_node << label_node
+                 create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
+                 object_node << resource_node        
+               end # if found an image
+             end # loop over all images
+           end # folder exists
+         end # loop over all input folders
+         
          # check to see if transcript folder exists, and if so, iterate and add all transcripts as new resource nodes   
-         transcript_folder=File.join(content_folder,'Transcript')
-         puts "looking in #{transcript_folder}" if @verbose
-         if File.exists? transcript_folder
-           puts "found #{transcript_folder}" if @verbose
-           FileUtils.cd(transcript_folder)
-           Dir.glob('*.pdf').each do |transcript_file|
-             # create the resource node for the file
-             puts "found #{transcript_file}" if @verbose
-             resource_node = Nokogiri::XML::Node.new("resource", cm)
-             resource_node['type']='text'
-             label_node = Nokogiri::XML::Node.new("label", cm)
-             label_node.content='Transcript'
-             resource_node << label_node
-             create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
-             object_node << resource_node        
-           end
-         end
+         
+         folders=['Transcript','transcript','Transcripts','transcripts']
+         folders.each do |folder|
+           transcript_folder=File.join(content_folder,folder)
+           if File.exists? transcript_folder
+             puts "found #{transcript_folder}" if @verbose
+             FileUtils.cd(transcript_folder)
+             Dir.glob('*.pdf').each do |transcript_file|
+               # create the resource node for the file
+               puts "found #{transcript_file}" if @verbose
+               resource_node = Nokogiri::XML::Node.new("resource", cm)
+               resource_node['type']='text'
+               label_node = Nokogiri::XML::Node.new("label", cm)
+               label_node.content='Transcript'
+               resource_node << label_node
+               create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
+               object_node << resource_node        
+             end # loop over transcript files
+          end # folder exists
+        end # loop over all folders
 
        end #look_for_extra_files
 
