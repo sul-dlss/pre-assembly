@@ -18,6 +18,7 @@ require 'pre_assembly/bundle'
 require 'pre_assembly/digital_object'
 require 'pre_assembly/object_file'
 require 'pre_assembly/remediation/remediate'
+require 'pre_assembly/smpl_precontent_metadata'
 
 require 'assembly-utils'
 require 'assembly-image'

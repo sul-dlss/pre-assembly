@@ -68,11 +68,11 @@ module PreAssembly
 
          return builder.to_xml
 
-       end
-    
-    end
+       end # create_content_metadata_xml_smpl
+       
+    end # SMPL module
       
-  end
+  end # project module
 
-end
+end # pre-assembly module
  
