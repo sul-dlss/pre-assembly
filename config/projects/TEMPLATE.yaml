@@ -244,7 +244,6 @@ manifest:         'manifest.csv'       # The manifest file, if 'use_manifest' is
 checksums_file:   'checksums.txt'      # A provider checksum file (in default md5sum format).  If none provided, set to ~
 desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML template to use in conjunction with the manifest.
 
-
 ####
 # If object_discovery:use_manifest=true, you must indicate the column names of certain fields in the CSV file.
 # 
@@ -278,6 +277,7 @@ content_md_creation:
                'none'                   # Do not generate any contentMetadata.xml file.  Select this option only if you have a previously created valid contentMetadata.xml in the root of your staged folder.
   pre_md_file: ~ 						# Name of the pre-content metadata file. Set to nil if style = 'default' (common scenario)
   			   'preContentMetadata.xml' # Currently only use by SMPL. 
+  smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
   										
 
 ####
