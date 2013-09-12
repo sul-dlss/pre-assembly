@@ -10,22 +10,50 @@ module PreAssembly
 
     class Smpl       
        
+       attr_accessor :manifest,:items,:csv_filename,:bundle_dir,:pre_md_file
+       
        def initialize(params)
          @pre_md_file=params[:pre_md_file] || 'preContentMetadata.xml'
          @bundle_dir=params[:bundle_dir]
          csv_file=params[:csv_filename] || 'smpl_manifest.csv'
          @csv_filename=File.join(@bundle_dir,csv_file)
          @verbose=params[:verbose] || true
+         
+         @file_attributes={}
+         @file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
+         @file_attributes['sh']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
+         @file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
+         @file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
+         @file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
+         
        end
        
+       def load_manifest
+    
+         # load manifest into @items and then parse into @manifest hash
+         @items=CsvMapper.import(@csv_filename) do read_attributes_from_file end  
+        
+         @manifest={}
+                  
+         @items.each do |row|
+            
+            if row.druid_no_audio
+              druid=row.druid_no_audio
+            else
+              druid=get_druid(row.filename)
+              role=get_role(row.filename)
+              file_extension=File.extname(row.filename)
+            end
+            
+            manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
+            manifest[druid][:source_id]=row.source_id if row.source_id
+            manifest[druid][:files] << {:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
+            
+         end # loop over all items
+         
+       end # load_manifest
+       
        def prepare_smpl_content
-
-         file_attributes={}
-         file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
-         file_attributes['sh']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
-         file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-         file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-         file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
 
          puts "Content path: #{@bundle_dir}" if @verbose
          puts "Input spreadsheet: #{@csv_filename}"  if @verbose
@@ -34,8 +62,8 @@ module PreAssembly
          previous_druid=''
 
          # read CSV
-         @items=CsvMapper.import(@csv_filename) do read_attributes_from_file end  
-
+         load_manifest
+         
          @items.each do |row|
 
            # if druid_no_audio exists, it will specify a druid that has no audio files, so we just need to look for extra files (images/transcripts)
@@ -53,7 +81,7 @@ module PreAssembly
 
              if previous_druid != '' # finish up by looking for images and transcripts for this druid and then write out the previous XML file (except for the first druid)
 
-               look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid)
+               look_for_extra_files(@cm,@object_node,@content_folder,previous_druid)
 
                write_out_xml(@output_folder,@cm)
 
@@ -98,7 +126,7 @@ module PreAssembly
              @object_node << resource_node
 
              # create the file node and attach it to the resource node, along with supplemenatry md5 and techMD nodes
-             create_file_node(resource_node,:filename=>row.filename,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>file_attributes[role.downcase])
+             create_file_node(resource_node,:filename=>row.filename,:druid=>druid,:role=>role.upcase,:content_folder=>@content_folder,:file_attributes=>@file_attributes[role.downcase])
            end
 
            # set the previous druid so we know when we are starting a new one 
@@ -106,7 +134,7 @@ module PreAssembly
 
          end
 
-         look_for_extra_files(@cm,@object_node,@content_folder,file_attributes,previous_druid)
+         look_for_extra_files(@cm,@object_node,@content_folder,previous_druid)
 
          write_out_xml(@output_folder,@cm) # write out last XML file
          
@@ -133,7 +161,7 @@ module PreAssembly
 
        end #write_out_xml
 
-       def look_for_extra_files(cm,object_node,content_folder,file_attributes,druid)
+       def look_for_extra_files(cm,object_node,content_folder,druid)
 
          # check to see if images folder exists, and if so, iterate and add all images as new resource nodes   
          folders=['Images','images','image','Image']
@@ -151,7 +179,7 @@ module PreAssembly
                  label_node = Nokogiri::XML::Node.new("label", cm)
                  label_node.content=get_image_label(image_file)
                  resource_node << label_node
-                 create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>file_attributes['image'])       
+                 create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>@file_attributes['image'])       
                  object_node << resource_node        
                end # if found an image
              end # loop over all images
@@ -174,7 +202,7 @@ module PreAssembly
                label_node = Nokogiri::XML::Node.new("label", cm)
                label_node.content='Transcript'
                resource_node << label_node
-               create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>file_attributes['text'])       
+               create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>@file_attributes['text'])       
                object_node << resource_node        
              end # loop over transcript files
           end # folder exists
