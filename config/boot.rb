@@ -17,10 +17,11 @@ require 'dor-services'
 require 'lyber_core'
 
 # Environment.
-ENV_FILE = PRE_ASSEMBLY_ROOT + "/config/environments/#{environment}.rb"
-require ENV_FILE
-
-Dor::WorkflowService.configure(Dor::Config.workflow.url,:dor_services_url => Dor::Config.dor.service_root.gsub('/v1',''))
+unless defined?(NO_ENVIRONMENT)
+  ENV_FILE = PRE_ASSEMBLY_ROOT + "/config/environments/#{environment}.rb"
+  require ENV_FILE
+  Dor::WorkflowService.configure(Dor::Config.workflow.url,:dor_services_url => Dor::Config.dor.service_root.gsub('/v1',''))
+end
 
 # Project dir in load path.
 $LOAD_PATH.unshift(PRE_ASSEMBLY_ROOT + '/lib')
