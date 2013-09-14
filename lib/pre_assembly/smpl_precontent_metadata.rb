@@ -43,15 +43,93 @@ module PreAssembly
               druid=get_druid(row.filename)
               role=get_role(row.filename)
               file_extension=File.extname(row.filename)
+              publish=defined?(row.publish) ? row.publish || nil : nil
+              shelve=defined?(row.shelve) ? row.shelve || nil : nil
+              preserve=defined?(row.preserve) ? row.preserve || nil : nil
+              resource_type=defined?(row.resource_type) ? row.resource_type || nil : nil    
+              checksum=defined?(row.checksum) ? row.checksum || nil : nil              
             end
             
             manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
             manifest[druid][:source_id]=row.source_id if row.source_id
-            manifest[druid][:files] << {:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
+            manifest[druid][:files] << {:checksum=>checksum,:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
             
          end # loop over all items
          
        end # load_manifest
+       
+        # generate content metadata for a specific druid in the manifest
+       def generate_cm(druid)
+         
+         load_manifest if @manifest.nil?
+         
+         druid.gsub!('druid:','')
+         
+         if @manifest[druid]
+
+           files=@manifest[druid][:files]
+           source_id=@manifest[druid][:source_id]
+                  
+           previous_seq = ''
+           resources={}
+
+           # bundle into resources based on sequence
+           files.each do |file|
+             seq=file[:sequence]
+             label=file[:label] || ""
+             resource_type=file[:resource_type] || "media"
+             if (previous_seq != seq && seq != '') # this is a new resource
+               resources[seq.to_i] = {:label=>label,:sequence=>seq,:resource_type=>resource_type,:files=>[]}   
+               previous_seq = seq
+             end
+             resources[seq.to_i][:files] << file
+           end
+          
+           # generate the base of the XML file for this new druid
+           # generate content metadata
+           builder = Nokogiri::XML::Builder.new { |xml|
+             
+             xml.contentMetadata(:objectId => druid,:type=>'media') {  
+
+              resources.keys.sort.each do |seq|
+                resource=resources[seq]
+                xml.resource(:sequence => seq.to_s, :id => "#{druid}_#{seq}",:type=>resource[:resource_type]) {
+                  xml.label resource[:label]  
+                
+                  resource[:files].each do |file|
+                    filename=file[:filename] || ""
+                    role=file[:role]
+
+                    file_attributes=@file_attributes[role.downcase]
+
+                    publish=file[:publish] || file_attributes[:publish] || "true"
+                    preserve=file[:preserve] || file_attributes[:preserve] || "true"
+                    shelve=file[:shelve] || file_attributes[:shelve] || "true"
+                    checksum=file[:checksum] 
+
+                      xml.file(:id=>filename,:preserve=>preserve,:publish=>publish,:shelve=>shelve) {
+                         xml.checksum(checksum, :type => 'md5') if checksum 
+                       } # end file
+                  
+                  end # end loop over files
+                
+                } # end resource
+              
+              end # end loop over resources
+
+             } #end CM tag
+             
+           } #end XML tag
+          
+          return builder.to_xml
+         
+         else
+         
+           return ""
+         
+         end
+         
+       end
        
        def prepare_smpl_content
 
