@@ -53,6 +53,7 @@ module PreAssembly
       :provider_checksums,
       :digital_objects,
       :skippables,
+      :sample_manifest,
       :desc_md_template_xml    ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -203,6 +204,7 @@ module PreAssembly
 
       validation_errors <<  "Bundle directory not specified." if @bundle_dir.nil? || @bundle_dir == ''
       @bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
+      validation_errors <<  "Bundle directory #{@bundle_dir} not found." if !File.directory?(@bundle_dir)
       
       validation_errors <<  "Staging directory '#{@staging_dir}' not writable." unless File.writable?(@staging_dir)
       validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file)) 
@@ -257,6 +259,8 @@ module PreAssembly
        validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
        validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
       
+      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:smpl_manifest] && !File.exists?(File.join(@bundle_dir,@content_md_creation[:smpl_manifest]))
+
       if !validation_errors.blank?
         validation_errors = ['Configuration errors found:'] + validation_errors
         raise BundleUsageError, validation_errors.join('  ') if !validation_errors.blank?
@@ -276,6 +280,12 @@ module PreAssembly
       puts "#{Time.now}: Pre-assembly started for #{@project_name}" if @show_progress
       
       return unless bundle_directory_is_valid?
+      
+      # load up the SMPL manifest
+      if @content_md_creation[:style] == 'smpl' && @content_md_creation[:smpl_manifest]
+        @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file],:verbose=>false)
+      end
+      
       discover_objects
       load_provider_checksums
       process_manifest
@@ -392,7 +402,8 @@ module PreAssembly
           :stageable_items      => stageables,
           :object_files         => object_files,
           :new_druid_tree_format => @new_druid_tree_format,
-          :staging_style        => @staging_style
+          :staging_style        => @staging_style,
+          :smpl_manifest        => @smpl_manifest
         }
         dobj = DigitalObject.new params
         @digital_objects.push dobj
