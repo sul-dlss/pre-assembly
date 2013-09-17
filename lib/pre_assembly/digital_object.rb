@@ -41,6 +41,7 @@ module PreAssembly
       :desc_md_xml,
       :pre_assem_finished,
       :content_structure,
+      :sample_manifest
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
@@ -402,7 +403,7 @@ module PreAssembly
         
         @content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
       
-      elsif @content_md_creation[:style].to_s != 'none'
+      elsif @content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
         
         # otherwise use the content metadata generation gem
         params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}

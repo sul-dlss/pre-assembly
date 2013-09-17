@@ -5,6 +5,8 @@
 # or in the context of a bundle object:
 # cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file],:verbose=>false)
 # cm.prepare_smpl_content
+# OR
+# cm.generate_cm('oo000oo0001') 
 
 module PreAssembly
 
@@ -25,7 +27,10 @@ module PreAssembly
          @file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
          @file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
          @file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-         
+                  
+         # read CSV
+         load_manifest
+
        end
        
        def load_manifest
@@ -47,12 +52,11 @@ module PreAssembly
               shelve=defined?(row.shelve) ? row.shelve || nil : nil
               preserve=defined?(row.preserve) ? row.preserve || nil : nil
               resource_type=defined?(row.resource_type) ? row.resource_type || nil : nil    
-              checksum=defined?(row.checksum) ? row.checksum || nil : nil              
             end
             
             manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
             manifest[druid][:source_id]=row.source_id if row.source_id
-            manifest[druid][:files] << {:checksum=>checksum,:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
+            manifest[druid][:files] << {:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
             
          end # loop over all items
          
@@ -70,7 +74,7 @@ module PreAssembly
            files=@manifest[druid][:files]
            source_id=@manifest[druid][:source_id]
                   
-           previous_seq = ''
+           current_seq = ''
            resources={}
 
            # bundle into resources based on sequence
@@ -78,11 +82,11 @@ module PreAssembly
              seq=file[:sequence]
              label=file[:label] || ""
              resource_type=file[:resource_type] || "media"
-             if (previous_seq != seq && seq != '') # this is a new resource
+             if (!seq.nil? && seq != '' && seq != current_seq) # this is a new resource if we have a non-blank different sequence number
                resources[seq.to_i] = {:label=>label,:sequence=>seq,:resource_type=>resource_type,:files=>[]}   
-               previous_seq = seq
+               current_seq = seq
              end
-             resources[seq.to_i][:files] << file
+             resources[current_seq.to_i][:files] << file
            end
           
            # generate the base of the XML file for this new druid
@@ -105,7 +109,8 @@ module PreAssembly
                     publish=file[:publish] || file_attributes[:publish] || "true"
                     preserve=file[:preserve] || file_attributes[:preserve] || "true"
                     shelve=file[:shelve] || file_attributes[:shelve] || "true"
-                    checksum=file[:checksum] 
+                    md5_file=File.join(@bundle_dir,druid,role.upcase,filename + '.md5')
+                    checksum = File.exists?(md5_file) ? get_checksum(md5_file) : nil
 
                       xml.file(:id=>filename,:preserve=>preserve,:publish=>publish,:shelve=>shelve) {
                          xml.checksum(checksum, :type => 'md5') if checksum 
@@ -138,9 +143,6 @@ module PreAssembly
 
          # keep track of which druid we just operated on, so we know when to start working on a new one (this is because the input CSV has more than one row per druid, but we only need one XML file per druid)
          previous_druid=''
-
-         # read CSV
-         load_manifest
          
          @items.each do |row|
 
