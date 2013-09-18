@@ -243,8 +243,8 @@ describe PreAssembly::Bundle do
         [ :proj_revs,   3, 1, 1 ],
         [ :proj_rumsey, 3, 2, 2 ],
         [ :proj_folder_manifest, 3, 2, 2],
-        [ :proj_sohp_files_only, 2, 21, 21], 
-        [ :proj_sohp_files_and_folders, 2, 26, 41]
+        [ :proj_sohp_files_only, 2, 19, 19], 
+        [ :proj_sohp_files_and_folders, 2, 24, 38]
       ]
       tests.each do |proj, n_dobj, n_stag, n_file|
         bundle_setup proj

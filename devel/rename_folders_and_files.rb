@@ -1,15 +1,16 @@
-require 'rubygems'
-require 'bundler/setup'
-
-require 'csv'
-require 'csv-mapper'
-require 'fileutils'
 # Pass in input base folder and CSV file with two columns (sourceid,druid)
 # Script will iterate over base folder and rename any folders it finds called sourceid to druid
 # It will then go into the newly renamed folder and find any files/subfolders that contain sourceid and rename them to druid
 
 # call this with 
 # ruby devel/rename_folders_and_files BASE_FOLDER CSV_FILE
+
+require 'rubygems'
+require 'bundler/setup'
+
+require 'csv'
+require 'csv-mapper'
+require 'fileutils'
 
 
 @base_folder=ARGV[0]
