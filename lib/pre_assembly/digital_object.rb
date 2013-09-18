@@ -23,7 +23,8 @@ module PreAssembly
       :init_assembly_wf,
       :content_md_creation,
       :new_druid_tree_format,
-      :staging_style
+      :staging_style,
+      :smpl_manifest
     ]
 
     OTHER_ACCESSORS = [
@@ -40,8 +41,7 @@ module PreAssembly
       :content_md_xml,
       :desc_md_xml,
       :pre_assem_finished,
-      :content_structure,
-      :sample_manifest
+      :content_structure
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }

@@ -1,6 +1,8 @@
 describe PreAssembly::DigitalObject do
 
   before(:each) do
+    @bundle_dir=File.join(PRE_ASSEMBLY_ROOT,'spec/test_data/bundle_input_e')
+    @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>'smpl_manifest.csv',:bundle_dir=>@bundle_dir,:verbose=>false)
     @ps = {
       :apo_druid_id  => 'qq333xx4444',
       :set_druid_id  => 'mm111nn2222',
@@ -9,8 +11,9 @@ describe PreAssembly::DigitalObject do
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
-      :bundle_dir    => 'spec/test_data/bundle_input_e',
-      :content_md_creation => {:style=>:smpl,:pre_md_file=>'preContentMetadata.xml'}
+      :bundle_dir    => @bundle_dir,
+      :smpl_manifest => @smpl_manifest,
+      :content_md_creation => {:style=>:smpl}
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
     @dru          = 'aa111aa1111'
@@ -28,49 +31,45 @@ describe PreAssembly::DigitalObject do
     it "should convert SMPL content metadata into valid base content metadata" do
 
       @dobj.content_md_creation[:style]='smpl'
-      @dobj.project_style[:content_structure]='simple_book'
+     # @dobj.project_style[:content_structure]='simple_book'
       
       @exp_xml = <<-END.gsub(/^ {8}/, '')
-      <?xml version="1.0"?>
-      <contentMetadata objectId="aa111aa1111" type="media">
-        <resource sequence="1" id="aa111aa1111_1" type="media">
-          <label>Tape 1, Side A</label>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_pm.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_a_pm.wav</checksum>
-          </file>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_sh.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_a_sh.wav</checksum>
-          </file>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_a_sl.mp3">
-            <checksum type="md5">checksumforaa111aa1111_001_a_sl.mp3</checksum>
-          </file>
-          <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111_001_img_1.jpg">
-            <checksum type="md5">checksumforaa111aa1111_001_img_1.jpg</checksum>
-          </file>
-        </resource>
-        <resource sequence="2" id="aa111aa1111_2" type="media">
-          <label>Tape 1, Side B</label>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_pm.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_b_pm.wav</checksum>
-          </file>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_sh.wav">
-            <checksum type="md5">checksumforaa111aa1111_001_b_sh.wav</checksum>
-          </file>
-          <file shelve="no" publish="yes" preserve="yes" id="aa111aa1111_001_b_sl.mp3">
-            <checksum type="md5">checksumforaa111aa1111_001_b_sl.mp3</checksum>
-          </file>
-          <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111_001_img_2.jpg">
-            <checksum type="md5">checksumforaa111aa1111_001_img_2.jpg</checksum>
-          </file>
-        </resource>
-        <resource sequence="3" id="aa111aa1111_3" type="media">
-          <label>Transcript</label>
-          <file shelve="yes" publish="yes" preserve="yes" id="aa111aa1111.pdf">
-            <checksum type="md5">checksumforedited_transcript.pdf</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-      END
+        <?xml version="1.0"?>
+             <contentMetadata type="media" objectId="aa111aa1111">
+               <resource type="media" sequence="1" id="aa111aa1111_1">
+                 <label>Tape 1, Side A</label>
+                 <file publish="no" preserve="yes" id="aa111aa1111_001_a_pm.wav" shelve="no">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d1eea</checksum>
+                 </file>
+                 <file publish="no" preserve="yes" id="aa111aa1111_001_a_sh.wav" shelve="no">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d1eec</checksum>
+                 </file>
+                 <file publish="yes" preserve="yes" id="aa111aa1111_001_a_sl.mp3" shelve="yes">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d0eea</checksum>
+                 </file>
+                 <file publish="yes" preserve="yes" id="aa111aa1111_001_img_1.jpg" shelve="yes">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d1eea</checksum>
+                 </file>
+               </resource>
+               <resource type="file" sequence="2" id="aa111aa1111_2">
+                 <label>Tape 1, Side B</label>
+                 <file publish="yes" preserve="yes" id="aa111aa1111_001_b_pm.wav" shelve="yes">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d1eea</checksum>
+                 </file>
+                 <file publish="no" preserve="no" id="aa111aa1111_001_b_sh.wav" shelve="no">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d0eeb</checksum>
+                 </file>
+                 <file publish="yes" preserve="yes" id="aa111aa1111_001_b_sl.mp3" shelve="yes"/>
+                 <file publish="yes" preserve="yes" id="aa111aa1111_001_img_2.jpg" shelve="yes">
+                   <checksum type="md5">0e80068efa7b0d749ed5da097f6d4eeb</checksum>
+                 </file>
+               </resource>
+               <resource type="text" sequence="3" id="aa111aa1111_3">
+                 <label>Transcript</label>
+                 <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
+               </resource>
+             </contentMetadata>
+            END
       @exp_xml = noko_doc @exp_xml
       noko_doc(@dobj.create_content_metadata_xml_smpl).should be_equivalent_to @exp_xml
       noko_doc(@dobj.create_content_metadata).should be_equivalent_to @exp_xml      

@@ -109,6 +109,7 @@ module PreAssembly
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
       @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
       @project_style[:content_tag_override] = false if @project_style[:content_tag_override].nil? # default to false
+      @content_md_creation[:smpl_manifest] = 'smpl_manifest.csv' if @content_md_creation[:smpl_manifest].nil? # default filename for smpl manifest
     end
     
     def load_desc_md_template
@@ -259,7 +260,7 @@ module PreAssembly
        validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
        validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
       
-      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:smpl_manifest] && !File.exists?(File.join(@bundle_dir,@content_md_creation[:smpl_manifest]))
+      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:style] == :smpl && !File.exists?(File.join(@bundle_dir,@content_md_creation[:smpl_manifest]))
 
       if !validation_errors.blank?
         validation_errors = ['Configuration errors found:'] + validation_errors
@@ -281,9 +282,9 @@ module PreAssembly
       
       return unless bundle_directory_is_valid?
       
-      # load up the SMPL manifest
-      if @content_md_creation[:style] == 'smpl' && @content_md_creation[:smpl_manifest]
-        @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file],:verbose=>false)
+      # load up the SMPL manifest if we are using that style
+      if @content_md_creation[:style] == :smpl
+        @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
       end
       
       discover_objects

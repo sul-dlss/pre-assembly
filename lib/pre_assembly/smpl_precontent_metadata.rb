@@ -3,7 +3,7 @@
 # cm.prepare_smpl_content
 
 # or in the context of a bundle object:
-# cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:pre_md_file=>@content_md_creation[:pre_md_file],:verbose=>false)
+# cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
 # cm.prepare_smpl_content
 # OR
 # cm.generate_cm('oo000oo0001') 
@@ -12,24 +12,30 @@ module PreAssembly
 
     class Smpl       
        
-       attr_accessor :manifest,:items,:csv_filename,:bundle_dir,:pre_md_file
+       attr_accessor :manifest,:items,:csv_filename,:bundle_dir,:pre_md_file,:default_resource_type,:cm_type
        
        def initialize(params)
-         @pre_md_file=params[:pre_md_file] || 'preContentMetadata.xml'
+         @pre_md_file='preContentMetadata.xml'
          @bundle_dir=params[:bundle_dir]
          csv_file=params[:csv_filename] || 'smpl_manifest.csv'
          @csv_filename=File.join(@bundle_dir,csv_file)
          @verbose=params[:verbose] || true
          
          @file_attributes={}
+         @file_attributes['default']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
          @file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
          @file_attributes['sh']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
          @file_attributes['sl']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-         @file_attributes['image']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-         @file_attributes['text']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
-                  
+         @file_attributes['images']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
+         @file_attributes['transcript']={:publish=>'yes',:shelve=>'yes',:preserve=>'yes'}
+        
+         @default_resource_type="media"
+         @cm_type="media"
+         
          # read CSV
          load_manifest
+         
+         puts "found #{@items.size} items in manifest" if @verbose
 
        end
        
@@ -42,20 +48,23 @@ module PreAssembly
                   
          @items.each do |row|
             
-            if row.druid_no_audio
+            if (defined?(row.druid_no_audio) && row.druid_no_audio) # this column doesn't need to exist anymore, but we'll leave it here for backwards compatibility
               druid=row.druid_no_audio
             else
               druid=get_druid(row.filename)
               role=get_role(row.filename)
               file_extension=File.extname(row.filename)
+              # set the resource type if available, otherwise we'll use a default
+              resource_type=defined?(row.resource_type) ? row.resource_type || nil : nil    
+
+              # set the publish/preserve/shelve if available, otherwise we'll use the default
               publish=defined?(row.publish) ? row.publish || nil : nil
               shelve=defined?(row.shelve) ? row.shelve || nil : nil
               preserve=defined?(row.preserve) ? row.preserve || nil : nil
-              resource_type=defined?(row.resource_type) ? row.resource_type || nil : nil    
             end
             
             manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
-            manifest[druid][:source_id]=row.source_id if row.source_id
+            manifest[druid][:source_id]=row.source_id if (defined?(row.source_id) && row.source_id)
             manifest[druid][:files] << {:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
             
          end # loop over all items
@@ -81,7 +90,7 @@ module PreAssembly
            files.each do |file|
              seq=file[:sequence]
              label=file[:label] || ""
-             resource_type=file[:resource_type] || "media"
+             resource_type=file[:resource_type] || @default_resource_type
              if (!seq.nil? && seq != '' && seq != current_seq) # this is a new resource if we have a non-blank different sequence number
                resources[seq.to_i] = {:label=>label,:sequence=>seq,:resource_type=>resource_type,:files=>[]}   
                current_seq = seq
@@ -93,7 +102,7 @@ module PreAssembly
            # generate content metadata
            builder = Nokogiri::XML::Builder.new { |xml|
              
-             xml.contentMetadata(:objectId => druid,:type=>'media') {  
+             xml.contentMetadata(:objectId => druid,:type=>@cm_type) {  
 
               resources.keys.sort.each do |seq|
                 resource=resources[seq]
@@ -103,17 +112,16 @@ module PreAssembly
                   resource[:files].each do |file|
                     filename=file[:filename] || ""
                     role=file[:role]
-
-                    file_attributes=@file_attributes[role.downcase]
-
+                    file_attributes=@file_attributes[role.downcase] || @file_attributes['default']
+                    
                     publish=file[:publish] || file_attributes[:publish] || "true"
                     preserve=file[:preserve] || file_attributes[:preserve] || "true"
                     shelve=file[:shelve] || file_attributes[:shelve] || "true"
-                    md5_file=File.join(@bundle_dir,druid,role.upcase,filename + '.md5')
+                    md5_file=File.join(@bundle_dir,druid,role,filename + '.md5')
                     checksum = File.exists?(md5_file) ? get_checksum(md5_file) : nil
 
                       xml.file(:id=>filename,:preserve=>preserve,:publish=>publish,:shelve=>shelve) {
-                         xml.checksum(checksum, :type => 'md5') if checksum 
+                         xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
                        } # end file
                   
                   end # end loop over files
@@ -225,7 +233,7 @@ module PreAssembly
        def get_checksum(md5_file)
          s = IO.read(md5_file)
          checksums=s.scan(/[0-9a-fA-F]{32}/)
-         return checksums.first.strip
+         return checksums.first ? checksums.first.strip : ""
        end #get_checksum
 
        def write_out_xml(output_folder,cm)
@@ -259,7 +267,7 @@ module PreAssembly
                  label_node = Nokogiri::XML::Node.new("label", cm)
                  label_node.content=get_image_label(image_file)
                  resource_node << label_node
-                 create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>@file_attributes['image'])       
+                 create_file_node(resource_node,:filename=>image_file,:druid=>druid,:role=>'Images',:content_folder=>content_folder,:file_attributes=>@file_attributes['images'])       
                  object_node << resource_node        
                end # if found an image
              end # loop over all images
@@ -282,7 +290,7 @@ module PreAssembly
                label_node = Nokogiri::XML::Node.new("label", cm)
                label_node.content='Transcript'
                resource_node << label_node
-               create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>@file_attributes['text'])       
+               create_file_node(resource_node,:filename=>transcript_file,:druid=>druid,:role=>'Transcript',:content_folder=>content_folder,:file_attributes=>@file_attributes['transcript'])       
                object_node << resource_node        
              end # loop over transcript files
           end # folder exists
@@ -340,9 +348,15 @@ module PreAssembly
        def get_role(filename)
          matches=filename.scan(/_pm|_sl|_sh/)  
          if matches.size==0 
-           return ""
+           if ['.tif','.tiff','.jpg','.jpeg','.jp2'].include? File.extname(filename).downcase
+             return 'Images'
+            elsif ['.pdf','.txt','.doc'].include? File.extname(filename).downcase
+              return "Transcript"
+            else
+             return ""
+            end
          else
-           matches.first.sub('_','').strip
+           matches.first.sub('_','').strip.upcase
          end
        end # get_role
 

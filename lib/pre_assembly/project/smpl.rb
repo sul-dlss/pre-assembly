@@ -3,15 +3,17 @@ module PreAssembly
   module Project
 
     module Smpl
-      
-       # def create_content_metadata_xml_smpl
-       #    
-       #    @smpl_manifest.generate_cm(@druid.id)
-       #    
-       # end
-      
-      # the name of this method must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
+
+      # the name of this method must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration      
        def create_content_metadata_xml_smpl
+           
+           return @smpl_manifest.generate_cm(@druid.id)
+           
+       end
+      
+      # this is the depracated method we used to use to convert preContentMetadata into actual content_metadata for SMPL
+      # it is no longer needed since we now can generate content metadata directly using the supplied manifest
+       def OLD_create_content_metadata_xml_smpl
 
           # do not include these files in the new content metadata when creating file nodes
          file_extensions_to_exclude=%w{.md5 .xml}
@@ -19,7 +21,7 @@ module PreAssembly
          log "    - create_content_metadata_xml_smpl()"
 
          # create path to smpl XML content metadata
-         input_cm_filename=File.join(bundle_dir,container_basename,content_md_creation[:pre_md_file])
+         input_cm_filename=File.join(bundle_dir,container_basename,'preContentMetadata.xml')
 
          # read in smpl XML content metadata into nokogiri document
          f = File.open(input_cm_filename)
@@ -74,7 +76,7 @@ module PreAssembly
 
          return builder.to_xml
 
-       end # create_content_metadata_xml_smpl
+       end # OLD_create_content_metadata_xml_smpl
        
     end # SMPL module
       

@@ -275,8 +275,6 @@ content_md_creation:
                                          # part of a single resource node.                                          
                'smpl'                   # Only used by SMPL projects.  Will generate a content metadata file using the SMPL preContentMetadata.
                'none'                   # Do not generate any contentMetadata.xml file.  Select this option only if you have a previously created valid contentMetadata.xml in the root of your staged folder.
-  pre_md_file: ~ 						# Name of the pre-content metadata file. Set to nil if style = 'default' (common scenario)
-  			   'preContentMetadata.xml' # Currently only use by SMPL. 
   smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
   										
 
