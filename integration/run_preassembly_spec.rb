@@ -12,7 +12,8 @@ describe "Pre-assembly integration" do
     'reid_dennis',
     'gould',
     'sohp',
-    'sohp_via_symlink'
+    'sohp_via_symlink',
+    'sohp_discovery_manifest'
   ]
   
   PROJECTS.each do |p|
@@ -72,6 +73,23 @@ describe "Pre-assembly integration" do
           [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
         ],
       },
+      :sohp_discovery_manifest => {
+        :n_objects => 1,
+        :exp_files => [
+          [2, 'content/*.jpg'],
+          [2, 'content/*.jpg.md5'],
+          [2, 'content/*_pm.wav'],
+          [2, 'content/*_pm.wav.md5'],
+          [2, 'content/*_sh.wav'],
+          [2, 'content/*_sh.wav.md5'],
+          [2, 'content/*_sl.mp3'],
+          [2, 'content/*_sl.mp3.md5'],
+          [2, 'content/*_sl_techmd.xml'],
+          [1, 'content/*.pdf'],
+          [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
+          [1, "metadata/#{Assembly::DESC_MD_FILE}"],
+        ],
+      },      
     }
     @expected[:rumsey]      = @expected[:revs]
     @expected[:reid_dennis] = @expected[:revs]
