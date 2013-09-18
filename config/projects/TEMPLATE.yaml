@@ -262,7 +262,7 @@ manifest_cols:
 # Attributes related to content metadata generation.
 ####
 
-# A regex to exclude staged files from contentMetadata.xml.
+# A regex to exclude staged files from contentMetadata.xml (content will still be staged though).
 content_exclusion: ~             # Include all staged files in content metadata.
                    '(?i)\.xml$'  # Exclude xml files from content metadata.
 

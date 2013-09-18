@@ -1,5 +1,5 @@
 # Run with
-# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP',:csv_filename=>'smpl_manifest.csv')
+# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP',:csv_filename=>'smpl_manifest.csv',:verbose=>true)
 # cm.prepare_smpl_content
 
 # or in the context of a bundle object:
@@ -19,7 +19,7 @@ module PreAssembly
          @bundle_dir=params[:bundle_dir]
          csv_file=params[:csv_filename] || 'smpl_manifest.csv'
          @csv_filename=File.join(@bundle_dir,csv_file)
-         @verbose=params[:verbose] || true
+         @verbose=params[:verbose] || false
          
          @file_attributes={}
          @file_attributes['default']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}

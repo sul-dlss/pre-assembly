@@ -14,7 +14,7 @@ describe "Pre-assembly integration" do
     'sohp',
     'sohp_via_symlink'
   ]
-
+  
   PROJECTS.each do |p|
     it(p) { run_integration_tests p }
   end
@@ -69,7 +69,6 @@ describe "Pre-assembly integration" do
           [2, 'content/*_sl.mp3.md5'],
           [2, 'content/*_sl_techmd.xml'],
           [1, 'content/*.pdf'],
-          [1, 'content/*.pdf.md5'],
           [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
         ],
       },
