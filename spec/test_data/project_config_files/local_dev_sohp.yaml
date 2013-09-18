@@ -45,7 +45,7 @@ manifest_cols:
   source_id:          ~
   label:              ~
 
-content_exclusion:    '(?ix) ( \.md5 | _techmd\.xml ) $'
+content_exclusion:    ~
 
 new_druid_tree_format: true
 validate_usage:       false

@@ -45,7 +45,7 @@ manifest_cols:
   source_id:          ~
   label:              ~
 
-content_exclusion:    '(?ix) ( \.md5 | _techmd\.xml ) $'
+content_exclusion:    ~
 
 validate_usage:       false
 show_progress:        true
