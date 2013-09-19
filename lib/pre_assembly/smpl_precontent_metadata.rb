@@ -117,9 +117,13 @@ module PreAssembly
                     publish=file[:publish] || file_attributes[:publish] || "true"
                     preserve=file[:preserve] || file_attributes[:preserve] || "true"
                     shelve=file[:shelve] || file_attributes[:shelve] || "true"
-                    md5_file=File.join(@bundle_dir,druid,role,filename + '.md5')
-                    checksum = File.exists?(md5_file) ? get_checksum(md5_file) : nil
-
+                    role_folders = [role.downcase,role.upcase,role.titlecase] # look in all these combos for the MD5 files
+                    checksum=nil
+                    role_folders.each do |role_folder|
+                      md5_file=File.join(@bundle_dir,druid,role_folder,filename + '.md5')
+                      checksum = get_checksum(md5_file) if File.exists?(md5_file)
+                      break if checksum # stop looking if we find one  
+                    end
                       xml.file(:id=>filename,:preserve=>preserve,:publish=>publish,:shelve=>shelve) {
                          xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
                        } # end file
