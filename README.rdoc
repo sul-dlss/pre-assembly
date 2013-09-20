@@ -87,6 +87,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.2.3:: Move SMPL preContentMetadata generation methods into a class and allow it to be run automatically whenever SMPL accessioning occurs
 2.2.4:: Make SMPL content metadata generation per object so that you do not need to run an extra step ahead of pre-assembly
 2.2.5:: Make SMPL searching of checksums in MD5 file case insensitive for the role folder
+2.2.6:: Add some additional info to the discovery report for SMPL manifest projects 
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -156,7 +157,8 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    * the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
    * for manifest style projects, the label and source id along with if all source IDs contained in the manifest are unique 
    * for manifest style projects, a listing of any folders/files present in the bundle directory that are not referenced in the manifest... some will be expected (such as a checksum file), but this will let you see if any expected images/data are missing from the manifest
-
+   * for SMPL style projects, a listing of the the number of files found in the content metadata manifest ... which will let you know if you it has correctly found the object in the smpl_manifest.csv file -- a 0 would mean none were found or listed, which is a problem
+   
    If any errors occur, they will be displayed and a total error count is shown at the bottom.
 
    To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using
@@ -174,6 +176,7 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    +check_sourceids+::  for manifest style projects, will confirm source IDs are globally unique in DOR (sources ids area already checked for local uniqueness in the manifest)
    +no_check_reg+:: for projects where objects are to be registered, DONT'T check if objects are registered and have APOs (assuming they are supposed to be registered already)
    +show_staged+:: will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
+   +show_smpl_cm+:: will show content metadata that will be generated for each SMPL object using the supplied manifest (warning: will produce a lot of XML output if you have lots of objects with lots of files!)
 
    e.g.
 
