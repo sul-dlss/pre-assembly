@@ -10,6 +10,7 @@ module PreAssembly
       # d) if confirm_checksums is true, will open up provided checksum file and confirm each checksum
       # e) if show_staged is true, will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
       # f) if show_other is true, will show all files/folders in source directory that will NOT be discovered/pre-assembled (warning: will produce a lot of output if you have lots of ignored objects in your directory!)
+      # g) if show_smpl_cm is true, will show contentMetadata that will be generated for SMPL objects
 
       @error_count=0
 
@@ -22,6 +23,10 @@ module PreAssembly
               
       # determine checks to actually be performed, based on user parameters and configuration setings
       using_manifest=@manifest && @object_discovery[:use_manifest]
+      using_smpl_manifest=(@content_md_creation[:style] == :smpl) && File.exists?(File.join(@bundle_dir,@content_md_creation[:smpl_manifest]))
+      
+      show_smpl_cm=(params[:show_smpl_cm] && using_smpl_manifest) || false
+      
       confirming_checksums=@checksums_file && confirm_checksums
       checking_sourceids=check_sourceids && using_manifest
 
@@ -40,6 +45,8 @@ module PreAssembly
       puts "Checking APO and registration status" if confirming_registration
       puts "Show all staged files" if show_staged
       puts "Show non-discovered objects in directory" if show_other
+      puts "Showing SMPL contentMetadata that will be generated" if show_smpl_cm
+      puts "Using SMPL manifest for contentMetadata: #{File.join(@bundle_dir,@content_md_creation[:smpl_manifest])}" if using_smpl_manifest
 
       if @accession_items        
         puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
@@ -51,11 +58,14 @@ module PreAssembly
       end
       header="\nObject Container , Number of Items , Files Have Spaces, Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
+      header+="Num Files in CM Manifest , All CM files found ," if using_smpl_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
       header+="DRUID, Registered? , APOs , " if confirming_registration
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
+      
+      smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false) if using_smpl_manifest
       
       unique_objects=0
       discover_objects
@@ -97,6 +107,20 @@ module PreAssembly
            message += "\"#{dobj.source_id}\" ," # source ID
          end
          
+         if using_smpl_manifest # if we are using a SMPL manifest, let's add how many files were found
+           cm_files=smpl_manifest.manifest[bundle_id]
+           num_files_in_manifest=(cm_files && cm_files[:files]) ? cm_files[:files].size : 0
+           message += (num_files_in_manifest == 0 ? report_error_message(" no files in CM manifest") : " #{num_files_in_manifest} ,")
+           if num_files_in_manifest > 0
+             found_files=0 
+             all_staged_files=dobj.object_files.collect {|objfile| objfile.relative_path}
+             cm_files[:files].each do |file|
+               found_files += 1 if all_staged_files.include?(file[:filename])
+             end
+             message += (num_files_in_manifest != found_files ? report_error_message(" not all files in CM manifest found in object ") : " all files found ,")
+           end
+         end
+         
          message += confirm_checksums(dobj) ? " confirmed , " : report_error_message("failed") if confirming_checksums # checksum confirmation
              
          message += (object_filenames_unique?(dobj) ? " no ," : report_error_message("dupes")) # check for dupe filenames, important in a nested object that will be flattened
@@ -131,6 +155,10 @@ module PreAssembly
            dobj.object_files.each do |objfile|
               puts "-- #{objfile.relative_path}"
            end 
+         end
+         
+         if show_smpl_cm # let's show SMPL CM
+           puts smpl_manifest.generate_cm(bundle_id)
          end
          
       end

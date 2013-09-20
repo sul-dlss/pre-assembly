@@ -148,6 +148,7 @@ module PreAssembly
          
        end
        
+       # NOTE: THIS IS DEPRECATED AND SHOULD NOT BE NEEDED ANYMORE.  IT WAS USED WHEN WE HAD TO GENERATE INTERMEDIATE PRE-CONTENT METADATA
        def prepare_smpl_content
 
          puts "Content path: #{@bundle_dir}" if @verbose
