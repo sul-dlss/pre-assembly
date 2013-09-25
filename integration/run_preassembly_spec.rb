@@ -15,7 +15,7 @@ describe "Pre-assembly integration" do
     'sohp_via_symlink',
     'sohp_discovery_manifest'
   ]
-  
+
   PROJECTS.each do |p|
     it(p) { run_integration_tests p }
   end
@@ -71,6 +71,7 @@ describe "Pre-assembly integration" do
           [2, 'content/*_sl_techmd.xml'],
           [1, 'content/*.pdf'],
           [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
+          [1, "metadata/#{Assembly::TECHNICAL_MD_FILE}"],
         ],
       },
       :sohp_discovery_manifest => {
@@ -87,6 +88,7 @@ describe "Pre-assembly integration" do
           [2, 'content/*_sl_techmd.xml'],
           [1, 'content/*.pdf'],
           [1, "metadata/#{Assembly::CONTENT_MD_FILE}"],
+          [1, "metadata/#{Assembly::TECHNICAL_MD_FILE}"],
           [1, "metadata/#{Assembly::DESC_MD_FILE}"],
         ],
       },      
@@ -133,7 +135,8 @@ describe "Pre-assembly integration" do
     @params[:staging_dir]   = @temp_dir
     @params[:show_progress] = false
     @params[:cleanup] = false
-
+#    @params[:bundle_dir] = File.join(PRE_ASSEMBLY_ROOT,@params[:bundle_dir])
+    
     # Create the bundle.
     @b = PreAssembly::Bundle.new @params
 
