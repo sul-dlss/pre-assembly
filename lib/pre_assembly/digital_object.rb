@@ -37,8 +37,10 @@ module PreAssembly
       :reaccession,
       :source_id,
       :content_md_file,
+      :technical_md_file,
       :desc_md_file,
       :content_md_xml,
+      :technical_md_xml,
       :desc_md_xml,
       :pre_assem_finished,
       :content_structure
@@ -65,8 +67,10 @@ module PreAssembly
       @manifest_row        = nil
 
       @content_md_file     = Assembly::CONTENT_MD_FILE
+      @technical_md_file   = Assembly::TECHNICAL_MD_FILE
       @desc_md_file        = Assembly::DESC_MD_FILE
       @content_md_xml      = ''
+      @technical_md_xml      = ''
       @desc_md_xml         = ''
 
       @pre_assem_finished = false
@@ -127,6 +131,7 @@ module PreAssembly
       add_dor_object_to_set
       stage_files
       generate_content_metadata unless @content_md_creation[:style].to_s == 'none'
+      # generate_technical_metadata
       generate_desc_metadata
       initialize_assembly_workflow
       log "    - pre_assemble(#{@pid}) finished"
@@ -383,6 +388,48 @@ module PreAssembly
       end
     end
 
+    ####
+    # Technical metadata combined file for SMPL.
+    ####
+    def generate_technical_metadata
+    
+      create_technical_metadata
+      write_technical_metadata 
+      
+    end
+    
+    def create_technical_metadata
+      # create technical metadata for smpl projects only
+      return unless @content_md_creation[:style].to_s == 'smpl' 
+
+      tm = Nokogiri::XML::Document.new
+      tm_node = Nokogiri::XML::Node.new("technicalMetadata", tm)
+      tm_node['objectId']=@pid
+      tm_node['datetime']=Time.now.utc.strftime("%Y-%m-%d-T%H:%M:%SZ")
+      tm << tm_node
+      
+      # find all technical metadata files and just append the xml to the combined technicalMetadata 
+     # FileUtils.cd(File.join(@bundle_dir,container_basename))
+      # tech_md_filenames=Dir.glob("**/*_techmd.xml")
+      # tech_md_filenames.each do |filename|
+      #    tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
+      #    tm.root << tech_md_xml.root  
+      # end
+      
+      @technical_md_xml=tm.to_xml
+      
+    end
+    
+    def write_technical_metadata
+      # write technical metadata out to a file only if it exists
+      return if @technical_md_xml.blank?
+
+      file_name = File.join self.metadata_dir, @technical_md_file
+      log "    - write_technical_metadata_xml(#{file_name})"
+      create_object_directories
+      File.open(file_name, 'w') { |fh| fh.puts @technical_md_xml } 
+    end
+    
     ####
     # Content metadata.
     ####
