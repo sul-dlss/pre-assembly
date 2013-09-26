@@ -131,7 +131,7 @@ module PreAssembly
       add_dor_object_to_set
       stage_files
       generate_content_metadata unless @content_md_creation[:style].to_s == 'none'
-      # generate_technical_metadata
+      generate_technical_metadata
       generate_desc_metadata
       initialize_assembly_workflow
       log "    - pre_assemble(#{@pid}) finished"
@@ -409,13 +409,14 @@ module PreAssembly
       tm << tm_node
       
       # find all technical metadata files and just append the xml to the combined technicalMetadata 
-     # FileUtils.cd(File.join(@bundle_dir,container_basename))
-      # tech_md_filenames=Dir.glob("**/*_techmd.xml")
-      # tech_md_filenames.each do |filename|
-      #    tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
-      #    tm.root << tech_md_xml.root  
-      # end
-      
+      current_directory=Dir.pwd
+      FileUtils.cd(File.join(@bundle_dir,container_basename))
+      tech_md_filenames=Dir.glob("**/*_techmd.xml")
+      tech_md_filenames.each do |filename|
+         tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
+         tm.root << tech_md_xml.root  
+      end
+      FileUtils.cd(current_directory)
       @technical_md_xml=tm.to_xml
       
     end

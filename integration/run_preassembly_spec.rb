@@ -135,7 +135,7 @@ describe "Pre-assembly integration" do
     @params[:staging_dir]   = @temp_dir
     @params[:show_progress] = false
     @params[:cleanup] = false
-#    @params[:bundle_dir] = File.join(PRE_ASSEMBLY_ROOT,@params[:bundle_dir])
+    @params[:bundle_dir] = File.join(PRE_ASSEMBLY_ROOT,@params[:bundle_dir])
     
     # Create the bundle.
     @b = PreAssembly::Bundle.new @params
