@@ -29,7 +29,7 @@ init_assembly_wf:     false
 
 content_md_creation:
   style:              'smpl'
-  smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
+  smpl_manifest:      'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
 
 object_discovery:
   use_manifest:       true
@@ -39,7 +39,8 @@ object_discovery:
 stageable_discovery:
   use_container:      false
   glob:               '**/*'
-  regex:              ~
+  regex:              '^((?!_techmd.xml|.md5).)*$'
+  files_only:         true
 
 manifest_cols:
   object_container:   'folder'

@@ -37,7 +37,7 @@ object_discovery:
 stageable_discovery:
   use_container:      false
   glob:               '**/*'
-  regex:              ~
+  regex:              '^((?!_techmd.xml|.md5).)*$'
   files_only:         true
 
 manifest_cols:
