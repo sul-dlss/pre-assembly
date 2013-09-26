@@ -21,19 +21,34 @@ describe PreAssembly::DigitalObject do
     @druid        = DruidTools::Druid.new @pid
     @tmp_dir_args = [nil, 'tmp']
     @dobj.druid = @druid
+    @dobj.pid = @pid
     @dobj.container = @dru    
+    @dobj.content_md_creation[:style]='smpl'
   end
   
   ####################
+  describe "SMPL specific technical metadata generation" do
 
+    it "should generate technicalMetadata for SMPL by combining all existing _techmd.xml files" do
+      
+      @dobj.create_technical_metadata
+      exp_xml = noko_doc(@dobj.technical_md_xml)
+      exp_xml.css('technicalMetadata').size.should == 1 # one top level node
+      exp_xml.css('Mediainfo').size.should == 2 # two Mediainfo nodes
+      exp_xml.css('Count').size.should == 4 # four nodes that have file info
+      exp_xml.css('Count')[0].content.should == '279' # look for some specific bits in the files that have been assembled
+      exp_xml.css('Count')[1].content.should == '217'
+      exp_xml.css('Count')[2].content.should == '280'
+      exp_xml.css('Count')[3].content.should == '218'
+    end
+  
+  end
+  
   describe "SMPL specific methods in project_specific module" do
 
     it "should convert SMPL content metadata into valid base content metadata" do
 
-      @dobj.content_md_creation[:style]='smpl'
-     # @dobj.project_style[:content_structure]='simple_book'
-      
-      @exp_xml = <<-END.gsub(/^ {8}/, '')
+      exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
              <contentMetadata type="media" objectId="aa111aa1111">
                <resource type="media" sequence="1" id="aa111aa1111_1">
@@ -70,9 +85,8 @@ describe PreAssembly::DigitalObject do
                </resource>
              </contentMetadata>
             END
-      @exp_xml = noko_doc @exp_xml
-      noko_doc(@dobj.create_content_metadata_xml_smpl).should be_equivalent_to @exp_xml
-      noko_doc(@dobj.create_content_metadata).should be_equivalent_to @exp_xml      
+      @dobj.create_content_metadata      
+      noko_doc(@dobj.content_md_xml).should be_equivalent_to noko_doc(exp_xml)
     end
 
   end
