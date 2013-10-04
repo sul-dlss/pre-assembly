@@ -165,7 +165,8 @@ module PreAssembly
 
      # Check if the object is on ingest hold
      def ingest_hold?
-       WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold'
+       # accession2WF is temporary, and anything set to "waiting" in that workflow is really treated like a "hold" condition
+       WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold' || (WFS.get_workflow_status(REPO, @pid, 'accession2WF','sdr-ingest-transfer') == 'waiting' && WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer').nil?)
      end
 
      # Check if the object is submitted
