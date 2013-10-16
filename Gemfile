@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 source 'http://sul-gems.stanford.edu'
 
-gem 'nokogiri', '~>1.5' # v1.6 does not work in Ruby 1.8.7
+gem 'nokogiri'
 gem 'equivalent-xml'
 gem 'csv-mapper'
-gem 'dor-services', '~>3.25'
+gem 'dor-services', '>=3.25'
 gem 'druid-tools', '>=0.2.0'
 gem 'lyber-core'
 gem 'rest-client'
@@ -26,8 +26,10 @@ group :test do
 end
 
 group :development do
-	gem 'lyberteam-devel', '>= 1.0.1'
 	gem 'lyberteam-capistrano-devel', '>= 1.1.0'
   gem 'capistrano'
+  gem 'net-ssh-kerberos', :platform => :ruby_18
+  gem 'net-ssh-krb', :platform => :ruby_19
+  gem 'gssapi', :github => 'cbeer/gssapi', :platform => :ruby_19
   gem 'awesome_print'
 end
