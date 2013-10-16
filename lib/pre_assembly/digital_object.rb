@@ -312,21 +312,18 @@ module PreAssembly
       
       i=0
       success=false
-      backtrace=""
-      exception_message=""
-      
+      exception=nil
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
         begin      
-          @set_druid_id.each do |druid|
+          Array(@set_druid_id).each do |druid|
             @dor_object.add_relationship *add_member_relationship_params(druid)
             @dor_object.add_relationship *add_collection_relationship_params(druid)
           end
           success = @dor_object.save
         rescue Exception => e
           log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          backtrace=e.backtrace
-          exception_message=e.message
+          exception = e
           sleep Dor::Config.dor.sleep_time
         end
       end
@@ -334,9 +331,9 @@ module PreAssembly
       if success == false
         error_message = "add_dor_object_to_set failed after #{i} attempts; for druid=#{pid} and set=#{@set_druid_id} \n"
         log error_message
-        error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
-        raise error_message
+        wrapped_exception = e.exception(error_message + e.message)
+        wrapped_exception.set_backtrace(e.backtrace)
+        raise wrapped_exception
       end
 
     end
