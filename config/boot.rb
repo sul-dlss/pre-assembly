@@ -8,9 +8,11 @@ CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 # Override Solrizer logger before it gets a chance to load and pollute STDERR.
 require 'solrizer'
-solr_log        = Logger.new(PRE_ASSEMBLY_ROOT + "/log/solrizer_#{environment}.log")
-solr_log.level  = Logger::SEV_LABEL.index(ENV['ROBOT_LOG_LEVEL']) || Logger::INFO
-Solrizer.logger = solr_log
+if Solrizer.respond_to? :logger
+  solr_log        = Logger.new(PRE_ASSEMBLY_ROOT + "/log/solrizer_#{environment}.log")
+  solr_log.level  = Logger::SEV_LABEL.index(ENV['ROBOT_LOG_LEVEL']) || Logger::INFO
+  Solrizer.logger = solr_log
+end
 
 # General DLSS infrastructure.
 require 'dor-services'
