@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe PreAssembly::DruidMinter do
 
   before(:all) do

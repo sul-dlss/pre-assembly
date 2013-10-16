@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe PreAssembly::ObjectFile do
 
   before( :each ) do
