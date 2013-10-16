@@ -119,7 +119,9 @@ module PreAssembly
 
     def load_skippables
       return unless @resume
-      YAML.each_document(Assembly::Utils.read_file(@progress_log_file)) do |yd|
+      docs = YAML.load_stream(Assembly::Utils.read_file(progress_log_file))
+      docs = docs.documents if docs.respond_to? :documents
+      docs.each do |yd|
         skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
       end
     end
@@ -472,7 +474,7 @@ module PreAssembly
     def discover_object_files(stageable_items)
       # Returns a list of the ObjectFiles for a digital object.
       object_files = []
-      stageable_items.each do |stageable|
+      Array(stageable_items).each do |stageable|
         find_files_recursively(stageable).each do |file_path|
           object_files.push(new_object_file stageable, file_path)
         end
