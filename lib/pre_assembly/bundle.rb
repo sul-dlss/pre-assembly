@@ -239,11 +239,11 @@ module PreAssembly
            elsif @manifest_cols.blank? || @manifest_cols[:object_container].blank?
              validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
            else
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.methods.include? @manifest_cols[:object_container]
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.respond_to? @manifest_cols[:object_container]
              validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:source_id])
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.methods.include?(@manifest_cols[:label])
-             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.methods.include?('druid')
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.respond_to?(@manifest_cols[:source_id])
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.respond_to?(@manifest_cols[:label])
+             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.respond_to?('druid')
             end
          end        
       else # if we are not using a manifest, check some stuff
