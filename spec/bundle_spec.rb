@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe PreAssembly::Bundle do
 
   before(:all) do
