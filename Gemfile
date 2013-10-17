@@ -32,6 +32,7 @@ end
 group :development do
 	gem 'lyberteam-capistrano-devel', '>= 1.1.0'
   gem 'capistrano', "< 3"
+  gem 'rvm-capistrano'
   gem 'awesome_print'
 end
 
