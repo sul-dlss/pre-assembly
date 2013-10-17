@@ -22,7 +22,7 @@
 #  * dev
 #  * production
 
-load 'deploy' if respond_to?(:namespace) # cap2 differentiator
+load 'deploy'
 require 'dlss/capistrano/robots'
 
 set :application,     'pre-assembly'
