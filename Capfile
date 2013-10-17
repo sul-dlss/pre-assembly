@@ -27,7 +27,14 @@ require 'dlss/capistrano/robots'
 
 set :application,     'pre-assembly'
 set :git_subdir,      "lyberteam/#{application}.git"
-set :rvm_ruby_string, "1.8.7-p358@#{application}"
+set :rvm_ruby_string, "1.9.3-p448"
+
+set :shared_children, %w(
+  log
+  .rvmrc
+  config/certs
+  config/environments
+)
 
 set :branch do
   last_tag = `git describe --abbrev=0 --tags`.strip
@@ -61,6 +68,12 @@ task :production do
   role :app, 'sul-lyberservices-prod.stanford.edu'
   set :deploy_env, 'production'
   set :rails_env,  'production' # TEMPORARY: see above
+end
+
+namespace :dlss do
+  task :set_shared_children do
+    # no-op
+  end
 end
 
 after "deploy:update", "deploy:cleanup" 
