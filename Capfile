@@ -24,6 +24,7 @@
 
 load 'deploy'
 require 'dlss/capistrano/robots'
+require 'rvm/capistrano'
 
 set :application,     'pre-assembly'
 set :git_subdir,      "lyberteam/#{application}.git"
