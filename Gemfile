@@ -31,7 +31,7 @@ end
 
 group :development do
 	gem 'lyberteam-capistrano-devel', '>= 1.1.0'
-  gem 'capistrano'
+  gem 'capistrano', "< 3"
   gem 'net-ssh-kerberos', :platform => :ruby_18
   gem 'net-ssh-krb', :platform => :ruby_19
   gem 'gssapi', :github => 'cbeer/gssapi', :platform => :ruby_19
