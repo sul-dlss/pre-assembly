@@ -356,7 +356,8 @@ cleanup:                 false  # If true, pre-assembly deletes objects from DOR
 # the contents of the bundle directory. Supply the path to the Ruby code that will
 # perform the validation (see spec/test_data/project_config_files/local_dev_rumsey.rb
 # for an example). Also supply the path to the file to be used to report any
-# validation warnings. If warnings are generated, pre-assembly won't run.
+# validation warnings. If warnings are generated, pre-assembly won't run. 
+# Use fully qualified paths from the root of the server, not relative to pre-assembly.
 validate_bundle_dir:
-  code:   'some/path/validation_code.rb'
-  report: 'some/path/validation_warnings.csv'
+  code:   '/some/full/path/to/validation_code.rb'
+  report: '/some/full/path/to/validation_warnings.csv'
