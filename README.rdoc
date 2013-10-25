@@ -1,8 +1,8 @@
-==Pre-assembly
+=Pre-assembly
 
 This is a Ruby implementation of services needed to prepare objects to be assembled and then accessioned into the SUL digital library.
 
-==Version History
+==Releases
 
 1.0.0::  Released to production
 1.2.0::  Changed <provider_checksum> node to regular <checksum> node.  Must be run in combination with assembly 1.2.0.
@@ -89,6 +89,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.2.5:: Make SMPL searching of checksums in MD5 file case insensitive for the role folder
 2.2.6:: Add some additional info to the discovery report for SMPL manifest projects 
 2.2.7-2.2.8:: Enable automated combination of all techmd.xml files for SMPL projects into a single technical metadata datastream; cleanup old methods
+2.3.1:: Remove revs specific shared methods from revs project file, include their functionality from the new revs-utils gem
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
