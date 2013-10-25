@@ -60,7 +60,7 @@ describe PreAssembly::DigitalObject do
         </relatedItem>
         <relatedItem type="original">
           <physicalDescription>
-            <form authority="aat"><%=revs_check_formats(manifest_row[:format])%></form>
+            <form authority="aat"><%=revs_check_format(manifest_row[:format])%></form>
           </physicalDescription>
         </relatedItem>
         <originInfo>
@@ -158,28 +158,6 @@ describe PreAssembly::DigitalObject do
      it "create_desc_metadata_xml() should generate the expected xml text" do
        @dobj.create_desc_metadata_xml
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
-     end
-     
-     it "should lookup the country correctly" do
-       @dobj.revs_get_country('USA').should == "United States"
-       @dobj.revs_get_country('US').should == "United States"
-       @dobj.revs_get_country('United States').should == "United States"
-       @dobj.revs_get_country('italy').should == "Italy"
-       @dobj.revs_get_country('Bogus').should be_false
-     end
-
-     it "should parse a city/state correctly" do
-       @dobj.revs_get_city_state('San Mateo (Calif.)').should == ['San Mateo','Calif.']
-       @dobj.revs_get_city_state('San Mateo').should be_false
-       @dobj.revs_get_city_state('Indianapolis (Ind.)').should == ['Indianapolis','Ind.']
-     end
-
-     it "should lookup a state correctly" do
-       @dobj.revs_get_state_name('Calif').should == "California"
-       @dobj.revs_get_state_name('Calif.').should == "California"
-       @dobj.revs_get_state_name('calif').should == "California"       
-       @dobj.revs_get_state_name('Ind').should == "Indiana"       
-       @dobj.revs_get_state_name('Bogus').should == "Bogus"
      end
      
    end
