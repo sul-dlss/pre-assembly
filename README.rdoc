@@ -758,7 +758,7 @@ More information on the assembly robots is found in the assembly project here:
 ==Deployment
 
   cap development deploy  # for lyberservices-dev
-  cap test deploy  # for lyberservices-test
+  cap testing deploy  # for lyberservices-test
   cap production deploy # for lyberservices-production
 
 Enter the branch or tag you want deployed.
