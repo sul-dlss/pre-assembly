@@ -141,10 +141,10 @@ module PreAssembly
            rescue
              message += report_error_message("no obj") # object does not exist
            end
-           if obj # if object exists
+           begin # if object exists
               apo=obj.admin_policy_object
               message += (apo.nil? ? report_error_message("no APO") : "yes") # check for apo
-           else # object doesn't exist
+           rescue # object doesn't exist or checking for apo fails
               message += report_error_message("no APO") # no object, so no APO
            end # end if object exists
          end # end confirming registration
