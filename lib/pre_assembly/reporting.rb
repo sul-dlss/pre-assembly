@@ -61,7 +61,7 @@ module PreAssembly
       header+="Num Files in CM Manifest , All CM files found ," if using_smpl_manifest
       header+="Checksums , " if confirming_checksums
       header+="Duplicate Filenames? , "
-      header+="DRUID, Registered? , APOs , " if confirming_registration
+      header+="DRUID, Registered? , APO exists? , " if confirming_registration
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
       
@@ -138,12 +138,16 @@ module PreAssembly
            begin
              obj = Dor::Item.find(druid)
              message += " yes , " # obj exists
-             apos=obj.admin_policy_object_ids
-             message += (apos.size == 0 ? report_error_message("no APO") : "#{apos.size}") # apo
            rescue
-             message += report_error_message("no obj") + report_error_message("no APO")
+             message += report_error_message("no obj") # object does not exist
            end
-         end
+           if obj # if object exists
+              apo=obj.admin_policy_object
+              message += (apo.nil? ? report_error_message("no APO") : "yes") # check for apo
+           else # object doesn't exist
+              message += report_error_message("no APO") # no object, so no APO
+           end # end if object exists
+         end # end confirming registration
            
          if checking_sourceids # let's check for global source ID uniqueness
            message += (Assembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))

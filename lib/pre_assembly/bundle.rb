@@ -591,7 +591,7 @@ module PreAssembly
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
         # Get label and source_id from column names declared in YAML config.
-        label_value=r.send(@manifest_cols[:label])
+        label_value = (@manifest_cols[:label] ? r.send(@manifest_cols[:label]) : "")
         dobj.label         = r.send(@manifest_cols[:label]) unless (label_value.nil? || label_value.empty?)
         dobj.source_id     = (r.send(@manifest_cols[:source_id]) + source_id_suffix) if @manifest_cols[:source_id] 
         # Also store a hash of all values from the manifest row, using column names as keys.
