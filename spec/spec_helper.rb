@@ -1,8 +1,9 @@
 require 'tmpdir'
 require 'equivalent-xml'
 
-environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
+environment = "test" # ENV['ROBOT_ENVIRONMENT'] ||= 'test'
 
+puts "running in #{environment} mode"
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
 

@@ -1,10 +1,9 @@
 # Pass in input base folder and CSV file with two columns (sourceid,druid)
-# Script will iterate over base folder and rename any items it finds that contain sourceid, replacing it with druid
-# It will do this iteratively over all files and folders contained in the source directory
-# NOTE - if the input base folder contains sub-folders, and those sub-folders contain instances of sourceid, you will run into issues
+# Script will iterate over base folder and rename any files it finds that contain sourceid, replacing it with druid
+# It will do this iteratively over all files contained in the source directory, but will ignore folders
 
 # call this with 
-# ruby devel/rename_files BASE_FOLDER CSV_FILE
+# ruby devel/rename_files.rb BASE_FOLDER CSV_FILE
 
 require 'rubygems'
 require 'bundler/setup'
@@ -22,20 +21,22 @@ require 'fileutils'
 # go into base folder
 FileUtils.cd(@base_folder)
 
-# grab all files and folders
+# grab all files recurisvely in source folder
 files=Dir.glob("**/**")
 
 @items.each do |row|
   sourceid=row.sourceid
   druid=row.druid
-  puts "Working on #{sourceid} -- renaming to #{druid}"
+  puts "Working on '#{sourceid}' -- renaming all files with this value to '#{druid}'"
   
   files.each do |file|
-    old_name=File.join(@base_folder,file)
-    if File.file?(old_name) && file.include?(sourceid)
-      new_name=File.join(@base_folder,file.gsub(sourceid,druid))
-      puts "...renaming #{old_name} to #{new_name}"
-      FileUtils.mv old_name,new_name
+    orig_file=File.join(@base_folder,file)
+    dir=File.dirname(orig_file)
+    filename=File.basename(orig_file)
+    if File.file?(orig_file) && filename.include?(sourceid) # only operate on files, and only update filenames, not folder names
+      new_file=File.join(dir,filename.gsub(sourceid,druid))
+      puts "...renaming #{orig_file} to #{new_file}"
+      FileUtils.mv orig_file,new_file
     end
   end
 

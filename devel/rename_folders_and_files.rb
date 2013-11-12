@@ -3,7 +3,7 @@
 # It will then go into the newly renamed folder and find any files/subfolders that contain sourceid and rename them to druid
 
 # call this with 
-# ruby devel/rename_folders_and_files BASE_FOLDER CSV_FILE
+# ruby devel/rename_folders_and_files.rb BASE_FOLDER CSV_FILE
 
 require 'rubygems'
 require 'bundler/setup'
