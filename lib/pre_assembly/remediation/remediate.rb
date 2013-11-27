@@ -23,10 +23,10 @@ module PreAssembly
       end
       
       def log_to_csv(csv_out)
-        csv_file_out = CSV::Writer.generate(File.open(csv_out,'ab'))
-        output_row=[pid,success,message.truncate(300),Time.now]
-        csv_file_out << output_row
-        csv_file_out.close
+	CSV.open("csv_out", "ab") do |csv|
+        	output_row=[pid,success,message,Time.now]
+        	csv << output_row
+	end
       end
       
       def log_to_progress_file(progress_log_file)
@@ -81,7 +81,7 @@ module PreAssembly
       
       # run the update logic but with versioning
       def update_object_with_versioning
-        open_version
+        open_version 
         update_object if @success # only continue the process if everything is still good
         close_version if @success # only continue the process if everything is still good
       end
@@ -116,7 +116,7 @@ module PreAssembly
 
      def close_version
        begin # try and close the version 
-         @fobj.close_version
+         @fobj.close_version :description => 'automated metadata remediation', :significance => :minor
          @success=true
        rescue Exception => e  
          @success=false
@@ -128,7 +128,7 @@ module PreAssembly
        return {
          :pid                  => @pid,
          :remediate_completed  => @success,
-         :message              => @message.truncate(300),
+         :message              => @message,
          :timestamp            => Time.now.to_s
        }       
      end
