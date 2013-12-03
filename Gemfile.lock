@@ -282,6 +282,7 @@ GEM
     uuidtools (2.1.4)
     validatable (1.6.7)
     xml-simple (1.1.2)
+    yard (0.8.2.1)
 
 PLATFORMS
   ruby
@@ -311,3 +312,4 @@ DEPENDENCIES
   revs-utils (>= 0.0.2)
   rspec (~> 2.6)
   rvm-capistrano
+  yard
