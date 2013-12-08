@@ -12,8 +12,10 @@ describe PreAssembly::Remediation::Item do
     before(:each) do
       @pid = "druid:cs575bk5522"
       @item = PreAssembly::Remediation::Item.new(@pid)
-      @csv_filename = File.dirname(__FILE__) + "/test_data/logging/csv_log.csv"
-      @progress_log_file = File.dirname(__FILE__) + "/test_data/logging/progress_log_file.yml"
+      @log_dir = File.dirname(__FILE__) + "/test_data/logging"
+      Dir.mkdir(@log_dir) unless Dir.exist?(@log_dir)
+      @csv_filename = @log_dir + "/csv_log.csv"
+      @progress_log_file = @log_dir + "/progress_log_file.yml"
     end
     after(:each) do
        # File.delete(@csv_filename)
