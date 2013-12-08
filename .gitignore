@@ -5,6 +5,7 @@
 .bundle
 config/certs/*
 config/environments/*.rb
+spec/test_data/logging/*
 doc/*
 log/*
 pkg/*
