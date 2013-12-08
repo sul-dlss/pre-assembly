@@ -22,15 +22,35 @@ module PreAssembly
         return druids.uniq
       end
       
+      # Ensure the log file exists 
+      # @param
+      # @return
+      def ensureLogFile(filename)
+        begin
+          File.open(filename, 'w+') {|f| 
+            f.write("--- Logging started at #{Time.now}---") 
+          }
+        rescue => e
+          raise "Unable to open log file #{filename}: #{e.message}"
+        end
+      end
+      
+      # Log to a CSV file
+      # @param String csv_out
+      # @return
       def log_to_csv(csv_out)
-	CSV.open("csv_out", "ab") do |csv|
-        	output_row=[pid,success,message,Time.now]
-        	csv << output_row
-	end
+        ensureLogFile(csv_out)
+        CSV.open(csv_out, 'w+') {|f| 
+          output_row=[pid,success,message,Time.now]
+          f << output_row
+        }
       end
       
       def log_to_progress_file(progress_log_file)
-        File.open(progress_log_file, 'a') { |f| f.puts log_info.to_yaml } # complete log to output file
+        ensureLogFile(progress_log_file)
+        File.open(progress_log_file, 'w+') { |f| 
+          f.puts log_info.to_yaml 
+        } # complete log to output file
       end
       
       # gets and caches the Dor Item
@@ -129,7 +149,7 @@ module PreAssembly
          :pid                  => @pid,
          :remediate_completed  => @success,
          :message              => @message,
-         :timestamp            => Time.now.to_s
+         :timestamp            => Time.now
        }       
      end
 
