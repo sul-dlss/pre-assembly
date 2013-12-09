@@ -27,8 +27,7 @@ module PreAssembly
       # @return
       def ensureLogFile(filename)
         begin
-          File.open(filename, 'w+') {|f| 
-            f.write("--- Logging started at #{Time.now}---") 
+          File.open(filename, 'a') {|f| 
           }
         rescue => e
           raise "Unable to open log file #{filename}: #{e.message}"
@@ -40,7 +39,7 @@ module PreAssembly
       # @return
       def log_to_csv(csv_out)
         ensureLogFile(csv_out)
-        CSV.open(csv_out, 'w+') {|f| 
+        CSV.open(csv_out, 'a') {|f| 
           output_row=[pid,success,message,Time.now]
           f << output_row
         }
