@@ -74,7 +74,7 @@ module PreAssembly
 
       objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
       all_object_containers=manifest_rows.collect {|r| r.send(@manifest_cols[:object_container])}
-
+      
       total_objects=@digital_objects.size
 
       o2p = objects_to_process
@@ -170,7 +170,7 @@ module PreAssembly
       # now check all files in the bundle directory against the manifest to report on files not referenced
       if using_manifest && show_other
         puts "\nExtra Files/Dir Report (items in bundle directory not in manifest):"
-        entries_in_bundle_directory.each { |dir_item| puts "** #{dir_item}" unless all_object_containers.include?(dir_item)}
+        entries_in_bundle_directory.each { |dir_item| puts "** #{dir_item}" unless all_object_containers.include?(dir_item.to_s.strip)}
       end
       
       puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
@@ -188,7 +188,7 @@ module PreAssembly
         else
           source_ids.each {|k, v| puts report_error_message("sourceid \"#{k}\" appears #{v} times") if v.to_i != 1}
         end
-      else
+      elsif !using_manifest
         if show_other && (entries_in_bundle_directory.count != total_objects)
           puts "List of entries in bundle directory that will not be discovered: " 
           puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
