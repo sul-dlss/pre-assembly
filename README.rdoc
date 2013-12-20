@@ -91,6 +91,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.2.7-2.2.8:: Enable automated combination of all techmd.xml files for SMPL projects into a single technical metadata datastream; cleanup old methods
 2.3.1:: Remove revs specific shared methods from revs project file, include their functionality from the new revs-utils gem
 2.3.2:: Small changes to discovery report around checking for APOs and objects; do not fail if label column is missing from manifest for should_register=false
+2.3.6:: Use latest version of assembly-image and assembly-objectfile gems
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
