@@ -702,7 +702,7 @@ module PreAssembly
         :unadjusted_container => dobj.unadjusted_container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
-        :timestamp            => Time.now
+        :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
     end
 
