@@ -47,7 +47,7 @@ module PreAssembly
       
       def log_to_progress_file(progress_log_file)
         ensureLogFile(progress_log_file)
-        File.open(progress_log_file, 'w+') { |f| 
+        File.open(progress_log_file, 'a') { |f| 
           f.puts log_info.to_yaml 
         } # complete log to output file
       end
