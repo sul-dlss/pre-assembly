@@ -1,4 +1,7 @@
-require 'csv-mapper'
+# encoding: UTF-8
+
+require 'csv'
+require 'ostruct'
 
 module PreAssembly
 
@@ -9,7 +12,6 @@ module PreAssembly
 
   class Bundle
 
-    include CsvMapper
     include PreAssembly::Logging
     include PreAssembly::Reporting
 
@@ -62,6 +64,13 @@ module PreAssembly
     # Initialization.
     ####
 
+    def self.import_csv_to_structs(filename)
+      # load CSV into an array of structs, allowing UTF-8 to pass through, deleting blank columns
+      file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
+      csv = CSV.parse(file_contents, :headers => true)
+      return csv.map { |row| OpenStruct.new(row.to_hash.delete_if{|key,value| key==nil}) }
+    end
+    
     def initialize(params = {})
       # Unpack the user-supplied parameters, after converting
       # all hash keys and some hash values to symbols.
@@ -603,14 +612,8 @@ module PreAssembly
       # On first call, loads the manifest data (does not reload on subsequent calls).
       # If bundle is not using a manifest, just loads and returns emtpy array.
       return @manifest_rows if @manifest_rows
-      @manifest_rows = @object_discovery[:use_manifest] ? load_manifest_rows_from_csv : []
+      @manifest_rows = @object_discovery[:use_manifest] ? self.class.import_csv_to_structs(@manifest) : []
     end
-
-    def load_manifest_rows_from_csv
-      # Wrap the functionality provided by csv-mapper.
-      return import(@manifest) { read_attributes_from_file }
-    end
-
 
     ####
     # Digital object processing.
