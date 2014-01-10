@@ -1,6 +1,8 @@
+# encoding: UTF-8
+
 # Run with
-# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/SC1017_SOHP',:csv_filename=>'smpl_manifest.csv',:verbose=>true)
-# cm.generate_cm('oo000oo0001') 
+# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/ARS0022_speech/content_ready_for_accessioning/content',:csv_filename=>'smpl_manifest.csv',:verbose=>true)
+# cm.generate_cm('zx248jc1918')
 
 # or in the context of a bundle object:
 # cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
@@ -38,9 +40,9 @@ module PreAssembly
        
        def load_manifest
     
-         # load manifest into @items and then parse into @manifest hash
-         @items=CsvMapper.import(@csv_filename) do read_attributes_from_file end  
-        
+         # load manifest into @items
+         @items=PreAssembly::Bundle.import_csv_to_structs(@csv_filename)
+
          @manifest={}
                   
          @items.each do |row|

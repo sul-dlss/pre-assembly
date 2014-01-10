@@ -44,7 +44,7 @@ stageable_discovery:
 manifest_cols:
   object_container:   'file_name'
   source_id:          'stanford_file_id'
-  label:              'title1'
+  label:              'Title1'
 
 content_exclusion:    ~
 

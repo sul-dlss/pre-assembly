@@ -92,6 +92,7 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.3.1:: Remove revs specific shared methods from revs project file, include their functionality from the new revs-utils gem
 2.3.2:: Small changes to discovery report around checking for APOs and objects; do not fail if label column is missing from manifest for should_register=false
 2.3.6:: Use latest version of assembly-image and assembly-objectfile gems
+2.3.7:: Use latest version of revs-utils.  Allow manifests to have UTF-8 characters (switch manifest loading from csv-mapper to standard CSV library)
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
