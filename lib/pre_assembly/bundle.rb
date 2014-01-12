@@ -66,9 +66,10 @@ module PreAssembly
 
     def self.import_csv_to_structs(filename)
       # load CSV into an array of structs, allowing UTF-8 to pass through, deleting blank columns
-      file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
-      csv = CSV.parse(file_contents, :headers => true)
-      return csv.map { |row| OpenStruct.new(row.to_hash.delete_if{|key,value| key==nil}) }
+      #file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
+      #csv = CSV.parse(file_contents, :headers => true)
+      #return csv.map { |row| OpenStruct.new(row.to_hash.delete_if{|key,value| key==nil}) }
+      return CsvMapper.import(filename) do read_attributes_from_file end
     end
     
     def initialize(params = {})
