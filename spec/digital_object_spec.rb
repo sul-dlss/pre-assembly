@@ -694,10 +694,25 @@ describe PreAssembly::DigitalObject do
       @dobj.generate_desc_metadata
     end
 
-    it "create_desc_metadata_xml() should generate the expected xml text" do
+    it "create_desc_metadata_xml() should generate the expected xml text with the manifest row having a hash with keys as symbols" do
       @dobj.create_desc_metadata_xml
       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
     end
+
+    it "create_desc_metadata_xml() should generate the expected xml text with the manifest row having a hash with keys as strings" do
+      @dobj.manifest_row = {
+        'sourceid'    => 'foo-1',
+        'label'       => 'this is < a label with an & that will break XML unless it is escaped',
+        'year'        => '2012',
+        'description' => 'this is a description > another description < other stuff',
+        'format'      => 'film',
+        'foo'        =>  '123',
+        'bar'         =>  '456',
+      }
+      @dobj.create_desc_metadata_xml
+      noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+    end
+
 
     it "should be able to write the desc_metadata XML to a file" do
       @dobj.create_desc_metadata_xml
