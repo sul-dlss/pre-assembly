@@ -277,7 +277,7 @@ module PreAssembly
               log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
             end
           end
-          Dor::SearchService.solr.commit
+          #Dor::SearchService.solr.commit
           backtrace=e.backtrace
           exception_message=e.message
           sleep Dor::Config.dor.sleep_time
