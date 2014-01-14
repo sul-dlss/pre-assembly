@@ -172,7 +172,9 @@ describe PreAssembly::DigitalObject do
          :year        => '9/2/2012',
          :description => 'this is a description > another description < other stuff',
          :format      => 'film',
-         :location    => 'Raceway | Rome | Italy'
+         :location    => 'Raceway | Rome | Italy',
+         :foo         =>  nil,
+         :bar         =>  ''
        }
        @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
