@@ -272,7 +272,7 @@ module PreAssembly
           all_pids.each do |pid|
             begin
               Dor::Config.fedora.client["objects/#{pid}"].delete
-              Dor::SearchService.solr.delete_by_id(pid)
+             # Dor::SearchService.solr.delete_by_id(pid)  # should be unncessary
             rescue Exception => e
               log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
             end
