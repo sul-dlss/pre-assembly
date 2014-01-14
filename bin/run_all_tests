@@ -1,3 +1,4 @@
 #! /bin/bash
+ROBOT_ENVIRONMENT='test'
 
 bundle exec rspec spec integration
