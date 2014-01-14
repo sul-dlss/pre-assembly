@@ -17,7 +17,9 @@ module PreAssembly
       def self.get_druids(progress_log_file,completed=true)
         druids=[]
         if File.readable? progress_log_file 
-          YAML.each_document(IO.read(progress_log_file)) { |obj| druids << obj[:pid] if obj[:remediate_completed] == completed}  
+          docs = YAML.load_stream(IO.read(progress_log_file))
+          docs = docs.documents if docs.respond_to? :documents
+          docs.each { |yd| druids << yd[:pid] if yd[:remediate_completed] == completed }
         end
         return druids.uniq
       end
