@@ -707,7 +707,7 @@ describe PreAssembly::DigitalObject do
         'description' => 'this is a description > another description < other stuff',
         'format'      => 'film',
         'foo'        =>  '123',
-        'bar'         =>  '456',
+        'bar'         => '456',
       }
       @dobj.create_desc_metadata_xml
       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
@@ -725,6 +725,48 @@ describe PreAssembly::DigitalObject do
       end
     end
 
+    it "should generate descMetadata correctly given a manifest row as loaded from the csv" do
+      manifest=PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
+      @dobj.manifest_row = Hash[manifest[2].each_pair.to_a]
+      
+      @dobj.desc_md_template_xml = IO.read("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/mods_template.xml")
+      @dobj.create_desc_metadata_xml
+      exp_xml = <<-END.gsub(/^ {8}/, '')
+      <?xml version="1.0"?>
+      <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+        <typeOfResource>still image</typeOfResource>
+        <genre authority="att">digital image</genre>
+        <subject authority="lcsh">
+          <topic>Automobile</topic>
+          <topic>History</topic>
+        </subject>
+        <relatedItem type="host">
+          <titleInfo>
+      			<title>The Collier Collection of the Revs Institute for Automotive Research</title>
+          </titleInfo>
+          <typeOfResource collection="yes"/>
+        </relatedItem>
+        <relatedItem type="original">
+          <physicalDescription>
+            <form authority="att">BW film</form>
+          </physicalDescription>
+        </relatedItem>
+        <originInfo>
+          <dateCreated>1938, 1956</dateCreated>
+        </originInfo>
+        <titleInfo>a
+          	<title>Avus 1938, 1956</title>
+      	</titleInfo>
+        <note>yo, this is a description</note>
+        <identifier type="local" displayLabel="Revs ID">foo-2.2</identifier>
+        <note type="source note" ID="inst_notes">strip 2 is duplicate; don't scan</note>
+        <note type="source note" ID="inst_notes2">strip 2 is duplicate; don't scan</note>
+      </mods>
+      END
+                  
+      noko_doc(@dobj.desc_md_xml).should be_equivalent_to exp_xml
+    end
+    
   end
 
   ####################

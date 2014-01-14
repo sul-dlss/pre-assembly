@@ -41,30 +41,30 @@ module PreAssembly
        def load_manifest
     
          # load manifest into @items
-         @items=PreAssembly::Bundle.import_csv_to_structs(@csv_filename)
+         @items=PreAssembly::Bundle.import_csv(@csv_filename)
 
          @manifest={}
                   
          @items.each do |row|
             
-            if (defined?(row.druid_no_audio) && row.druid_no_audio) # this column doesn't need to exist anymore, but we'll leave it here for backwards compatibility
-              druid=row.druid_no_audio
+            if (defined?(row[:druid_no_audio]) && row[:druid_no_audio]) # this column doesn't need to exist anymore, but we'll leave it here for backwards compatibility
+              druid=row[:druid_no_audio]
             else
-              druid=get_druid(row.filename)
-              role=get_role(row.filename)
-              file_extension=File.extname(row.filename)
+              druid=get_druid(row[:filename])
+              role=get_role(row[:filename])
+              file_extension=File.extname(row[:filename])
               # set the resource type if available, otherwise we'll use a default
-              resource_type=defined?(row.resource_type) ? row.resource_type || nil : nil    
+              resource_type=defined?(row[:resource_type]) ? row[:resource_type] || nil : nil    
 
               # set the publish/preserve/shelve if available, otherwise we'll use the default
-              publish=defined?(row.publish) ? row.publish || nil : nil
-              shelve=defined?(row.shelve) ? row.shelve || nil : nil
-              preserve=defined?(row.preserve) ? row.preserve || nil : nil
+              publish=defined?(row[:publish]) ? row[:publish] || nil : nil
+              shelve=defined?(row[:shelve]) ? row[:shelve] || nil : nil
+              preserve=defined?(row[:preserve]) ? row[:preserve] || nil : nil
             end
             
             manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
-            manifest[druid][:source_id]=row.source_id if (defined?(row.source_id) && row.source_id)
-            manifest[druid][:files] << {:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row.filename,:label=>row.label,:sequence=>row.sequence}
+            manifest[druid][:source_id]=row[:source_id] if (defined?(row[:source_id]) && row[:source_id])
+            manifest[druid][:files] << {:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row[:filename],:label=>row[:label],:sequence=>row[:sequence]}
             
          end # loop over all items
          

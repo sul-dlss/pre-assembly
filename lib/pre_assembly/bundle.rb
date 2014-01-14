@@ -64,12 +64,12 @@ module PreAssembly
     # Initialization.
     ####
 
-    def self.import_csv_to_structs(filename)
-      # load CSV into an array of structs, allowing UTF-8 to pass through, deleting blank columns
-      #file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
-      #csv = CSV.parse(file_contents, :headers => true)
-      #return csv.map { |row| OpenStruct.new(row.to_hash.delete_if{|key,value| key==nil}) }
-      return CsvMapper.import(filename) do read_attributes_from_file end
+    def self.import_csv(filename)
+      # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
+      file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
+      csv = CSV.parse(file_contents, :headers => true)
+      return csv.map { |row| row.to_hash.with_indifferent_access }
+      #return CsvMapper.import(filename) do read_attributes_from_file end
     end
     
     def initialize(params = {})
@@ -249,11 +249,11 @@ module PreAssembly
            elsif @manifest_cols.blank? || @manifest_cols[:object_container].blank?
              validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
            else
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.respond_to? @manifest_cols[:object_container]
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first[@manifest_cols[:object_container]]
              validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.respond_to?(@manifest_cols[:source_id])
-             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.respond_to?(@manifest_cols[:label])
-             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.respond_to?('druid')
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first[@manifest_cols[:source_id]]
+             validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first[@manifest_cols[:label]]
+             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first['druid']
             end
          end        
       else # if we are not using a manifest, check some stuff
@@ -448,7 +448,7 @@ module PreAssembly
       # manifest columns. The column name to use is configured by the
       # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
-      return manifest_rows.map { |r| path_in_bundle r.send(col_name) }
+      return manifest_rows.map { |r| path_in_bundle r[col_name] }
     end
 
     def discover_items_via_crawl(root, discovery_info)
@@ -584,7 +584,7 @@ module PreAssembly
     
     # confirm that the all of the source IDs supplied within a manifest are locally unique
     def manifest_sourceids_unique?
-      all_source_ids=manifest_rows.collect {|r| r.send(@manifest_cols[:source_id])}
+      all_source_ids=manifest_rows.collect {|r| r[@manifest_cols[:source_id]]}
       all_source_ids.size == all_source_ids.uniq.size
     end
     
@@ -601,11 +601,11 @@ module PreAssembly
       @digital_objects.each_with_index do |dobj, i|
         r                  = mrows[i]
         # Get label and source_id from column names declared in YAML config.
-        label_value = (@manifest_cols[:label] ? r.send(@manifest_cols[:label]) : "")
-        dobj.label         = r.send(@manifest_cols[:label]) unless (label_value.nil? || label_value.empty?)
-        dobj.source_id     = (r.send(@manifest_cols[:source_id]) + source_id_suffix) if @manifest_cols[:source_id] 
+        label_value = (@manifest_cols[:label] ? r[@manifest_cols[:label]] : "")
+        dobj.label         = label_value
+        dobj.source_id     = (r[@manifest_cols[:source_id]] + source_id_suffix) if @manifest_cols[:source_id] 
         # Also store a hash of all values from the manifest row, using column names as keys.
-        dobj.manifest_row  = Hash[r.each_pair.to_a]
+        dobj.manifest_row  = r
       end
     end
 
@@ -613,7 +613,7 @@ module PreAssembly
       # On first call, loads the manifest data (does not reload on subsequent calls).
       # If bundle is not using a manifest, just loads and returns emtpy array.
       return @manifest_rows if @manifest_rows
-      @manifest_rows = @object_discovery[:use_manifest] ? self.class.import_csv_to_structs(@manifest) : []
+      @manifest_rows = @object_discovery[:use_manifest] ? self.class.import_csv(@manifest) : []
     end
 
     ####

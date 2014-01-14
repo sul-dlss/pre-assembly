@@ -20,7 +20,7 @@ describe PreAssembly::DigitalObject do
           <topic>Automobile</topic>
           <topic>History</topic>
         </subject>
-        <% if manifest_row[:location] %>
+        <% if !manifest_row[:location].blank? %>
        		<subject id="location" displayLabel="Location" authority="local">
       	    <hierarchicalGeographic>
       		<% manifest_row[:location].split('|').reverse.each do |location| %>
@@ -38,7 +38,7 @@ describe PreAssembly::DigitalObject do
       			</hierarchicalGeographic>
       		</subject>
       	<% end %>
-      	<% if manifest_row[:marque] %>
+      	<% if !manifest_row[:marque].blank? %>
       		<% manifest_row[:marque].split('|').each do |marque| %>
       			<% lc_term=revs_lookup_marque(marque.strip)
       			 if lc_term %>
@@ -72,9 +72,9 @@ describe PreAssembly::DigitalObject do
         <note>[[description]]</note>
         <note>ERB Test: <%=manifest_row[:description]%></note>
         <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
-        <%if manifest_row[:foo]%><note type="source note" ID="foo"><%=manifest_row[:foo]%></note><% end %>
-        <%if manifest_row[:bar]%><note type="source note" ID="bar"><%=manifest_row[:bar]%></note><% end %>
-        <%if manifest_row[:hide] %><note type="source note" displayLabel="Visibility" ID="visibility">hidden</note><% end %>  
+        <%if !manifest_row[:foo].blank?%><note type="source note" ID="foo"><%=manifest_row[:foo]%></note><% end %>
+        <%if !manifest_row[:bar].blank?%><note type="source note" ID="bar"><%=manifest_row[:bar]%></note><% end %>
+        <%if !manifest_row[:hide].blank? %><note type="source note" displayLabel="Visibility" ID="visibility">hidden</note><% end %>  
       </mods>
     END
     

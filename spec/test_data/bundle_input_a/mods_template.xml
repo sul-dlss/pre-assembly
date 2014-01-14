@@ -21,13 +21,14 @@
     <dateCreated>[[year]]</dateCreated>
   </originInfo>
   <titleInfo>a
-	  <% if manifest_row[:label] %>
+	  <% if !manifest_row[:label].blank? %>
     	<title>[[label]]</title>
 		<% end %>
   </titleInfo>
-  <% if manifest_row[:description] %><note><%=manifest_row[:description]%></note><% end %>
+  <% if !manifest_row[:description].blank? %><note><%=manifest_row[:description]%></note><% end %>
   <identifier type="local" displayLabel="Revs ID">[[sourceid]]</identifier>
-  <% if manifest_row[:inst_notes] %><note type="source note" ID="inst_notes"><%=manifest_row[:inst_notes]%></note><% end %>
-  <% if manifest_row[:prod_notes] %><note type="source note" ID="prod_notes"><%=manifest_row[:prod_notes]%></note><% end %>
-  <% if manifest_row[:has_more_metadata] %><note type="source note" ID="has_more_metadata"><%=manifest_row[:has_more_metadata]%></note><% end %>
+  <% if !manifest_row[:inst_notes].blank? %><note type="source note" ID="inst_notes"><%=manifest_row[:inst_notes]%></note><% end %>
+  <% if !manifest_row['inst_notes'].blank? %><note type="source note" ID="inst_notes2"><%=manifest_row['inst_notes']%></note><% end %>
+  <% if !manifest_row[:prod_notes].blank? %><note type="source note" ID="prod_notes"><%=manifest_row[:prod_notes]%></note><% end %>
+  <% if !manifest_row[:has_more_metadata].blank? %><note type="source note" ID="has_more_metadata"><%=manifest_row[:has_more_metadata]%></note><% end %>
 </mods>

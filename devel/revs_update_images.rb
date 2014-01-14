@@ -20,7 +20,6 @@ require 'csv-mapper'
 include CsvMapper
 
 remediate_logic_file='/thumpers/dpgthumper-staging/Revs/revs_update_images_remediation.rb' # the revs update mods remeditation class
-#remediate_logic_file='/dor/preassembly/revs/revs_update_images_remediation.rb' # the revs update mods remeditation class
 require remediate_logic_file
 
 source_path=File.dirname(csv_in)
