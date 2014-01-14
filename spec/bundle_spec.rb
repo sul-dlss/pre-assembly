@@ -124,7 +124,38 @@ describe PreAssembly::Bundle do
     
   end
   
+  ####################
 
+  describe "import_csv()" do
+
+    it "should load a CSV as a hash with indifferent access" do
+      filename = "#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv"
+      manifest=PreAssembly::Bundle.import_csv(filename)
+      manifest.class.should == Array
+      manifest.size.should == 3
+      headers=%w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
+      headers_as_symbols=headers.map {|header| header.to_sym}
+      manifest.each do |row|  # rows should be accessible as keys by header, both as string and symbols
+         headers.each do |header|
+           row.key?(header).should be_true
+           row.key?(header.to_sym).should be_true
+         end
+      end
+      # test some specific values by key and string -- if the column is totally missing at the end, it might have a value of nil (like in the first row, missing the description column)
+      manifest[0][:description].nil?.should be_true
+      manifest[0]['description'].nil?.should be_true
+      manifest[1][:description].nil?.should be_false
+      manifest[1]['description'].nil?.should be_false
+      manifest[1][:description].should == ''
+      manifest[2][:description].nil?.should be_false
+      manifest[2]['description'].nil?.should be_false
+      manifest[2][:description].should == 'yo, this is a description'
+      manifest[2]['description'].should == 'yo, this is a description'
+      manifest[2]['Description'].nil?.should be_true # case sensitive
+    end
+    
+  end
+  
   ####################
 
   describe "validate_usage()" do
