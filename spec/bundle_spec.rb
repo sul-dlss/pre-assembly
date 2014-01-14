@@ -5,6 +5,7 @@ describe PreAssembly::Bundle do
   before(:all) do
     @yaml_filenames= {
       :proj_revs   => 'spec/test_data/project_config_files/local_dev_revs.yaml',
+      :proj_revs_bad_manifest   => 'spec/test_data/project_config_files/local_dev_revs_bad_manifest.yaml',
       :proj_revs_no_cm   => 'spec/test_data/project_config_files/local_dev_revs_no_contentMetadata.yaml',
       :proj_rumsey => 'spec/test_data/project_config_files/local_dev_rumsey.yaml',
       :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
@@ -110,6 +111,19 @@ describe PreAssembly::Bundle do
     end
 
   end
+
+  ####################
+
+  describe "validate_usage() with bad manifest" do
+
+    it "should raise an exception since the sourceID column is misspelled" do
+      @exp_err = PreAssembly::BundleUsageError
+      exp_msg = /Manifest does not have a column called 'sourceid'/
+      lambda { bundle_setup :proj_revs_bad_manifest }.should raise_error @exp_err, exp_msg
+    end
+    
+  end
+  
 
   ####################
 
@@ -828,6 +842,7 @@ describe PreAssembly::Bundle do
           "image2.tif",
           "image3.tif",
           "manifest.csv",
+          "manifest_badsourceid_column.csv",
           "mods_template.xml",
         ],
         :proj_rumsey => [
