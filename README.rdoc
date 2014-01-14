@@ -259,6 +259,59 @@ they will NOT have JP2s re-generated from the source TIFFs). If you do stage the
 different basename than the TIFFs, they WILL be re-generated, and you will end up with two copies, in two
 different resources.
 
+==Deployment
+
+  cap development deploy  # for lyberservices-dev
+  cap testing deploy  # for lyberservices-test
+  cap production deploy # for lyberservices-production
+
+Enter the branch or tag you want deployed.
+
+See the Capfile for more info
+
+==Setting up code for local development
+
+    # Clone project.
+    git clone `whoami`@corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git
+    cd pre-assembly
+
+    Copy the default configs and use them for local and test.
+
+      cp config/environments/test.example.rb config/environments/test.rb
+      cp config/environments/local.example.rb config/environments/local.rb
+
+    You will need to have a certificate to access DOR-test in order to run integration tests from your laptop.  The certificates are placed
+    in your laptops' "config/certs" folder and are referenced in the "config/environments/test.rb" file.  Talk to DevOps to get a certificate.
+
+    # Get needed gems.
+    bundle install
+
+    # Confirm that it's working by running the tests as decribed below.
+
+    To make your life easier, it's easiest to put this in your bash profile so you don't need to identify each time you run a command on your laptop during development:
+
+      export ROBOT_ENVIRONMENT=local
+
+
+==Running tests
+
+To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus) and with a SSH tunnel connection to sul-solr (see below)
+
+    bin/run_all_tests
+
+To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN and an SSH tunnel (see below)
+    
+    bundle exec rspec spec        # no DOR access required, no VPN
+    bundle exec rspec integration # DOR access required, VPN, SSH tunneling required
+
+To create an SSH tunnel to run the integration tests, you will first need to be on VPNed in (even if on campus). Then, in a separate terminal window: 
+
+  ssh sul-solr-a -L 8080:localhost:8080
+
+Leave that terminal window open as long as you need to run integration tests.
+
+See this page for more information: https://consul.stanford.edu/display/DLSSINFRAAPP/SUL+Solr+Infrastructure
+
 ==Environments
 
 Use the ROBOT_ENVIRONMENT=xxxxx in front of commands to run in a specific environment.  Current available environments are:
@@ -271,6 +324,7 @@ production:: production servers
 The server environments define which instance of DOR is connected to, as well as the workflow and other
 services. If you run in the incorrect environment, you will find your objects registered in unexpected
 places, or you may run into errors when objects you believe should be registered are not.
+
 
 ==Screen Command
 
@@ -759,45 +813,5 @@ More information on the assembly robots is found in the assembly project here:
 
   corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/assembly.git
 
-==Deployment
 
-  cap development deploy  # for lyberservices-dev
-  cap testing deploy  # for lyberservices-test
-  cap production deploy # for lyberservices-production
-
-Enter the branch or tag you want deployed.
-
-See the Capfile for more info
-
-==Setting up code for local development
-
-    # Clone project.
-    git clone `whoami`@corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git
-    cd pre-assembly
-
-    # Set up some stuff not stored in Git.
-    mkdir doc log pkg tmp
-    RCONF='lyberadmin@lyberservices-dev.stanford.edu:/home/lyberadmin/pre-assembly/config'
-    scp -r $RCONF/certs $RCONF/environments config
-
-    # Get needed gems.
-    bundle install
-
-    # Confirm that it's working.  Note that for integration tests to work, you will need to be on the Stanford network and kerberos         # authenticated
-    bin/run_all_tests 
-
-
-==Running tests
-
-For local testing, it's easiest to put this in your bash profile:
-
-  export ROBOT_ENVIRONMENT=local
-
-Running tests:
-
-    # All tests.  Note that to run integration tests you will need to be on the Stanford network since they will attempt to access DOR-dev
-    bin/run_all_tests
-
-    # Unit tests and integration tests separately.
-    bundle exec rspec spec
-    bundle exec rspec integration
+    
