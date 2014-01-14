@@ -75,7 +75,7 @@ module PreAssembly
       process_manifest
 
       objects_in_bundle_directory=@digital_objects.collect {|dobj| dobj.container_basename}
-      all_object_containers=manifest_rows.collect {|r| r.send(@manifest_cols[:object_container])}
+      all_object_containers=manifest_rows.collect {|r| r[@manifest_cols[:object_container]]}
       
       total_objects=@digital_objects.size
 

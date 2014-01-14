@@ -318,7 +318,7 @@ describe PreAssembly::Bundle do
       col_name  = :col_foo
       vals      = %w(123.tif 456.tif 789.tif)
       exp       = vals.map { |v| @b.path_in_bundle v }
-      fake_rows = vals.map { |v| double('row', col_name => v) }
+      fake_rows = vals.map { |v| {col_name => v} }
       @b.manifest_cols[:object_container] = col_name
       @b.stub(:manifest_rows).and_return fake_rows
       @b.discover_containers_via_manifest.should == exp

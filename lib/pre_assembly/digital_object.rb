@@ -497,7 +497,7 @@ module PreAssembly
       # XML escape all of the entries in the manifest row so they won't break the XML
       manifest_row.each {|k,v| manifest_row[k]=Nokogiri::XML::Text.new(v,Nokogiri::XML('')).to_s if v }
       
-      # allow access with symbol or string keys 
+      # ensure access with symbol or string keys 
       manifest_row = manifest_row.with_indifferent_access
       
       # Run the XML template through ERB. 

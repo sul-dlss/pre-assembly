@@ -93,6 +93,8 @@ This is a Ruby implementation of services needed to prepare objects to be assemb
 2.3.2:: Small changes to discovery report around checking for APOs and objects; do not fail if label column is missing from manifest for should_register=false
 2.3.6:: Use latest version of assembly-image and assembly-objectfile gems
 2.3.7:: Use latest version of revs-utils.  Allow manifests to have UTF-8 characters (switch manifest loading from csv-mapper to standard CSV library)
+2.3.8:: Fixes to manifest loading and access to always use hash style references for columns (instead of allowing for struct like syntax that came from csv-mapper). Fix rdf gem to 1.0.9 until activefedora is updated to v6
+
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
