@@ -1,3 +1,8 @@
+ENV['ROBOT_ENVIRONMENT']='test'
+
+helper = File.expand_path(File.dirname(__FILE__) + '/../spec/spec_helper')
+require helper
+
 describe "Pre-assembly integration" do
 
   ####
