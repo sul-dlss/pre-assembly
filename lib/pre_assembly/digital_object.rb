@@ -302,7 +302,7 @@ module PreAssembly
         :admin_policy => @apo_druid_id,
         :source_id    => { @project_name => @source_id },
         :pid          => @pid,
-        :label        => @label,
+        :label        => @label.blank? ? Dor::Config.dor.default_label : @label,
         :tags         => ["Project : #{@project_name}"],
       }
     end

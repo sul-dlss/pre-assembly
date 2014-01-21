@@ -638,7 +638,7 @@ describe PreAssembly::Bundle do
       @b.digital_objects.should have(3).items
       # Before processing manifest: various attributes should be nil or default value.
       @b.digital_objects.each do |dobj|
-        dobj.label.should        == "Untitled"
+        dobj.label.should        == Dor::Config.dor.default_label
         dobj.source_id.should    == nil
         dobj.manifest_row.should == nil
       end
@@ -646,7 +646,7 @@ describe PreAssembly::Bundle do
       @b.process_manifest
       @b.digital_objects.each do |dobj|
         dobj.label.should be_kind_of        String
-        dobj.label.should_not == "Untitled"
+        dobj.label.should_not == Dor::Config.dor.default_label
         dobj.source_id.should be_kind_of    String
         dobj.manifest_row.should be_kind_of Hash
       end
