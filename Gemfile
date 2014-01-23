@@ -41,4 +41,4 @@ end
 
 gem 'net-ssh-kerberos', :platform => :ruby_18
 gem 'net-ssh-krb', :platform => :ruby_19
-gem 'gssapi', :github => 'cbeer/gssapi', :platform => :ruby_19
+gem 'gssapi', :github => 'cbeer/gssapi'

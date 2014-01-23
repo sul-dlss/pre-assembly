@@ -40,7 +40,7 @@ puts "limiting to #{limit}" if !limit.blank?
 @items.each_with_index do |manifest_row, x|
  break if (!limit.blank? && x > limit)
  druid=manifest_row[:druid]
- sourceid=manifest_row[:sourceid]
+ sourceid=manifest_row[params['manifest_cols']['source_id']]
  identifier=druid.blank? ? sourceid : druid # what we will call the filename, either by druid or sourceid depending on the project
  druid = druid.blank? ? "druid:oo000oo0001" : druid # we need a druid to instantiate the object, use the real druid if possible, otherwise just make one up
  dig_obj=PreAssembly::DigitalObject.new(:pid=>druid)

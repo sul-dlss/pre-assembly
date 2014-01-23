@@ -265,8 +265,8 @@ module PreAssembly
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
-          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           source_id="#{@project_name}:#{@source_id}" 
+          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           sourceid_pids=Dor::SearchService.query_by_id(source_id)
           all_pids=sourceid_pids << @pid
           all_pids.each do |pid|
