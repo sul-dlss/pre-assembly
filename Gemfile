@@ -36,7 +36,6 @@ group :development do
   gem 'capistrano', "< 3"
   gem 'rvm-capistrano'
   gem 'awesome_print'
-  gem 'yard'
 end
 
 gem 'net-ssh-kerberos', :platform => :ruby_18
