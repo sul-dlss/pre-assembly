@@ -28,11 +28,10 @@ require 'rvm/capistrano'
 
 set :application,     'pre-assembly'
 set :git_subdir,      "lyberteam/#{application}.git"
-set :rvm_ruby_string, "1.9.3-p448"
+set :rvm_ruby_string, "1.9.3"
 
 set :shared_children, %w(
   log
-  .rvmrc
   config/certs
   config/environments
 )

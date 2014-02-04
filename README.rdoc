@@ -2,6 +2,8 @@
 
 This is a Ruby implementation of services needed to prepare objects to be assembled and then accessioned into the SUL digital library.
 
+Uses ruby 1.9.3
+
 ==Releases
 
 1.0.0::  Released to production
