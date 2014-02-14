@@ -9,7 +9,7 @@
 # From within the "remediate_logic" method, you will have access to the Fedora object in the instance variable called @fobj. 
 # Just perform the actions you need -- it will be saved out for you.  
 
-# Convenience values avaialble to you:
+# Convenience values available to you:
 
 # @fobj          = the actual Fedora object to operate on
 # @pid           = the DRUID (e.g. "druid:oo000oo0001")
