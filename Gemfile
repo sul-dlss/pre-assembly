@@ -25,8 +25,6 @@ gem 'actionmailer', '>= 3.2.11'
 gem 'revs-utils', '>= 0.0.2'
 
 group :test do
-  gem 'equivalent-xml'
-  gem 'rake'
   gem 'yard'
   gem 'rspec', '~> 2.6'
 end

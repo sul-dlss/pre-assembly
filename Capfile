@@ -19,7 +19,7 @@
 #
 # ENVIRONMENT can be:
 #  * testing
-#  * development
+#  * dev
 #  * production
 
 load 'deploy'
@@ -45,7 +45,7 @@ set :branch do
   tag
 end
 
-task :development do
+task :dev do
   role :app, 'sul-lyberservices-dev.stanford.edu'
   set :deploy_env, 'development'
   set :rails_env,  'development'  # TEMPORARY: needed until lyberteam-gems-devel is fixed.
