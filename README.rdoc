@@ -264,7 +264,7 @@ different resources.
 
 ==Deployment
 
-  cap development deploy  # for lyberservices-dev
+  cap dev deploy  # for lyberservices-dev
   cap testing deploy  # for lyberservices-test
   cap production deploy # for lyberservices-production
 
