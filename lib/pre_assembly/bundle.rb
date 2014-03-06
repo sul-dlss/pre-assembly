@@ -576,7 +576,7 @@ module PreAssembly
 
     # confirm that the checksums provided match the checksums as computed 
     def confirm_checksums(dobj)
-      log "  - confirm_checksums()"
+     # log "  - confirm_checksums()"
       result=false
       dobj.object_files.each { |f| result=(f.md5 == @provider_checksums[File.basename(f.path)]) }
       return result
