@@ -22,7 +22,7 @@ gem 'dir_validator'
 gem 'dor-workflow-service', '>= 1.3.1'
 gem 'actionpack', '>= 3.2.11'
 gem 'actionmailer', '>= 3.2.11'
-gem 'revs-utils', '>= 0.0.2'
+gem 'revs-utils', '>= 1.0.0'
 
 group :test do
   gem 'yard'
