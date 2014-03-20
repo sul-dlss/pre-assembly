@@ -35,6 +35,7 @@ module RemediationLogic
     
     # this method MUST be defined and can peform any action you need to on @fobj - YOU MUST RETURN TRUE OR FALSE TO INDICATE SUCCESS  
     def remediate_logic 
+      @description="An optional description to add to the version history"
     	@fobj.datastreams['rightsMetadata'].content=revs_new_rights_metadata
     	# for custom remedations; the instance variable @data will be set for you with any object you passed in to the initialize method
     	#  so you can use it here
