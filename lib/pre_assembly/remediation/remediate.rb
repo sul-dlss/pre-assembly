@@ -137,7 +137,7 @@ module PreAssembly
 
      def close_version
        begin # try and close the version 
-         @fobj.close_version :description => 'automated metadata remediation', :significance => :minor
+         @fobj.close_version :description => "auto remeditation #{@description}", :significance => :admin
          @success=true
        rescue Exception => e  
          @success=false
