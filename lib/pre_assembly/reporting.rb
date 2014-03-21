@@ -13,7 +13,8 @@ module PreAssembly
       # e) if show_staged is true, will show all files that will be staged (warning: will produce a lot of output if you have lots of objects with lots of files!)
       # f) if show_other is true, will show all files/folders in source directory that will NOT be discovered/pre-assembled (warning: will produce a lot of output if you have lots of ignored objects in your directory!)
       # g) if show_smpl_cm is true, will show contentMetadata that will be generated for SMPL objects
-
+      # h) checks that there are no zero size files and that the total object size is greater than 0
+      
       @error_count=0
 
       # get user parameters
@@ -58,7 +59,7 @@ module PreAssembly
       if @project_style[:should_register] # confirm the supplied APO
         puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO") if Assembly::Utils.is_apo?(@apo_druid_id) == false
       end
-      header="\nObject Container , Number of Items , Files Have Spaces, Total Size, Files Readable , "
+      header="\nObject Container , Number of Items , Files Have Spaces, Files with 0 Size, Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
       header+="Num Files in CM Manifest , All CM files found ," if using_smpl_manifest
       header+="Checksums , " if confirming_checksums
@@ -99,8 +100,10 @@ module PreAssembly
            total_size_all_files+=total_size # keep running tally of sizes of all discovered files
            dobj.object_files.each{|obj| mimetypes[obj.mimetype]+=1} # keep a running tally of number of files by mimetype
            filenames_have_spaces=dobj.object_files.collect{|obj| obj.path.include?(' ')}.include?(true)
+           file_with_zero_size=dobj.object_files.collect{|obj| obj.filesize == 0}.include?(true)
            message += (filenames_have_spaces ? report_error_message("filenames have spaces") : " no , ") 
-           message += " %.3f" % total_size.to_s + " MB , " # total size of all files in MB      
+           message += (file_with_zero_size ? report_error_message("a file has zero size") : " no , ") 
+           message += (total_size == 0 ? report_error_message("object is zero size") : " %.3f" % total_size.to_s + " MB , ") # total size of all files in MB      
            message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
          end
        
