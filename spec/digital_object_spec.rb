@@ -9,7 +9,7 @@ describe PreAssembly::DigitalObject do
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',
-      :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
+      :publish_attr  => { 'default' => {:publish => 'yes', :shelve => 'yes', :preserve => 'yes' }},
       :project_style => {:should_register=>true},
       :content_md_creation => {},
       :bundle_dir    => 'spec/test_data/bundle_input_g',
@@ -309,25 +309,25 @@ describe PreAssembly::DigitalObject do
         <contentMetadata type="image" objectId="gn330dv6119">
           <resource type="image" id="gn330dv6119_1" sequence="1">
             <label>Image 1</label>
-            <file publish="yes" shelve="yes" id="image1.jp2" preserve="no">
+            <file publish="yes" shelve="yes" id="image1.jp2" preserve="yes">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_2" sequence="2">
             <label>Image 2</label>
-            <file publish="no" shelve="no" id="image1.tif" preserve="yes">
+            <file publish="yes" shelve="yes" id="image1.tif" preserve="yes">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_3" sequence="3">
             <label>Image 3</label>
-            <file publish="yes" shelve="yes" id="image2.jp2" preserve="no">
+            <file publish="yes" shelve="yes" id="image2.jp2" preserve="yes">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_4" sequence="4">
             <label>Image 4</label>
-            <file publish="no" shelve="no" id="image2.tif" preserve="yes">
+            <file publish="yes" shelve="yes" id="image2.tif" preserve="yes">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
@@ -468,6 +468,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:content_tag_override]=true        # this allows override of content structure
       @dobj.stub(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
       @dobj.project_style[:should_register]=false
+      @dobj.publish_attr=nil
       add_object_files('tif')
       add_object_files('jp2')      
       @dobj.create_content_metadata
@@ -476,25 +477,25 @@ describe PreAssembly::DigitalObject do
         <contentMetadata type="file" objectId="gn330dv6119">
           <resource type="file" id="gn330dv6119_1" sequence="1">
             <label>File 1</label>
-            <file publish="yes" shelve="yes" id="image1.jp2" preserve="no">
+            <file id="image1.jp2">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="file" id="gn330dv6119_2" sequence="2">
             <label>File 2</label>
-            <file publish="no" shelve="no" id="image1.tif" preserve="yes">
+            <file id="image1.tif">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="file" id="gn330dv6119_3" sequence="3">
             <label>File 3</label>
-            <file publish="yes" shelve="yes" id="image2.jp2" preserve="no">
+            <file id="image2.jp2">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
           <resource type="file" id="gn330dv6119_4" sequence="4">
             <label>File 4</label>
-            <file publish="no" shelve="no" id="image2.tif" preserve="yes">
+            <file id="image2.tif">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
@@ -536,6 +537,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:content_structure]='simple_image' # this is the default
       @dobj.stub(:content_type_tag).and_return('File')       # this is what the object tag says, but it should be ignored since overriding is not allowed
       @dobj.project_style[:should_register]=false
+      @dobj.publish_attr={'image/jp2'=>{:publish=>'yes',:shelve=>'yes',:preserve=>'no'},'image/tiff'=>{:publish=>'no',:shelve=>'no',:preserve=>'yes'}}
       add_object_files('tif')
       add_object_files('jp2')      
       @dobj.create_content_metadata
