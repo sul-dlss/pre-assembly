@@ -25,51 +25,10 @@ require 'dor-services'
 require 'assembly-utils'
 require 'logger'
 
-@druids=%w{druid:wh714jd5922
-           druid:zt360bf4956
-           druid:rh819sf0365
-           druid:cy818kd0872
-           druid:rs804kc3617
-           druid:hy850gj3726
-           druid:zc633qx0677
-           druid:hv240zr7497
-           druid:gs197yh4784
-           druid:cd312dr2057
-           druid:gm988vp2189
-           druid:xn387md2099
-           druid:tb156mz0245
-           druid:rh100zx3933
-           druid:xm374zc9656
-           druid:rt077kc5709
-           druid:hr919sk0986
-           druid:vy845jd6918
-           druid:rp012bn5257
-           druid:vy822kv2037
-           druid:hn648vb3536
-           druid:zk224ks6389
-           druid:rz015cx6864
-           druid:wm293gh2418
-           druid:zp140wm0694
-           druid:xs632sk4508
-           druid:cp361gz0454
-           druid:dt340xd5204
-           druid:ht595nk2014
-           druid:fn859jg2579
-           druid:dm479hf3037
-           druid:wb630cv9374
-           druid:tt902nw2787
-           druid:py875qc0136
-           druid:ps176gv8310
-           druid:kr778gf7793
-           druid:fq330st8102
-           druid:kd489xz1142
-           druid:ts698mk0914
-           druid:gs863yh1143
-           druid:np434wx7761
-           druid:bw171mw1036
-           druid:pn264pz8940
-           druid:hv577jx3178
-         }
+@druids=%w{
+  druid:ws012nq5164
+  druid:sd586gp3826
+}
          
 @druids.each do |druid|
 
