@@ -23,7 +23,7 @@ describe PreAssembly::DigitalObject do
         <% if !manifest_row[:location].blank? %>
        		<subject id="location" displayLabel="Location" authority="local">
       	    <hierarchicalGeographic>
-      		<% manifest_row[:location].split('|').reverse.each do |location| %>
+        	<% manifest_row[:location].split(/[,|]/).reverse.each do |location| %>
       		  <% country=revs_get_country(location) 
       				 city_state=revs_get_city_state(location)
       		     if country %>
@@ -172,7 +172,7 @@ describe PreAssembly::DigitalObject do
          :year        => '9/2/2012',
          :description => 'this is a description > another description < other stuff',
          :format      => 'film',
-         :location    => 'Raceway | Rome | Italy',
+         :location    => 'Raceway , Rome , Italy',
          :foo         =>  nil,
          :bar         =>  ''
        }
