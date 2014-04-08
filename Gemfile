@@ -34,8 +34,7 @@ group :development do
   gem 'capistrano', "< 3"
   gem 'rvm-capistrano'
   gem 'awesome_print'
+  gem 'net-ssh-kerberos', :platform => :ruby_18
+  gem 'net-ssh-krb', :platform => :ruby_19
+  gem 'gssapi', :github => 'cbeer/gssapi'
 end
-
-gem 'net-ssh-kerberos', :platform => :ruby_18
-gem 'net-ssh-krb', :platform => :ruby_19
-gem 'gssapi', :github => 'cbeer/gssapi'
