@@ -454,6 +454,9 @@ Manifests are a way of indicating which objects you will be accessioning. A mani
 encoded file and works for projects which have one file per object (container = one file in this case), or
 projects with many files per object (container = folder in this case).
 
+WARNING: if you export from Microsoft Excel, you may not get a properly formatted UTF-8 CSV file. You should
+open any CSV that has been exported from Excel in a text editor and re-save it in proper UTF-8 files (like TextMate on a Mac).
+
 There are a few columns required in the manifest depending on if should_register is true or false:
 
 container:: container name (either filename or folder name) -- always required

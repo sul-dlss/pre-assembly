@@ -66,7 +66,7 @@ module PreAssembly
 
     def self.import_csv(filename)
       # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
-      file_contents = IO.read(filename).force_encoding("ISO-8859-1").encode("utf-8", replace: nil) 
+      file_contents = IO.read(filename).encode("utf-8", replace: nil) 
       csv = CSV.parse(file_contents, :headers => true)
       return csv.map { |row| row.to_hash.with_indifferent_access }
       #return CsvMapper.import(filename) do read_attributes_from_file end
