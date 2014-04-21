@@ -59,7 +59,7 @@ module PreAssembly
       if @project_style[:should_register] # confirm the supplied APO
         puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO") if Assembly::Utils.is_apo?(@apo_druid_id) == false
       end
-      header="\nObject Container , Number of Items , Files Have Spaces, Files with 0 Size, Total Size, Files Readable , "
+      header="\nObject Container , Number of Items , Files with spaces, Files with no ext, Files with 0 Size, Total Size, Files Readable , "
       header+="Label , Source ID , " if using_manifest
       header+="Num Files in CM Manifest , All CM files found ," if using_smpl_manifest
       header+="Checksums , " if confirming_checksums
@@ -100,8 +100,10 @@ module PreAssembly
            total_size_all_files+=total_size # keep running tally of sizes of all discovered files
            dobj.object_files.each{|obj| mimetypes[obj.mimetype]+=1} # keep a running tally of number of files by mimetype
            filenames_have_spaces=dobj.object_files.collect{|obj| obj.path.include?(' ')}.include?(true)
+           filenames_with_no_extension=dobj.object_files.collect{|obj| File.extname(obj.path).empty?}.include?(true)
            file_with_zero_size=dobj.object_files.collect{|obj| obj.filesize == 0}.include?(true)
            message += (filenames_have_spaces ? report_error_message("filenames have spaces") : " no , ") 
+           message += (filenames_with_no_extension ? report_error_message("filenames have no extension") : " no , ") 
            message += (file_with_zero_size ? report_error_message("a file has zero size") : " no , ") 
            message += (total_size == 0 ? report_error_message("object is zero size") : " %.3f" % total_size.to_s + " MB , ") # total size of all files in MB      
            message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
