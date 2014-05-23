@@ -51,13 +51,13 @@ Dor::Config.configure do
      indexer_url 'http://sulstats-raw.stanford.edu//render/?format=json&from=-1minute&until=now&target=stats.gauges.dor-prod.argo.reindexqueue.queue-size.count'
    end
    stacks do
-     document_cache_storage_root '/home/lyberadmin/document_cache'
-     document_cache_host 'purl.stanford.edu'
-     document_cache_user 'lyberadmin'
-     local_workspace_root '/dor/workspace'
-     storage_root '/stacks'
-     host 'stacks.stanford.edu'
-     user 'lyberadmin'
+    document_cache_storage_root '/purl/document_cache'
+      document_cache_host 'sul-purl-prod.stanford.edu'
+      document_cache_user 'lyberadmin'
+      local_workspace_root '/dor/workspace'
+      storage_root '/stacks'
+      host 'stacks.stanford.edu'
+      user 'lyberadmin'
    end
   
 end
