@@ -16,10 +16,10 @@ input_file="/dor/staging/Revs/druids.csv"
 
 rows=CsvMapper.import(input_file){read_attributes_from_file}
 
-puts "#{druids.size} objects to work on"
+puts "#{rows.size} objects to work on"
 rows.each do |row|
 
-	druid="druid:#{rows['id']}"
+	druid="druid:#{row['id']}"
 	puts "Working on #{druid}"
 	i=Dor::Item.find(druid)
 	i.publish_metadata # republish metadata
