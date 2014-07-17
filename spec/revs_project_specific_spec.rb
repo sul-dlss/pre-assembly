@@ -48,10 +48,12 @@ describe PreAssembly::DigitalObject do
       			</subject>
       		<% end %>
         <% end %>
-      	<% if !manifest_row[:entrant].blank? %>
-      		<subject id="entrant" displayLabel="Entrant" authority="local">
-      			<name type="personal"><namePart><%=manifest_row[:entrant].strip%></namePart></name>
-      		</subject>
+        <% if !manifest_row[:entrant].blank? %>
+          <% manifest_row[:entrant].split('|').each do |entrant| %>
+            <subject id="entrant" displayLabel="Entrant" authority="local">
+              <name type="personal"><namePart><%=entrant.strip%></namePart></name>
+            </subject>
+          <% end %>
         <% end %>
       	<% if !manifest_row[:photographer].blank? %>
       		<name id="photographer" displayLabel="Photographer" type="personal" authority="local">
@@ -415,6 +417,7 @@ describe PreAssembly::DigitalObject do
          :year        => '9/2/2012',
          :description => 'this is a description > another description < other stuff',
          :format      => 'black-and-white negative',
+         :entrant     => 'Donald Duck | Mickey Mouse',
          :city        => 'Munich',
          :state       => 'Bavaria',
          :country     => 'Germany'
@@ -434,6 +437,16 @@ describe PreAssembly::DigitalObject do
              <state>Bavaria</state>
              <city>Munich</city>
            </hierarchicalGeographic>
+         </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>
+          <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Mickey Mouse</namePart>
+           </name>
          </subject>
          <relatedItem type="host">
            <titleInfo>
@@ -467,6 +480,7 @@ describe PreAssembly::DigitalObject do
          :sourceid    => 'foo-1',
          :label       => 'a label',
          :year        => '9/2/2012',
+         :entrant     => 'Donald Duck',
          :description => 'this is a description > another description < other stuff',
          :format      => 'black-and-white negative',
          :city        => 'Munich',
@@ -490,6 +504,11 @@ describe PreAssembly::DigitalObject do
              <city>Munich</city>
            </hierarchicalGeographic>
          </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>         
          <relatedItem type="host">
            <titleInfo>
              <title>The Collier Collection of the Revs Institute for Automotive Research</title>
