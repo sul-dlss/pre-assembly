@@ -25,7 +25,7 @@ describe PreAssembly::DigitalObject do
        			<% lc_term=revs_lookup_marque(marque.strip)
        			 if lc_term %>
        			    <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
-                  <topic valueURI="<%=lc_term['url']%>"><%=lc_term['value']%></topic>
+                    <topic valueURI="<%=lc_term['url']%>"><%=marque.strip%></topic>
                 </subject>
       		   <% else %>
           			<subject displayLabel="Marque" authority="local">
@@ -188,7 +188,7 @@ describe PreAssembly::DigitalObject do
              </hierarchicalGeographic>
            </subject>           
            <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
-             <topic valueURI="http://id.loc.gov/authorities/subjects/sh85050464">Ford automobile</topic>
+             <topic valueURI="http://id.loc.gov/authorities/subjects/sh85050464">Ford</topic>
            </subject>
            <subject displayLabel="Marque" authority="local">
              <topic>Jaguar</topic>
@@ -197,7 +197,7 @@ describe PreAssembly::DigitalObject do
              <topic valueURI="http://id.loc.gov/authorities/subjects/sh94002401">Pegaso automobile</topic>
            </subject>                  
            <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
-             <topic valueURI="http://id.loc.gov/authorities/subjects/sh85130929">Suzuki automobile</topic>
+             <topic valueURI="http://id.loc.gov/authorities/subjects/sh85130929">Suzuki automobiles</topic>
            </subject>           
            <relatedItem type="host">
              <titleInfo>
