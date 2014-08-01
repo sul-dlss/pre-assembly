@@ -30,11 +30,9 @@ group :test do
 end
 
 group :development do
-	gem 'lyberteam-capistrano-devel', '>= 1.1.0'
-  gem 'capistrano', "< 3"
-  gem 'rvm-capistrano'
+	gem 'capistrano', "~> 3.0"
+  gem 'capistrano-bundler'
+  gem 'capistrano-rvm'
+  gem 'lyberteam-capistrano-devel', '~> 3.0'
   gem 'awesome_print'
-  gem 'net-ssh-kerberos', :platform => :ruby_18
-  gem 'net-ssh-krb', :platform => :ruby_19
-  gem 'gssapi', :github => 'cbeer/gssapi'
 end
