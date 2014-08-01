@@ -1,7 +1,7 @@
 # config valid only for Capistrano 3.1
 lock '3.2.1'
 
-set :rvm_ruby_version, '1.9.3-p484'      # Defaults to: 'default'
+set :rvm_ruby_version, '1.9.3'      # Defaults to: 'default'
 set :application, 'pre-assembly'
 set :repo_url, 'git@github.com:sul-dlss/pre-assembly.git'
 
