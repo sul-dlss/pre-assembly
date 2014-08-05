@@ -43,22 +43,33 @@ FileUtils.mkdir_p(log_path)
 def correct_versioning_on_druid(druid)
   begin
     item = Dor::Item.find(druid)
-  rescue ActiveFedora::ObjectNotFoundError
-    #rescue
+  rescue
     @run_log.error("The object #{druid} for APO #{apo} was not found via Dor::Item.find(pid).")
     return
   end
   
   dor_version = item.current_version.to_i #gets current version
-  workflow_xml = Nokogiri.parse(Dor::WorkflowService.workflow_resource["dor/objects/#{druid}/workflows"].get) #get all the workflow xml as one chunk
+  
+  begin
+    workflow_xml = Nokogiri.parse(Dor::WorkflowService.workflow_resource["dor/objects/#{druid}/workflows"].get) #get all the workflow xml as one chunk
+  rescue
+    run_log.error("Failed to get workflow XML for #{druid}")
+    @run_log.error $!.backtrace
+    return
+  end
   
   if workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version}']").size > 0 #Test to if we have the latest dor workflow
     #If we have the latest worflow, we're good, at least for the purpose of this script
     @no_action_log.info(druid)
   
   elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version-1}']").size > 0
-    item.initialize_workflow(@target_workflow)
-    @no_ingest_error_log.info(druid)
+    begin
+      item.initialize_workflow(@target_workflow)
+      @no_ingest_error_log.info(druid)
+    rescue
+      @run_log.error("Failed to initialize accessioning for #{druid}")
+      @run_log.error $!.backtrace
+    end
     
   elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version-2}']").size > 0
     errorNode =  workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@status='error']").first
@@ -68,10 +79,23 @@ def correct_versioning_on_druid(druid)
       vmd.xpath("//versionMetadata/version[@versionId=#{dor_version}]").remove
       item.datastreams['versionMetadata'].content = vmd.to_xml
       item.datastreams['versionMetadata'].dirty = true
-      item.datastreams['versionMetadata'].save
       
-      Dor::WorkflowService.update_workflow_status(@target_repo, druid, @target_workflow, errorNode['name'], 'waiting')
-      @ingest_error_log.info(druid)
+      begin
+        item.datastreams['versionMetadata'].save
+      rescue
+        @run_log.error("Failed to save workflow datastream for #{druid}")
+        @run_log.error $!.backtrace
+      end
+      
+      begin
+        Dor::WorkflowService.update_workflow_status(@target_repo, druid, @target_workflow, errorNode['name'], 'waiting')
+        @ingest_error_log.info(druid)
+      rescue
+        @run_log.error("DorWorkflowservices error for #{druid}")
+        @run_log.error $!.backtrace
+      end
+      
+     
     end
     
   else
@@ -90,7 +114,7 @@ ARGV.each do |apo|
   begin
     client = Harvestdor::Client.new
     oais = client.oai_headers(:set => "is_governed_by_#{apo}")
-  rescue OAI::Exception
+  rescue 
     @run_log.error("#{apo} failed.  Possibly an invalid druid.")
     @run_log.error $!.backtrace
     #oais_return = false
