@@ -21,7 +21,7 @@ require 'logger'
 
 #Set Up the Various Paths
 current_path = File.dirname(File.expand_path(__FILE__))
-log_path = current_path.split("/bin")[0] + "/log/remediate_version/#{Time.now.to_i}/"
+log_path = current_path.split("/bin")[0] + "/log/correct_version/#{Time.now.to_i}/"
 @target_repo = "dor"
 @target_workflow = "accessionWF"
 
@@ -33,10 +33,10 @@ end
 #Set up the Overall Run Log
 FileUtils.mkdir_p(log_path) 
 @run_log = Logger.new(log_path+"run.log")
-@no_action_log = Logger.new(log_path+"no_remediation.log")
-@no_ingest_error_log = Logger.new(log_path+"remediation_no_ingest_error.log")
-@ingest_error_log = Logger.new(log_path+"remediation_and_ingest_error.log")
-@too_many_ahead_log = Logger.new(log_path + "version_more_than_one_head.log")
+@no_action_log = Logger.new(log_path+"versions_match.log")
+@no_ingest_error_log = Logger.new(log_path+"one_version_ahead_no_ingest_error.log")
+@ingest_error_log = Logger.new(log_path+"two_versions_ahead_and_ingest_error.log")
+@too_many_ahead_log = Logger.new(log_path + "too_many_versions_ahead.log")
 
 
 
@@ -84,7 +84,7 @@ end
 
 #TODO: Lots of stuff ripe for parallelization here
 ARGV.each do |apo|
-  @run_log.info("Starting remediation for #{apo}")
+  @run_log.info("Starting version fixes for #{apo}")
 
   #oais_returned = true
   begin
@@ -107,10 +107,7 @@ ARGV.each do |apo|
       correct_versioning_on_druid(druid)
       
     end 
+     @run_log.info("Completed version fixes for #{apo}")
 
 end
 
-#client = Harvestdor::Client.new
-#client.oai_headers(:set => 'is_governed_by_qv648vd4392') do |druid|
-#  puts druid
-#end
