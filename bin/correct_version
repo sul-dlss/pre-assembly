@@ -44,7 +44,7 @@ def correct_versioning_on_druid(druid)
   begin
     item = Dor::Item.find(druid)
   rescue
-    @run_log.error("The object #{druid} for APO #{apo} was not found via Dor::Item.find(pid).")
+    @run_log.error("The object #{druid} was not found via Dor::Item.find(pid).")
     return
   end
   
