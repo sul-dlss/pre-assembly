@@ -357,6 +357,19 @@ For more info on screen, see http://kb.iu.edu/data/acuy.html
 
 ==Troubleshooting
 
+0. Seeing an error like this when you try to run pre-assembly or a discovery report? 
+
+Psych::SyntaxError: (<unknown>): mapping values are not allowed in this context at line 37 column 14
+
+Its probably because your YAML configuration file is malformed. YAML is very picky, particularly in tabs, spacing and other formatting trickeries.  You can see if your YAML file loads straight on the console:
+
+bin/console
+yaml_config='/full/path/to/your/config.yaml'
+params = YAML.load(File.read yaml_config)
+
+If you get a hash of values back, it parsed correctly.  If you get the Psych::SyntaxError, it did not.  The line number referenced in the error
+should help you locate the part of your file that is having issues.  Edit and try loading the YAML again on the console to confirm.
+
 1. If you don't see all of your objects being discovered or no files are found in discovered objects, check the permissions on the bundle directory. You need read permissions on all the bundle directory folders and files.
 
 2. Be sure you are running on the correct server in the correct environment.  See the "environment" section above.
