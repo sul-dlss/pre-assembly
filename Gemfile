@@ -1,6 +1,4 @@
 source 'https://rubygems.org'
-source 'http://sul-gems.stanford.edu'
-
 
 # Let's require at least ruby 1.9, but allow ruby 2.0 too
 ruby "1.9.3" if RUBY_VERSION < "1.9"
@@ -31,10 +29,13 @@ group :test do
   gem 'rspec', '~> 2.6'
 end
 
-group :development do
-	gem 'capistrano', "~> 3.0"
+group :deployment do
+	gem 'capistrano', "~> 3"
   gem 'capistrano-bundler'
+  gem 'lyberteam-capistrano-devel', '~> 3'
   gem 'capistrano-rvm'
-  gem 'lyberteam-capistrano-devel', '~> 3.0'
+end
+
+group :development do
   gem 'awesome_print'
 end
