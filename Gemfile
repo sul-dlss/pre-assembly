@@ -24,6 +24,7 @@ gem 'actionpack', '>= 3.2.19'
 gem 'actionmailer', '>= 3.2.19'
 gem 'revs-utils', '>= 1.0.7'
 gem 'harvestdor'
+gem 'dor-fetcher', '>= 1.1.5'
 
 group :test do
   gem 'yard'
