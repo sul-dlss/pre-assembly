@@ -76,6 +76,8 @@ druids.each do |druid| #TODO: Threach me
     #Get SDR Version
     begin
       puts "#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"
+      puts "Result of call:" 
+      puts open("#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]")
       r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"))
       puts r
       @run_log.info(r)
