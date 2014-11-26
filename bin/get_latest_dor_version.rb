@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 
 # Run with
-# ROBOT_ENVIRONMENT=test bin/FILENAME fetcher-service-url apo-druid
+# ROBOT_ENVIRONMENT=test bin/FILENAME fetcher-service-url apo-druid sdr-url sdr-user-name sdr-password
 
 require 'rubygems'
 require 'dor-services'
@@ -11,6 +11,7 @@ require 'dor-workflow-service'
 require 'logger'
 require 'dor-fetcher'
 require 'csv'
+require 'nokogiri'
 
 #Set Up the Various Paths
 current_path = File.dirname(File.expand_path(__FILE__))
@@ -20,8 +21,8 @@ results_path = log_path + "results.csv"
 @target_workflow = "accessionWF"
 
 #Make Sure at least APO Druid was provided
-if ARGV.size != 2
-  abort("Please supply ARGV in the form of: http://fetcher-service-url.edu druid:apo_pid")
+if ARGV.size != 5
+  abort("Please supply ARGV in the form of: http://fetcher-service-url.edu druid:apo_pid http://sdr-service-url.edu sdrUserName sdrPassword")
 end
 
 #Set up the Overall Run Log
@@ -61,7 +62,9 @@ end
 druids = fetcher.druid_array(objects_hash)-[apo]  
 @run_log.info("#{druids.size} records returned for APO #{apo}")
 
-druids.each do |druid|
+druids.each do |druid| #TODO: Threach me
+   
+    #Get The Dor Version
     begin
       item = Dor::Item.find(druid)
     rescue
@@ -69,7 +72,17 @@ druids.each do |druid|
       next #Skip to the next druid
     end
     dor_version = item.current_version.to_i #gets current dor version
-    sdr_version = -1 #TODO: Run a curl request to fix this
+    
+    #Get SDR Version
+    begin
+      r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version',:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"))
+      sdr_version = r.xpath('//currentversion').children.first.text.to_i
+    rescue 
+      @run_log.error("The object #{druid} failed to a return sdr_version")
+      next #Skip to the next druid
+    end
+    
+    puts [druid, dor_version, sdr_version]
     @results << [druid, dor_version, sdr_version]
 end
 @run_log.info("Completed version fixes for #{apo}")
