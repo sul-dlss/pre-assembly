@@ -51,6 +51,12 @@ rescue
 end
 
 apo = ARGV[1]
+
+#Add on the druid prefix if it is not present
+if apo.split("druid:").size = 1
+  apo = "druid:"+apo
+end
+
 @run_log.info("Starting Version Comparsion for objects governed by #{apo}")
 
 #Fetch all the objects governed by this APO
@@ -85,14 +91,10 @@ druids.each do |druid| #TODO: Threach me
       next #Skip to the next druid
     end
     
-    CSV.open(results_path) do |csv|
-      csv << [druid, dor_version, sdr_version]
-    end
-    
-    if dor_version == sdr_version
-      CSV.open(mismatch_results_path) do |csv|
-        csv << [druid, dor_version, sdr_version]
-      end
+    @results << [druid, dor_version, sdr_version]
+       
+    if dor_version != sdr_version
+        @mismatch_results << [druid, dor_version, sdr_version]
     end
 end
 @run_log.info("Completed version fixes for #{apo}")
