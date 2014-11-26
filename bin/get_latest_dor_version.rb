@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 
 # Run with
-# ROBOT_ENVIRONMENT=test bin/remediate_version fetcher-service-url apo-druid
+# ROBOT_ENVIRONMENT=test bin/FILENAME fetcher-service-url apo-druid
 
 require 'rubygems'
 require 'dor-services'
@@ -15,7 +15,7 @@ require 'csv'
 #Set Up the Various Paths
 current_path = File.dirname(File.expand_path(__FILE__))
 log_path = current_path.split("/bin")[0] + "/log/compare_version/#{Time.now.to_i}/"
-results_path = log+ath + "results.csv"
+results_path = log_path + "results.csv"
 @target_repo = "dor"
 @target_workflow = "accessionWF"
 
