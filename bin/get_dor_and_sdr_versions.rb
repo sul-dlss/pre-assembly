@@ -85,10 +85,14 @@ druids.each do |druid| #TODO: Threach me
       next #Skip to the next druid
     end
     
-    @results << [druid, dor_version, sdr_version]
+    CSV.open(results_path) do |csv|
+      csv << [druid, dor_version, sdr_version]
+    end
     
     if dor_version == sdr_version
-      @mismatch_results << [druid, dor_version, sdr_version]
+      CSV.open(mismatch_results_path) do |csv|
+        csv << [druid, dor_version, sdr_version]
+      end
     end
 end
 @run_log.info("Completed version fixes for #{apo}")
