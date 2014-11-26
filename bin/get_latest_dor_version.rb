@@ -76,7 +76,7 @@ druids.each do |druid| #TODO: Threach me
     #Get SDR Version
     begin
       puts "#{ARGV[2]}/sdr/objects/#{druid}/current_version',:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"
-      r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version',:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"))
+      r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"))
       sdr_version = r.xpath('//currentversion').children.first.text.to_i
     rescue 
       @run_log.error("The object #{druid} failed to a return sdr_version")
