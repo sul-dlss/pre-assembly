@@ -31,7 +31,7 @@ FileUtils.mkdir_p(log_path)
 
 #Set Up the Results Output
 begin
-  @results=  CSV.open(results_path)
+  @results=  CSV.open(results_path,'wb')
   @results << ['druid','dor-version','sdr-version']
 rescue
   @run_log.error("Failed to initialize a results.csv at #{results_path}")
