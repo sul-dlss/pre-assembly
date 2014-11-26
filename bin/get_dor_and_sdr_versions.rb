@@ -17,6 +17,7 @@ require 'nokogiri'
 current_path = File.dirname(File.expand_path(__FILE__))
 log_path = current_path.split("/bin")[0] + "/log/get_dor_and_sdr_versions/#{Time.now.to_i}/"
 results_path = log_path + "results.csv"
+mismatch_results_path = log_path + "mismatch_results.csv"
 @target_repo = "dor"
 @target_workflow = "accessionWF"
 
@@ -34,6 +35,8 @@ FileUtils.mkdir_p(log_path)
 begin
   @results=  CSV.open(results_path,'wb')
   @results << ['druid','dor-version','sdr-version']
+  @mismatch_results = CSV.open(mismatch_results_path,'wb')
+  @mismatch_results << ['druid','dor-version','sdr-version']
 rescue
   @run_log.error("Failed to initialize a results.csv at #{results_path}")
   @run_log.error $!.backtrace
@@ -75,18 +78,18 @@ druids.each do |druid| #TODO: Threach me
     
     #Get SDR Version
     begin
-      puts "#{ARGV[2]}/sdr/objects/#{druid}/current_version"
-      puts "#{ARGV[3]},#{ARGV[4]}"
       r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version", :http_basic_authentication=>["#{ARGV[3]}","#{ARGV[4]}"]))
-      puts r
       sdr_version = r.xpath('//currentversion').children.first.text.to_i
     rescue 
       @run_log.error("The object #{druid} failed to a return sdr_version")
       next #Skip to the next druid
     end
     
-    puts [druid, dor_version, sdr_version]
     @results << [druid, dor_version, sdr_version]
+    
+    if dor_version == sdr_version
+      @mismatch_results << [druid, dor_version, sdr_version]
+    end
 end
 @run_log.info("Completed version fixes for #{apo}")
 
