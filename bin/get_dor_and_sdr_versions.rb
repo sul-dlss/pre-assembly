@@ -55,6 +55,7 @@ apo = ARGV[1]
 #Add on the druid prefix if it is not present
 if apo.split("druid:").size == 1
   apo = "druid:"+apo
+  @run_log.info("Added the druid: prefix to the apo for a result of #{apo}")
 end
 
 @run_log.info("Starting Version Comparsion for objects governed by #{apo}")
