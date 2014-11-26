@@ -78,10 +78,10 @@ druids.each do |druid| #TODO: Threach me
       puts "#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"
       r = Nokogiri::HTML(open("#{ARGV[2]}/sdr/objects/#{druid}/current_version,:http_basic_authentication=>[#{ARGV[3]},#{ARGV[4]}]"))
       puts r
-      sdr_version = r.xpath('//currentversion').children.first.text.to_i
+      @run_log.info(r)
+      #sdr_version = r.xpath('//currentversion').children.first.text.to_i
     rescue 
       @run_log.error("The object #{druid} failed to a return sdr_version")
-      @run_log.error $!.backtrace
       next #Skip to the next druid
     end
     
