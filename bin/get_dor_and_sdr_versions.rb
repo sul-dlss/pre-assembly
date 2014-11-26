@@ -53,7 +53,7 @@ end
 apo = ARGV[1]
 
 #Add on the druid prefix if it is not present
-if apo.split("druid:").size = 1
+if apo.split("druid:").size == 1
   apo = "druid:"+apo
 end
 
