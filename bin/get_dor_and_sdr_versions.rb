@@ -37,9 +37,9 @@ FileUtils.mkdir_p(log_path)
 #Set Up the Results Output
 begin
   @results=  CSV.open(results_path,'wb')
-  @results << ['druid','dor-version','sdr-version']
+  @results << ['druid', 'status', 'dor-version','sdr-version']
   @mismatch_results = CSV.open(mismatch_results_path,'wb')
-  @mismatch_results << ['druid','dor-version','sdr-version']
+  @mismatch_results << ['druid','status','dor-version','sdr-version']
 rescue
   @run_log.error("Failed to initialize a results.csv at #{results_path}")
   @run_log.error $!.backtrace
@@ -95,10 +95,10 @@ druids.each do |druid| #TODO: Threach me
       next #Skip to the next druid
     end
     
-    @results << [druid, dor_version, sdr_version]
+    @results << [druid, item.status, dor_version, sdr_version]
        
     if dor_version != sdr_version
-        @mismatch_results << [druid, dor_version, sdr_version]
+        @mismatch_results << [druid, item.status, dor_version, sdr_version]
     end
 end
 @run_log.info("Completed version fixes for #{apo}")
