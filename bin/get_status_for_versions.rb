@@ -6,12 +6,13 @@ require 'rubygems'
 require 'dor-services'
 require 'csv'
 require 'fileutils'
+require 'pathname'
 
 
 current_path = File.dirname(File.expand_path(__FILE__))
 output_path = current_path.split("/bin")[0] + "/log/add_status/"
 FileUtils::mkdir_p  output_path
-@with_status = CSV.open(output_path+"results.csv",'wb')
+@with_status = CSV.open(output_path+Pathname.new(ARGV[0]).basename.to_s,'wb')
 
 @with_status << ['druid', 'status','dor-version','sdr-version']
 
