@@ -14,8 +14,11 @@ require 'csv'
 require 'nokogiri'
 
 #Set Up the Various Paths
+time_now = Time.now.getlocal.to_s
+time_stamp = time_now[0..time_now.size-7]
 current_path = File.dirname(File.expand_path(__FILE__))
-log_path = current_path.split("/bin")[0] + "/log/get_dor_and_sdr_versions/#{Time.now.to_i}/"
+log_path = current_path.split("/bin")[0] + "/log/get_dor_and_sdr_versions/#{time_stamp}/"
+
 results_path = log_path + "results.csv"
 mismatch_results_path = log_path + "mismatch_results.csv"
 @target_repo = "dor"
