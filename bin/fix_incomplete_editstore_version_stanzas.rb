@@ -46,6 +46,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   item.datastreams['versionMetadata'].content = vmd.to_xml
   item.versionMetadata.content_will_change!
   item.versionMetadata.save
+  puts "#{row['druid']} Completed"
   
   #Clear the accessionWF so we can make new versions
   # Dor::WorkflowService.delete_workflow('dor', row['druid'], 'accessionWF')
