@@ -9,6 +9,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 require 'rubygems'
 require 'dor-services'
+require 'dor-workflow-service'
 require 'logger'
 require 'csv'
 require 'nokogiri'
@@ -34,13 +35,16 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   
   #Replace the ones we just removed with new ones
   v = 2
-  while(v <= rows['sdr-version'].to_i+1 ) do
+  while(v <= rows['sdr-version'].to_i+1) do
     item.open_new_version(:assume_accessioned=>true) # we are already doing all of our checks to see if updates are allowe and versioning is required
     item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
     item.versionMetadata.content_will_change!
     item.versionMetadata.save
     v++
   end
+  
+  #Restart The Workflow
+  Dor::WorkflowService.update_workflow_status 'dor', row['druid'], 'accessionWF', 'sdr-ingest-transfer', 'waiting'
   
   #Check for incomplete stanza
   #Delete incomplete stanza, lower number on all others
