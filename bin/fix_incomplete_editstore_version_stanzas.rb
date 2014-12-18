@@ -29,27 +29,40 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
     v+=1
   end
   
+  #Create New Editstore Stanzas
+  v = 2
+  while(v <= row['sdr-version'].to_i+1) do
+    new_version = Nokogiri::XML::Node.new 'version', vmd
+    new_version['tag'] = "1.0.#{v-1}"
+    new_version['versionId'] = v
+    description = Nokogiri::XML::Node.new 'description', new_version
+    description.content = "descriptive metadata update from editstore"
+    new_version.add_child(description)
+    vmd.children[0].add_child(new_version)
+    v+=1
+  end
+  
+  
   item.datastreams['versionMetadata'].content = vmd.to_xml
   item.versionMetadata.content_will_change!
   item.versionMetadata.save
   
   #Clear the accessionWF so we can make new versions
-  Dor::WorkflowService.delete_workflow('dor', row['druid'], 'accessionWF')
+  # Dor::WorkflowService.delete_workflow('dor', row['druid'], 'accessionWF')
   
   #Replace the ones we just removed with new ones
-  v = 2
-  while(v <= row['sdr-version'].to_i+1) do
-    Dor::WorkflowService.delete_workflow('dor', row['druid'], 'versioningWF')
-    item.open_new_version(:assume_accessioned=>true) # we are already doing all of our checks to see if updates are allowe and versioning is required
-    item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
-    item.versionMetadata.content_will_change!
-    item.versionMetadata.save
-    v+=1
-  end
+  # v = 2
+  # while(v <= row['sdr-version'].to_i+1) do
+  #   Dor::WorkflowService.delete_workflow('dor', row['druid'], 'versioningWF')
+  #   item.open_new_version(:assume_accessioned=>true) # we are already doing all of our checks to see if updates are allowe and versioning is required
+  #   item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
+  #   item.versionMetadata.content_will_change!
+  #   item.versionMetadata.save
+  #   v+=1
+  # end
   
-  #Restart The Accessioning since we blew the entire workflow away to add new versions
-  item.initialize_workflow('dor','accessionWF')
-  #Dor::WorkflowService.update_workflow_status 'dor', row['druid'], 'accessionWF', 'sdr-ingest-transfer', 'waiting'
+  #Restart The Accessioning WF
+  Dor::WorkflowService.update_workflow_status 'dor', row['druid'], 'accessionWF', 'sdr-ingest-transfer', 'waiting'
   
   #Check for incomplete stanza
   #Delete incomplete stanza, lower number on all others
