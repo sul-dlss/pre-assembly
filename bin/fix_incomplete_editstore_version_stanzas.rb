@@ -24,9 +24,9 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   
   #Remove All But the First Version (due to possible incomplete stanzas)
   v = 2
-  while(v <= row['dor-version'].to_i) do
+  begin (v <= row['dor-version'].to_i) do
     vmd.xpath("//versionMetadata/version[@versionId=#{v}]").remove
-    v++
+    v+=1
   end
   
   item.datastreams['versionMetadata'].content = vmd.to_xml
@@ -40,7 +40,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
     item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
     item.versionMetadata.content_will_change!
     item.versionMetadata.save
-    v++
+    v+=1
   end
   
   #Restart The Workflow
