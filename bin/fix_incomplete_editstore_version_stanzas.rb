@@ -24,7 +24,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   
   #Remove All But the First Version (due to possible incomplete stanzas)
   v = 2
-  begin (v <= row['dor-version'].to_i) do
+  while (v <= row['dor-version'].to_i) do
     vmd.xpath("//versionMetadata/version[@versionId=#{v}]").remove
     v+=1
   end
