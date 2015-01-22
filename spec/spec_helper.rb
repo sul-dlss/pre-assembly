@@ -1,5 +1,5 @@
 require 'tmpdir'
-require 'equivalent-xml'
+require 'equivalent-xml/rspec_matchers'
 
 puts "running in #{ENV['ROBOT_ENVIRONMENT']} mode"
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
