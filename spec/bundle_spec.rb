@@ -137,21 +137,21 @@ describe PreAssembly::Bundle do
       headers_as_symbols=headers.map {|header| header.to_sym}
       manifest.each do |row|  # rows should be accessible as keys by header, both as string and symbols
          headers.each do |header|
-           row.key?(header).should be_true
-           row.key?(header.to_sym).should be_true
+           row.key?(header).should be_truthy
+           row.key?(header.to_sym).should be_truthy
          end
       end
       # test some specific values by key and string -- if the column is totally missing at the end, it might have a value of nil (like in the first row, missing the description column)
-      manifest[0][:description].nil?.should be_true
-      manifest[0]['description'].nil?.should be_true
-      manifest[1][:description].nil?.should be_false
-      manifest[1]['description'].nil?.should be_false
+      manifest[0][:description].nil?.should be_truthy
+      manifest[0]['description'].nil?.should be_truthy
+      manifest[1][:description].nil?.should be_falsey
+      manifest[1]['description'].nil?.should be_falsey
       manifest[1][:description].should == ''
-      manifest[2][:description].nil?.should be_false
-      manifest[2]['description'].nil?.should be_false
+      manifest[2][:description].nil?.should be_falsey
+      manifest[2]['description'].nil?.should be_falsey
       manifest[2][:description].should == 'yo, this is a description'
       manifest[2]['description'].should == 'yo, this is a description'
-      manifest[2]['Description'].nil?.should be_true # case sensitive
+      manifest[2]['Description'].nil?.should be_truthy # case sensitive
     end
     
   end
@@ -760,7 +760,7 @@ describe PreAssembly::Bundle do
     it "should set the content_tag_override to the default value when not specified" do
       bundle_setup :proj_revs
       @ps['project_style'][:content_tag_override].should be_nil
-      @b.project_style[:content_tag_override].should be_false      
+      @b.project_style[:content_tag_override].should be_falsey      
     end
     
     it "should set the staging_dir to the default value if not specified in the YAML" do
