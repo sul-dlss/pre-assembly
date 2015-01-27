@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'revs-utils'
 
 describe PreAssembly::DigitalObject do
 
@@ -12,6 +13,16 @@ describe PreAssembly::DigitalObject do
     @tmp_dir_args = [nil, 'tmp']
     @dobj.object_files = []
     @dobj.desc_md_template_xml = <<-END.gsub(/^ {8}/, '')
+    <% 
+      if !manifest_row[:date].blank?
+        full_date = get_full_date(manifest_row[:date])
+        pub_date = (full_date ?  full_date.strftime('%-m/%-d/%Y') : manifest_row[:date])
+      elsif !manifest_row[:year].blank?
+        pub_date = manifest_row[:year]
+      else
+        pub_date = nil
+      end
+    %>
     <?xml version="1.0"?>
     <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
       <typeOfResource>still image</typeOfResource>
@@ -126,14 +137,10 @@ describe PreAssembly::DigitalObject do
           </physicalDescription>
         </relatedItem>
       <% end %>
-      <% if !manifest_row[:date].blank? %>
+      <% if pub_date %>
         <originInfo keyDate="yes">
-          <dateCreated><%=manifest_row[:date].strip%></dateCreated>
+          <dateCreated><%=pub_date.strip%></dateCreated>
         </originInfo>
-      <% elsif !manifest_row[:year].blank? %>	
-          <originInfo keyDate="yes">
-            <dateCreated><%=manifest_row[:year].strip%></dateCreated>
-          </originInfo>
       <% end %>
       <titleInfo>
         <title><% if !manifest_row[:label].blank? %><%=manifest_row[:label].strip%><% end %></title>
@@ -368,7 +375,7 @@ describe PreAssembly::DigitalObject do
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
          :label       => 'a label',
-         :year        => '9/2/2012',
+         :year        => '2012',
          :description => 'this is a description > another description < other stuff',
          :format      => 'black-and-white negative',
          :location    => '',
@@ -402,7 +409,7 @@ describe PreAssembly::DigitalObject do
            </physicalDescription>
          </relatedItem>
          <originInfo keyDate="yes">
-           <dateCreated>9/2/2012</dateCreated>
+           <dateCreated>2012</dateCreated>
          </originInfo>
          <titleInfo>
            <title>a label</title>
@@ -421,7 +428,7 @@ describe PreAssembly::DigitalObject do
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
          :label       => 'a label',
-         :year        => '9/2/2012',
+         :date        => '9/2/2012',
          :description => 'this is a description > another description < other stuff',
          :format      => 'black-and-white negative',
          :entrant     => 'Donald Duck | Mickey Mouse',
@@ -486,7 +493,7 @@ describe PreAssembly::DigitalObject do
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
          :label       => 'a label',
-         :year        => '9/2/2012',
+         :date        => '05/12/55',
          :entrant     => 'Donald Duck',
          :description => 'this is a description > another description < other stuff',
          :format      => 'black-and-white negative',
@@ -528,7 +535,69 @@ describe PreAssembly::DigitalObject do
            </physicalDescription>
          </relatedItem>
          <originInfo keyDate="yes">
-           <dateCreated>9/2/2012</dateCreated>
+           <dateCreated>5/12/1955</dateCreated>
+         </originInfo>
+         <titleInfo>
+           <title>a label</title>
+         </titleInfo>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note displayLabel="Description">this is a description  another description  other stuff</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
+     
+     it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :date        => '1965-04-12',
+         :year        => 'some crap',
+         :entrant     => 'Donald Duck',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'black-and-white negative',
+         :city        => 'Munich',
+         :state       => 'Bavaria',
+         :country     => 'Germany',
+         :location    => nil
+       }
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="aat">digital image</genre>
+         <subject displayLabel="Subject" authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="location" displayLabel="Location" authority="local">
+           <hierarchicalGeographic>
+             <country>Germany</country>
+             <state>Bavaria</state>
+             <city>Munich</city>
+           </hierarchicalGeographic>
+         </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>         
+         <relatedItem type="host">
+           <titleInfo>
+             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+           </titleInfo>
+           <typeOfResource collection="yes"/>
+         </relatedItem>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="aat">black-and-white negatives</form>
+           </physicalDescription>
+         </relatedItem>
+         <originInfo keyDate="yes">
+           <dateCreated>4/12/1965</dateCreated>
          </originInfo>
          <titleInfo>
            <title>a label</title>
