@@ -303,14 +303,14 @@ describe PreAssembly::DigitalObject do
 
    end 
 
-   describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities and multiple formats with format correction" do
+   describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities and multiple formats with format correction, and preserving some odd date value" do
 
      before(:each) do
        @dobj.druid = @druid
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
          :label       => 'a label',
-         :date        => '9/2/2012',
+         :date        => 'something weird',
          :format      => 'black-and-white negative| color transparencies',
          :year        => 'blot',
          :description => 'this is a description > another description < other stuff',
@@ -349,7 +349,7 @@ describe PreAssembly::DigitalObject do
            </physicalDescription>
          </relatedItem>         
          <originInfo keyDate="yes">
-           <dateCreated>9/2/2012</dateCreated>
+           <dateCreated>something weird</dateCreated>
          </originInfo>
          <titleInfo>
            <title>a label</title>
@@ -370,7 +370,7 @@ describe PreAssembly::DigitalObject do
 
    describe "use specific location fields instead of generic location field" do
 
-     it "should create revs specific descriptive metadata using city, state and country fields instead of location" do
+     it "should create revs specific descriptive metadata using city, state and country fields instead of location and using a year" do
        @dobj.druid = @druid
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
@@ -488,7 +488,7 @@ describe PreAssembly::DigitalObject do
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
      end
 
-     it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
+     it "should create revs specific descriptive using alternate two year date format" do
        @dobj.druid = @druid
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
@@ -548,8 +548,8 @@ describe PreAssembly::DigitalObject do
        @dobj.create_desc_metadata_xml
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
      end
-     
-     it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
+
+     it "should create revs specific descriptive metadata using alternate date format and ignoring the bad year field" do
        @dobj.druid = @druid
        @dobj.manifest_row = {
          :sourceid    => 'foo-1',
@@ -610,6 +610,125 @@ describe PreAssembly::DigitalObject do
        @dobj.create_desc_metadata_xml
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
      end
+
+     it "should create revs specific descriptive metadata using date range with years" do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :date        => '1965-1969',
+         :entrant     => 'Donald Duck',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'black-and-white negative',
+         :city        => 'Munich',
+         :state       => 'Bavaria',
+         :country     => 'Germany',
+         :location    => nil
+       }
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="aat">digital image</genre>
+         <subject displayLabel="Subject" authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="location" displayLabel="Location" authority="local">
+           <hierarchicalGeographic>
+             <country>Germany</country>
+             <state>Bavaria</state>
+             <city>Munich</city>
+           </hierarchicalGeographic>
+         </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>         
+         <relatedItem type="host">
+           <titleInfo>
+             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+           </titleInfo>
+           <typeOfResource collection="yes"/>
+         </relatedItem>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="aat">black-and-white negatives</form>
+           </physicalDescription>
+         </relatedItem>
+         <originInfo keyDate="yes">
+           <dateCreated>1965-1969</dateCreated>
+         </originInfo>
+         <titleInfo>
+           <title>a label</title>
+         </titleInfo>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note displayLabel="Description">this is a description  another description  other stuff</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
+               
+     it "should create revs specific descriptive metadata with no date or year" do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :entrant     => 'Donald Duck',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'black-and-white negative',
+         :city        => 'Munich',
+         :state       => 'Bavaria',
+         :country     => 'Germany',
+         :location    => nil
+       }
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="aat">digital image</genre>
+         <subject displayLabel="Subject" authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="location" displayLabel="Location" authority="local">
+           <hierarchicalGeographic>
+             <country>Germany</country>
+             <state>Bavaria</state>
+             <city>Munich</city>
+           </hierarchicalGeographic>
+         </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>         
+         <relatedItem type="host">
+           <titleInfo>
+             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
+           </titleInfo>
+           <typeOfResource collection="yes"/>
+         </relatedItem>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="aat">black-and-white negatives</form>
+           </physicalDescription>
+         </relatedItem>
+         <titleInfo>
+           <title>a label</title>
+         </titleInfo>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note displayLabel="Description">this is a description  another description  other stuff</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
+
 
    end    
 
