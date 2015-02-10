@@ -10,7 +10,7 @@ module PreAssembly
       attr_accessor :pid,:fobj,:message,:object_type,:success,:description,:data
       
       def initialize(pid,data=nil)
-        @pid=pid
+        @pid=(pid.include?("druid:")) ? pid : "druid:#{pid}"
         @data=data
       end
         
@@ -71,15 +71,17 @@ module PreAssembly
           
           if should_remediate? # should_remediate? == true              
             
-            if versioning_not_required? # object can be updated directly, no versioning needed
-              update_object
-              @message='remediated directly (versioning not required)' if @success
-            elsif in_accessioning? # object in accessioning, cannot be remediated right now
+            if updates_allowed?
+                if versioning_required? # object can be updated directly, no versioning needed
+                    update_object_with_versioning
+                    @message='remediated with versioning' if @success        
+                else
+                    update_object
+                    @message='remediated directly (versioning not required)' if @success
+                end
+            else
               @success=false
               @message='currently in accessioning, cannot remediate'
-            else # object fully ingested, remediate with versioning
-              update_object_with_versioning
-              @message='remediated with versioning' if @success        
             end
            
            else # should_remediate? == false, no remediation required
@@ -112,7 +114,7 @@ module PreAssembly
           @success=remediate_logic # this method must be defined for your specific remediation passed in
           if @success
             @fobj.save
-            @fobj.publish_metadata
+            @fobj.publish_metadata unless versioning_required?
           end
         rescue Exception => e  
           @success=false
@@ -122,8 +124,9 @@ module PreAssembly
      
      def open_version
        begin # try and open the version
-         @fobj.open_new_version
+         @fobj.open_new_version(:assume_accessioned=>true) if !@fobj.new_version_open?
          @fobj.versionMetadata.update_current_version({:description => "auto remeditation #{@description}",:significance => :admin})
+         @fobj.versionMetadata.content_will_change!
          @success=true
        rescue Exception => e  
          if e.message.downcase.include?('already opened')
@@ -137,7 +140,8 @@ module PreAssembly
 
      def close_version
        begin # try and close the version 
-         @fobj.close_version :description => "auto remeditation #{@description}", :significance => :admin
+         @fobj.close_version(:description => "auto remeditation #{@description}", :significance => :admin) if @fobj.new_version_open?
+         @fobj.versionMetadata.content_will_change!
          @success=true
        rescue Exception => e  
          @success=false
@@ -154,46 +158,33 @@ module PreAssembly
        }       
      end
 
-    
-     def run_assembly_robot(name)
-       `BUNDLE_GEMFILE=~/assembly/current/Gemfile ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} bundle exec ~/assembly/current/bin/run_robot dor:assemblyWF:#{name} -e #{ENV['ROBOT_ENVIRONMENT']} -d #{@pid}`
-     end
-
-     def run_accession_robot(name)
-       `BUNDLE_GEMFILE=~/common-accessioning/Gemfile ROBOT_ENVIRONMENT=#{ENV['ROBOT_ENVIRONMENT']} bundle exec ~/common-accessioning/current/bin/run_robot dor:accessionWF:#{name} -e #{ENV['ROBOT_ENVIRONMENT']} -d #{@pid}`
-     end
-              
-     def in_accessioning?
-        if Dor::Config.remediation.check_for_in_accessioning
-           return (!is_ingested? && !ingest_hold?)
-        else
-          return false
-        end
+     def updates_allowed?
+       @updates_allowed ||= Dor::Config.remediation.check_for_in_accessioning ? !in_accessioning? && is_ingested? : true 
      end
      
-     def versioning_not_required?
-       if Dor::Config.remediation.check_for_versioning_required 
-         return (!is_ingested? && ingest_hold?) || (!is_ingested? && !is_submitted?)
-      else
-        return true 
-      end
+     def versioning_required?
+       @versioning_required ||= (Dor::Config.remediation.check_for_versioning_required) ? !((!is_ingested? && ingest_hold?) || (!is_ingested? && !is_submitted?)) : false # object can be updated directly, no versioning needed
      end   
                    
-     # Check if the object is full accessioned and ingested.
-     def is_ingested?
-       WFS.get_lifecycle(REPO, @pid, 'accessioned') ? true : false
-     end
+    # Check if the object is full accessioned and ingested, either we have an accessioned lifecycle
+    def is_ingested?
+      WFS.get_lifecycle(REPO, @pid, 'accessioned') ? true : false
+    end
+    
+    def in_accessioning?
+      WFS.get_active_lifecycle(REPO, @pid, 'submitted') ? true : false
+    end
 
-     # Check if the object is on ingest hold
-     def ingest_hold?
-       # accession2WF is temporary, and anything set to "waiting" in that workflow is really treated like a "hold" condition
-       WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold' || (WFS.get_workflow_status(REPO, @pid, 'accession2WF','sdr-ingest-transfer') == 'waiting' && WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer').nil?)
-     end
+    # Check if the object is on ingest hold
+    def ingest_hold?
+      # accession2WF is temporary, and anything set to "waiting" in that workflow is really treated like a "hold" condition
+      WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold' || (WFS.get_workflow_status(REPO, @pid, 'accession2WF','sdr-ingest-transfer') == 'waiting' && WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer').nil?)
+    end
 
-     # Check if the object is submitted
-     def is_submitted?
-       WFS.get_lifecycle(REPO, @pid, 'submitted') == nil
-     end
+    # Check if the object is submitted
+    def is_submitted?
+      WFS.get_lifecycle(REPO, @pid, 'submitted') == nil
+    end
       
     end
 
