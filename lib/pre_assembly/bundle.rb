@@ -630,6 +630,7 @@ module PreAssembly
       puts "#{Time.now}: #{message}" if @show_progress
       
       n=0
+      num_no_file_warnings=0
       
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
@@ -648,6 +649,7 @@ module PreAssembly
         log "  - N object files: #{dobj.object_files.size}"
         puts "#{Time.now}: #{message}" if @show_progress
         puts "#{Time.now}: Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
+        num_no_file_warnings+=1 if dobj.object_files.size == 0
         
         begin
           # Try to pre_assemble the digital object.
@@ -678,6 +680,7 @@ module PreAssembly
         n+=1
       end
    
+      puts "**WARNING**: #{num_no_file_warnings} objects had no files" if (@show_progress && num_no_file_warnings > 0)
       puts "#{Time.now}: #{o2p.size} objects pre-assembled" if @show_progress
     
     end
