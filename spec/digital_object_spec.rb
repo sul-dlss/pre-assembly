@@ -146,16 +146,42 @@ describe PreAssembly::DigitalObject do
       @dobj.dor_object.should == 1234
     end
 
-    it "can exercise registration_params() an get expected data structure" do
+    it "can exercise registration_params() and get expected data structure" do
       @dobj.druid = @druid
       @dobj.label = "LabelQuux"
       rps = @dobj.registration_params
       rps.should             be_kind_of Hash
       rps[:source_id].should be_kind_of Hash
       rps[:tags].should      be_kind_of Array
+      rps[:tags].should == ["Project : ProjectBar"]
       rps[:label].should == "LabelQuux"
     end
 
+    it "should add a new tag to the registration params if set" do
+      
+      @ps[:apply_tag]='Foo : Bar'
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      rps = dobj_with_tag.registration_params
+      rps.should             be_kind_of Hash
+      rps[:tags].should      be_kind_of Array
+      rps[:tags].should == ["Project : ProjectBar", "Foo : Bar"]
+
+      @ps[:apply_tag]='Foo : Bar'
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      rps = dobj_with_tag.registration_params
+      rps.should             be_kind_of Hash
+      rps[:tags].should      be_kind_of Array
+      rps[:tags].should == ["Project : ProjectBar", "Foo : Bar"]
+      
+      @ps[:apply_tag]=nil
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      rps = dobj_with_tag.registration_params
+      rps.should             be_kind_of Hash
+      rps[:tags].should      be_kind_of Array
+      rps[:tags].should == ["Project : ProjectBar"]
+
+    end
+    
   end
 
   ####################

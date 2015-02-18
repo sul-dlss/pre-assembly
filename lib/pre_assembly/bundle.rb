@@ -26,6 +26,7 @@ module PreAssembly
       :desc_md_template,
       :progress_log_file,
       :project_name,
+      :apply_tag,
       :apo_druid_id,
       :set_druid_id,
       :publish_attr,
@@ -178,7 +179,8 @@ module PreAssembly
         :new_druid_tree_format,
         :staging_style,
         :validate_bundle_dir,
-        :throttle_time
+        :throttle_time,
+        :apply_tag
       ]
     end
         
@@ -405,6 +407,7 @@ module PreAssembly
           :staging_dir          => @staging_dir,
           :desc_md_template_xml => @desc_md_template_xml,
           :project_name         => @project_name,
+          :apply_tag            => @apply_tag,
           :apo_druid_id         => @apo_druid_id,
           :set_druid_id         => @set_druid_id,
           :publish_attr         => @publish_attr,
