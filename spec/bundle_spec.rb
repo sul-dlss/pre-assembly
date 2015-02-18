@@ -14,6 +14,7 @@ describe PreAssembly::Bundle do
       :proj_sohp_files_only   => 'spec/test_data/project_config_files/local_dev_sohp_files_only.yaml',   
       :proj_sohp_files_and_folders   => 'spec/test_data/project_config_files/local_dev_sohp_files_and_folders.yaml',   
       :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',               
+      :proj_with_tag          => 'spec/test_data/project_config_files/local_dev_revs_old_druid_style.yaml'               
     }
     @yaml={}
     @yaml_filenames.each {|key,value| @yaml[key]=File.read(value) }
@@ -42,7 +43,7 @@ describe PreAssembly::Bundle do
     it "should trim the trailing slash from the bundle directory" do
       @b.bundle_dir.should == 'spec/test_data/bundle_input_a'
     end
-    
+        
     it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_md_template = nil
@@ -67,6 +68,29 @@ describe PreAssembly::Bundle do
 
   end
 
+  ####################
+
+  describe "apply_tag settings" do
+    it "should set apply_tag to nil if not set in the yaml file" do
+      bundle_setup :proj_revs
+      @b.apply_tag.should be_nil
+      @b.apply_tag.blank?.should be_truthy
+    end
+    
+    it "should set the apply_tag parameter if set" do
+      bundle_setup :proj_with_tag
+      @b.apply_tag.should == "revs:batch1"
+      @b.apply_tag.blank?.should be_falsey
+    end
+
+    it "should set the apply_tag to empty string or nil and be blank if set this way in config file" do
+      bundle_setup :proj_revs_no_cm
+      @b.apply_tag.blank?.should be_truthy
+      bundle_setup :proj_rumsey
+      @b.apply_tag.blank?.should be_truthy
+    end   
+  end
+  
   ####################
 
   describe "setting set_druid_id() correctly" do
@@ -167,13 +191,13 @@ describe PreAssembly::Bundle do
     end
 
     it "required_files() should return expected N of items" do
-      @b.required_files.should have(3).items
+      expect(@b.required_files.size).to eq(3)
       @b.manifest = nil
-      @b.required_files.should have(2).items
+      expect(@b.required_files.size).to eq(2)
       @b.checksums_file = nil
-      @b.required_files.should have(1).items
+      expect(@b.required_files.size).to eq(1)
       @b.desc_md_template = nil
-      @b.required_files.should have(0).items
+      expect(@b.required_files.size).to eq(0)
     end
 
     it "should do nothing if @validate_usage is false" do
@@ -297,7 +321,7 @@ describe PreAssembly::Bundle do
         bundle_setup proj
         @b.discover_objects
         dobjs = @b.digital_objects
-        dobjs.should have(n_dobj).items
+        expect(dobjs.size).to eq(n_dobj)
         dobjs.each do |dobj|          
           dobj.stageable_items.size.should == n_stag
           dobj.object_files.size.should == n_file
@@ -635,7 +659,7 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_revs
       # Discover the objects: we should find some.
       @b.discover_objects
-      @b.digital_objects.should have(3).items
+      expect(@b.digital_objects.size).to eq(3)
       # Before processing manifest: various attributes should be nil or default value.
       @b.digital_objects.each do |dobj|
         dobj.label.should        == Dor::Config.dor.default_label

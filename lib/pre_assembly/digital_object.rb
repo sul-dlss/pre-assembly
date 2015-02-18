@@ -16,6 +16,7 @@ module PreAssembly
       :object_files,
       :project_style,
       :project_name,
+      :apply_tag,
       :apo_druid_id,
       :set_druid_id,
       :publish_attr,
@@ -297,13 +298,15 @@ module PreAssembly
     end
 
     def registration_params
+      tags=["Project : #{@project_name}"]
+      tags << @apply_tag unless @apply_tag.blank?
       {
         :object_type  => 'item',
         :admin_policy => @apo_druid_id,
         :source_id    => { @project_name => @source_id },
         :pid          => @pid,
         :label        => @label.blank? ? Dor::Config.dor.default_label : @label,
-        :tags         => ["Project : #{@project_name}"],
+        :tags         => tags,
       }
     end
 
