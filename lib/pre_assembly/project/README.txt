@@ -1,5 +1,5 @@
-Any files included in this directory will be included automatically in the "DigitalObject" class automatically, which is useful if you need
-to specific project specific methods for generating content metadata (e.g. for SMPL) or in generating descriptive metadata (e.g. for Revs).
+Any files included in this directory will be included automatically in the "DigitalObject" class, which is useful if you need
+to define project specific methods for generating content metadata (e.g. for SMPL) or in generating descriptive metadata (e.g. for Revs).
 
 If you name your file "my_project_file.rb", be sure your module name reflects this using the ruby camelized standard, as below:
 
