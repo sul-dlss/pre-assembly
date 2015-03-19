@@ -18,7 +18,7 @@ Dor::Config.configure do
     pass 'lyberteam'
   end
    
-  solrizer.url 'http://localhost:8080/solr/argo_test'
+  solrizer.url 'https://sul-solr-tester.stanford.edu/argo_test'
   workflow.url 'http://sul-lyberservices-test.stanford.edu/workflow/'
 
   purl do
