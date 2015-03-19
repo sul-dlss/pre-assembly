@@ -301,22 +301,14 @@ See the Capfile for more info
 
 ==Running tests
 
-To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus) and with a SSH tunnel connection to sul-solr (see below)
+To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus).
 
     bin/run_all_tests
 
-To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN and an SSH tunnel (see below)
+To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN.
     
     bundle exec rspec spec        # no DOR access required, no VPN
-    bundle exec rspec integration # DOR access required, VPN, SSH tunneling required
-
-To create an SSH tunnel to run the integration tests, you will first need to be on VPNed in (even if on campus). Then, in a separate terminal window: 
-
-  ssh sul-solr-a -L 8080:localhost:8080
-
-Leave that terminal window open as long as you need to run integration tests.
-
-See this page for more information: https://consul.stanford.edu/display/DLSSINFRAAPP/SUL+Solr+Infrastructure
+    bundle exec rspec integration # DOR access required, VPN
 
 ==Environments
 
