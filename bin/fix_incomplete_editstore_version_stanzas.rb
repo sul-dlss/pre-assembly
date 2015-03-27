@@ -20,8 +20,14 @@ require 'nokogiri'
 CSV.foreach(ARGV[0], :headers => true) do |row|
   #puts row['druid']
   
+  #An Argo CSV uses a capitalized Druid for head and does not include the druid: prefix, if we have that handle it via
+  druid = row['druid']
+  druid = row['Druid'] if druid == nil
+  druid = "druid:" + druid if druid.split("druid:").size == 1
+  
+  
   #Get the Item and datastream
-  item = Dor::Item.find(row['druid'])
+  item = Dor::Item.find(druid)
   vmd = item.datastreams['versionMetadata'].ng_xml
   
   #Remove All But the First Version (due to possible incomplete stanzas)
@@ -29,11 +35,8 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   total_dor_versions = nil
   
   #By default we trust the spreadsheet provided over what dor tells us, because if we're fixing an error in dor it may be providing a bad number
-  begin
-    total_dor_versions = row['dor-version'].to_i
-  rescue 
-    total_dor_versions = item.current_version.to_i
-  end
+  total_dor_versions = row['dor-version'].to_i 
+  total_dor_versions = item.current_version.to_i if total_dor_versions == 0 
    
   while (v <= total_dor_versions) do
     vmd.xpath("//versionMetadata/version[@versionId=#{v}]").remove
@@ -45,9 +48,8 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   total_sdr_versions = nil
   
   #By default we trust the spreadsheet since we're fixing errors
-  begin 
-    total_sdr_versions = row['sdr-version'].to_i 
-  rescue
+  total_sdr_versions = row['sdr-version'].to_i 
+  if total_sdr_versions == 0
     r = Nokogiri::HTML(open("#{ARGV[1]}/sdr/objects/#{druid}/current_version", :http_basic_authentication=>["#{ARGV[2]}","#{ARGV[3]}"]))
     total_sdr_versions = r.xpath('//currentversion').children.first.text.to_i
   end
@@ -67,7 +69,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   item.datastreams['versionMetadata'].content = vmd.to_xml
   item.versionMetadata.content_will_change!
   item.versionMetadata.save
-  puts "#{row['druid']} Completed"
+  puts "#{druid} Completed"
   
   #Clear the accessionWF so we can make new versions
   # Dor::WorkflowService.delete_workflow('dor', row['druid'], 'accessionWF')
