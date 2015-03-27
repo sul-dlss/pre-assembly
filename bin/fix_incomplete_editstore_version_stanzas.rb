@@ -2,10 +2,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 
-# Run with
+# If you have a spreadsheet that has all dor-versions and sdr-versions filled in, run with:
 # ROBOT_ENVIRONMENT=test bin/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS
 #CSV is expected to have headers of druid, dor_version, sdr_version
 
+#If you have only a .csv containing druids, run with
+# ROBOT_ENVIRONMENT=test bin/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS http://sdr-service-url.edu sdrUserName sdrPassword
 
 require 'rubygems'
 require 'dor-services'
@@ -23,15 +25,34 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   vmd = item.datastreams['versionMetadata'].ng_xml
   
   #Remove All But the First Version (due to possible incomplete stanzas)
-  v = 2
-  while (v <= row['dor-version'].to_i) do
+  v = 2 #start further into the version stanzas because we assume the initial ones are goond
+  total_dor_versions = nil
+  
+  #By default we trust the spreadsheet provided over what dor tells us, because if we're fixing an error in dor it may be providing a bad number
+  begin
+    total_dor_versions = row['dor-version'].to_i
+  rescue 
+    total_dor_versions = item.current_version.to_i
+  end
+   
+  while (v <= total_dor_versions) do
     vmd.xpath("//versionMetadata/version[@versionId=#{v}]").remove
     v+=1
   end
   
   #Create New Editstore Stanzas
-  v = 2
-  while(v <= row['sdr-version'].to_i+1) do
+  v = 2 
+  total_sdr_versions = nil
+  
+  #By default we trust the spreadsheet since we're fixing errors
+  begin 
+    total_sdr_versions = row['sdr-version'].to_i 
+  rescue
+    r = Nokogiri::HTML(open("#{ARGV[1]}/sdr/objects/#{druid}/current_version", :http_basic_authentication=>["#{ARGV[2]}","#{ARGV[3]}"]))
+    total_sdr_versions = r.xpath('//currentversion').children.first.text.to_i
+  end
+
+  while(v <= total_sdr_versions +1) do
     new_version = Nokogiri::XML::Node.new 'version', vmd
     new_version['tag'] = "1.0.#{v-1}"
     new_version['versionId'] = v
