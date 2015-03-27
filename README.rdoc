@@ -98,6 +98,9 @@ Uses ruby 1.9.3
 2.3.8:: Fixes to manifest loading and access to always use hash style references for columns (instead of allowing for struct like syntax that came from csv-mapper). Fix rdf gem to 1.0.9 until activefedora is updated to v6
 2.3.9:: Send default title to registration service if no label is provided in the manifest
 2.4.0:: Added a new MODs generation report so you can test your MODs desc md template before you actually run accessioning.
+2.4.1:: Update a revs related mods test.
+2.4.2:: Remove dependency on lyber-core, update other gems (including dor-services)
+2.4.3:: Allow user to specify a tag to be applied to each object when registering
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
@@ -298,22 +301,14 @@ See the Capfile for more info
 
 ==Running tests
 
-To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus) and with a SSH tunnel connection to sul-solr (see below)
+To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus).
 
     bin/run_all_tests
 
-To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN and an SSH tunnel (see below)
+To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN.
     
     bundle exec rspec spec        # no DOR access required, no VPN
-    bundle exec rspec integration # DOR access required, VPN, SSH tunneling required
-
-To create an SSH tunnel to run the integration tests, you will first need to be on VPNed in (even if on campus). Then, in a separate terminal window: 
-
-  ssh sul-solr-a -L 8080:localhost:8080
-
-Leave that terminal window open as long as you need to run integration tests.
-
-See this page for more information: https://consul.stanford.edu/display/DLSSINFRAAPP/SUL+Solr+Infrastructure
+    bundle exec rspec integration # DOR access required, VPN
 
 ==Environments
 

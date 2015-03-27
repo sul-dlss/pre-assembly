@@ -16,7 +16,6 @@ end
 
 # General DLSS infrastructure.
 require 'dor-services'
-require 'lyber_core'
 
 # Environment.
 unless defined?(NO_ENVIRONMENT)

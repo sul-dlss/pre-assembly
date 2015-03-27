@@ -20,13 +20,13 @@ def check_file(file)
   reg=RevsUtils.valid_to_register(file)
   source=RevsUtils.unique_source_ids([file])
   metadata=RevsUtils.valid_for_metadata(file)
-  puts "#{file},#{reg},#{source},#{metadata}"
+  puts "#{file} , #{reg} , #{source} , #{metadata}"
   return reg && source && metadata
 end
 
 puts ''
 
-puts "File,Registration Columns OK,Source IDs/Filenames OK & Unique,Metadata Columns OK"
+puts "File, Registration Columns OK , Source IDs/Filenames OK & Unique , Metadata Columns OK "
 
 if File.file?(input) && File.extname(input).downcase == '.csv'
   
@@ -37,11 +37,12 @@ elsif File.directory?(input)
   num_errors=0
   FileUtils.cd(input)
   files=Dir.glob("**/**.csv")
+  num_files=files.count
   files.each do |file|
      ok=check_file(file)
      num_errors +=1 unless ok
   end 
-  puts "#{num_errors} files had problems"
+  puts "#{num_errors} files out of #{num_files} had problems"
   
 else
 

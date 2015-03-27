@@ -15,11 +15,6 @@
 # @pid           = the DRUID (e.g. "druid:oo000oo0001")
 # @object_type   = the object type as a symbol,  could be :collection, :item or :adminpolicyobject 
 
-# Convenience methods available to you:
-
-# run_assembly_robot(robot_name) = run the named robot immediately on the druid you are operating on, e.g. run_assembly_robot('jp2-create')
-# run_accession_robot(robot_name)
-
 # You an also defined additional methods if you want, and they will be available to you in your remediate_logic method.  To be sure
 # you don't conflict with other methods in the base class, you might want to namespace your methods in some way. 
 
