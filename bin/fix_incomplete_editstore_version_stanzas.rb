@@ -86,7 +86,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   # end
   
   #Restart The Accessioning WF
-  Dor::WorkflowService.update_workflow_status 'dor', row['druid'], 'accessionWF', 'sdr-ingest-transfer', 'waiting'
+  Dor::WorkflowService.update_workflow_status 'dor', druid, 'accessionWF', 'sdr-ingest-transfer', 'waiting'
   
   #Check for incomplete stanza
   #Delete incomplete stanza, lower number on all others
