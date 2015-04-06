@@ -22,7 +22,7 @@ gem 'actionmailer', '>= 3.2.20'
 gem 'revs-utils', '>= 1.0.14'
 gem 'harvestdor'
 gem 'dor-fetcher', '>= 1.1.5'
-
+gem 'roo'
 
 group :test do
   gem 'yard'

@@ -1,9 +1,8 @@
 #! /usr/bin/env ruby
 
 # Used to test descriptive Metadata generation given a MODs template and a manifest.  This allows you to test how the MODs will be
-#  generated during pre-assembly without rom updated manifests provided by Revs Institute.
-# Iterate through each row in the manifest, use source ID to lookup DRUID, generate new MODs using MODs template, update each object using
-# remediation framework.
+#  generated during pre-assembly with updated manifests provided by Revs Institute.
+# Iterate through each row in the manifest, use source ID to lookup DRUID, generate new MODs using MODs template.
 
 # Peter Mangiafico
 # January 21, 2014
