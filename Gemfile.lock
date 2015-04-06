@@ -230,6 +230,10 @@ GEM
       chronic
       countries (= 0.9.2)
       rdf
+    roo (1.13.2)
+      nokogiri
+      rubyzip
+      spreadsheet (> 0.6.4)
     rsolr (1.0.10)
       builder (>= 2.1.2)
     rsolr-ext (1.0.3)
@@ -244,6 +248,7 @@ GEM
     rspec-mocks (2.99.3)
     ruby-cache (0.3.0)
     ruby-graphviz (1.0.9)
+    ruby-ole (1.2.11.8)
     rubydora (1.6.5)
       activemodel
       activesupport
@@ -254,6 +259,7 @@ GEM
       mime-types
       nokogiri
       rest-client
+    rubyzip (1.1.7)
     solrizer (2.2.0)
       activesupport
       daemons
@@ -262,6 +268,8 @@ GEM
       om (>= 1.5.0)
       stomp
       xml-simple
+    spreadsheet (1.0.3)
+      ruby-ole (>= 1.0)
     sprockets (2.2.3)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -317,5 +325,6 @@ DEPENDENCIES
   rdf (<= 1.0.9)
   rest-client
   revs-utils (>= 1.0.14)
+  roo
   rspec (~> 2.6)
   yard

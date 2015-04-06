@@ -17,9 +17,21 @@ class RevsUtils
 end
 
 def check_file(file)
-  reg=RevsUtils.valid_to_register(file)
-  source=RevsUtils.unique_source_ids([file])
-  metadata=RevsUtils.valid_for_metadata(file)
+  begin 
+    reg=RevsUtils.valid_to_register(file) # check for valid registration
+  rescue
+    reg=false
+  end
+  begin
+    source=RevsUtils.unique_source_ids([file]) # check for unique source ID
+  rescue
+    source=false
+  end
+  begin
+    metadata=RevsUtils.valid_for_metadata(file) # check for valid metadata columns
+  rescue 
+    metadata=false
+  end
   puts "#{file} , #{reg} , #{source} , #{metadata}"
   return reg && source && metadata
 end
