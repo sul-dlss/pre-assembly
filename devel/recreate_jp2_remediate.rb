@@ -16,7 +16,6 @@ module RemediationLogic
       run_assembly_robot('exif-collect')
       run_assembly_robot('checksum-compute')
       Dor::WorkflowService.update_workflow_status('dor',@pid,'assemblyWF', 'accessioning-initiate', 'completed')
-      run_accession_robot('content-metadata')
     end
     
 end
