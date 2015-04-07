@@ -12,7 +12,6 @@ module RemediationLogic
     def remediate_logic 
       run_assembly_robot('exif-collect')
       run_assembly_robot('checksum-compute')
-      run_accession_robot('content-metadata')
     	return true # if you have logic that determines if you have succeeded or not, you can decide to return false instead if there is a problem
     end
   
