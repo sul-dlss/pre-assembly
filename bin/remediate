@@ -7,7 +7,7 @@
 # Run with
 # ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb
 
-# eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /thumpers/dpgthumper-staging/Revs/revs_rights_remediate.rb
+# eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
 
 # INPUT_FILE can be either a pre-assembly generated YAML log file or a CSV file with one column containing at least a list of druids
 # If a pre-assembly YAML log file is passed in, the successfully accessioned druids will be used.
