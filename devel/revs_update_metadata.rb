@@ -18,8 +18,8 @@ require 'csv'
 require 'csv-mapper'
 include CsvMapper
 
-remediate_logic_file='/thumpers/dpgthumper-staging/Revs/revs_update_mods_remediation.rb' # the revs update mods remeditation class
-mods_template_file='/thumpers/dpgthumper-staging/Revs/mods_template.xml' # the revs MODs template
+remediate_logic_file='/dor/preassembly/remediation/scripts/revs_update_mods_remediation.rb' # the revs update mods remeditation class
+mods_template_file='/dor/staging/Revs/mods_template.xml' # the revs MODs template
 require remediate_logic_file
 
 source_path=File.dirname(csv_in)
