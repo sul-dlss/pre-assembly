@@ -9,6 +9,9 @@
 # From within the "remediate_logic" method, you will have access to the Fedora object in the instance variable called @fobj. 
 # Just perform the actions you need -- it will be saved out for you.  
 
+# Convenience methods available to you:
+# run_assembly_robot(robot_name) = run the named assembly robot immediately on the druid you are operating on, e.g. run_assembly_robot('jp2-create')
+
 # Convenience values available to you:
 
 # @fobj          = the actual Fedora object to operate on
