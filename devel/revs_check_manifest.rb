@@ -4,7 +4,7 @@
 # June 18, 2014
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_check_manifest.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+# ruby devel/revs_check_manifest.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]
