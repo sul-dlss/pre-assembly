@@ -5,7 +5,7 @@
 # April 8, 2015
 #
 # Run with
-# ruby devel/revs_hide_images_in_manifest.rb /dor/staging/Revs/BoxXX/path_to_manifest.csv  # supply path to csv manifest that needs all of its images hidden
+#  ROBOT_ENVIRONMENT=production ruby devel/revs_hide_images_in_manifest.rb /dor/staging/Revs/BoxXX/path_to_manifest.csv  # supply path to csv manifest that needs all of its images hidden
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]
@@ -17,7 +17,6 @@ if File.file?(input)
 
     puts ""
     puts 'revs_hide_images_in_manifest'
-    puts "Started at #{Time.now}"
     puts "Input: #{input}"
     start_time=Time.now
 
@@ -47,9 +46,7 @@ if File.file?(input)
     FileUtils.mv input,input+'.old' # save the old version
     FileUtils.mv new_file,input # rename the new version to the original
 
-    puts ""
     puts "Original file at: #{input+'.old'}"
-    puts "Completed at #{Time.now}, total time was #{Time.now - start_time}"
   
 else
   

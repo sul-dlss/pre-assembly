@@ -39,7 +39,9 @@ module PreAssembly
       log ""
       log "discovery_report(#{run_log_msg})"
       
+      start_time=Time.now
       puts "\nProject, #{@project_name}"
+      puts "Started at #{Time.now}"
       puts "Config filename, #{@config_filename}"
       puts "Directory, #{@bundle_dir}"
       puts "Object discovery via manifest, #{@manifest}" if using_manifest
@@ -82,15 +84,19 @@ module PreAssembly
 
       o2p = objects_to_process
       total_objects_to_process=o2p.size
-      
+            
       source_ids=Hash.new(0) if using_manifest # hash to keep track of local source_id uniqueness
       total_size_all_files=0
       mimetypes=Hash.new(0) # hash to keep track of mimetypes
       
+      counter = 0
+      
       o2p.each do |dobj|
         
+         counter += 1
+        
          bundle_id=File.basename(dobj.unadjusted_container)
-         message="#{bundle_id} , " # obj container id
+         message="#{counter} of #{total_objects_to_process} : #{bundle_id} , " # obj container id
 
          if dobj.object_files.count == 0
            message+=report_error_message("none") + " N/A ," # no items found and therefore existence gets an N/A
@@ -180,6 +186,8 @@ module PreAssembly
         entries_in_bundle_directory.each { |dir_item| puts "** #{dir_item}" unless all_object_containers.include?(dir_item.to_s.strip)}
       end
       
+      puts "\nConfig filename, #{@config_filename}"
+      puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time)/60.0)} minutes"
       puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
       puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
       puts "Total Discovered Objects, #{total_objects}"
