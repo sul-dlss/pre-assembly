@@ -39,7 +39,7 @@ if File.directory?(input)
   puts "Found #{num_files} files to process"
   puts ""
   
-  puts "Num, File, Saved To, Registration Columns OK , Source IDs/Filenames OK & Unique , Metadata Columns OK "
+  puts "Num, File, Saved To, Registration Columns OK , Metadata Columns OK , Num Bad Formats or Dates "
 
   files.each do |file|
     
@@ -59,25 +59,14 @@ if File.directory?(input)
     File.delete(full_path_to_exported_csv) if File.file?(full_path_to_exported_csv) # remove the CSV if it is there
     xlsx.to_csv(full_path_to_exported_csv) # export the CSV file
     
-    begin 
-      reg=RevsUtils.valid_to_register(full_path_to_exported_csv) # check for valid registration
-    rescue
-      reg=false
-    end
-    begin
-      source=RevsUtils.unique_source_ids([full_path_to_exported_csv]) # check for unique source ID
-    rescue
-      source=false
-    end
-    begin
-      metadata=RevsUtils.valid_for_metadata(full_path_to_exported_csv) # check for valid metadata columns
-    rescue 
-      metadata=false
-    end
-    
-    ok=reg && source && metadata
+    csv_data = RevsUtils.read_csv_with_headers(full_path_to_exported_csv) 
+    reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
+    headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
+    metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
+        
+    ok=(reg && headers && (metadata == 0))
 
-    puts "#{counter}, #{file} , #{move_to} , #{reg} , #{source} , #{metadata}"
+    puts "#{counter}, #{file} , #{move_to} , #{reg} , #{headers}, #{metadata}"
     
     num_errors +=1 unless ok
      

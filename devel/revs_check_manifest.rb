@@ -4,7 +4,7 @@
 # June 18, 2014
 #
 # Run with
-# ruby devel/revs_check_manifest.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+#  ROBOT_ENVIRONMENT=production ruby devel/revs_check_manifest.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]
@@ -16,43 +16,37 @@ class RevsUtils
   extend Revs::Utils    
 end
 
-def check_file(file)
-  begin 
-    reg=RevsUtils.valid_to_register(file) # check for valid registration
-  rescue
-    reg=false
-  end
-  begin
-    source=RevsUtils.unique_source_ids([file]) # check for unique source ID
-  rescue
-    source=false
-  end
-  begin
-    metadata=RevsUtils.valid_for_metadata(file) # check for valid metadata columns
-  rescue 
-    metadata=false
-  end
-  puts "#{file} , #{reg} , #{source} , #{metadata}"
-  return reg && source && metadata
-end
-
 puts ''
 
-puts "File, Registration Columns OK , Source IDs/Filenames OK & Unique , Metadata Columns OK "
+puts "File, Registration Columns OK , Metadata Columns OK, Num Bad Formats or Dates "
+counter = 0
 
 if File.file?(input) && File.extname(input).downcase == '.csv'
   
-  check_file(input)
-  
+  csv_data = RevsUtils.read_csv_with_headers(input) 
+  reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
+  headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
+  metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
+  puts "#{input} , #{reg} , #{headers}, #{metadata}"
+    
 elsif File.directory?(input)
 
+  puts "Searching for CSV files..."
   num_errors=0
   FileUtils.cd(input)
   files=Dir.glob("**/**.csv")
   num_files=files.count
+  puts "Found #{num_files} CSV files"
   files.each do |file|
-     ok=check_file(file)
-     num_errors +=1 unless ok
+    counter += 1
+   # puts "Working on #{file}: (#{counter} of #{num_files})"
+    csv_data = RevsUtils.read_csv_with_headers(file) 
+    reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
+    headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
+    metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
+    puts "#{file} , #{reg} , #{headers}, #{metadata}"
+    ok = (reg && headers && (metadata == 0))
+    num_errors +=1 unless ok
   end 
   puts "#{num_errors} files out of #{num_files} had problems"
   
