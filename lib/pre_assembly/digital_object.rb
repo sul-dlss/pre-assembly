@@ -437,9 +437,32 @@ module PreAssembly
     # Content metadata.
     ####
     def generate_content_metadata
-    
-      create_content_metadata
-      write_content_metadata 
+
+      i=0
+      success=false
+      backtrace=""
+      exception_message=""
+      until i == Dor::Config.dor.num_attempts || success do
+        i+=1
+        begin
+          create_content_metadata
+          write_content_metadata 
+          success=true
+        rescue Exception => e
+          log "      ** GENERATE_CONTENT_METADATA FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
+          backtrace=e.backtrace
+          exception_message=e.message
+          sleep Dor::Config.dor.sleep_time
+        end
+      end
+      
+      if success == false
+        error_message = "GENERATE_CONTENT_METADATA failed after #{i} attempts \n"
+        log error_message
+        error_message += "exception: #{exception_message}\n"
+        error_message += "backtrace: #{backtrace}" 
+        raise error_message
+      end    
       
     end
     
