@@ -118,7 +118,7 @@ module PreAssembly
     end
     
     def setup_defaults
-      @validate_files = true if @validate_files.nil? # default to not validating files if not provided     
+      @validate_files = true if @validate_files.nil? # default to validating files if not provided     
       @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
       @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
@@ -566,50 +566,18 @@ module PreAssembly
 
     def validate_files(dobj)
       log "  - validate_files()"
-      
-      i=0
-      success=false
-      failed_validation=false
-      backtrace=""
-      exception_message=""
       tally = Hash.new(0)           # A tally to facilitate testing.
-
-      until i == Dor::Config.dor.num_attempts || success || failed_validation do
-        i+=1
-        begin
-          tally = Hash.new(0)           # A tally to facilitate testing.
-          dobj.object_files.each do |f|
-            if not f.image?
-              tally[:skipped] += 1
-            elsif f.valid_image? && f.has_color_profile?
-              tally[:valid] += 1
-            else
-              msg = "File validation failed: #{f.path}"
-              failed_validation=true
-              raise msg
-            end
-          end
-          success=true
-        rescue Exception => e
-          raise e if failed_validation # just raise the exception as normal if we have a failed file validation
-          
-          log "      ** VALIDATE_FILES FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          backtrace=e.backtrace
-          exception_message=e.message
-          sleep Dor::Config.dor.sleep_time
+      dobj.object_files.each do |f|
+        if not f.image?
+          tally[:skipped] += 1
+        elsif f.valid_image? && f.has_color_profile?
+          tally[:valid] += 1
+        else
+          msg = "File validation failed: #{f.path}"
+          raise msg
         end
       end
-      
-      if success == false && !failed_validation
-        error_message = "validate_files failed after #{i} attempts \n"
-        log error_message
-        error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
-        raise error_message
-      else
-        return tally
-      end    
-      
+      return tally
     end
 
     # confirm that the checksums provided match the checksums as computed 
