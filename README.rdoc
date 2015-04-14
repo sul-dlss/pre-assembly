@@ -102,6 +102,7 @@ Uses ruby 1.9.3
 2.4.2:: Remove dependency on lyber-core, update other gems (including dor-services)
 2.4.3:: Allow user to specify a tag to be applied to each object when registering
 2.4.4:: Add some additional scripts to help prep Revs content.  Allow desc_metadata_templates to be specified with an absolute path as well as a relative path.
+2.4.5:: Add in retry logic around validate_files since it still seems to fail sporadically.  Update to the revs_create_yaml script.  Use new version of assembly-objectfile which gets mimetype from file extension.
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
