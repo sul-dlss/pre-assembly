@@ -59,6 +59,7 @@ if File.directory?(input)
           config['set_druid_id'][0] = collection_druid # set collection druid
           config['bundle_dir']=File.join(input,File.dirname(file))
           config['manifest']=File.basename(file)
+          config['apply_tag']=config['apply_tag'] + name_without_extension.gsub(' ','_') # append a tag with the name of the manifest, but with no spaces
           config['progress_log_file']=File.join('/dor/preassembly/revs/',name_without_extension+".log")
           File.open(output_file,'w') do |h|
             h.write config.to_yaml

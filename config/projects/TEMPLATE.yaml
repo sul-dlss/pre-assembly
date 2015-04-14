@@ -75,7 +75,7 @@ project_style:
   should_register: true   # Use if the objects are not yet registered
                    false  # Use if the objects are already registered.
                    
-  apply_tag:      'prefix : tagname' # only applicable if "should_register" is set to true - if so and if a tag is listed here, it will be applied to all objects when registering ... set to ~ or empty string if you don't want any additional tags applied during registration
+  apply_tag:      'prefix : tagname : etc' # only applicable if "should_register" is set to true - if so and if a tag is listed here, it will be applied to all objects when registering ... set to ~ or empty string if you don't want any additional tags applied during registration
 
   # Pre-assembly must obtain a druid for every object.
   get_druid_from: 'suri'               # Only used with should_register = true.
