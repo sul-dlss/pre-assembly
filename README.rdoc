@@ -766,6 +766,11 @@ The result will be some screen output and a detailed log file in .YML format in 
 The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
 You can re-run the remediation with the same CSV file and it will automatically skip already completed objects - SO KEEP THE CSV FILE.
 
+You can also add optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.  
+Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!
+
+ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb ignore_versioning ignore_accessioning
+
 === Custom Object Remediation 
 
 You can also build a fully customized remediation script that does not require input DRUIDs in a CSV and can pass data to

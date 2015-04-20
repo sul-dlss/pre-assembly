@@ -9,6 +9,11 @@
 
 # eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
 
+# Add in optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.  
+# Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!
+
+# ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb ignore_versioning ignore_accessioning
+
 # INPUT_FILE can be either a pre-assembly generated YAML log file or a CSV file with one column containing at least a list of druids
 # If a pre-assembly YAML log file is passed in, the successfully accessioned druids will be used.
 # For a CSV file, there should be a header with a column labeled "druid" which indicates which column contains the druid
@@ -43,10 +48,22 @@ help "Incorrect N of arguments." if ARGV.size < 2
 input_file = ARGV[0]
 remediate_logic_file = ARGV[1]
 
+ignore_accessioning = true if ARGV.include? 'ignore_accessioning' # override config file if supplied
+ignore_versioning = true if ARGV.include? 'ignore_versioning'  # override config file if supplied
+
 help "Input file not found." unless File.file?(input_file)
 help "REMEDIATE_LOGIC_FILE file not found." unless File.file?(remediate_logic_file)
 
 require remediate_logic_file
+
+if ignore_accessioning
+  puts "*** OVERRIDING CONFIG: Ignoring accessioning check"
+  Dor::Config.remediation.check_for_in_accessioning = false
+end
+if ignore_versioning
+  puts "*** OVERRIDING CONFIG: Ignoring versioning check"
+  Dor::Config.remediation.check_for_versioning_required = false
+end
 
 source_path=File.dirname(input_file)
 source_ext=File.extname(input_file)
@@ -90,6 +107,7 @@ druids.each do |druid|
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
+    success=true
     if success
       total_success += 1
       result="success"
