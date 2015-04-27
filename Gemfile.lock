@@ -261,6 +261,7 @@ GEM
     ruby-cache (0.3.0)
     ruby-graphviz (1.0.9)
     ruby-ole (1.2.11.8)
+    ruby-prof (0.15.8)
     rubydora (1.6.5)
       activemodel
       activesupport
@@ -342,4 +343,5 @@ DEPENDENCIES
   revs-utils (>= 1.0.18)
   roo
   rspec (~> 2.6)
+  ruby-prof
   yard
