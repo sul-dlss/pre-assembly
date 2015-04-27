@@ -682,12 +682,12 @@ module PreAssembly
       log "process_digital_objects(#{total_obj} objects)"
       message="#{total_obj} objects to pre-assemble"
       log message
-      message="limit of #{@limit_n} applied after completed objects " if @limit_n
-      log message
-      message="memory profiling enabled" if @profile
-      message="#{@skippables.size} already completed objects skipped"
       puts "#{Time.now}: #{message}" if @show_progress
-      
+      log "#{@skippables.size} already completed objects skipped"
+      log "#{@digital_objects.size} objects found, #{objects_to_process.size} not yet complete"
+      log("limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
+      log("memory profiling enabled") if @profile
+    
       n=0
       num_no_file_warnings=0
       
