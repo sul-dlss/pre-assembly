@@ -5,7 +5,7 @@ require 'ostruct'
 require 'pathname'
 
 module PreAssembly
-
+  
   class BundleUsageError < StandardError
     # An exception class used to pass usage error messages
     # back to users of the bin/pre-assemble script.
@@ -15,7 +15,7 @@ module PreAssembly
 
     include PreAssembly::Logging
     include PreAssembly::Reporting
-
+    
     # Paramaters passed via YAML config files.
     YAML_PARAMS = [
       :project_style,
@@ -49,7 +49,9 @@ module PreAssembly
       :new_druid_tree_format,
       :validate_bundle_dir,
       :throttle_time,
-      :staging_style
+      :staging_style,
+      :profile,
+      :garbage_collect_each_n
     ]
 
     OTHER_ACCESSORS = [
@@ -118,6 +120,8 @@ module PreAssembly
     end
     
     def setup_defaults
+      @garbage_collect_each_n = 50 if @garbage_collect_each_n.nil? # when to run garbage collection manually
+      @profile = false if @profile.nil? # default to no profiling
       @validate_files = true if @validate_files.nil? # default to validating files if not provided     
       @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
@@ -183,7 +187,9 @@ module PreAssembly
         :staging_style,
         :validate_bundle_dir,
         :throttle_time,
-        :apply_tag
+        :apply_tag,
+        :profile,
+        :garbage_collect_each_n
       ]
     end
         
@@ -194,7 +200,8 @@ module PreAssembly
       warning<<'* init_assembly_wf=false' unless @init_assembly_wf
       warning<<'* uniqify_source_ids=true' if @uniqify_source_ids             
       warning<<'* cleanup=true' if @cleanup
-      warning<<"* limit=#{@limit_n}" if @limit_n      
+      warning<<"* limit=#{@limit_n}" if @limit_n 
+      warning<<"* memory profiling enabled" if @profile           
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
     end
     
@@ -299,19 +306,28 @@ module PreAssembly
       
       return unless bundle_directory_is_valid?
       
+      RubyProf.start if @profile # start profiling
+      
       # load up the SMPL manifest if we are using that style
       if @content_md_creation[:style] == :smpl
         @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
       end
-      
+
       discover_objects
       load_provider_checksums
       process_manifest
       process_digital_objects
       delete_digital_objects
-
+      
       puts "#{Time.now}: Pre-assembly completed for #{@project_name}" if @show_progress
 
+      # stop profiling and print a graph profile to text
+      if @profile
+        result = RubyProf.stop
+        printer = RubyProf::GraphPrinter.new(result)
+        File.open('memory_report.txt','w') {|file| printer.print(file)}
+      end
+      
       return processed_pids
     end
 
@@ -400,7 +416,7 @@ module PreAssembly
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
       log "discover_objects()"
-      pruned_containers(object_containers).each do |c|
+      object_containers.each do |c|
         container    = actual_container(c)
         stageables   = stageable_items_for(c)
         object_files = discover_object_files(stageables)
@@ -658,12 +674,18 @@ module PreAssembly
     ####
 
     def process_digital_objects
-      # Get the non-skipped objects to process.
-      o2p = objects_to_process
+      # Get the non-skipped objects to process, limited to n if the user asked for that
+      o2p = pruned_containers(objects_to_process)
       
-      log "process_digital_objects(#{o2p.size} non-skipped objects)"
-      message="#{o2p.size} objects to pre-assemble"
+      total_obj = o2p.size
+      
+      log "process_digital_objects(#{total_obj} objects)"
+      message="#{total_obj} objects to pre-assemble"
       log message
+      message="limit of #{@limit_n} applied after completed objects " if @limit_n
+      log message
+      message="memory profiling enabled" if @profile
+      message="#{@skippables.size} already completed objects skipped"
       puts "#{Time.now}: #{message}" if @show_progress
       
       n=0
@@ -680,7 +702,7 @@ module PreAssembly
           sleep @throttle_time.to_i
         end
           
-        message="#{o2p.size-n} objects left"
+        message="#{total_obj-n} out of #{total_obj} objects left"
         log message
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
@@ -715,10 +737,16 @@ module PreAssembly
           end
         end
         n+=1
+        if (n % @garbage_collect_each_n) == 0 # garbage collect each specified number of objects
+          message="------GARBAGE COLLECTION RUNNING----"
+          puts message if @show_progress
+          GC.start 
+          GC::Profiler.clear
+        end
       end
    
       puts "**WARNING**: #{num_no_file_warnings} objects had no files" if (@show_progress && num_no_file_warnings > 0)
-      puts "#{Time.now}: #{o2p.size} objects pre-assembled" if @show_progress
+      puts "#{Time.now}: #{total_obj} objects pre-assembled" if @show_progress
     
     end
 

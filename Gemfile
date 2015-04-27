@@ -23,6 +23,7 @@ gem 'revs-utils', '>= 1.0.18'
 gem 'harvestdor'
 gem 'dor-fetcher', '>= 1.1.5'
 gem 'roo'
+gem 'ruby-prof'
 
 group :test do
   gem 'yard'
