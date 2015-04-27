@@ -3,6 +3,7 @@
 require 'csv'
 require 'ostruct'
 require 'pathname'
+# require 'ruby-prof' # necessary to get ruby profiling working, but causes issues/errors with rest-client if required
 
 module PreAssembly
   
@@ -672,7 +673,6 @@ module PreAssembly
     ####
     # Digital object processing.
     ####
-
     def process_digital_objects
       # Get the non-skipped objects to process, limited to n if the user asked for that
       o2p = pruned_containers(objects_to_process)
@@ -680,13 +680,9 @@ module PreAssembly
       total_obj = o2p.size
       
       log "process_digital_objects(#{total_obj} objects)"
-      message="#{total_obj} objects to pre-assemble"
-      log message
-      puts "#{Time.now}: #{message}" if @show_progress
-      log "#{@skippables.size} already completed objects skipped"
-      log "#{@digital_objects.size} objects found, #{objects_to_process.size} not yet complete"
-      log("limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
-      log("memory profiling enabled") if @profile
+      log_and_show "#{total_obj} objects to pre-assemble"
+      log_and_show("limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
+      log_and_show "#{@digital_objects.size} total objects found, #{objects_to_process.size} not yet complete, #{@skippables.size} already completed objects skipped"
     
       n=0
       num_no_file_warnings=0
@@ -698,16 +694,14 @@ module PreAssembly
       o2p.each do |dobj|
         
         if @throttle_time.to_i > 0 
-          log "sleeping for #{@throttle_time.to_i} seconds"
+          log_and_show "sleeping for #{@throttle_time.to_i} seconds"
           sleep @throttle_time.to_i
         end
           
-        message="#{total_obj-n} out of #{total_obj} objects left"
-        log message
+        log_and_show "#{total_obj-n} out of #{total_obj} objects left"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        puts "#{Time.now}: #{message}" if @show_progress
-        puts "#{Time.now}: Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
+        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         num_no_file_warnings+=1 if dobj.object_files.size == 0
         
         begin
@@ -718,7 +712,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          puts "#{Time.now}: Completed #{dobj.druid.druid}" if @show_progress
+          log_and_show "Completed #{dobj.druid.druid}"
 
         rescue Exception => e
           # For now, just re-raise any exceptions.
@@ -738,15 +732,14 @@ module PreAssembly
         end
         n+=1
         if (n % @garbage_collect_each_n) == 0 # garbage collect each specified number of objects
-          message="------GARBAGE COLLECTION RUNNING----"
-          puts message if @show_progress
+          puts "------GARBAGE COLLECTION RUNNING----" if @show_progress
           GC.start 
           GC::Profiler.clear
         end
       end
    
-      puts "**WARNING**: #{num_no_file_warnings} objects had no files" if (@show_progress && num_no_file_warnings > 0)
-      puts "#{Time.now}: #{total_obj} objects pre-assembled" if @show_progress
+      log_and_show "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
+      log_and_show "#{total_obj} objects pre-assembled"
     
     end
 
@@ -843,7 +836,12 @@ module PreAssembly
       @error_count+=1
       "** #{message.upcase} ** ,"
     end
-    
+
+    def log_and_show(message)
+      log message
+      puts "#{Time.now}: #{message}" if @show_progress
+    end
+        
     def source_id_suffix
       # Used during development to append a timestamp to source IDs.
       @uniqify_source_ids ? Time.now.strftime('_%s') : ''
