@@ -697,8 +697,8 @@ module PreAssembly
           log_and_show "sleeping for #{@throttle_time.to_i} seconds"
           sleep @throttle_time.to_i
         end
-          
-        log_and_show "#{total_obj-n} out of #{total_obj} objects left"
+        
+        log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{objects_to_process.size-n} total incomplete"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
         puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
