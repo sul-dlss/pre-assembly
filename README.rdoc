@@ -104,6 +104,8 @@ Uses ruby 1.9.3
 2.4.4:: Add some additional scripts to help prep Revs content.  Allow desc_metadata_templates to be specified with an absolute path as well as a relative path.
 2.4.5:: Add in retry logic around validate_files since it still seems to fail sporadically.  Update to the revs_create_yaml script.  Use new version of assembly-objectfile which gets mimetype from file extension.
 2.4.6:: Add garbage collection each X objects pre-assembled; add optional memory profiling
+2.4.7:: Do not add descmd xml template to every digital object when processing to lower memory usage.  Add a new script for easier batch processing.
+
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
   cd /home/lyberadmin/pre-assembly/current
@@ -203,9 +205,15 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
      # Normal run.  Will restart and crete a new log file, overwriting any existing log file for that project.
      bin/pre-assemble YAML_FILE
 
-     # Run in resume mode, which will automatically pick up where left off based on the log file.
+     # Run in resume mode, which will automatically pick up where left off based on the log file.  Passing the --resume flag overrides the actual value of resume from the YAML config.
      bin/pre-assemble YAML_FILE --resume
 
+     # Run in limit mode (default of 200), which will automatically limit the number of items pre-assembled to 200 regardless of what is set in the YAML file.  Useful with resume.
+     bin/pre-assemble YAML_FILE --limit --resume
+
+     # Run in limit mode (set to 100), which will automatically limit the number of items pre-assembled regardless of what is set in the YAML file.  Useful with resume.
+     bin/pre-assemble YAML_FILE --limit=100 --resume
+     
    Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command to run in test, production or
    other modes as needed.
 
@@ -214,7 +222,8 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    - Navigate to the production box, in the pre-assembly area.
    - Set the ROBOT_ENVIRONMENT=production.
    - Run pre-assembly with nohup and in the background (&).
-   - Optionally, include the <tt>--resume</tt> option.
+   - Optionally, include the <tt>--resume</tt> option to override the resume parameter and set to true.
+   - Optionally, include the <tt>--limit</tt> option to override the limit paramater.  You can specify the limit, or you can let it default to 200.
   
    See the example below:
 
@@ -236,6 +245,21 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    using the <tt>--resume</tt> switch, it will be overwritten. You will need the progress log for cleanup
    and restarting.
 
+9. Running in batch mode, automatically splitting a large run in groups of smaller jobs, using limits and resume:
+
+
+  bin/batch_run YAML_CONFIG LIMIT
+
+This will run pre-assembly multiple times sequentially, using resume and limits, allowing the process to end and restart each time.
+This is useful to prevent memory errors on the server when running large jobs.  It will automatically compute the number of items
+remaining to be run, split the job up into the number of jobs needed based on the limit you request, and then sequentially run them.
+You will most likely want to run this in nohup mode, sending the output to a file.
+  
+  e.g.
+  
+  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml 200 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  # will run ALL of the incomplete items in that YAML file in the background, but in groups of 200, sending output for all runs to the mailander_box4_batch.out file
+  
 == Expert Cheatsheet
 
 Here's a quick summary of the basic execution steps:

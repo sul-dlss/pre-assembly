@@ -1,0 +1,26 @@
+#! /usr/bin/env ruby
+
+require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
+
+def help(error_msg)
+  abort "#{error_msg}\n\nUsage:\n    get_total_objects YAML_CONFIG_FILE\n"
+end
+
+# Load YAML config file for the bundle of materials to be pre-assembled.
+help "Incorrect N of arguments." unless ARGV.size == 1
+yaml_config = ARGV.shift
+help "YAML file not found." unless File.file? yaml_config
+params = YAML.load(File.read yaml_config)
+params['config_filename'] = yaml_config
+params['show_progress'] = false
+
+# get total number of objects
+begin
+  b = PreAssembly::Bundle.new params
+  b.discover_objects
+  total_objects=b.digital_objects.size
+  objects_remaining=b.objects_to_process.size
+  puts objects_remaining
+rescue PreAssembly::BundleUsageError => e
+  help e.message
+end

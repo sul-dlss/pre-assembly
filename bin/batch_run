@@ -1,0 +1,21 @@
+#! /bin/bash
+# run with 
+#  batch_run YAML_CONFIG LIMIT_N
+
+# Load YAML config file for the bundle of materials to be pre-assembled.
+yaml=$1
+limit=$2
+
+echo "Processing $yaml"
+
+num_objects="$(bin/get_total_objects $yaml)"
+num_runs=$[num_objects/limit + 1]
+
+echo "$num_objects incomplete objects to process; will require $num_runs runs with limit of $limit"
+
+for (( i=1; i<=$num_runs; i++ ))
+ do
+    echo "on run $i"
+    "$(bin/pre-assemble $yaml --resume --limit)"
+ done
+        

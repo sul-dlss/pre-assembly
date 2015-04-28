@@ -73,8 +73,9 @@ module PreAssembly
       @technical_md_file   = Assembly::TECHNICAL_MD_FILE
       @desc_md_file        = Assembly::DESC_MD_FILE
       @content_md_xml      = ''
-      @technical_md_xml      = ''
+      @technical_md_xml    = ''
       @desc_md_xml         = ''
+      
 
       @pre_assem_finished = false
       @content_structure  = (@project_style ? @project_style[:content_structure] : 'file')
@@ -125,7 +126,10 @@ module PreAssembly
     # The main process.
     ####
 
-    def pre_assemble
+    def pre_assemble(desc_md_xml=nil)
+      
+      @desc_md_template_xml = desc_md_xml
+
       log "  - pre_assemble(#{@source_id}) started"
       determine_druid
       

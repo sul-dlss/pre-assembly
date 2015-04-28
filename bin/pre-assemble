@@ -2,20 +2,34 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n    pre-assemble YAML_CONFIG_FILE [--resume]\n"
-end
+require 'optparse'
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage:\n    pre-assemble YAML_CONFIG_FILE [--resume] [--limit 200]\n"
+  opts.on("-r", "--resume", "Resume") do |r|
+    options[:resume] = true
+  end
+  opts.on("-l [LIMIT]", "--limit [LIMIT]", "Limit") do |l|
+    options[:limit] = l || 200
+  end
+
+end.parse!
+
+abort "Incorrect N of arguments - you did not supply a YAML file." unless ARGV.size == 1
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
-resume = ARGV.delete '--resume'
-help "Incorrect N of arguments." unless ARGV.size == 1
+
+
 yaml_config = ARGV.shift
-help "YAML file not found." unless File.file? yaml_config
+abort "YAML file not found." unless File.file? yaml_config
+
 params = YAML.load(File.read yaml_config)
-params['resume'] = true if resume
+params['resume'] = true if options[:resume] 
+params['limit_n'] = options[:limit] if options[:limit]
 params['config_filename'] = yaml_config
 
-# Run pre-assembly.
+Run pre-assembly.
 begin
   b = PreAssembly::Bundle.new params
   b.run_pre_assembly
