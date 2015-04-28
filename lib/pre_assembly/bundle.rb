@@ -425,7 +425,6 @@ module PreAssembly
           :project_style        => @project_style,
           :bundle_dir           => @bundle_dir,
           :staging_dir          => @staging_dir,
-          :desc_md_template_xml => @desc_md_template_xml,
           :project_name         => @project_name,
           :apply_tag            => @apply_tag,
           :apo_druid_id         => @apo_druid_id,
@@ -709,7 +708,7 @@ module PreAssembly
           load_checksums(dobj)
           validate_files(dobj) if @validate_files
           dobj.reaccession=true if !@accession_items.nil? && @accession_items[:reaccession] # if we are reaccessioning items, then go ahead and clear each one out
-          dobj.pre_assemble
+          dobj.pre_assemble(@desc_md_template_xml)
           # Indicate that we finished.
           dobj.pre_assem_finished = true
           log_and_show "Completed #{dobj.druid.druid}"
