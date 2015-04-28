@@ -201,7 +201,6 @@ module PreAssembly
       warning<<'* init_assembly_wf=false' unless @init_assembly_wf
       warning<<'* uniqify_source_ids=true' if @uniqify_source_ids             
       warning<<'* cleanup=true' if @cleanup
-      warning<<"* limit=#{@limit_n}" if @limit_n 
       warning<<"* memory profiling enabled" if @profile           
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
     end
@@ -680,7 +679,7 @@ module PreAssembly
       
       log "process_digital_objects(#{total_obj} objects)"
       log_and_show "#{total_obj} objects to pre-assemble"
-      log_and_show("limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
+      log_and_show("**** limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
       log_and_show "#{@digital_objects.size} total objects found, #{objects_to_process.size} not yet complete, #{@skippables.size} already completed objects skipped"
     
       n=0
