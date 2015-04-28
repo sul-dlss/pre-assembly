@@ -248,17 +248,21 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
 9. Running in batch mode, automatically splitting a large run in groups of smaller jobs, using limits and resume:
 
 
-  bin/batch_run YAML_CONFIG LIMIT
+  bin/batch_run YAML_CONFIG [LIMIT]
 
 This will run pre-assembly multiple times sequentially, using resume and limits, allowing the process to end and restart each time.
 This is useful to prevent memory errors on the server when running large jobs.  It will automatically compute the number of items
 remaining to be run, split the job up into the number of jobs needed based on the limit you request, and then sequentially run them.
-You will most likely want to run this in nohup mode, sending the output to a file.
+You will most likely want to run this in nohup mode, sending the output to a file.  If no limit is specified, a default of 200 is used.
   
+
   e.g.
+
+  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  # will run ALL of the incomplete items in that YAML file in the background, but in groups of the default size of 200, sending output for all runs to the mailander_box4_batch.out file
   
-  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml 200 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
-  # will run ALL of the incomplete items in that YAML file in the background, but in groups of 200, sending output for all runs to the mailander_box4_batch.out file
+  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  # will run ALL of the incomplete items in that YAML file in the background, but in groups of 100, sending output for all runs to the mailander_box4_batch.out file
   
 == Expert Cheatsheet
 
