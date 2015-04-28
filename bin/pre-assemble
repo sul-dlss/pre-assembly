@@ -26,10 +26,10 @@ abort "YAML file not found." unless File.file? yaml_config
 
 params = YAML.load(File.read yaml_config)
 params['resume'] = true if options[:resume] 
-params['limit_n'] = options[:limit] if options[:limit]
+params['limit_n'] = options[:limit].to_i if options[:limit]
 params['config_filename'] = yaml_config
 
-Run pre-assembly.
+#Run pre-assembly.
 begin
   b = PreAssembly::Bundle.new params
   b.run_pre_assembly
