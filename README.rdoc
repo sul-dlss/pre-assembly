@@ -258,10 +258,10 @@ You will most likely want to run this in nohup mode, sending the output to a fil
 
   e.g.
 
-  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
   # will run ALL of the incomplete items in that YAML file in the background, but in groups of the default size of 200, sending output for all runs to the mailander_box4_batch.out file
   
-  nohup bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
   # will run ALL of the incomplete items in that YAML file in the background, but in groups of 100, sending output for all runs to the mailander_box4_batch.out file
   
 == Expert Cheatsheet
