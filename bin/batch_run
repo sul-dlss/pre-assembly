@@ -20,7 +20,7 @@ echo "$num_objects incomplete objects to process; will require $num_runs runs wi
 
 for (( i=1; i<=$num_runs; i++ ))
  do
-   echo "on run $i"
-   "$(bundle exec bin/pre-assemble $yaml --limit $limit --resume)"
+   echo "on run number $i of $num_runs"
+   "$(stdbuf -oL -eL bundle exec bin/pre-assemble $yaml --limit $limit --resume)"
  done
         
