@@ -4,12 +4,14 @@
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
 yaml=$1
-if [ $# == 2 ] ; then
+if [ $# == 2 ] ; then # if there is a limit specified use it, otherwise use the default of 200
   limit=$2
 else
   limit=200
 fi
-  
+
+echo ""
+date  
 echo "Processing $yaml"
 echo "Limit = $limit"
 
@@ -18,9 +20,16 @@ num_runs=$[num_objects/limit + 1]
 
 echo "$num_objects incomplete objects to process; will require $num_runs runs with limit of $limit"
 
+echo ""
+
 for (( i=1; i<=$num_runs; i++ ))
  do
    echo "on run number $i of $num_runs"
-   "$(stdbuf -oL -eL bundle exec bin/pre-assemble $yaml --limit $limit --resume)"
+   cmd="bundle exec bin/pre-assemble $yaml --limit $limit --resume"
+   echo $cmd
+   bash -c "$cmd"
  done
-        
+
+ echo "" 
+ echo "all runs complete"
+ date
