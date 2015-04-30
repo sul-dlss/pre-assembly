@@ -12,8 +12,8 @@ fi
 
 echo ""
 date  
-echo "Processing $yaml"
-echo "Limit = $limit"
+echo "PROCESSING $yaml"
+echo "LIMIT = $limit"
 
 num_objects="$(bin/get_total_objects $yaml)"
 num_runs=$[num_objects/limit + 1]
@@ -24,12 +24,14 @@ echo ""
 
 for (( i=1; i<=$num_runs; i++ ))
  do
-   echo "on run number $i of $num_runs"
+   echo "-------------------------------"
+   echo "  ON RUN NUMBER $i OF $num_runs"
    cmd="bundle exec bin/pre-assemble $yaml --limit $limit --resume"
    echo $cmd
+   echo "-------------------------------"
    bash -c "$cmd"
  done
 
  echo "" 
- echo "all runs complete"
+ echo "ALL $num_runs RUNS COMPLETED"
  date
