@@ -4,10 +4,10 @@
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
 yaml=$1
-if [ $# == 2 ] ; then # if there is a limit specified use it, otherwise use the default of 200
+if [ $# == 2 ] ; then # if there is a limit specified use it, otherwise use the default of 100
   limit=$2
 else
-  limit=200
+  limit=100
 fi
 
 echo ""
