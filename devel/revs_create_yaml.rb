@@ -43,7 +43,7 @@ if File.directory?(input)
   puts "Found #{num_files} CSV files"
   puts ""
   puts "For each manifest, enter in the druid (with druid: prefix) of the collection that this YAML file relates to."
-  puts "Press return (blank) to skip the manifest." 
+  puts "You can press return (blank) to skip the manifest." 
   files.each do |file|
 
     puts ""
