@@ -22,7 +22,7 @@ folders.reject! {|folder| excluded.include?(folder)}
 puts "Found #{folders.size} folders"
 renamed=0
 folders.each do |folder|
-  clean_name = folder.gsub(/[^a-zA-Z0-9\-]/,"").strip
+  clean_name = folder.gsub(/[^a-zA-Z0-9\-\_]/,"").strip
   if folder != clean_name
     puts "...renaming '#{folder}' to '#{clean_name}'"
     renamed+=1
