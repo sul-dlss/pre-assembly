@@ -74,7 +74,7 @@ if File.directory?(input)
 
   puts ""
   puts "#{num_errors} files out of #{num_files} had problems"
-  puts "Completed at #{Time.now}, total time was #{Time.now - start_time}"
+  puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time)/60.0)} minutes"
   
 else
   
