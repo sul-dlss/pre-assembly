@@ -49,7 +49,7 @@ if File.directory?(input)
     begin
       b = PreAssembly::Bundle.new params
       b.discovery_report(report_params)
-    rescue exception => e
+    rescue Exception => e
       puts "*** ERROR: #{e.message}"
     end
     
