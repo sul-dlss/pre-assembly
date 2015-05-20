@@ -57,7 +57,7 @@ module PreAssembly
       # gets and caches the Dor Item
       def get_object
         @fobj = Dor.find(@pid)
-        @object_type=@fobj.class.to_s.gsub('Dor::','').downcase.to_sym  # returns :collection, :item or :adminpolicyobject 
+        @object_type=@fobj.class.to_s.gsub('Dor::','').downcase.to_sym  # returns :collection, :set, :item or :adminpolicyobject 
       end
       
       # remediate the object using versioning or not depending on its current state;
