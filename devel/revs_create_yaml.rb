@@ -9,13 +9,15 @@
 #  ROBOT_ENVIRONMENT=production ruby devel/revs_create_yaml.rb /dor/staging/Revs
 STDOUT.sync = true
 
+ARCHIVE_DRUIDS={:revs=>'druid:nt028fd5773',:roadandtrack=>'druid:mr163sv5231'}  # a hash of druids of the master archives, keys are arbitrary but druids must match the druids in DOR
+
+yaml_template = '/dor/staging/Revs/revs_template_preassembly_yaml_file.yaml' # the template file to copy from
+
 require 'yaml'
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 raise "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]
-
-yaml_template = '/dor/staging/Revs/template_preassembly_yaml_file.yaml' # the template file to copy from
 
 puts "revs_create_yaml"
 puts "Input: #{input}"
@@ -24,10 +26,10 @@ puts "YAML Template: #{yaml_template}"
 raise "YAML template could not be found or read!" unless File.readable?(yaml_template)
 
 config = YAML.load_file(yaml_template)
-
+base_tag = config['apply_tag']
 collection_druids_from_yaml=config['set_druid_id']
-if collection_druids_from_yaml.size != 2 || collection_druids_from_yaml[1] != 'druid:nt028fd5773'
-  raise "The YAML template file has an issue with the set_druid_id params; there must be two entries, the first will be replaced by this script, the second must be the master Revs collection"
+if collection_druids_from_yaml.size != 2 || !ARCHIVE_DRUIDS.has_value?(collection_druids_from_yaml[1]) 
+  raise "The YAML template file has an issue with the set_druid_id params; there must be two entries, the first will be replaced by this script, the second must be the master Archive collection (e.g. Revs/R&T)"
 end
 
 puts ''
@@ -59,7 +61,7 @@ if File.directory?(input)
           config['set_druid_id'][0] = collection_druid # set collection druid
           config['bundle_dir']=File.join(input,File.dirname(file))
           config['manifest']=File.basename(file)
-          config['apply_tag']=config['apply_tag'] + name_without_extension.gsub(' ','_') # append a tag with the name of the manifest, but with no spaces
+          config['apply_tag']=base_tag + name_without_extension.gsub(' ','_') # append a tag with the name of the manifest, but with no spaces
           config['progress_log_file']=File.join('/dor/preassembly/revs/',name_without_extension+".log")
           File.open(output_file,'w') do |h|
             h.write config.to_yaml
