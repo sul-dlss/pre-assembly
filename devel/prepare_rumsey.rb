@@ -8,11 +8,13 @@
 # ROBOT_ENVIRONMENT=production ruby devel/prepare_rumsey.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv
 
 # this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
+#  input CSV should have columns labeled "Object", "Image", and "Label" -- 
+#   image is the filename, object is the object identifier (turned into a folder)
 
 help "Incorrect N of arguments." if ARGV.size != 1
 csv_in = ARGV[0]
 
-dry_run=true # will only show output, won't actually copy files or create anything, switch to false to actually run
+dry_run=false # will only show output, won't actually copy files or create anything, switch to false to actually run
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'revs-utils'
@@ -78,12 +80,12 @@ csv_data.each do |row|
     unless found_objects.include? object # we have a new object
       FileUtils.mkdir_p object_folder unless dry_run
       found_objects << object
-      puts "...Found new object: '#{object}', creating object folder '#{object_folder}'"
+      puts "...#{Time.now}: Found new object: '#{object}', creating object folder '#{object_folder}'"
       num_objects+=1
     end
 
     # now search for file
-    puts "......looking for file '#{filename}', label '#{label}'"
+    puts "......#{Time.now}: looking for file '#{filename}', label '#{label}'"
     files=Dir.glob("#{base_content_folder}/**/#{filename}.*")
   
     # if found, copy first file to staging directory (if it does not exist)
@@ -111,7 +113,7 @@ csv_data.each do |row|
   
   else
     
-    puts "......skipping #{object} - already run"
+    puts "......#{Time.now}: skipping #{object} - already run"
        
   end # end check to see if we have already successfully run this filename
   

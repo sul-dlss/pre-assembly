@@ -41,8 +41,7 @@ if File.directory?(input)
   
   puts "Num, File, Saved To, Registration Columns OK , Metadata Columns OK , Num Bad Formats or Dates "
 
-  files.each do |file|
-    
+  files.each do |file|    
     counter += 1 
     base_name = File.basename(file,File.extname(file)) # name of excel file without extension
     filename  = File.basename(file) # name of excel file with extension
