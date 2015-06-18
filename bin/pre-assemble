@@ -34,5 +34,5 @@ begin
   b = PreAssembly::Bundle.new params
   b.run_pre_assembly
 rescue PreAssembly::BundleUsageError => e
-  help e.message
+  abort e.message
 end

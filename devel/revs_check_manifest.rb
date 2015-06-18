@@ -10,11 +10,6 @@ help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
-require 'revs-utils'
-
-class RevsUtils
-  extend Revs::Utils    
-end
 
 puts ''
 
