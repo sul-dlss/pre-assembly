@@ -26,6 +26,29 @@ module PreAssembly
     def log(msg, severity = :info)
       @@log.add Logging::LEVELS[severity], msg
     end
+    
+    def self.seconds_to_string(s)
+ 
+      # d = days, h = hours, m = minutes, s = seconds
+      m = (s / 60).floor
+      s = s % 60
+      h = (m / 60).floor
+      m = m % 60
+      d = (h / 24).floor
+      h = h % 24
+ 
+      output = "#{s} second#{self.pluralize(s)}" if (s > 0)
+      output = "#{m} minute#{self.pluralize(m)}, #{s} second#{self.pluralize(s)}" if (m > 0)
+      output = "#{h} hour#{self.pluralize(h)}, #{m} minute#{self.pluralize(m)}, #{s} second#{self.pluralize(s)}" if (h > 0)
+      output = "#{d} day#{self.pluralize(d)}, #{h} hour#{self.pluralize(h)}, #{m} minute#{self.pluralize(m)}, #{s} second#{self.pluralize(s)}" if (d > 0)
+ 
+      return output
+    end
+ 
+    def self.pluralize number 
+      return "s" unless number == 1
+      return ""
+    end
 
   end
 
