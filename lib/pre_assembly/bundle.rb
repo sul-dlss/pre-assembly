@@ -700,7 +700,7 @@ module PreAssembly
           sleep @throttle_time.to_i
         end
         
-        log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{num_objects_to_process-n} total incomplete | estimated time remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
+        log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{num_objects_to_process-n} total incomplete | ~ remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
         puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
@@ -737,7 +737,7 @@ module PreAssembly
         n+=1
 
         avg_time_per_object=total_time/n
-        total_time_remaining=avg_time_per_object * (num_objects_to_process-n)
+        total_time_remaining=(avg_time_per_object * (num_objects_to_process-n)).floor
         
         if (n % @garbage_collect_each_n) == 0 # garbage collect each specified number of objects
           puts "------GARBAGE COLLECTION RUNNING----" if @show_progress
