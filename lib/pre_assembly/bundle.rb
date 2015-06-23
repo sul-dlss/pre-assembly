@@ -676,14 +676,18 @@ module PreAssembly
       o2p = pruned_containers(objects_to_process)
       
       total_obj = o2p.size
-      
+      num_objects_to_process = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log_and_show "#{total_obj} objects to pre-assemble"
       log_and_show("**** limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
-      log_and_show "#{@digital_objects.size} total objects found, #{objects_to_process.size} not yet complete, #{@skippables.size} already completed objects skipped"
+      log_and_show "#{@digital_objects.size} total objects found, #{num_objects_to_process} not yet complete, #{@skippables.size} already completed objects skipped"
     
       n=0
       num_no_file_warnings=0
+      avg_time_per_object=0
+      total_time_remaining=0
+      
+      start_time=Time.now
       
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
@@ -696,7 +700,7 @@ module PreAssembly
           sleep @throttle_time.to_i
         end
         
-        log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{objects_to_process.size-n} total incomplete"
+        log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{num_objects_to_process-n} total incomplete | estimated time remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
         puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
@@ -728,7 +732,13 @@ module PreAssembly
             f.puts log_progress_info(dobj).to_yaml
           end
         end
+
+        total_time=Time.now-start_time
         n+=1
+
+        avg_time_per_object=total_time/n
+        total_time_remaining=avg_time_per_object * (num_objects_to_process-n)
+        
         if (n % @garbage_collect_each_n) == 0 # garbage collect each specified number of objects
           puts "------GARBAGE COLLECTION RUNNING----" if @show_progress
           GC.start 
