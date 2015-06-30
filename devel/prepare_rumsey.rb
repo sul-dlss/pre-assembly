@@ -15,10 +15,10 @@
 # if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
 
 # parameters:
-# base_content_folder='/maps/ThirdParty/Rumsey/content/content_2015-02-12' # base folder to search for content
-# staging_folder='/maps/ThirdParty/Rumsey/staging' # location to stage content to
-base_content_folder='/Users/petucket/Downloads' # base folder to search for content
-staging_folder='/Users/petucket/Downloads/staging' # location to stage content to
+base_content_folder='/maps/ThirdParty/Rumsey/content/content_2015-02-12' # base folder to search for content
+staging_folder='/maps/ThirdParty/Rumsey/staging' # location to stage content to
+# base_content_folder='/Users/petucket/Downloads' # base folder to search for content
+# staging_folder='/Users/petucket/Downloads/staging' # location to stage content to
 
 content_metadata_filename='contentMetadata.xml'
 
