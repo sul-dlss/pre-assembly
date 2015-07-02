@@ -43,7 +43,7 @@ GEM
       mini_exiftool (~> 1.6)
       nokogiri
       uuidtools
-    assembly-objectfile (1.6.5)
+    assembly-objectfile (1.6.6)
       mime-types
       mini_exiftool
       nokogiri
@@ -321,7 +321,7 @@ DEPENDENCIES
   actionpack (>= 3.2.21)
   addressable (<= 2.3.5)
   assembly-image (>= 1.6.8)
-  assembly-objectfile (>= 1.6.5)
+  assembly-objectfile (>= 1.6.6)
   assembly-utils (>= 1.4.2)
   awesome_print
   capistrano (~> 3)
