@@ -127,6 +127,8 @@ if content_metadata # create the content metadata
 # either a report or copy operation
 else 
   
+  FileUtils.cd(base_content_folder)
+  
   csv_data.each do |row|
 
     n+=1
@@ -141,7 +143,7 @@ else
   
     filename=File.basename(row_filename,File.extname(row_filename)) # remove any extension from the filename that was provided
   
-    if log_file_data.select {|row| row["Filename"] == filename && row["Success"] == "true" }.size == 0 # check to see if we have already successfully run this file
+    if log_file_data.select {|row| row["Image"] == row_filename && row["Success"] == "true" }.size == 0 # check to see if we have already successfully run this file
     
       object_folder=File.join(staging_folder,object)
 
@@ -154,7 +156,9 @@ else
 
       # now search for file
       puts "......#{Time.now}: looking for file '#{filename}', label '#{label}'"
-      files=Dir.glob("#{base_content_folder}/**/#{filename}.*")
+      search_string="find . -name #{filename}.* -print"
+      search_result=`#{search_string}`
+      files=search_result.split(/\n/)
   
       # if found, copy first file to staging directory (if it does not exist)
       if files.size > 0
