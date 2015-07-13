@@ -331,6 +331,22 @@ See the Capfile for more info
 
 ==Running tests
 
+===Prerequisites
+
+You need exiftool on your system in order to successfully run all of the tests.
+
+   RHEL: (RPM to install comming soon)
+   Download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
+
+       tar -xf Image-ExifTool-#.##.tar.gz
+       cd Image-ExifTool-#.##
+       perl Makefile.PL
+       make test
+       sudo make install
+
+   If you are a mac user, use homebrew to install it (if you don't have homebrew installed, you really should: http://brew.sh/):
+       brew install exiftool
+       
 To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus).
 
     bin/run_all_tests
