@@ -143,7 +143,10 @@ else
   
     filename=File.basename(row_filename,File.extname(row_filename)) # remove any extension from the filename that was provided
   
-    if log_file_data.select {|row| row["Image"] == row_filename && row["Success"] == "true" }.size == 0 # check to see if we have already successfully run this file
+    previously_found=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "true" }.size) > 0
+    previously_missed=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "false" }.size) > 0
+    
+    unless previously_found # only look for this file if it has not already been found according to the log file
     
       object_folder=File.join(staging_folder,object)
 
@@ -156,7 +159,7 @@ else
 
       # now search for file
       puts "......#{Time.now}: looking for file '#{filename}', label '#{label}'"
-      search_string="find . -name #{filename}.* -print"
+      search_string="find . -iname '#{filename}.*' -type f -print"
       search_result=`#{search_string}`
       files=search_result.split(/\n/)
   
@@ -175,11 +178,14 @@ else
         success=false
       end
 
-      CSV.open(csv_out, 'a') {|f| 
-        output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
-        f << output_row
-      }  
-
+      # do not log if it was previously missed and we missed it again
+      unless (previously_missed && !success)
+        CSV.open(csv_out, 'a') {|f| 
+          output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
+          f << output_row
+        }  
+      end
+      
       puts "......#{message}"
       puts ""
       $stdout.flush  
