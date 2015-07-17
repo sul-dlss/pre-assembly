@@ -153,7 +153,7 @@ else
       unless found_objects.include? object # we have a new object
         FileUtils.mkdir_p object_folder unless report
         found_objects << object
-        puts "...#{Time.now}: Found new object: '#{object}', creating object folder '#{object_folder}'"
+        puts "...#{Time.now}: Found new object: '#{object}', creating object folder '#{object_folder}' if needed"
         num_objects+=1
       end # end we have an object
 
