@@ -25,7 +25,7 @@ if File.directory?(input)
 
   FileUtils.cd(input)
   files=Dir.glob("**/**.xlsx") + Dir.glob("**/**.xls") # look for all xls and xlsx files
-  files.reject! {|file| file.include?("$RECYCLE.BIN")} # ignore stuff in the trash
+  files.reject! {|file| file.include?("$RECYCLE.BIN") ||  file.include?("DoNotUse")} # ignore stuff in the trash or in the "old file" folder
 
   num_errors=0
   counter=0
