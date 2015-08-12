@@ -1,3 +1,6 @@
+# DEPRECATED - DO NOT USE
+# INDEXING WILL NOT RESPECT THE VALUE SET IN THE MODS
+
 # Given the full path to a csv file manifest, it will check for a "hide" column, add it if not found, then set the value to "yes" for all rows
 # to prepare the manifest to have all images hidden once accessioned.
 
@@ -15,7 +18,7 @@ require 'csv'
 
 if File.file?(input) 
 
-    puts ""
+    puts "WARNING: THIS WILL ADD A COLUMN TO THE MANIFEST BUT THE INDEXING WILL NOT RESPECT THE VALUE ADDED TO THE MODS"
     puts 'revs_hide_images_in_manifest'
     puts "Input: #{input}"
     start_time=Time.now
