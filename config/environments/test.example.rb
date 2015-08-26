@@ -10,6 +10,12 @@ Dor::Config.configure do
     key_pass ''
   end
   
+  sdr do
+    url 'http://localhost'
+    local_workspace_root '/dor/workspace'
+    local_export_home '/dor/export'
+  end
+    
   suri do
     mint_ids true
     id_namespace 'druid'
