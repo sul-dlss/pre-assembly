@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'modsulator'
 
 module PreAssembly
 
@@ -476,7 +477,14 @@ module PreAssembly
       file_name = File.join self.metadata_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
-      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml } 
+      
+      # normalize XML
+      mods_xml_doc = Nokogiri::XML(@content_md_xml) # create a nokogiri doc
+      normalizer = Normalizer.new 
+      normalizer.normalize_document(mods_xml_doc.root) # normalize it
+
+      File.open(file_name, 'w') { |fh| fh.puts mods_xml_doc.to_xml } # write out normalized result
+
     end
 
     def content_object_files
