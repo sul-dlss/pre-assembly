@@ -124,16 +124,10 @@ describe PreAssembly::DigitalObject do
     			</hierarchicalGeographic>
     		</subject>
     	<% end %>
-    	<relatedItem type="host">
-        <titleInfo>
-          <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-        </titleInfo>
-        <typeOfResource collection="yes"/>
-      </relatedItem>
     	<% manifest_row[:format].split('|').each do |format| %>  
         <relatedItem type="original">
           <physicalDescription>
-            <form authority="aat"><%=revs_check_format(format.downcase.strip)%></form>
+            <form authority="<%= manifest_row[:format_authority].blank? ? "aat" : manifest_row[:format_authority]%>"><%=revs_check_format(format).strip%></form>
           </physicalDescription>
         </relatedItem>
       <% end %>
@@ -155,7 +149,6 @@ describe PreAssembly::DigitalObject do
       <% if !manifest_row[:inst_notes].blank? %><note type="source note" displayLabel="Institution Notes" ID="inst_notes"><%=manifest_row[:inst_notes].strip%></note><% end %>
       <% if !manifest_row[:prod_notes].blank? %><note type="source note" displayLabel="Production Notes" ID="prod_notes"><%=manifest_row[:prod_notes].strip%></note><% end %>
       <% if !manifest_row[:has_more_metadata].blank? %><note type="source note" displayLabel="Has More Metadata" ID="has_more_metadata">yes</note><% end %>
-      <% if !manifest_row[:hide].blank? %><note type="source note" displayLabel="Visibility" ID="visibility">hidden</note><% end %>
     </mods>
     END
     
@@ -208,12 +201,6 @@ describe PreAssembly::DigitalObject do
            <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
              <topic valueURI="http://id.loc.gov/authorities/subjects/sh85130929">Suzuki automobiles</topic>
            </subject>           
-           <relatedItem type="host">
-             <titleInfo>
-               <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-             </titleInfo>
-             <typeOfResource collection="yes"/>
-           </relatedItem>
            <relatedItem type="original">
              <physicalDescription>
                <form authority="aat">color transparencies</form>
@@ -229,7 +216,6 @@ describe PreAssembly::DigitalObject do
            <note displayLabel="Description">this is a description &gt; another description &lt; other stuff</note>
            <note displayLabel="Vehicle Markings" ID="vehicle_markings">123</note>
            <note type="source note" displayLabel="Institution Notes" ID="inst_notes">456</note>
-           <note type="source note" displayLabel="Visibility" ID="visibility">hidden</note>
          </mods>
        END
        @exp_xml = noko_doc @exp_xml
@@ -272,12 +258,6 @@ describe PreAssembly::DigitalObject do
              <citySection>Raceway</citySection>
            </hierarchicalGeographic>
          </subject>
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">film</form>
@@ -332,12 +312,6 @@ describe PreAssembly::DigitalObject do
              <citySection>Raceway</citySection>
            </hierarchicalGeographic>
          </subject>
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -397,12 +371,6 @@ describe PreAssembly::DigitalObject do
              <city>Berlin</city>
            </hierarchicalGeographic>
          </subject>
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -462,12 +430,6 @@ describe PreAssembly::DigitalObject do
              <namePart>Mickey Mouse</namePart>
            </name>
          </subject>
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -523,12 +485,6 @@ describe PreAssembly::DigitalObject do
              <namePart>Donald Duck</namePart>
            </name>
          </subject>         
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -585,12 +541,6 @@ describe PreAssembly::DigitalObject do
              <namePart>Donald Duck</namePart>
            </name>
          </subject>         
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -646,12 +596,6 @@ describe PreAssembly::DigitalObject do
              <namePart>Donald Duck</namePart>
            </name>
          </subject>         
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -706,12 +650,6 @@ describe PreAssembly::DigitalObject do
              <namePart>Donald Duck</namePart>
            </name>
          </subject>         
-         <relatedItem type="host">
-           <titleInfo>
-             <title>The Collier Collection of the Revs Institute for Automotive Research</title>
-           </titleInfo>
-           <typeOfResource collection="yes"/>
-         </relatedItem>
          <relatedItem type="original">
            <physicalDescription>
              <form authority="aat">black-and-white negatives</form>
@@ -729,6 +667,46 @@ describe PreAssembly::DigitalObject do
        noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
      end
 
+     it "should create revs specific descriptive metadata with an alternate format authority" do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :entrant     => 'Donald Duck',
+         :description => 'this is a description > another description < other stuff',
+         :format      => 'black-and-white negative',
+         :format_authority => 'alternate'
+       }
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="aat">digital image</genre>
+         <subject displayLabel="Subject" authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>         
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="alternate">black-and-white negatives</form>
+           </physicalDescription>
+         </relatedItem>
+         <titleInfo>
+           <title>a label</title>
+         </titleInfo>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note displayLabel="Description">this is a description  another description  other stuff</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+       @dobj.create_desc_metadata_xml
+       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+     end
 
    end    
 
