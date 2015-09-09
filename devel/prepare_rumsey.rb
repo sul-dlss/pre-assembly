@@ -16,7 +16,7 @@
 
 # parameters:
 base_content_folder='/maps/ThirdParty/Rumsey/content/content_2015-02-12' # base folder to search for content
-staging_folder='/maps/ThirdParty/Rumsey/staging' # location to stage content to
+staging_folder='/maps/ThirdParty/Rumsey/Batch3/staging' # location to stage content to
 # base_content_folder='/Users/petucket/Downloads' # base folder to search for content
 # staging_folder='/Users/petucket/Downloads/staging' # location to stage content to
 
@@ -141,6 +141,8 @@ else
     sequence=row['Sequence']
     druid=row['Druid']
   
+    success=false
+    
     filename=File.basename(row_filename,File.extname(row_filename)) # remove any extension from the filename that was provided
   
     previously_found=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "true" }.size) > 0
@@ -157,36 +159,46 @@ else
         num_objects+=1
       end # end we have an object
 
-      # now search for file
-      puts "......#{Time.now}: looking for file '#{filename}', label '#{label}'"
-      search_string="find . -iname '#{filename}.*' -type f -print"
+      # now search for any file which ends with the filename (trying to catch cases where the filename has 0s at the beginning that were dropped from the spreadsheet)
+      puts "......#{Time.now}: looking for file '#{filename}', object '#{object}', label '#{label}'"
+      search_string="find . -iname '*#{filename}.*' -type f -print"
       search_result=`#{search_string}`
       files=search_result.split(/\n/)
+      object_leading_zeros=/^[0]*/.match(object)[0].size
   
-      # if found, copy first file to staging directory (if it does not exist)
+      # if found, copy files that match of that have the same number of zeros as the object label
       if files.size > 0
-        input_file=files[0]
-        message= "found #{input_file}, copying to object folder #{object_folder}"
-        input_filename=File.basename(files[0])
-        output_file=File.join(object_folder,input_filename)
-        FileUtils.cp input_file, output_file unless (report || File.exists?(output_file))
-        num_files_copied+=1
-        success=true
-      else
+        files.each do |input_file|
+          input_filename=File.basename(input_file)
+          input_filename_without_ext=File.basename(input_file,File.extname(input_file))
+          input_filename_leading_zeros=/^[0]*/.match(input_filename)[0].size
+          if (input_filename_without_ext == filename) || (object_leading_zeros == input_filename_leading_zeros) # if the found file is an exact match with the data provided OR if it starts with the same number of zeros as the object name, then call it a match 
+            message= "found #{input_file}, copying to object folder #{object_folder} (#{object_leading_zeros} object leading zeros, #{input_filename_leading_zeros} filename leading zeros)"
+            output_file=File.join(object_folder,input_filename)
+            FileUtils.cp input_file, output_file unless (report || File.exists?(output_file))
+            num_files_copied+=1
+            success=true
+            CSV.open(csv_out, 'a') {|f| 
+              output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
+              f << output_row
+            }  
+            puts "......#{message}"
+          end # end check for matching filename
+        end # end loop over all matches
+  
+      end # end check for files.size > 0 
+
+      # do not log if it was previously missed and we missed it again      
+      if (!previously_missed && !success)
         message="ERROR #{filename} NOT FOUND"
         num_files_not_found+=1
-        success=false
-      end
-
-      # do not log if it was previously missed and we missed it again
-      unless (previously_missed && !success)
-        CSV.open(csv_out, 'a') {|f| 
-          output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
-          f << output_row
-        }  
+          CSV.open(csv_out, 'a') {|f| 
+            output_row=[object,filename,'',sequence,label,druid,success,message,Time.now]
+            f << output_row
+          }  
+        puts "......#{message}"
       end
       
-      puts "......#{message}"
       puts ""
       $stdout.flush  
   
