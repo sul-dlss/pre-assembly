@@ -550,8 +550,8 @@ module PreAssembly
     end
 
     def read_exp_checksums
-      # Read checksums file. Wrapped in a method for unit testing.
-      IO.read @checksums_file
+      # Read checksums file. Wrapped in a method for unit testing.  Normalize CR/LF to be sure regex works
+      IO.read(@checksums_file).gsub(/\r\n?/, "\n")
     end
 
     def load_checksums(dobj)
