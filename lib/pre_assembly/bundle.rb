@@ -840,7 +840,7 @@ module PreAssembly
     # used to add characters to the reported message and bump up an error count incremeneter
     def report_error_message(message)
       @error_count+=1
-      "** #{message.upcase} ** ,"
+      " ** ERROR: #{message.upcase} ** ,"
     end
 
     def log_and_show(message)
