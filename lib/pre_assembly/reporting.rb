@@ -70,10 +70,10 @@ module PreAssembly
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
       
-      skipped_files=[] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
-      skipped_files << @content_md_creation[:smpl_manifest] if using_smpl_manifest
-      skipped_files << @manifest if using_manifest
-      skipped_files << @checksums_file if @checksums_file
+      skipped_files=['Thumbs.db'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
+      skipped_files << File.basename(@content_md_creation[:smpl_manifest]) if using_smpl_manifest
+      skipped_files << File.basename(@manifest) if using_manifest
+      skipped_files << File.basename(@checksums_file) if @checksums_file
       
       smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false) if using_smpl_manifest
       
@@ -188,7 +188,7 @@ module PreAssembly
       # now check all files in the bundle directory against the manifest to report on files not referenced
       if using_manifest && show_other
         puts "\nExtra Files/Dir Report (items in bundle directory not in manifest, except manifest itself and checksum file):"
-        entries_in_bundle_directory.each { |dir_item| puts "* #{dir_item}" unless (all_object_containers.include?(dir_item.to_s.strip) || skipped_files.include?(dir_item.to_s.strip))}
+        entries_in_bundle_directory.each { |dir_item| puts "* #{dir_item}" unless (all_object_containers.include?(dir_item.to_s.strip) || skipped_files.include?(dir_item.to_s.strip) || dir_item.to_s.strip[0..1]=='._')}
       end
       
       puts "\nConfig filename, #{@config_filename}"
