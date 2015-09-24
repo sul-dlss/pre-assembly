@@ -70,7 +70,7 @@ module PreAssembly
       header+="SourceID unique in DOR? , " if checking_sourceids
       puts header
       
-      skipped_files=['Thumbs.db'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
+      skipped_files=['Thumbs.db','.DS_Store'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
       skipped_files << File.basename(@content_md_creation[:smpl_manifest]) if using_smpl_manifest
       skipped_files << File.basename(@manifest) if using_manifest
       skipped_files << File.basename(@checksums_file) if @checksums_file
