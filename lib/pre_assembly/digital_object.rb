@@ -478,12 +478,14 @@ module PreAssembly
       log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
       
-      # normalize XML
-      mods_xml_doc = Nokogiri::XML(@content_md_xml) # create a nokogiri doc
-      normalizer = Normalizer.new 
-      normalizer.normalize_document(mods_xml_doc.root) # normalize it
+      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
 
-      File.open(file_name, 'w') { |fh| fh.puts mods_xml_doc.to_xml } # write out normalized result
+      # NOTE: This is being skipped because it now removes empty nodes, and we need an a node like this: <file id="filename" /> when first starting with contentMetadat
+      #        If this node gets removed, then nothing works.  - Peter Mangiafico, October 3, 2015
+      # mods_xml_doc = Nokogiri::XML(@content_md_xml) # create a nokogiri doc
+      # normalizer = Normalizer.new
+      # normalizer.normalize_document(mods_xml_doc.root) # normalize it
+      # File.open(file_name, 'w') { |fh| fh.puts mods_xml_doc.to_xml } # write out normalized result
 
     end
 
