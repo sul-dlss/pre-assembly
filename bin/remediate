@@ -78,9 +78,9 @@ csv_out=File.join(source_path, source_name + "_log.csv")
 completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 
 # read input druids
-if source_ext == '.csv' # read from CSV file
+if source_ext.downcase == '.csv' # read from CSV file
   rows=CsvMapper.import(input_file){read_attributes_from_file}
-  druids=rows.collect{|row| row.druid}
+  druids=rows.collect{|row| row.druid.include?("druid:") ? row.druid : "druid:#{row.druid}"} # add the druid prefix if missing from input file
 else # this must be a YAML progress log file
   druids=Assembly::Utils.get_druids_from_log(input_file,true)
 end

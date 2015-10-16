@@ -776,9 +776,15 @@ A basic object remediation framework is provided for mass remediating objects.
 To use it, first decide how you will specify the list of druids.  You can either manually specify with a CSV (see step 1 below), or
 use the pre-assembly YAML log file if you are remediated a run from pre-assembly. 
 
-1. For running a specific list of druids, create a CSV file containing a list of druids you wish to remediate, one line per druid, with a header column called "druid".  
-There can be other columns too -- they will be ignored.  These should be full druids, e.g.
-"druid:oo000oo0001".  Save it somewhere the pre-assembly code can read it.
+1. For running a specific list of druids, create a CSV file containing a list of druids you wish to remediate, one line per druid, with a header column called "druid" or "Druid" (caps don't matter).  
+There can be other columns too -- they will be ignored.  They can be either full druids (with the prefix) or just the PIDs.  Save it somewhere the pre-assembly code can read it.
+
+e.g.
+druid
+druid:oo000oo0001
+druid:oo000oo0002
+oo000oo0003
+
 
 2. Create a ruby file that defines exactly how you need to remediate each object.  The ruby file will define a method that has access to the
 fedora object and can perform any actions needed on the object.  The actual loading, saving, and versioning of objects is handled by the
