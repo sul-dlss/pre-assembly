@@ -10,7 +10,7 @@ require 'pathname'
 
 
 current_path = File.dirname(File.expand_path(__FILE__))
-output_path = current_path.split("/bin")[0] + "/log/add_status/"
+output_path = current_path.split("/devel")[0] + "/log/add_status/"
 FileUtils::mkdir_p  output_path
 @with_status = CSV.open(output_path+Pathname.new(ARGV[0]).basename.to_s,'wb')
 
@@ -21,7 +21,7 @@ info_blurb = 1000
 CSV.foreach(ARGV[0], :headers =>true) do  |row|
   @with_status << [row['druid'], Dor::Item.find(row['druid']).status, row['dor-version'], row['sdr-version']]
   i += 1
-  puts "#{i} complete" if i % info_blurb == 0 
+  puts "#{i} complete" if i % info_blurb == 0
 end
 
 puts 'Done'
