@@ -64,11 +64,11 @@ Uses ruby 1.9.3
 1.10.9:: Catch errors on register_object_in_set method call, and allow for retries before raising an exception
 1.10.10:: Add spaces in filenames checks to discovery report
 1.10.11:: Catch errors on get_pid_from_suri method call, and allow for retries before raising an exception
-1.10.12:: Delete assemblyWF and accessionWF workflows from objects when re-accessioning using updated assembly-utils gem  
+1.10.12:: Delete assemblyWF and accessionWF workflows from objects when re-accessioning using updated assembly-utils gem
 1.11.1::  Bump up to latest versions of assembly gems; fix bug in publish attributing adding during content metadata generation
 1.11.2::  If user had a trailing slash on the bundle_dir parameter, object discovery might fail.  Remove any trailing slashes during setup.
 1.11.3::  Make SMPL contentMetadata generation more robust so it doesn't crash if the checksum is missing from the preContentMetadata file.
-1.11.4:: Changed the object type and resource type from 'file' to 'media' for SMPL conntent metadata. 
+1.11.4:: Changed the object type and resource type from 'file' to 'media' for SMPL conntent metadata.
 2.0.0::  Allow user to stage items via symlink instead of copy -- useful when source bundle directory contains large files.  New YAML config parameter is called "staging_style" and can be set to "copy" or "symlink" (default is "copy").
 2.0.1::  Attempt cleanup if registration step fails -- try to delete object and purge from solr before trying again
 2.0.2:: Add some more intelligence to the validate_usage step to better indicate errors in YAML configuration; default to new druid tree
@@ -89,7 +89,7 @@ Uses ruby 1.9.3
 2.2.3:: Move SMPL preContentMetadata generation methods into a class and allow it to be run automatically whenever SMPL accessioning occurs
 2.2.4:: Make SMPL content metadata generation per object so that you do not need to run an extra step ahead of pre-assembly
 2.2.5:: Make SMPL searching of checksums in MD5 file case insensitive for the role folder
-2.2.6:: Add some additional info to the discovery report for SMPL manifest projects 
+2.2.6:: Add some additional info to the discovery report for SMPL manifest projects
 2.2.7-2.2.8:: Enable automated combination of all techmd.xml files for SMPL projects into a single technical metadata datastream; cleanup old methods
 2.3.1:: Remove revs specific shared methods from revs project file, include their functionality from the new revs-utils gem
 2.3.2:: Small changes to discovery report around checking for APOs and objects; do not fail if label column is missing from manifest for should_register=false
@@ -166,16 +166,16 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    You will probably want to run this against a specific environment so it can connect to DOR and confirm registration on the appropriate server, e.g:
 
      ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
-  
+
    You will see a report containing:
    * the total number of objects discovered
    * the names of each discovered object along with the number of files which will be discovered in that object
    * any entries (directories or files) in the bundle directory which will *not* be discovered based on your configuration.
    * the total number and listing of any objects which have duplicate filenames.  You must resolve the duplicate filenames if you intend to flatten the folder structure when accessioning.
-   * for manifest style projects, the label and source id along with if all source IDs contained in the manifest are unique 
+   * for manifest style projects, the label and source id along with if all source IDs contained in the manifest are unique
    * for manifest style projects, a listing of any folders/files present in the bundle directory that are not referenced in the manifest... some will be expected (such as a checksum file), but this will let you see if any expected images/data are missing from the manifest
    * for SMPL style projects, a listing of the the number of files found in the content metadata manifest ... which will let you know if you it has correctly found the object in the smpl_manifest.csv file -- a 0 would mean none were found or listed, which is a problem
-   
+
    If any errors occur, they will be displayed and a total error count is shown at the bottom.
 
    To send the report to a CSV file for better sorting and viewing in Excel, send the output to a file using
@@ -213,7 +213,7 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
 
      # Run in limit mode (set to 100), which will automatically limit the number of items pre-assembled regardless of what is set in the YAML file.  Useful with resume.
      bin/pre-assemble YAML_FILE --limit=100 --resume
-     
+
    Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command to run in test, production or
    other modes as needed.
 
@@ -224,7 +224,7 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
    - Run pre-assembly with nohup and in the background (&).
    - Optionally, include the <tt>--resume</tt> option to override the resume parameter and set to true.
    - Optionally, include the <tt>--limit</tt> option to override the limit paramater.  You can specify the limit, or you can let it default to 200.
-  
+
    See the example below:
 
      ssh lyberadmin@sul-lyberservices-prod.stanford.edu
@@ -232,9 +232,9 @@ The code is deployed onto sul-lyberservices-test and sul-lyberservices-prod in t
      ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
 
    If you want to run multiple nohup jobs simultaneously, you can redirect screen output to a different log file:
-  
+
      ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
-  
+
    Various ways to monitor progress:
    1. The workflow grid in Argo, using your project tag to filter.
    2. grep pid PROGRESS_LOG          # Using the filename defined in YAML progress_log_file.
@@ -254,23 +254,23 @@ This will run pre-assembly multiple times sequentially, using resume and limits,
 This is useful to prevent memory errors on the server when running large jobs.  It will automatically compute the number of items
 remaining to be run, split the job up into the number of jobs needed based on the limit you request, and then sequentially run them.
 You will most likely want to run this in nohup mode, sending the output to a file.  If no limit is specified, a default of 200 is used.
-  
+
 
   e.g.
 
-  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
   # will run ALL of the incomplete items in that YAML file in the background, but in groups of the default size of 200, sending output for all runs to the mailander_box4_batch.out file
-  
-  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1& 
+
+  nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
   # will run ALL of the incomplete items in that YAML file in the background, but in groups of 100, sending output for all runs to the mailander_box4_batch.out file
-  
+
 == Expert Cheatsheet
 
 Here's a quick summary of the basic execution steps:
 
  # Goto VM and select environment
  % ssh lyberadmin@lyberservices-prod
- % export ROBOT_ENVIRONMENT=production 
+ % export ROBOT_ENVIRONMENT=production
 
  # Goto project directory and copy YAML and related files
  % cd MyProject
@@ -346,13 +346,13 @@ You need exiftool on your system in order to successfully run all of the tests.
 
    If you are a mac user, use homebrew to install it (if you don't have homebrew installed, you really should: http://brew.sh/):
        brew install exiftool
-       
+
 To run all tests, use the command below.  Note that to run integration tests, you will need to be connected to the VPN (even if on campus).
 
     bin/run_all_tests
 
 To run the unit tests (fast) and the integration tests (slower) separately, use the commands below.  As noted above, integration tests require VPN.
-    
+
     bundle exec rspec spec        # no DOR access required, no VPN
     bundle exec rspec integration # DOR access required, VPN
 
@@ -372,7 +372,7 @@ places, or you may run into errors when objects you believe should be registered
 
 ==Screen Command
 
-If screen is installed on the server you are using (currently not in production), another possibility instead of running nohup is to run 
+If screen is installed on the server you are using (currently not in production), another possibility instead of running nohup is to run
 using the "screen" command.  (NOTE: currently, screen is not available in production).
 
 Start a new screen by typing:
@@ -385,7 +385,7 @@ You can then start pre-assembly without nohup, just like you would locally:
 
 You can then detach from the screen by pressing ctrl-a, ctrl-d and then exit from the server.
 
-You can come back to your screen by re-logging into the server, and typing 
+You can come back to your screen by re-logging into the server, and typing
 
  $ screen -r
 
@@ -398,7 +398,7 @@ For more info on screen, see http://kb.iu.edu/data/acuy.html
 
 ==Troubleshooting
 
-0. Seeing an error like this when you try to run pre-assembly or a discovery report? 
+0. Seeing an error like this when you try to run pre-assembly or a discovery report?
 
 Psych::SyntaxError: (<unknown>): mapping values are not allowed in this context at line 37 column 14
 
@@ -449,7 +449,7 @@ should help you locate the part of your file that is having issues.  Edit and tr
 
     source_img=Assembly::Image.new('/input/path_to_file.tif') # add to a single image
     source_img.add_exif_profile_description('Adobe RGB 1998')
- 
+
    or
 
     Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    # add to multiple images
@@ -476,7 +476,7 @@ code. Both will report on up to 50,000 rows and includes the following columns:
 * dc:title
 * published status
 * shelved status
-* PURL url 
+* PURL url
 * total files in object
 * number of files by file extension
 
@@ -526,13 +526,13 @@ descriptive metadata for each object. See the section below for more details on 
 
 The actual names of the columns above (except for "druid") can be set in the YAML file.  The druid column must be called "druid".
 
-A sample manifest file is located in config/projects/manifest_template/TEMPLATE_manifest.csv for an example.  
+A sample manifest file is located in config/projects/manifest_template/TEMPLATE_manifest.csv for an example.
 
 == Descriptive Metadata
 
 If descriptive metadata is supplied in a source known to common accessioning (currently MDToolkit or Symphony), then no action is required during pre-assembly other than ensuring your DRUIDs and/or barcodes match the ones in MDToolkit or Symphony.
 
-If you are supplying a manifest file instead of using object discovery via file system crawling, then you can also create a descriptive metadata MODs file for each object using content supplied in the manifest.  By creating a template XML MODS file, placing with your YAML configuration file and ensuring it's filename is indicated in your YAML configuration, you can tell pre-assembly to generate a MODs file per object.  The generated MODs file should be called "descMetadata.xml" and will be staged alongside the content.  This file is automatically picked up during common accessioning.  
+If you are supplying a manifest file instead of using object discovery via file system crawling, then you can also create a descriptive metadata MODs file for each object using content supplied in the manifest.  By creating a template XML MODS file, placing with your YAML configuration file and ensuring it's filename is indicated in your YAML configuration, you can tell pre-assembly to generate a MODs file per object.  The generated MODs file should be called "descMetadata.xml" and will be staged alongside the content.  This file is automatically picked up during common accessioning.
 
 The MODs file is generated by taking the XML template you supply, and filling in any <tt>[[field]]</tt> values in the template with the corresponding column from the manifest.
 
@@ -547,7 +547,7 @@ and you have a column called "description" in your manifest and you have a row w
 In addition, the entire MODs template is passed through an ERB parser, allowing you to utilize Ruby code in the template using the standard ERB[http://ruby-doc.org/stdlib-1.9.3/libdoc/erb/rdoc/ERB.html] template <tt><% %></tt> syntax.  This can be used to peform more complex operations.  If you utilize Ruby code, you will have access to a special local variable called 'manifest_row', which is a hash of values for that row in the manifest, keyed off the column names.  For example:
 
  <mods><title><%= manifest_row[:description] %></title></mods>
- 
+
 will provide the same output as the previous example.  A full example of a MODs template is provided at config/projects/manifest_template/TEMPLATE_mods.xml
 
 To use a different character encoding in your ERB template, put the following at the top of your <em>template.xml</em>:
@@ -559,7 +559,7 @@ To use a different character encoding in your ERB template, put the following at
 
 If you would like to test your MODs template prior to actually accessioning, you can run a "mods report", passing in the YAML config file,
 which references your manifest and MODs template, and a writable output folder location.  The report will then generate a MODs file for
-each row in your manifest so you can examine the results.  You can limit the number of rows run by temporarily modifying the "limit_n" 
+each row in your manifest so you can examine the results.  You can limit the number of rows run by temporarily modifying the "limit_n"
 parameter in the YAML file. Note that the output folder MUST exist and must be writable.  Be aware it will become filled with MODs files, one per object.  So if you have a
 large number of rows in your manifest, you will end up with many files in your output directory.
 
@@ -591,9 +591,9 @@ files in your bundle), you can do this in two ways, depending on your project se
 
 For projects with a manifest (e.g. like Revs):
 
-1. Create a new manifest with only the objects you need re-accessioned. 
-2. Create a new project config YAML file referencing the new manifest and write to a new progress log file. 
-3. "Cleanup" your existing objects that you will be re-accessioning using the "Assembly::Utils.cleanup" method on a Ruby console as described below. Since you will be re-registering objects, you will get new DRUIDs, and you should therefore be sure to completely delete your old objects. 
+1. Create a new manifest with only the objects you need re-accessioned.
+2. Create a new project config YAML file referencing the new manifest and write to a new progress log file.
+3. "Cleanup" your existing objects that you will be re-accessioning using the "Assembly::Utils.cleanup" method on a Ruby console as described below. Since you will be re-registering objects, you will get new DRUIDs, and you should therefore be sure to completely delete your old objects.
 4. Re-run pre-assembly.
 
 For projects that do not use a manifest and which have their objects already registered (e.g. like Rumsey):
@@ -617,7 +617,7 @@ YAML configuration, find the progress log, read it to find the actual completed 
 execute cleanup on those objects. Use the following script to perform a cleanup:
 
     ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
-    
+
 where steps is a comma delimited list of any or all of the following steps defined below:
 
 symlinks:: remove symlinks from the /dor/workspace
@@ -637,7 +637,7 @@ For example, when on sul-lyberservices-test:
 The second way to perform a cleanup is from a bin/console prompt running the appropriate environment. You
 can then specify a specific list of druids and steps (as an array of symbols) to cleanup:
 
-e.g. 
+e.g.
 
  $ ROBOT_ENVIRONMENT=test bin/console
 
@@ -651,7 +651,7 @@ If you are working in the console, and want to read your YAML configuration file
 where your progress log file is located), you can use the following methods to load the configuration into a
 ruby hash:
 
-e.g. 
+e.g.
 
  $ ROBOT_ENVIRONMENT=test bin/console
 
@@ -661,13 +661,13 @@ e.g.
 
 You can then use these values in other utility methods as needed.
 
-=== Finding Druids 
+=== Finding Druids
 
 If you want to find the druids from your progress log file that are either completed or not completed, you
 can use a method that will give you an array of relevant druids. You can then use this array in
 'workflow_status' method noted above or in the other utility methods.
 
-e.g. 
+e.g.
 
  $ ROBOT_ENVIRONMENT=test bin/console
 
@@ -681,7 +681,7 @@ If you want to find druids by source_id, use the utility method
 Assembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this. You can then use the array of druids in
 the other utility methods.
 
-e.g. 
+e.g.
 
  $ ROBOT_ENVIRONMENT=test bin/console
 
@@ -759,7 +759,7 @@ Provide a list of druids in an array, and a hash containing workflow names (e.g.
 'accessionWF') as the keys, and arrays of steps as the corresponding values (e.g.
 ['checksum-compute','jp2-create']) and they will all be reset to "waiting".
 
-e.g. 
+e.g.
 
   $ ROBOT_ENVIRONMENT=test bin/console
 
@@ -771,12 +771,12 @@ e.g.
 
 === Basic Object Remediation
 
-A basic object remediation framework is provided for mass remediating objects.  
+A basic object remediation framework is provided for mass remediating objects.
 
 To use it, first decide how you will specify the list of druids.  You can either manually specify with a CSV (see step 1 below), or
-use the pre-assembly YAML log file if you are remediated a run from pre-assembly. 
+use the pre-assembly YAML log file if you are remediated a run from pre-assembly.
 
-1. For running a specific list of druids, create a CSV file containing a list of druids you wish to remediate, one line per druid, with a header column called "druid" or "Druid" (caps don't matter).  
+1. For running a specific list of druids, create a CSV file containing a list of druids you wish to remediate, one line per druid, with a header column called "druid" or "Druid" (caps don't matter).
 There can be other columns too -- they will be ignored.  They can be either full druids (with the prefix) or just the PIDs.  Save it somewhere the pre-assembly code can read it.
 
 e.g.
@@ -790,7 +790,7 @@ oo000oo0003
 fedora object and can perform any actions needed on the object.  The actual loading, saving, and versioning of objects is handled by the
 framework - you just need to define the actual logic needed to operate on the object.  The file needs to have a specific format with
 two specific methods that must be defined, one that determines if remediation will occur at all, and the second indicates the type
-of remediation to perform.  An example file and its format is shown in the file 'lib/remediation/remediate_project_example.rb'  
+of remediation to perform.  An example file and its format is shown in the file 'lib/remediation/remediate_project_example.rb'
 Don't edit that file - copy it, and edit it somewhere the script can read it.
 
 Note that you have access to 'equivalent-xml' (https://github.com/mbklein/equivalent-xml) for comparing xml when deciding if you need to
@@ -801,7 +801,7 @@ run in test or development mode if you can access those environments).  Pass in 
 and the Ruby file you generated in steps 1 and 2.  You will get two output files -- the first is a CSV file which includes columns indicating if remediation succeeded, a message
 and a timestamp.  You will also get a .log file.  Each file is named in the same way as the input file with _log.csv and _log.yml appended to the
 filename and is placed in the same location.  This means you should place the input CSV in be a location where the script will have write access
-to that location (i.e. not on a thumper drive if you are on lyberservices-prod).  
+to that location (i.e. not on a thumper drive if you are on lyberservices-prod).
 
 Note that the _log.yml file is used to ensure that objects are not run through remediation twice, so you should keep that file in the
 same location as the input CSV if you need to resume a large remediation.  In each case, the file will always be appended to.
@@ -816,17 +816,22 @@ The result will be some screen output and a detailed log file in .YML format in 
 The input CSV file will also be updated with two additional columns - a status indicating if remediation succeeded and a message.
 You can re-run the remediation with the same CSV file and it will automatically skip already completed objects - SO KEEP THE CSV FILE.
 
-You can also add optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.  
+You can also add optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.
 Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!
 
 ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb ignore_versioning ignore_accessioning
 
-=== Custom Object Remediation 
+=== MODs Remediation
+
+A custom script has already been written to handle the case of updating MODs given a spreadsheet and a MODs template.  See the file
+devel/update_mods_metadata.rb for more information.
+
+=== Custom Object Remediation
 
 You can also build a fully customized remediation script that does not require input DRUIDs in a CSV and can pass data to
-individual druids for more specific remediation.  To do this, you will need to implement the logging or resume capability you will need.  
-You will also still implement your own project specific Ruby file (as in step 2 above) but you will also implement your own mechanism for 
-generating druids to remediate and for logging their completion. 
+individual druids for more specific remediation.  To do this, you will need to implement the logging or resume capability you will need.
+You will also still implement your own project specific Ruby file (as in step 2 above) but you will also implement your own mechanism for
+generating druids to remediate and for logging their completion.
 
 Within the pre-assembly codebase, you will have access to the following remediation class.   Pass it a druid and your remediation logic Ruby
 file, and it will return you success or failure and a message.  You can also use the built in logging methods to record success/failure
@@ -837,7 +842,7 @@ to help with resuming.  You can also optionally pass any data structure or objec
  require project_file
 
  item=PreAssembly::Remediation::Item.new(pid,optionalDataStructure) # optionalDataStructure is some kind of object, string, hash, etc.
-                                                                    # it will be made available to your "remediate_logic" method in 
+                                                                    # it will be made available to your "remediate_logic" method in
   	                                                                # the instance variable @data
  item.extend(RemediationLogic) # add in our project specific methods
  item.description='some description that will be added to any versions which are opened' # optional
@@ -849,13 +854,13 @@ Loop over your PIDs and log results as needed.  You can log to an output CSV and
  item.log_to_progress_file(progress_log_file)  # pass in a fully qualified path to a YML file to append to
  item.log_to_csv(csv_out)   # pass in a fully qualified path to a CSV file to append to
 
-You can read in completed druids from a progress_log_file you have previously created using a class level method if you wish to 
+You can read in completed druids from a progress_log_file you have previously created using a class level method if you wish to
 check if a druid is already completed.  Each of these calls gives you an array of druids.
 
  completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
  failed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file,false)
  done if completed_druids.include?(pid)  # will give you a true or false if your current pid is already done
-   
+
 ==Assembly Robots
 
 The last step of pre-assembly is the initiation of the assembly workflow for a given object.  This assumes the assemblyWF is defined in the APO referenced by the project, and it also assumes the assembly robots are running on the server.  If the assembly robots are not running, then JP2 creation and all follow up steps will not occur.  You can determine if the robots are running on the server with:
@@ -875,24 +880,21 @@ If you see multiple lines, something like below, the assembly robots are running
   503       9009  8909  0 13:05 pts/0    00:00:00 grep assemblyWF
 
 To start the assembly robots, use the following line.  If you are in production substitute "production" for "test" in the robot_environment variable:
-  
+
   cd /home/lyberadmin/assembly/current; ROBOT_ENVIRONMENT=test ./bin/run_robot start assemblyWF:jp2-create assemblyWF:checksum-compute assemblyWF:exif-collect assemblyWF:accessioning-initiate
 
 You can track the progress of each assembly robot by inspecting it's log file on the server.  To see the available log files (one for each robot):
-  
+
   ls /home/lyberadmin/assembly/current/log
-  
+
 Tail a file to watch it's output, e.g.
-  
+
   tail -f /home/lyberadmin/assembly/current/log/jp2-create.log
 
 Or inspect it for a more complete history, e.g.
-  
+
   less /home/lyberadmin/assembly/current/log/jp2-create.log
 
 More information on the assembly robots is found in the assembly project here:
 
   corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/assembly.git
-
-
-    
