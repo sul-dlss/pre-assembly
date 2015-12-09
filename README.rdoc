@@ -303,26 +303,26 @@ different resources.
 
 Enter the branch or tag you want deployed.
 
-See the Capfile for more info
+See the Capfile for more info.
 
 ==Setting up code for local development
 
     # Clone project.
-    git clone `whoami`@corn.stanford.edu:/afs/ir/dev/dlss/git/lyberteam/pre-assembly.git
+    git clone git@github.com:sul-dlss/pre-assembly.git
     cd pre-assembly
 
     Copy the default configs and use them for local and test.
 
       cp config/environments/test.example.rb config/environments/test.rb
-      cp config/environments/local.example.rb config/environments/local.rb
+      cp config/environments/test.example.rb config/environments/development.rb
 
     You will need to have a certificate to access DOR-test in order to run integration tests from your laptop.  The certificates are placed
-    in your laptops' "config/certs" folder and are referenced in the "config/environments/test.rb" file.  Talk to DevOps to get a certificate.
+    in your laptop's "config/certs" folder and are referenced in the "config/environments/test.rb" file.  Talk to DevOps to get a certificate.
 
     # Get needed gems.
     bundle install
 
-    # Confirm that it's working by running the tests as decribed below.
+    # Confirm that it's working by running the tests as described below.
 
     To make your life easier, it's easiest to put this in your bash profile so you don't need to identify each time you run a command on your laptop during development:
 
