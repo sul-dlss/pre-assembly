@@ -8,15 +8,15 @@ ENV['ROBOT_ENVIRONMENT']='production'  # environment to run under (i.e. which fe
 def path_to_object(druid,root_dir)
   new_path=druid_tree_path(druid,root_dir)
   old_path=old_druid_tree_path(druid,root_dir)
-  return File.directory?(old_path) ? old_path : new_path
+  File.directory?(old_path) ? old_path : new_path
 end
 
 # new style path, e.g. aa/111/bb/2222/aa111bb2222
 def druid_tree_path(druid,root_dir)
-  DruidTools::Druid.new(druid,root_dir).path() 
+  DruidTools::Druid.new(druid,root_dir).path()
 end
 
-# old style path, e.g. aa/111/bb/2222    
+# old style path, e.g. aa/111/bb/2222
 def old_druid_tree_path(druid,root_dir)
   Assembly::Utils.get_staging_path(druid,root_dir)
 end
@@ -30,7 +30,7 @@ require 'assembly-utils'
 require 'logger'
 
 @base_path = ['/dor/assembly','/dor/workspace']
-          
+
 @druids=%w{druid:wh714jd5922
            druid:ws012nq5164
            druid:sd586gp3826
@@ -78,7 +78,7 @@ require 'logger'
            druid:pn264pz8940
            druid:hv577jx3178
          }
-         
+
 @druids.each do |druid|
   puts druid
   i=Dor::Item.find(druid)
@@ -97,4 +97,4 @@ require 'logger'
 #puts ''
  # pp i.contentMetadata.ng_xml.to_s
   puts '----'
-end         
+end

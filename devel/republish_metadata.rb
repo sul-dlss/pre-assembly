@@ -19,10 +19,10 @@ rows=CsvMapper.import(input_file){read_attributes_from_file}
 puts "#{rows.size} objects to work on"
 rows.each do |row|
 
-	druid="druid:#{row['id']}"
-	puts "Working on #{druid}"
-	i=Dor::Item.find(druid)
-	i.publish_metadata # republish metadata
-	puts "...republished metadata"
+  druid="druid:#{row['id']}"
+  puts "Working on #{druid}"
+  i=Dor::Item.find(druid)
+  i.publish_metadata # republish metadata
+  puts "...republished metadata"
 
 end

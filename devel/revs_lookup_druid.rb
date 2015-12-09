@@ -23,7 +23,7 @@ csv_out=File.join(source_path, source_name + "_output.csv")
 @items=CsvMapper.import(csv_in) do read_attributes_from_file end
 puts "Found #{@items.size} source ids in #{source_name}"
 puts ""
-  
+
 CSV.open(csv_out, "wb") do |csv|
 
   csv << ['druid','sourceid']
@@ -37,7 +37,7 @@ CSV.open(csv_out, "wb") do |csv|
       csv << [pid,row.sourceid]
     end
   end
-  
+
 end
 
 puts ""

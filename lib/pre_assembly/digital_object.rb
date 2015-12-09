@@ -6,10 +6,10 @@ module PreAssembly
   class DigitalObject
 
     include PreAssembly::Logging
-    
+
     # include any project specific files
     Dir[File.dirname(__FILE__) + '/project/*.rb'].each {|file| include "PreAssembly::Project::#{File.basename(file).gsub('.rb','').camelize}".constantize }
-        
+
     INIT_PARAMS = [
       :container,
       :unadjusted_container,
@@ -51,7 +51,7 @@ module PreAssembly
     ]
 
     (INIT_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
-    
+
     ####
     # Initialization.
     ####
@@ -76,64 +76,64 @@ module PreAssembly
       @content_md_xml      = ''
       @technical_md_xml    = ''
       @desc_md_xml         = ''
-      
+
 
       @pre_assem_finished = false
       @content_structure  = (@project_style ? @project_style[:content_structure] : 'file')
-      
+
     end
 
     def stager(source,destination)
       if @staging_style.nil? || @staging_style == 'copy'
-        FileUtils.cp_r source, destination        
+        FileUtils.cp_r source, destination
       else
         FileUtils.ln_s source, destination, :force=>true
       end
     end
 
     def content_md_creation_style
-      # set this object's content_md_creation_style      
+      # set this object's content_md_creation_style
       if (@project_style[:should_register]) || (!@project_style[:content_tag_override]) || (@project_style[:content_tag_override] && content_type_tag.blank?) # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
         default_content_md_creation_style
       else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
         CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
       end
     end
-    
+
     def default_content_md_creation_style
        @project_style[:content_structure].to_sym
     end
-    
-    # compute the base druid tree folder for this object 
+
+    # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||=  (@new_druid_tree_format ? DruidTools::Druid.new(@druid.id,@staging_dir).path() : Assembly::Utils.get_staging_path(@druid.id,@staging_dir)) 
+      @druid_tree_dir ||=  (@new_druid_tree_format ? DruidTools::Druid.new(@druid.id,@staging_dir).path() : Assembly::Utils.get_staging_path(@druid.id,@staging_dir))
     end
-    
+
     def druid_tree_dir=(value)
       @druid_tree_dir=value
     end
-    
+
     # the content subfolder
     def content_dir
-      @content_dir ||= (@new_druid_tree_format ? File.join(self.druid_tree_dir,'content') : self.druid_tree_dir)
+      @content_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir,'content') : druid_tree_dir)
     end
-    
+
     # the metadata subfolder
     def metadata_dir
-      @metadata_dir ||=  (@new_druid_tree_format ? File.join(self.druid_tree_dir,'metadata') : self.druid_tree_dir)
+      @metadata_dir ||=  (@new_druid_tree_format ? File.join(druid_tree_dir,'metadata') : druid_tree_dir)
     end
-    
+
     ####
     # The main process.
     ####
 
     def pre_assemble(desc_md_xml=nil)
-      
+
       @desc_md_template_xml = desc_md_xml
 
       log "  - pre_assemble(#{@source_id}) started"
       determine_druid
-      
+
       prepare_for_reaccession if @reaccession
       register
       add_dor_object_to_set
@@ -149,7 +149,7 @@ module PreAssembly
     ####
     # Determining the druid.
     ####
-    
+
     def determine_druid
       k = @project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
@@ -160,7 +160,7 @@ module PreAssembly
     def get_pid_from_manifest
       @manifest_row[:druid]
     end
-    
+
     def get_pid_from_suri
 
       i=0
@@ -168,7 +168,7 @@ module PreAssembly
       backtrace=""
       exception_message=""
       result=nil
-      
+
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
         begin
@@ -181,23 +181,23 @@ module PreAssembly
           sleep Dor::Config.dor.sleep_time
         end
       end
-      
+
       if success == false || result.nil?
         error_message = "get_pid_from_suri failed after #{i} attempts\n"
         log error_message
         error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
+        error_message += "backtrace: #{backtrace}"
         raise error_message
-      else 
+      else
         return result
-      end          
-          
+      end
+
     end
-    
+
     def get_pid_from_druid_minter
       DruidMinter.next
     end
-    
+
     def get_pid_from_container
       "druid:#{container_basename}"
     end
@@ -210,11 +210,11 @@ module PreAssembly
         apo_pids = get_dor_item_apos.map { |apo| apo.pid }
         return pid if apo_matches_exactly_one?(apo_pids)
       end
-      return nil
+      nil
     end
 
     def query_dor_by_barcode(barcode)
-      return Dor::SearchService.query_by_id :barcode => barcode
+      Dor::SearchService.query_by_id :barcode => barcode
     end
 
     def get_dor_item_apos(pid)
@@ -227,22 +227,22 @@ module PreAssembly
         @dor_object ||= Dor::Item.find pid
       rescue ActiveFedora::ObjectNotFoundError
         @dor_object = nil
-      end      
+      end
     end
-    
+
     def content_type_tag
       get_dor_object
       @dor_object.nil? ? "" : @dor_object.content_type_tag
     end
-    
+
     def apo_matches_exactly_one?(apo_pids)
       n = 0
       apo_pids.each { |pid| n += 1 if pid == @apo_druid_id }
-      return n == 1
+      n == 1
     end
 
     def container_basename
-      return File.basename(@container)
+      File.basename(@container)
     end
 
 
@@ -258,20 +258,20 @@ module PreAssembly
     end
 
     def register_in_dor(params)
-      
+
       i=0
       success=false
       backtrace=""
       exception_message=""
       result=nil
-      
+
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
         begin
           result = Dor::RegistrationService.register_object params
           success = (result.class == Dor::Item)
         rescue Exception => e
-          source_id="#{@project_name}:#{@source_id}" 
+          source_id="#{@project_name}:#{@source_id}"
           log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           sourceid_pids=Dor::SearchService.query_by_id(source_id)
           all_pids=sourceid_pids << @pid
@@ -289,17 +289,17 @@ module PreAssembly
           sleep Dor::Config.dor.sleep_time
         end
       end
-      
+
       if success == false || result.nil?
         error_message = "register_in_dor failed after #{i} attempts; with params of #{params} \n"
         log error_message
         error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
+        error_message += "backtrace: #{backtrace}"
         raise error_message
-      else 
+      else
         return result
-      end     
-      
+      end
+
     end
 
     def registration_params
@@ -319,13 +319,13 @@ module PreAssembly
       # Add the object to a set (a sub-collection).
       return unless @set_druid_id && @project_style[:should_register]
       log "    - add_dor_object_to_set(#{@set_druid_id})"
-      
+
       i=0
       success=false
       exception=nil
       until i == Dor::Config.dor.num_attempts || success do
         i+=1
-        begin      
+        begin
           Array(@set_druid_id).each do |druid|
             @dor_object.add_relationship *add_member_relationship_params(druid)
             @dor_object.add_relationship *add_collection_relationship_params(druid)
@@ -337,7 +337,7 @@ module PreAssembly
           sleep Dor::Config.dor.sleep_time
         end
       end
-      
+
       if success == false
         error_message = "add_dor_object_to_set failed after #{i} attempts; for druid=#{pid} and set=#{@set_druid_id} \n"
         log error_message
@@ -362,9 +362,9 @@ module PreAssembly
       log "  - prepare_for_reaccession(#{@druid})"
 
       Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
-      
+
     end
-    
+
     def unregister
       # Used during testing and development work to unregister objects created in -dev.
       # Do not run unless the object was registered by pre-assembly.
@@ -373,7 +373,7 @@ module PreAssembly
       log "  - unregister(#{@pid})"
 
       Assembly::Utils.unregister(@pid)
-      
+
       @dor_object          = nil
       @reg_by_pre_assembly = false
     end
@@ -385,12 +385,12 @@ module PreAssembly
     def stage_files
       # Create the druid tree within the staging directory,
       # and then copy-recursive all stageable items to that area.
-      log "    - staging(druid_tree_dir = #{self.druid_tree_dir.inspect})"
+      log "    - staging(druid_tree_dir = #{druid_tree_dir.inspect})"
       create_object_directories
       @stageable_items.each do |si_path|
-        log "      - staging(#{si_path}, #{self.content_dir})", :debug
+        log "      - staging(#{si_path}, #{content_dir})", :debug
         # determine destination of staged file by looking to see if it is a known datastream XML file or not
-        destination = METADATA_FILES.include?(File.basename(si_path).downcase) ? self.metadata_dir : self.content_dir
+        destination = METADATA_FILES.include?(File.basename(si_path).downcase) ? metadata_dir : content_dir
         stager si_path, destination
       end
     end
@@ -399,55 +399,55 @@ module PreAssembly
     # Technical metadata combined file for SMPL.
     ####
     def generate_technical_metadata
-    
+
       create_technical_metadata
-      write_technical_metadata 
-      
+      write_technical_metadata
+
     end
-    
+
     def create_technical_metadata
       # create technical metadata for smpl projects only
-      return unless @content_md_creation[:style].to_s == 'smpl' 
+      return unless @content_md_creation[:style].to_s == 'smpl'
 
       tm = Nokogiri::XML::Document.new
       tm_node = Nokogiri::XML::Node.new("technicalMetadata", tm)
       tm_node['objectId']=@pid
       tm_node['datetime']=Time.now.utc.strftime("%Y-%m-%d-T%H:%M:%SZ")
       tm << tm_node
-      
-      # find all technical metadata files and just append the xml to the combined technicalMetadata 
+
+      # find all technical metadata files and just append the xml to the combined technicalMetadata
       current_directory=Dir.pwd
       FileUtils.cd(File.join(@bundle_dir,container_basename))
       tech_md_filenames=Dir.glob("**/*_techmd.xml")
       tech_md_filenames.each do |filename|
          tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
-         tm.root << tech_md_xml.root  
+         tm.root << tech_md_xml.root
       end
       FileUtils.cd(current_directory)
       @technical_md_xml=tm.to_xml
-      
+
     end
-    
+
     def write_technical_metadata
       # write technical metadata out to a file only if it exists
       return if @technical_md_xml.blank?
 
-      file_name = File.join self.metadata_dir, @technical_md_file
+      file_name = File.join metadata_dir, @technical_md_file
       log "    - write_technical_metadata_xml(#{file_name})"
       create_object_directories
-      File.open(file_name, 'w') { |fh| fh.puts @technical_md_xml } 
+      File.open(file_name, 'w') { |fh| fh.puts @technical_md_xml }
     end
-    
+
     ####
     # Content metadata.
     ####
     def generate_content_metadata
-    
+
       create_content_metadata
-      write_content_metadata 
-      
+      write_content_metadata
+
     end
-    
+
     def create_content_metadata
       # Invoke the contentMetadata creation method used by the project
       # The name of the method invoked must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
@@ -455,29 +455,29 @@ module PreAssembly
 
       # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
       if !['default','filename','dpg','none'].include? @content_md_creation[:style].to_s
-        
+
         @content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
-      
+
       elsif @content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
-        
+
         # otherwise use the content metadata generation gem
         params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}
-        
+
         params.merge!(:add_file_attributes=>true,:file_attributes=>@publish_attr.stringify_keys) unless @publish_attr.nil?
-        
+
         @content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
-        
+
       end
 
     end
-    
+
     def write_content_metadata
       # write content metadata out to a file
       return if @content_md_creation[:style].to_s == 'none'
-      file_name = File.join self.metadata_dir, @content_md_file
+      file_name = File.join metadata_dir, @content_md_file
       log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
-      
+
       File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
 
       # NOTE: This is being skipped because it now removes empty nodes, and we need an a node like this: <file id="filename" /> when first starting with contentMetadat
@@ -510,14 +510,14 @@ module PreAssembly
 
       # Note that the template uses the variable name `manifest_row`, so we set it here
       manifest_row = @manifest_row
-      
+
       # XML escape all of the entries in the manifest row so they won't break the XML
       manifest_row.each {|k,v| manifest_row[k]=Nokogiri::XML::Text.new(v,Nokogiri::XML('')).to_s if v }
-      
-      # ensure access with symbol or string keys 
+
+      # ensure access with symbol or string keys
       manifest_row = manifest_row.with_indifferent_access
-      
-      # Run the XML template through ERB. 
+
+      # Run the XML template through ERB.
       template     = ERB.new(@desc_md_template_xml, nil, '>')
       @desc_md_xml = template.result(binding)
 
@@ -527,34 +527,34 @@ module PreAssembly
       # Here we replace those placeholders with the corresponding value
       # from the manifest row.
       @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
-      return true
-      
+      true
+
     end
 
     def write_desc_metadata
-      file_name = File.join self.metadata_dir, @desc_md_file
+      file_name = File.join metadata_dir, @desc_md_file
       log "    - write_desc_metadata_xml(#{file_name})"
       create_object_directories
       File.open(file_name, 'w') { |fh| fh.puts @desc_md_xml }
     end
 
     def create_object_directories
-      FileUtils.mkdir_p self.druid_tree_dir unless File.directory?(self.druid_tree_dir)
-      FileUtils.mkdir_p self.metadata_dir unless File.directory?(self.metadata_dir)
-      FileUtils.mkdir_p self.content_dir unless File.directory?(self.content_dir)
+      FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)
+      FileUtils.mkdir_p metadata_dir unless File.directory?(metadata_dir)
+      FileUtils.mkdir_p content_dir unless File.directory?(content_dir)
     end
-    
+
     ####
     # Initialize the assembly workflow.
     ####
 
     def initialize_assembly_workflow
-      
+
       # Call web service to add assemblyWF to the object in DOR.
       return unless @init_assembly_wf
       log "    - initialize_assembly_workflow()"
       url = assembly_workflow_url
-      
+
       i=0
       success=false
       backtrace=""
@@ -571,15 +571,15 @@ module PreAssembly
           sleep Dor::Config.dor.sleep_time
         end
       end
-      
+
       if success == false
         error_message = "initialize_assembly_workflow failed after #{i} attempts; with URL of #{url} \n"
         log error_message
         error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
+        error_message += "backtrace: #{backtrace}"
         raise error_message
       end
-      
+
     end
 
     def assembly_workflow_url

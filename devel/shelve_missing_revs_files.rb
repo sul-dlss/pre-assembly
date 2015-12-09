@@ -18,7 +18,7 @@ druids={
 'druid:qh240gj0159'=>['2006-001PHIL-1957-b1_65.0_0011.jp2'],
 'druid:dq390fd5990'=>['2006-001PHIL-1963-b1_43.2_0021.jp2'],
 'druid:dm295pp9644'=>['2006-001PHIL-1960-b1_17.0_0003.jp2'],
-'druid:pb529hd7570'=>['2006-001PHIL-1960-b1_45.2_0012.jp2'], 
+'druid:pb529hd7570'=>['2006-001PHIL-1960-b1_45.2_0012.jp2'],
 }
 
 input_folder='/dor/preassembly/remediation/revs_jp2'
@@ -26,23 +26,23 @@ input_folder='/dor/preassembly/remediation/revs_jp2'
 puts "#{druids.size} objects to work on, source folder: #{input_folder}"
 druids.each do |druid,files|
 
-	puts "Working on #{druid}"
-	
-	i=Dor::Item.find(druid)
-	i.publish_metadata # republish metadata
-	puts "...republished metadata"
+  puts "Working on #{druid}"
 
-	workspace_druid = DruidTools::Druid.new(druid,Dor::Config.stacks.local_workspace_root) # get the workspace folder
-	workspace_druid.content_dir # create the workspace content folder if it does not exist
-	files.each do |file|
-	 src=File.join(input_folder,file)
-	 dest=File.join(workspace_druid.content_dir,file)
-	 FileUtils.cp src,dest # copy files from our source to the workspace
-	 puts "...copied #{file} to #{dest}"
-	end
-	Dor::DigitalStacksService.shelve_to_stacks(druid,files) # shelve em!
-	puts "...shelved"
+  i=Dor::Item.find(druid)
+  i.publish_metadata # republish metadata
+  puts "...republished metadata"
 
-	puts ""
+  workspace_druid = DruidTools::Druid.new(druid,Dor::Config.stacks.local_workspace_root) # get the workspace folder
+  workspace_druid.content_dir # create the workspace content folder if it does not exist
+  files.each do |file|
+   src=File.join(input_folder,file)
+   dest=File.join(workspace_druid.content_dir,file)
+   FileUtils.cp src,dest # copy files from our source to the workspace
+   puts "...copied #{file} to #{dest}"
+  end
+  Dor::DigitalStacksService.shelve_to_stacks(druid,files) # shelve em!
+  puts "...shelved"
+
+  puts ""
 
 end

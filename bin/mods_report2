@@ -29,7 +29,7 @@ mods_template_xml=IO.read(mods_template_file)
 @items=PreAssembly::Bundle.import_csv(manifest_file)
 
 puts "Generating #{@items.size} MODs files from #{manifest_file} using MODs template of #{mods_template_file}"
-   
+
 @items.each_with_index do |manifest_row, x|
  druid=manifest_row[:druid]
  sourceid=manifest_row[:sourceid]
@@ -40,7 +40,7 @@ puts "Generating #{@items.size} MODs files from #{manifest_file} using MODs temp
  dig_obj.desc_md_template_xml=mods_template_xml
  if dig_obj.create_desc_metadata_xml
    output_mods_file=File.join(output_directory,"#{identifier.gsub('druid:','')}.xml")
-   File.open(output_mods_file, 'w') { |fh| fh.puts dig_obj.desc_md_xml } 
+   File.open(output_mods_file, 'w') { |fh| fh.puts dig_obj.desc_md_xml }
    puts "Saving MODs for sourceID #{identifier}  [#{x} of #{@items.size}]"
  else
    puts "Error: cannot generate desc md xml for #{identifier} [#{x} of #{@items.size}]"

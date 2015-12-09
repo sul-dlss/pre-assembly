@@ -1,4 +1,4 @@
-# Given the full path to a folder containing content and manifest, iterate through, find any XLS or XLSX files, export to CSV, move 
+# Given the full path to a folder containing content and manifest, iterate through, find any XLS or XLSX files, export to CSV, move
 # into folder name with same prefix, and check that manifest is correct.
 
 # Used to prepare CSV manifest from supplied XLS/XLSX from The Revs Institute in preparation for accessioning.
@@ -15,7 +15,7 @@ input = ARGV[0]
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'roo'
 
-if File.directory?(input) 
+if File.directory?(input)
 
   puts ""
   puts 'revs_prepare_manifests'
@@ -33,47 +33,47 @@ if File.directory?(input)
 
   puts "Found #{num_files} files to process"
   puts ""
-  
+
   puts "Num, File, Saved To, Registration Columns OK , Metadata Columns OK , Num Bad Formats or Dates "
 
-  files.each do |file|    
-    counter += 1 
+  files.each do |file|
+    counter += 1
     base_name = File.basename(file,File.extname(file)) # name of excel file without extension
     filename  = File.basename(file) # name of excel file with extension
     full_path_to_excel = File.join(input,file) # fully qualified path to excel file
     file_directory = full_path_to_excel.gsub(filename,'') # directory that excel file is in
-    
+
     move_to=File.join(file_directory,base_name) # try and find a folder with a matching base name in that same directory
-    
+
     csv_directory = (File.directory?(move_to) ? move_to : file_directory) # if we find it, we will export the CSV there, otherwise just put it in the same place as the Excel file
-      
+
     full_path_to_exported_csv   = File.join(csv_directory,base_name + '.csv') # fully qualified path to the exported CSV file
-    
+
     xlsx = Roo::Spreadsheet.open(full_path_to_excel) # open the excel file
     File.delete(full_path_to_exported_csv) if File.file?(full_path_to_exported_csv) # remove the CSV if it is there
     xlsx.to_csv(full_path_to_exported_csv) # export the CSV file
-    
-    csv_data = RevsUtils.read_csv_with_headers(full_path_to_exported_csv) 
+
+    csv_data = RevsUtils.read_csv_with_headers(full_path_to_exported_csv)
     reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
     headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
     metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
-        
+
     ok=(reg && headers && (metadata == 0))
 
     puts "#{counter}, #{file} , #{move_to} , #{reg} , #{headers}, #{metadata}"
-    
+
     num_errors +=1 unless ok
-     
-  end 
+
+  end
 
   puts ""
   puts "#{num_errors} files out of #{num_files} had problems"
   puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time)/60.0)} minutes"
-  
+
 else
-  
+
   puts "Error: #{input} is not a directory"
-  
+
 end
 
 

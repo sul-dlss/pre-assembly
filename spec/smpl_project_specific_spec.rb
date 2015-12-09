@@ -24,15 +24,15 @@ describe PreAssembly::DigitalObject do
     @tmp_dir_args = [nil, 'tmp']
     @dobj.druid = @druid
     @dobj.pid = @pid
-    @dobj.container = @dru    
+    @dobj.container = @dru
     @dobj.content_md_creation[:style]='smpl'
   end
-  
+
   ####################
   describe "SMPL specific technical metadata generation" do
 
     it "should generate technicalMetadata for SMPL by combining all existing _techmd.xml files" do
-      
+
       @dobj.create_technical_metadata
       exp_xml = noko_doc(@dobj.technical_md_xml)
       exp_xml.css('technicalMetadata').size.should == 1 # one top level node
@@ -43,9 +43,9 @@ describe PreAssembly::DigitalObject do
       exp_xml.css('Count')[2].content.should == '280'
       exp_xml.css('Count')[3].content.should == '218'
     end
-  
+
   end
-  
+
   describe "SMPL specific methods in project_specific module" do
 
     it "should convert SMPL content metadata into valid base content metadata" do
@@ -87,10 +87,10 @@ describe PreAssembly::DigitalObject do
                </resource>
              </contentMetadata>
             END
-      @dobj.create_content_metadata      
+      @dobj.create_content_metadata
       noko_doc(@dobj.content_md_xml).should be_equivalent_to noko_doc(exp_xml)
     end
 
   end
-  
+
 end

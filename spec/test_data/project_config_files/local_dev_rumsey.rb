@@ -17,8 +17,8 @@ module PreAssembly
       d.file('tifs',   :re   => /^\d+.tif$/)
       d.file('descMD', :name => 'descMetadata.xml')
     end
-    return dv
+    dv
   end
-    
+
 end
 
