@@ -1,7 +1,7 @@
-# Pass in input base folder 
+# Pass in input base folder
 # Script will iterate over top level folders, renaming to remove spaces and special characters
 
-# call this with 
+# call this with
 # ruby devel/clean_folder_names.rb BASE_FOLDER
 
 require 'rubygems'
@@ -17,7 +17,7 @@ FileUtils.cd(input)
 # grab all folders
 folders=Dir.glob('*').select {|f| File.directory? f}
 excluded=['System Volume Information','$RECYCLE.BIN']
-folders.reject! {|folder| excluded.include?(folder)} 
+folders.reject! {|folder| excluded.include?(folder)}
 
 puts "Found #{folders.size} folders"
 renamed=0

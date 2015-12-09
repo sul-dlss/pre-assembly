@@ -17,7 +17,7 @@ describe PreAssembly::DigitalObject do
       :staging_style=>'copy'
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
-    
+
     @dru          = 'gn330dv6119'
     @pid          = "druid:#{@dru}"
     @druid        = DruidTools::Druid.new @pid
@@ -158,30 +158,30 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should add a new tag to the registration params if set" do
-      
+
       @ps[:apply_tag]='Foo : Bar'
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       rps.should             be_kind_of Hash
       rps[:tags].should      be_kind_of Array
       rps[:tags].should == ["Project : ProjectBar", "Foo : Bar"]
 
       @ps[:apply_tag]='Foo : Bar'
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       rps.should             be_kind_of Hash
       rps[:tags].should      be_kind_of Array
       rps[:tags].should == ["Project : ProjectBar", "Foo : Bar"]
-      
+
       @ps[:apply_tag]=nil
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps  
+      dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       rps.should             be_kind_of Hash
       rps[:tags].should      be_kind_of Array
       rps[:tags].should == ["Project : ProjectBar"]
 
     end
-    
+
   end
 
   ####################
@@ -218,7 +218,7 @@ describe PreAssembly::DigitalObject do
       fake.should_receive(:add_relationship).exactly(4).times
       @dobj.add_dor_object_to_set
     end
-    
+
     it "can exercise method using stubbed exernal calls" do
       @dobj.dor_object = double('dor_object', :add_relationship => nil, :save => nil)
       @dobj.add_dor_object_to_set
@@ -275,7 +275,7 @@ describe PreAssembly::DigitalObject do
         @dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         @dobj.stageable_items.each { |si| FileUtils.touch si }
         @dobj.staging_style='copy'
-        
+
         # Stage the files via copy.
         FileUtils.mkdir @dobj.staging_dir
         @dobj.stage_files
@@ -289,10 +289,10 @@ describe PreAssembly::DigitalObject do
         end
       end
     end
-    
+
     it "should be able to symlink stageable items successfully" do
       @dobj.druid = @druid
-      
+
        Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         #Add some stageable items to the digital object, and create those files.
         files                 = [1,2,3].map { |n| "image#{n}.tif" }
@@ -328,7 +328,7 @@ describe PreAssembly::DigitalObject do
       @dobj.content_md_creation[:style]='default'
       @dobj.project_style[:content_structure]='simple_image'
       add_object_files('tif')
-      add_object_files('jp2')      
+      add_object_files('jp2')
       @dobj.create_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
@@ -357,7 +357,7 @@ describe PreAssembly::DigitalObject do
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
-        </contentMetadata>          
+        </contentMetadata>
       END
       @exp_xml = noko_doc @exp_xml
     end
@@ -426,7 +426,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='none'
       @dobj.project_style[:content_structure]='simple_book'
-      @dobj.publish_attr=nil      
+      @dobj.publish_attr=nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -437,9 +437,9 @@ describe PreAssembly::DigitalObject do
     end
 
   end
-  
+
   ####################
-  
+
   ####################
 
   describe "bundled by filename, simple book content metadata without file attributes" do
@@ -448,7 +448,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='filename'
       @dobj.project_style[:content_structure]='simple_book'
-      @dobj.publish_attr=nil      
+      @dobj.publish_attr=nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -482,7 +482,7 @@ describe PreAssembly::DigitalObject do
     end
 
   end
-  
+
   ####################
 
   describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
@@ -496,7 +496,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:should_register]=false
       @dobj.publish_attr=nil
       add_object_files('tif')
-      add_object_files('jp2')      
+      add_object_files('jp2')
       @dobj.create_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
@@ -525,7 +525,7 @@ describe PreAssembly::DigitalObject do
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
-        </contentMetadata>          
+        </contentMetadata>
       END
       @exp_xml = noko_doc @exp_xml
     end
@@ -565,7 +565,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:should_register]=false
       @dobj.publish_attr={'image/jp2'=>{:publish=>'yes',:shelve=>'yes',:preserve=>'no'},'image/tiff'=>{:publish=>'no',:shelve=>'no',:preserve=>'yes'}}
       add_object_files('tif')
-      add_object_files('jp2')      
+      add_object_files('jp2')
       @dobj.create_content_metadata
       @exp_xml = <<-END.gsub(/^ {8}/, '')
         <?xml version="1.0"?>
@@ -594,7 +594,7 @@ describe PreAssembly::DigitalObject do
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
-        </contentMetadata>       
+        </contentMetadata>
       END
       @exp_xml = noko_doc @exp_xml
     end
@@ -633,7 +633,7 @@ describe PreAssembly::DigitalObject do
 
   ####################
 
-  
+
   describe "descriptive metadata" do
 
     before(:each) do
@@ -756,7 +756,7 @@ describe PreAssembly::DigitalObject do
     it "should generate descMetadata correctly given a manifest row as loaded from the csv" do
       manifest=PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
       @dobj.manifest_row = Hash[manifest[2].each_pair.to_a]
-      
+
       @dobj.desc_md_template_xml = IO.read("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/mods_template.xml")
       @dobj.create_desc_metadata_xml
       exp_xml = <<-END.gsub(/^ {8}/, '')
@@ -770,7 +770,7 @@ describe PreAssembly::DigitalObject do
         </subject>
         <relatedItem type="host">
           <titleInfo>
-      			<title>The Collier Collection of the Revs Institute for Automotive Research</title>
+            <title>The Collier Collection of the Revs Institute for Automotive Research</title>
           </titleInfo>
           <typeOfResource collection="yes"/>
         </relatedItem>
@@ -783,18 +783,18 @@ describe PreAssembly::DigitalObject do
           <dateCreated>1938, 1956</dateCreated>
         </originInfo>
         <titleInfo>a
-          	<title>Avus 1938, 1956</title>
-      	</titleInfo>
+            <title>Avus 1938, 1956</title>
+        </titleInfo>
         <note>yo, this is a description</note>
         <identifier type="local" displayLabel="Revs ID">foo-2.2</identifier>
         <note type="source note" ID="inst_notes">strip 2 is duplicate; don't scan</note>
         <note type="source note" ID="inst_notes2">strip 2 is duplicate; don't scan</note>
       </mods>
       END
-                  
+
       noko_doc(@dobj.desc_md_xml).should be_equivalent_to exp_xml
     end
-    
+
   end
 
   ####################

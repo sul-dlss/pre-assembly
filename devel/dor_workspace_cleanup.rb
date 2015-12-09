@@ -10,10 +10,10 @@ paths_to_cleanup=['/dor/assembly','/dor/workspace']
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 abort "Incorrect N of arguments." unless ARGV.size == 1
-csv_in = ARGV[0]   
+csv_in = ARGV[0]
 
 # read input manifest
-csv_data = RevsUtils.read_csv_with_headers(csv_in) 
+csv_data = RevsUtils.read_csv_with_headers(csv_in)
 total=csv_data.size
 
 start_time=Time.now
@@ -35,9 +35,9 @@ csv_data.each do |row|
 
   pid=row['Druid']
   druid=(pid.include?("druid:") ? pid : "druid:#{pid}")
-  
+
   unless pid.blank?
-    
+
     msg="#{n} of #{total}: #{druid}"
     deleted_from=[]
     if Assembly::Utils.updates_allowed?(druid)
@@ -47,7 +47,7 @@ csv_data.each do |row|
           FileUtils.rm_r(folder)
           deleted_from << root_dir
         end
-      end 
+      end
       if deleted_from.size > 0
         puts "#{msg}: deleted folders from #{deleted_from.join(', ')}"
         fixed+=1
@@ -58,10 +58,10 @@ csv_data.each do |row|
     else
       puts "#{msg}: no action taken - currently in accessioning and cannot be updated"
       not_available+=1
-    end    
-  
+    end
+
   end
-  
+
 end
 
 puts ""

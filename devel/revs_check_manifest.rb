@@ -17,14 +17,14 @@ puts "File, Registration Columns OK , Metadata Columns OK, Num Bad Formats or Da
 counter = 0
 
 if File.file?(input) && File.extname(input).downcase == '.csv'
-  
+
 #  puts "Working on #{input}"
-  csv_data = RevsUtils.read_csv_with_headers(input) 
+  csv_data = RevsUtils.read_csv_with_headers(input)
   reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
   headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
   metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
   puts "#{input} , #{reg} , #{headers}, #{metadata}"
-    
+
 elsif File.directory?(input)
 
   puts "Searching for CSV files..."
@@ -36,20 +36,20 @@ elsif File.directory?(input)
   files.each do |file|
     counter += 1
 #    puts "Working on #{file}: (#{counter} of #{num_files})"
-    csv_data = RevsUtils.read_csv_with_headers(file) 
+    csv_data = RevsUtils.read_csv_with_headers(file)
     reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
     headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
     metadata=RevsUtils.check_metadata(csv_data) # check for certain valid metadata values
     puts "#{file} , #{reg} , #{headers}, #{metadata}"
     ok = (reg && headers && (metadata == 0))
     num_errors +=1 unless ok
-  end 
+  end
   puts "#{num_errors} files out of #{num_files} had problems"
-  
+
 else
 
   puts "ERROR: Input '#{input}' is not a CSV file or directory"
-  
+
 end
 
 puts ''
