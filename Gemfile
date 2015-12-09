@@ -1,8 +1,5 @@
 source 'https://rubygems.org'
 
-# Let's require at least ruby 1.9, but allow ruby 2.0 too
-ruby "1.9.3" if RUBY_VERSION < "1.9"
-
 gem 'nokogiri'
 gem 'equivalent-xml'
 gem 'csv-mapper'
