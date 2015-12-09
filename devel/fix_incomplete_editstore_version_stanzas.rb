@@ -22,7 +22,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
 
   #An Argo CSV uses a capitalized Druid for head and does not include the druid: prefix, if we have that handle it via
   druid = row['druid']
-  druid = row['Druid'] if druid == nil
+  druid = row['Druid'] if druid.nil?
   druid = "druid:" + druid if druid.split("druid:").size == 1
 
 

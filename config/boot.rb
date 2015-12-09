@@ -32,9 +32,7 @@ require 'pre_assembly/logging'
 PreAssembly::Logging.setup PRE_ASSEMBLY_ROOT, environment
 
 # Development dependencies.
-if ['local', 'development'].include? environment
-  require 'awesome_print'
-end
+require 'awesome_print' if ['local', 'development'].include? environment
 
 # Load the project and its dependencies.
 require 'pre_assembly'
@@ -42,5 +40,5 @@ require 'pre_assembly'
 require 'revs-utils'
 
 class RevsUtils
-  extend Revs::Utils    
+  extend Revs::Utils
 end

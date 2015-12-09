@@ -12,10 +12,10 @@ reference_step='end-accession' # the step to look at
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 abort "Incorrect N of arguments." unless ARGV.size == 1
-csv_in = ARGV[0]   
+csv_in = ARGV[0]
 
 # read input manifest
-csv_data = RevsUtils.read_csv_with_headers(csv_in) 
+csv_data = RevsUtils.read_csv_with_headers(csv_in)
 total=csv_data.size
 
 start_time=Time.now
@@ -45,8 +45,8 @@ csv_data.each do |row|
   else
     puts "#{msg}: No action taken"
     not_fixed+=1
-  end    
-  
+  end
+
 end
 
 puts ""

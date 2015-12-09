@@ -20,5 +20,5 @@ puts "found #{completed_druids.size} druids"
 completed_druids.each_with_index do |druid,index|
   desc_filename=File.join(DruidTools::Druid.new(druid,'/dor/assembly').path(),'metadata','descMetadata.xml')
   puts "#{druid} [#{index+1} of #{completed_druids.size}]: touching #{desc_filename}"
-  `touch #{desc_filename}` unless dry_run 
+  `touch #{desc_filename}` unless dry_run
 end

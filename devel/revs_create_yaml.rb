@@ -28,14 +28,14 @@ raise "YAML template could not be found or read!" unless File.readable?(yaml_tem
 config = YAML.load_file(yaml_template)
 base_tag = config['apply_tag']
 collection_druids_from_yaml=config['set_druid_id']
-if collection_druids_from_yaml.size != 2 || !ARCHIVE_DRUIDS.has_value?(collection_druids_from_yaml[1]) 
+if collection_druids_from_yaml.size != 2 || !ARCHIVE_DRUIDS.has_value?(collection_druids_from_yaml[1])
   raise "The YAML template file has an issue with the set_druid_id params; there must be two entries, the first will be replaced by this script, the second must be the master Archive collection (e.g. Revs/R&T)"
 end
 
 puts ''
 
 counter = 0
-    
+
 if File.directory?(input)
 
   puts "Searching for CSV files..."
@@ -45,12 +45,12 @@ if File.directory?(input)
   puts "Found #{num_files} CSV files"
   puts ""
   puts "For each manifest, enter in the druid (with druid: prefix) of the collection that this YAML file relates to."
-  puts "You can press return (blank) to skip the manifest." 
+  puts "You can press return (blank) to skip the manifest."
   files.each do |file|
 
     puts ""
     print "#{file} - enter collection druid: "
-    collection_druid=STDIN.gets.chomp 
+    collection_druid=STDIN.gets.chomp
 
     unless collection_druid.blank?
         begin
@@ -74,15 +74,15 @@ if File.directory?(input)
        puts "No collection druid entered, skipping #{file}"
     end
 
-  end 
-  
+  end
+
   puts ""
   puts "completed #{num_files}, created YAML files for #{counter}"
-  
+
 else
 
   puts "ERROR: Input '#{input}' is not a directory"
-  
+
 end
 
 puts ''

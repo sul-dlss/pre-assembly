@@ -4,7 +4,7 @@
 # if no local save location is specified, the current script directory is used
 # in either case, a druid folder is created to hold all of the files
 
-# note that you need to be webauthed, have a valid kerberos ticket, be on campus (or VPN) 
+# note that you need to be webauthed, have a valid kerberos ticket, be on campus (or VPN)
 #  and have access to the stacks server as lyberadmin
 
 # Peter Mangiafico
@@ -13,7 +13,7 @@
 #
 # Run with
 # bin/download_object druid [save_location]
-# e.g. 
+# e.g.
 # bin/download oo000oo0001 ~/Desktop
 
 require 'open-uri'

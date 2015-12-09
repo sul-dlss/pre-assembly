@@ -20,11 +20,9 @@ require 'logger'
 def get_file_path(file)
 ###########################
 
-  if file !~ /#{@base_path}/
-    file = @base_path + file
-  end
+  file = @base_path + file if file !~ /#{@base_path}/
 
-  return file
+  file
 
 end # get_file_path
 
@@ -70,7 +68,7 @@ def main() # Iterate over file of pid/druids to publish metadata for
           @log.info "Processing pid #{pid}"
           obj = Dor::Item.find(pid)
           obj.publish_metadata
-	  success=true # IF IT WORKS
+    success=true # IF IT WORKS
         rescue Exception => e
           @log.error "      ** BOOM **, trying again in #{sleep_time} seconds"
           backtrace=e.backtrace
@@ -78,11 +76,11 @@ def main() # Iterate over file of pid/druids to publish metadata for
           sleep sleep_time
         end
       end
-      
+
       if success == false
         error_message = "failure after #{i} attempts \n"
         error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}" 
+        error_message += "backtrace: #{backtrace}"
         raise error_message
       end
 

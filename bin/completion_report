@@ -19,7 +19,7 @@ progress_filename=params['progress_log_file']
 
 completed_druids=Assembly::Utils.get_druids_from_log(progress_filename,true)
 
-help "no completed druids found in '#{progress_filename}'" if completed_druids.size == 0 
+help "no completed druids found in '#{progress_filename}'" if completed_druids.size == 0
 
 puts "Running report with #{completed_druids.size} objects"
 
@@ -29,17 +29,17 @@ report_filename="../log/#{params['project_name']}_completion_report.csv"
 
 CSV.open(File.join(File.expand_path(File.dirname(__FILE__)),report_filename), "wb") do |csv|
 
-	# header row 
-	csv << ["druid", "label", "dc:title", "source_id", "accessioned", "shelved", "purl", "total_files", "files_found"] 
+  # header row
+  csv << ["druid", "label", "dc:title", "source_id", "accessioned", "shelved", "purl", "total_files", "files_found"]
 
-	batch_druids.each do |batch|
+  batch_druids.each do |batch|
 
     query_tag="id:\"" + batch.join('" OR id:"') + "\""
-		resp = Dor::SearchService.query query_tag, :rows => n, :fl => 'id, public_dc_title_t, wf_wps_facet, source_id_t, objectLabel_t, content_file_t'
-	  resp.docs.each {|doc|	csv << Assembly::Utils.solr_doc_parser(doc,true)}
+    resp = Dor::SearchService.query query_tag, :rows => n, :fl => 'id, public_dc_title_t, wf_wps_facet, source_id_t, objectLabel_t, content_file_t'
+    resp.docs.each {|doc|	csv << Assembly::Utils.solr_doc_parser(doc,true)}
 
-	end
-		
-	puts "Report written to #{report_filename}"
-		
+  end
+
+  puts "Report written to #{report_filename}"
+
 end

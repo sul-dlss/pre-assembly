@@ -32,7 +32,7 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 
 # read input manifest
 @items=CsvMapper.import(csv_in) do read_attributes_from_file end
-  
+
 @items.each_with_index do |row, x|
   pids=Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
@@ -40,7 +40,7 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
   else
     pid=pids.first
     done=completed_druids.include?(pid)
-     if done 
+     if done
        puts "#{pid} : skipping, already completed"
      else
        data={:source_path=>source_path,:filename=>row.filename}
@@ -50,8 +50,8 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
        success=item.remediate
        item.log_to_progress_file(progress_log_file)
        item.log_to_csv(csv_out)
-       puts "#{pid} : #{success}"    
+       puts "#{pid} : #{success}"
      end
    end
-   
+
 end

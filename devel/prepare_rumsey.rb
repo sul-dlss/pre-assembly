@@ -43,24 +43,24 @@ OptionParser.new do |opts|
 end.parse!
 
 abort "Incorrect N of arguments." unless ARGV.size == 1
-csv_in = ARGV[0]    
+csv_in = ARGV[0]
 
 source_path=File.dirname(csv_in)
 source_name=File.basename(csv_in,File.extname(csv_in))
 csv_out=File.join(source_path, source_name + "_log.csv")
 
 unless File.exists?(csv_out) # if we don't already have a log file, write out the header row
-  CSV.open(csv_out, 'a') {|f| 
+  CSV.open(csv_out, 'a') {|f|
     output_row=["Object","Image","Filename","Sequence","Label","Druid","Success","Message","Time"]
     f << output_row
-  }  
+  }
 end
 
 # read in existing log file
 log_file_data=RevsUtils.read_csv_with_headers(csv_out)
 
 # read input manifest
-csv_data = RevsUtils.read_csv_with_headers(csv_in) 
+csv_data = RevsUtils.read_csv_with_headers(csv_in)
 
 start_time=Time.now
 puts ""
@@ -82,74 +82,74 @@ num_objects=0
 num_files_copied=0
 
 # only running content_metadata
-if content_metadata # create the content metadata 
+if content_metadata # create the content metadata
 
   log_file_data.each do |row| # loop over log file data
-    
+
     object=row['Object'].gsub(',','-') # commas are no good in filenames, use a dash instead
     druid=row['Druid']
 
     unless druid # if we don't have a druid in the output log file, look in the input spreadsheet for this object
       input_csv_druids=csv_data.select {|s| s['Object'] == object} # read the druid from the input spreadsheet in case you want to add it later
-      input_csv_druids.uniq! {|e| e['Druid']} # remove any duped entries      
+      input_csv_druids.uniq! {|e| e['Druid']} # remove any duped entries
       druid=input_csv_druids.first['Druid']
     end
-    
+
     all_files=log_file_data.select {|s| s['Object'] == object && s['Success'] == "true"} # find all files in this object that successfully staged
-    
+
     all_files.uniq! {|e| e['Filename']} # remove any duped filenames (for example, if the log file has multiple entries from multiple runs)
     all_files.sort_by! {|e| e['Sequence'].to_i} # sort the list of files by sequence
 
     if druid and all_files.size > 0 # be sure we have a druid and files
 
       object_folder=File.join(staging_folder,object)
-    
+
       cm_file=File.join(object_folder,content_metadata_filename)
-  
+
       content_object_files=[] # build list of assembly objectfiles for creating content metadata
       all_files.each {|object_file| content_object_files <<  Assembly::ObjectFile.new(File.join(object_folder,File.basename(object_file['Filename'])),:label=>object_file['Label']) }
-        
-      params={:druid=>druid,:objects=>content_object_files,:add_exif=>false,:style=>cm_style.to_sym}        
+
+      params={:druid=>druid,:objects=>content_object_files,:add_exif=>false,:style=>cm_style.to_sym}
       content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
-      File.open(cm_file, 'w') { |fh| fh.puts content_md_xml } 
+      File.open(cm_file, 'w') { |fh| fh.puts content_md_xml }
       puts "Writing content metadata file #{cm_file} for #{druid} and object #{object}"
 
     else
 
       puts "ERROR: Did not create content metadata file #{cm_file} -- missing druid or no files found"
-    
+
     end # end check for a druid and files
-    
+
   end # end loop over all output log file
-  
+
   puts ""
-  
+
 # either a report or copy operation
-else 
-  
+else
+
   FileUtils.cd(base_content_folder)
-  
+
   csv_data.each do |row|
 
     n+=1
     puts "Row #{n} out of #{csv_data.size}"
     $stdout.flush
-  
+
     object=row['Object'].gsub(',','-') # commas are no good in filenames, use a dash instead
     row_filename=row['Image']
     label=row['Label']
     sequence=row['Sequence']
     druid=row['Druid']
-  
+
     success=false
-    
+
     filename=File.basename(row_filename,File.extname(row_filename)) # remove any extension from the filename that was provided
-  
+
     previously_found=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "true" }.size) > 0
     previously_missed=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "false" }.size) > 0
-    
+
     unless previously_found # only look for this file if it has not already been found according to the log file
-    
+
       object_folder=File.join(staging_folder,object)
 
       unless found_objects.include? object # we have a new object
@@ -165,56 +165,56 @@ else
       search_result=`#{search_string}`
       files=search_result.split(/\n/)
       object_leading_zeros=/^[0]*/.match(object)[0].size
-  
+
       # if found, copy files that match of that have the same number of zeros as the object label
       if files.size > 0
         files.each do |input_file|
           input_filename=File.basename(input_file)
           input_filename_without_ext=File.basename(input_file,File.extname(input_file))
           input_filename_leading_zeros=/^[0]*/.match(input_filename)[0].size
-          if (input_filename_without_ext == filename) || (object_leading_zeros == input_filename_leading_zeros) # if the found file is an exact match with the data provided OR if it starts with the same number of zeros as the object name, then call it a match 
+          if (input_filename_without_ext == filename) || (object_leading_zeros == input_filename_leading_zeros) # if the found file is an exact match with the data provided OR if it starts with the same number of zeros as the object name, then call it a match
             message= "found #{input_file}, copying to object folder #{object_folder} (#{object_leading_zeros} object leading zeros, #{input_filename_leading_zeros} filename leading zeros)"
             output_file=File.join(object_folder,input_filename)
             FileUtils.cp input_file, output_file unless (report || File.exists?(output_file))
             num_files_copied+=1
             success=true
-            CSV.open(csv_out, 'a') {|f| 
+            CSV.open(csv_out, 'a') {|f|
               output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
               f << output_row
-            }  
+            }
             puts "......#{message}"
           end # end check for matching filename
         end # end loop over all matches
-  
-      end # end check for files.size > 0 
 
-      # do not log if it was previously missed and we missed it again      
+      end # end check for files.size > 0
+
+      # do not log if it was previously missed and we missed it again
       if (!previously_missed && !success)
         message="ERROR #{filename} NOT FOUND"
         num_files_not_found+=1
-          CSV.open(csv_out, 'a') {|f| 
+          CSV.open(csv_out, 'a') {|f|
             output_row=[object,filename,'',sequence,label,druid,success,message,Time.now]
             f << output_row
-          }  
+          }
         puts "......#{message}"
       end
-      
+
       puts ""
-      $stdout.flush  
-  
+      $stdout.flush
+
     else
-    
+
       puts "......#{Time.now}: skipping #{object} - already run"
-       
+
     end # end check to see if we have already successfully run this filename
-  
+
   end # end loop over all rows
 
   puts ""
   puts "Total objects staged: #{num_objects}"
   puts "Total files copied: #{num_files_copied}"
   puts "Total files not found: #{num_files_not_found}"
-  
+
 end # end check for content metadata or copying/report
 
 puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time)/60.0)} minutes"

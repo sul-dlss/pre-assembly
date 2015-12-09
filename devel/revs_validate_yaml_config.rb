@@ -12,7 +12,7 @@ input = ARGV[0]
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-if File.directory?(input) 
+if File.directory?(input)
 
   puts ""
   puts 'revs_validate_yaml_config'
@@ -32,17 +32,17 @@ if File.directory?(input)
   puts "Found #{num_files} yaml files to process"
   puts ""
   puts "counter , file , collections, ok"
-  
+
   files.each do |file|
-    
-    counter += 1 
+
+    counter += 1
     full_path_to_yaml = File.join(input,file) # fully qualified path to yaml file
-      
+
     params = YAML.load(File.read full_path_to_yaml)
     params['config_filename'] = full_path_to_yaml
     report_params={:confirm_checksums=>true,:show_other=>true,:show_smpl_cm=>false,:show_stage=>false,:no_check_reg=>false,:check_sourceids=>false}
     collection_names=[]
-        
+
     begin
       b = PreAssembly::Bundle.new params # just load up bundle to see if any errors are thrown
       # now confirm set IDs are valid
@@ -60,19 +60,19 @@ if File.directory?(input)
       message=" ** PREASSEMBLY PARAMS ERROR OR SET ID NOT A VALID OBJECT **"
       num_errors +=1
     end
-    
+
     puts "#{counter} of #{num_files} , #{file} , #{collection_names.join('|')}, #{message}"
-    
-  end 
+
+  end
 
   puts ""
   puts "Num files with errors: #{num_errors} out of #{num_files} processed"
   puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time)/60.0)} minutes"
-  
+
 else
-  
+
   puts "Error: #{input} is not a directory"
-  
+
 end
 
 puts ''

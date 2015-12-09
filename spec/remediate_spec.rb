@@ -35,7 +35,7 @@ describe PreAssembly::Remediation::Item do
     it "logs to a progress file as yml" do
       @item.success = "true"
       @item.message = "message"
-      @item.log_to_progress_file(@progress_log_file)    
+      @item.log_to_progress_file(@progress_log_file)
     end
   end
 end
