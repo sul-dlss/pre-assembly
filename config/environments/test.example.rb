@@ -1,21 +1,21 @@
 Dor::Config.configure do
-  
+
   fedora do
     url 'https://sul-dor-test.stanford.edu/fedora'
   end
-  
+
   ssl do
     cert_file File.join(CERT_DIR,"YOUR_CERT.crt")
     key_file  File.join(CERT_DIR,"YOUR_CERT.key")
     key_pass ''
   end
-  
+
   sdr do
     url 'http://localhost'
     local_workspace_root '/dor/workspace'
     local_export_home '/dor/export'
   end
-    
+
   suri do
     mint_ids true
     id_namespace 'druid'
@@ -23,7 +23,7 @@ Dor::Config.configure do
     user 'labware'
     pass 'lyberteam'
   end
-   
+
   solrizer.url 'https://sul-solr-tester.stanford.edu/argo_test'
   workflow.url 'http://sul-lyberservices-test.stanford.edu/workflow/'
 
@@ -32,15 +32,15 @@ Dor::Config.configure do
    end
 
    remediation do
-     check_for_versioning_required false  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks 
-     check_for_in_accessioning false  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks 
+     check_for_versioning_required false  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks
+     check_for_in_accessioning false  # this MUST be true in production; can be false in development and test if you want to ignore workflow checks
    end
-      
+
   dor do
     service_root 'https://dorAdmin:dorAdmin@sul-lyberservices-test.stanford.edu/dor/v1'
     num_attempts  3  # the number of attempts to contact the dor web service before throwing an exception
-    sleep_time   2  # sleep time in seconds between attempts to contact the dor service    
-    default_label 'Untitled' # the default label for an object that is registered when no label is provided in the manifest    
+    sleep_time   2  # sleep time in seconds between attempts to contact the dor service
+    default_label 'Untitled' # the default label for an object that is registered when no label is provided in the manifest
   end
 
   content do

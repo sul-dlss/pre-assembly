@@ -19,11 +19,9 @@ require 'logger'
 def get_file_path(file)
 ##########################
 
-  if file !~ /#{@base_path}/
-    file = @base_path + file
-  end
+  file = @base_path + file if file !~ /#{@base_path}/
 
-  return file
+  file
 
 end # get_file_path
 
@@ -31,11 +29,11 @@ end # get_file_path
 def check_args(args)
 ####################
 
- if args.size != 2 
+ if args.size != 2
    return -1
  elsif ! File.exists?(get_file_path(args[0])) &&
-       ! File.exists(get_file_path(args[1])) 
-    return -1 
+       ! File.exists(get_file_path(args[1]))
+    return -1
  else
     return 0
  end
@@ -48,13 +46,13 @@ def get_pid_to_file(pf_file)
 
   pf_lines = IO.readlines(get_file_path(pf_file)).map { |x| x.chomp }
 
-  pid_to_file = Hash.new
+  pid_to_file = {}
   pf_lines.each do |l|
     pid, file = l.split(/,/)
     pid_to_file[pid] = file
   end
 
-  return pid_to_file
+  pid_to_file
 
 end # get_pid_to_file
 
@@ -67,7 +65,7 @@ def cleanup_guill(xml) # Change pseudo guillaumets to simple quotation marks
    xml.gsub!(/&lt;&lt;/, '"')
    xml.gsub!(/&gt;&gt;/, '"')
 
-   return xml
+   xml
 
 end #cleanup_guill
 
@@ -82,7 +80,7 @@ def get_title(xml)
     new_title = doc.xpath('//xmlns:mods/xmlns:titleInfo/xmlns:title').inner_html
   end
 
-  return new_title
+  new_title
 
 end # get_title
 
@@ -91,7 +89,7 @@ def read_xml(pid, pid_to_file) # Get XML based on pid (druid)
 ##############################
   file = pid_to_file[pid]
   @log.info "Using file #{@mods_path}#{file} for pid #{pid}"
-  return IO.read(@mods_path + file)
+  IO.read(@mods_path + file)
 end
 
 ##########
@@ -108,7 +106,7 @@ def main() # Iterate over file of pid/druids to change
   pid_to_file = get_pid_to_file(get_file_path(ARGV[0]))
 
   File.open(get_file_path(ARGV[1])).each do |pid|
-    
+
     pid.chomp!
     @log.info '====================='
     @log.info "#{Time.now.to_s}"
@@ -120,7 +118,7 @@ def main() # Iterate over file of pid/druids to change
     obj = Dor::Item.find(pid)
     #puts "obj descMetadata  is " + obj.datastreams['descMetadata'].to_xml
 
-    # Get XML from file if available & use to change descMetadata and identityMetadata 
+    # Get XML from file if available & use to change descMetadata and identityMetadata
     #puts "Getting XML file ..."
     if pid_to_file[pid] and File.exists?("#{@mods_path}#{pid_to_file[pid]}")
       xml_dm = read_xml(pid, pid_to_file)
@@ -141,7 +139,7 @@ def main() # Iterate over file of pid/druids to change
       end
       changes_made += 1
     else
-      @log.info "No MODS file found for pid #{pid}" 
+      @log.info "No MODS file found for pid #{pid}"
     end
 
     # Get Nokokiri doc for this obj and delete descMetadata.xml resource if present
@@ -156,7 +154,7 @@ def main() # Iterate over file of pid/druids to change
       obj.contentMetadata.content_will_change!
       changes_made += 1
     else
-      @log.info "No descMetadata found in contentMetadata for pid #{pid}" 
+      @log.info "No descMetadata found in contentMetadata for pid #{pid}"
     end
 
     # Save changes to object

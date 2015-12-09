@@ -1,8 +1,8 @@
-# Pass in input base folder 
+# Pass in input base folder
 # Script will iterate over base folder and remove any spaces it finds in filenames
 # It will do this iteratively over all files contained in the source directory, but will ignore folders
 
-# call this with 
+# call this with
 # ruby devel/remove_spaces_from_files.rb BASE_FOLDER
 
 require 'rubygems'

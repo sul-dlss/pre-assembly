@@ -9,12 +9,12 @@ module PreAssembly
     @@druid = 'druid:aa000bb0000'
 
     def self.current
-      return String.new(@@druid)
+      String.new(@@druid)
     end
 
     def self.next
       @@druid.next!
-      self.current
+      current
     end
 
   end

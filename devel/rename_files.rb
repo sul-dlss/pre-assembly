@@ -2,7 +2,7 @@
 # Script will iterate over base folder and rename any files it finds that contain sourceid, replacing it with druid
 # It will do this iteratively over all files contained in the source directory, but will ignore folders
 
-# call this with 
+# call this with
 # ruby devel/rename_files.rb BASE_FOLDER CSV_FILE
 
 require 'rubygems'
@@ -16,7 +16,7 @@ require 'fileutils'
 @base_folder=ARGV[0]
 @csv_filename=ARGV[1]
 
-@items=CsvMapper.import(@csv_filename) do read_attributes_from_file end  
+@items=CsvMapper.import(@csv_filename) do read_attributes_from_file end
 
 # go into base folder
 FileUtils.cd(@base_folder)
@@ -28,7 +28,7 @@ files=Dir.glob("**/**")
   sourceid=row.sourceid
   druid=row.druid
   puts "Working on '#{sourceid}' -- renaming all files with this value to '#{druid}'"
-  
+
   files.each do |file|
     orig_file=File.join(@base_folder,file)
     dir=File.dirname(orig_file)

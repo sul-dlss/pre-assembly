@@ -9,7 +9,7 @@
 
 # eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
 
-# Add in optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.  
+# Add in optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.
 # Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!
 
 # ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb ignore_versioning ignore_accessioning
@@ -24,15 +24,15 @@
 #druid:oo000oo0001,other stuff
 #druid:oo000oo0002,ignored
 
-# REMEDIATE_LOGIC_FILENAME is a reference to a Ruby code file that defines what you want the remediation to do.  An example of this 
-# file is in lib/remediation/remediate_project_example.rb  Copy that file, and edit it somewhere the script can read it and then pass 
+# REMEDIATE_LOGIC_FILENAME is a reference to a Ruby code file that defines what you want the remediation to do.  An example of this
+# file is in lib/remediation/remediate_project_example.rb  Copy that file, and edit it somewhere the script can read it and then pass
 # the filename to the script.
 
 # The result will be some screen output, a detailed .YML file in the same location and with the same name as the input CSV file.
 # The input CSV file will be updated with two additional columns - a status indicating if remediation succeeded and a message.
 # You can re-run remediation with the same CSV file and it will automatically skip already completed objects.
 
-# Note that unless your laptop has access to the Fedora instance you need to remediate (usually Production), 
+# Note that unless your laptop has access to the Fedora instance you need to remediate (usually Production),
 # you should probably run this from lyberservices-prod to have access to all mounts and configuration.
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
@@ -101,7 +101,7 @@ count=0
 
 druids.each do |druid|
   done=completed_druids.include?(druid)
-  unless done 
+  unless done
     count+=1
     item=PreAssembly::Remediation::Item.new(druid)
     item.description=File.basename(remediate_logic_file) # added to the version description
@@ -115,7 +115,7 @@ druids.each do |druid|
       result="FAILURE"
       total_failure += 1
     end
-    status = "#{druid} : #{result} : #{count} of #{total_to_process} (#{total_to_process-count} remaining) : #{Time.now}"    
+    status = "#{druid} : #{result} : #{count} of #{total_to_process} (#{total_to_process-count} remaining) : #{Time.now}"
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
     puts status

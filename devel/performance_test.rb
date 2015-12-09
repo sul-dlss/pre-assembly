@@ -42,7 +42,7 @@ while i < number_of_loops do
     descMD.search('title').first.content=new_title
     obj.descMetadata.content=descMD.to_xml
     parse_times+=Time.now-parse_time_start
-    
+
     save_time_start=Time.now
     obj.save
     save_times+=Time.now-save_time_start
@@ -52,7 +52,7 @@ while i < number_of_loops do
       obj.publish_metadata
       pub_times+=Time.now-pub_time_start
     end
-    
+
     obj = nil
   end
   i += 1

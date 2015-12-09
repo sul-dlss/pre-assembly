@@ -6,7 +6,7 @@ ENV['ROBOT_ENVIRONMENT']='production'  # environment to run under (i.e. which fe
 
 # search possible locations for object (new and old style)
 def path_to_object(druid)
-  DruidTools::Druid.new(druid,Dor::Config.content.content_base_dir).path() 
+  DruidTools::Druid.new(druid,Dor::Config.content.content_base_dir).path()
 end
 
 def content_folder(druid)
@@ -29,12 +29,12 @@ require 'logger'
   druid:ws012nq5164
   druid:sd586gp3826
 }
-         
+
 @druids.each do |druid|
 
   @fobj=Dor::Item.find(druid)
   puts "working on #{druid}"
-  
+
   # create directories in /dor/workspace if they do not exist
   FileUtils.mkpath(path_to_object(druid)) unless File.directory?(path_to_object(druid))
   FileUtils.mkpath(content_folder(druid)) unless File.directory?(content_folder(druid))
@@ -46,7 +46,7 @@ require 'logger'
     File.open(cm_file, 'w') { |fh| fh.puts @fobj.contentMetadata.ng_xml.to_s }
     puts 'write contentMetadata.xml'
   end
-  
+
   # figure out where the source content is (assuming only ludvigsen here)
   source_id=@fobj.identityMetadata.sourceId
   base_content_directory='/dor/staging/Revs/Ludvigsen/'
@@ -54,7 +54,7 @@ require 'logger'
   filename="#{source_id}.tif".gsub('Revs:','')
   source=File.join(base_content_directory,content_subfolder,filename)
   dest=File.join(content_folder(druid),filename)
-  
+
   FileUtils.cp(source,dest) unless File.exists?(dest) && !File.exists?(source)
 
-end         
+end

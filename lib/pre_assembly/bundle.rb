@@ -6,7 +6,7 @@ require 'pathname'
 # require 'ruby-prof' # necessary to get ruby profiling working, but causes issues/errors with rest-client if required
 
 module PreAssembly
-  
+
   class BundleUsageError < StandardError
     # An exception class used to pass usage error messages
     # back to users of the bin/pre-assemble script.
@@ -16,7 +16,7 @@ module PreAssembly
 
     include PreAssembly::Logging
     include PreAssembly::Reporting
-    
+
     # Paramaters passed via YAML config files.
     YAML_PARAMS = [
       :project_style,
@@ -64,19 +64,19 @@ module PreAssembly
       :desc_md_template_xml    ]
 
     (YAML_PARAMS + OTHER_ACCESSORS).each { |p| attr_accessor p }
-    
+
     ####
     # Initialization.
     ####
 
     def self.import_csv(filename)
       # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
-      file_contents = IO.read(filename).encode("utf-8", replace: nil) 
+      file_contents = IO.read(filename).encode("utf-8", replace: nil)
       csv = CSV.parse(file_contents, :headers => true)
-      return csv.map { |row| row.to_hash.with_indifferent_access }
+      csv.map { |row| row.to_hash.with_indifferent_access }
       #return CsvMapper.import(filename) do read_attributes_from_file end
     end
-    
+
     def initialize(params = {})
       # Unpack the user-supplied parameters, after converting
       # all hash keys and some hash values to symbols.
@@ -95,7 +95,7 @@ module PreAssembly
       show_developer_setting_warning
       load_desc_md_template
       load_skippables
-      
+
     end
 
     def setup_paths
@@ -119,20 +119,20 @@ module PreAssembly
       @publish_attr.delete_if { |k,v| v.nil? }
       @set_druid_id = [@set_druid_id] if @set_druid_id && @set_druid_id.class == String # convert set_druid_id to 1 element array if its single valued and exists
     end
-    
+
     def setup_defaults
       @garbage_collect_each_n = 50 if @garbage_collect_each_n.nil? # when to run garbage collection manually
       @profile = false if @profile.nil? # default to no profiling
-      @validate_files = true if @validate_files.nil? # default to validating files if not provided     
-      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format 
+      @validate_files = true if @validate_files.nil? # default to validating files if not provided
+      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format
       @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
       @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
       @project_style[:content_tag_override] = false if @project_style[:content_tag_override].nil? # default to false
       @content_md_creation[:smpl_manifest] = 'smpl_manifest.csv' if @content_md_creation[:smpl_manifest].nil? # default filename for smpl manifest
     end
-    
+
     def load_desc_md_template
-      return nil unless @desc_md_template and File.readable?(@desc_md_template)
+      return nil unless @desc_md_template && File.readable?(@desc_md_template)
       @desc_md_template_xml = IO.read(@desc_md_template)
     end
 
@@ -159,9 +159,9 @@ module PreAssembly
         :content_md_creation=>{
           :style=>[:default,:filename,:dpg,:smpl,:salt,:none],
         }
-      }  
+      }
     end
-    
+
     def required_dirs
       [@bundle_dir, @staging_dir]
     end
@@ -179,7 +179,7 @@ module PreAssembly
     def required_user_params
       YAML_PARAMS - non_required_user_params
     end
-    
+
     def non_required_user_params
       [
         :config_filename,
@@ -193,25 +193,25 @@ module PreAssembly
         :garbage_collect_each_n
       ]
     end
-        
+
     def show_developer_setting_warning
       # spit out some dire warning messages if you set certain parameters that are only applicable for developers
       warning=[]
       warning<<'* get_druid_from=druid_minter' if @project_style[:get_druid_from]==:druid_minter
       warning<<'* init_assembly_wf=false' unless @init_assembly_wf
-      warning<<'* uniqify_source_ids=true' if @uniqify_source_ids             
+      warning<<'* uniqify_source_ids=true' if @uniqify_source_ids
       warning<<'* cleanup=true' if @cleanup
-      warning<<"* memory profiling enabled" if @profile           
+      warning<<"* memory profiling enabled" if @profile
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
     end
-    
+
     def validate_usage
       # Validate parameters supplied via user script.
       # Unit testing often bypasses such checks.
       return unless @validate_usage
 
       validation_errors=[]
-      
+
       required_user_params.each do |p|
         next if @user_params.has_key? p
         validation_errors << "Missing parameter: #{p}."
@@ -229,10 +229,10 @@ module PreAssembly
 
       validation_errors <<  "Bundle directory not specified." if @bundle_dir.nil? || @bundle_dir == ''
       @bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
-      validation_errors <<  "Bundle directory #{@bundle_dir} not found." if !File.directory?(@bundle_dir)
-      
+      validation_errors <<  "Bundle directory #{@bundle_dir} not found." unless File.directory?(@bundle_dir)
+
       validation_errors <<  "Staging directory '#{@staging_dir}' not writable." unless File.writable?(@staging_dir)
-      validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file)) 
+      validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file))
 
       if @project_style[:should_register] # if should_register=true, check some stuff
         validation_errors << "The APO DRUID must be set if should_register = true." if @apo_druid_id.blank? #APO can't be blank
@@ -249,9 +249,9 @@ module PreAssembly
         validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if @project_style[:get_druid_from]==:suri # can't use SURI to get druid
         validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if @project_style[:get_druid_from]==:manifest && @object_discovery[:use_manifest] == false # can't use SURI to get druid
       end
-      
-      
-      if @object_discovery[:use_manifest] # if we are using a manifest, check some stuff 
+
+
+      if @object_discovery[:use_manifest] # if we are using a manifest, check some stuff
         validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless @object_discovery[:glob].nil? && @object_discovery[:regex].nil? # glob and regex should be nil
          if @manifest.blank?
            validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
@@ -267,7 +267,7 @@ module PreAssembly
              validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(@manifest_cols[:label].to_s)
              validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from]==:manifest && !manifest_rows.first.keys.include?('druid')
             end
-         end        
+         end
       else # if we are not using a manifest, check some stuff
         validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if @object_discovery[:glob].blank? # glob must be set
         validation_errors << "Manifest and desc_md_template files should be set to nil if object_discovery:use_manifest=false." unless @manifest.blank? && @desc_md_template.blank?
@@ -278,36 +278,36 @@ module PreAssembly
       else # if we are not staging the whole container, check some stuff
         validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if @stageable_discovery[:glob].blank? # glob must be set
       end
-      
+
        # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values
        validation_errors << "The project_style:content_structure value of '#{@project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? @project_style[:content_structure]
        validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
        validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
-      
+
       validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:style] == :smpl && !File.exists?(File.join(@bundle_dir,@content_md_creation[:smpl_manifest]))
 
-      if !validation_errors.blank?
+      unless validation_errors.blank?
         validation_errors = ['Configuration errors found:'] + validation_errors
-        raise BundleUsageError, validation_errors.join('  ') if !validation_errors.blank?
+        raise BundleUsageError, validation_errors.join('  ') unless validation_errors.blank?
       end
-      
+
     end
-    
+
     ####
     # The main process.
     ####
-    
+
     def run_pre_assembly
       # Runs the pre-assembly process and returns an array of PIDs
       # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       puts "#{Time.now}: Pre-assembly started for #{@project_name}" if @show_progress
-      
+
       return unless bundle_directory_is_valid?
-      
+
       RubyProf.start if @profile # start profiling
-      
+
       # load up the SMPL manifest if we are using that style
       if @content_md_creation[:style] == :smpl
         @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
@@ -318,7 +318,7 @@ module PreAssembly
       process_manifest
       process_digital_objects
       delete_digital_objects
-      
+
       puts "#{Time.now}: Pre-assembly completed for #{@project_name}" if @show_progress
 
       # stop profiling and print a graph profile to text
@@ -327,8 +327,8 @@ module PreAssembly
         printer = RubyProf::GraphPrinter.new(result)
         File.open('memory_report.txt','w') {|file| printer.print(file)}
       end
-      
-      return processed_pids
+
+      processed_pids
     end
 
     def run_log_msg
@@ -340,23 +340,23 @@ module PreAssembly
         :environment   => ENV['ROBOT_ENVIRONMENT'],
         :resume        => @resume,
       }
-      return log_params.map { |k,v| "#{k}=#{v.inspect}"  }.join(', ')
+      log_params.map { |k,v| "#{k}=#{v.inspect}"  }.join(', ')
     end
 
     def processed_pids
-      return @digital_objects.map { |dobj| dobj.pid }
+      @digital_objects.map { |dobj| dobj.pid }
     end
 
     def object_filenames_unique?(dobj)
-      filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) } 
+      filenames = dobj.object_files.map {|objfile| File.basename(objfile.path) }
       filenames.count == filenames.uniq.count
     end
 
     def object_files_exist?(dobj)
-      if dobj.object_files.size == 0 
+      if dobj.object_files.size == 0
         return false
       else
-        all_files_exist = dobj.object_files.map {|objfile| File.readable?(objfile.path)} 
+        all_files_exist = dobj.object_files.map {|objfile| File.readable?(objfile.path)}
         return !all_files_exist.uniq.include?(false)
       end
     end
@@ -398,7 +398,7 @@ module PreAssembly
       # Require the DirValidator code, run it, and return the validator.
       require @validate_bundle_dir[:code]
       dv = PreAssembly.validate_bundle_directory(@bundle_dir)
-      return dv
+      dv
     end
 
     def write_validation_warnings(validator, io = STDOUT)
@@ -411,7 +411,7 @@ module PreAssembly
     ####
     # Discovery of object containers and stageable items.
     ####
-    
+
     def discover_objects
       # Discovers the digital object containers and the stageable items within them.
       # For each container, creates a new Digitalobject.
@@ -469,7 +469,7 @@ module PreAssembly
       # manifest columns. The column name to use is configured by the
       # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
-      return manifest_rows.map { |r| path_in_bundle r[col_name] }
+      manifest_rows.map { |r| path_in_bundle r[col_name] }
     end
 
     def discover_items_via_crawl(root, discovery_info)
@@ -484,22 +484,22 @@ module PreAssembly
       items   = []
       dir_glob(pattern).each do |item|
         rel_path = relative_path root, item
-        next unless regex.nil? or rel_path =~ regex
+        next unless regex.nil? || rel_path =~ regex
         next if discovery_info[:files_only] && File.directory?(item)
-        items.push(item) 
+        items.push(item)
       end
-      return items.sort
+      items.sort
     end
 
     def actual_container(container)
       # When the discovered object's container functions as the stageable item,
       # we adjust the value that will serve as the DigitalObject container.
-      return @stageable_discovery[:use_container] ? get_base_dir(container) : container
+      @stageable_discovery[:use_container] ? get_base_dir(container) : container
     end
 
     def stageable_items_for(container)
       return [container] if @stageable_discovery[:use_container]
-      return discover_items_via_crawl(container, @stageable_discovery)
+      discover_items_via_crawl(container, @stageable_discovery)
     end
 
     def discover_object_files(stageable_items)
@@ -510,7 +510,7 @@ module PreAssembly
           object_files.push(new_object_file stageable, file_path)
         end
       end
-      return object_files
+      object_files
     end
 
     def all_object_files
@@ -520,7 +520,7 @@ module PreAssembly
     end
 
     def new_object_file(stageable, file_path)
-      return ObjectFile.new(
+      ObjectFile.new(
         :path                 => file_path,
         :relative_path        => relative_path(get_base_dir(stageable), file_path),
         :exclude_from_content => exclude_from_content(file_path)
@@ -531,7 +531,7 @@ module PreAssembly
       # If user supplied a content exclusion regex pattern, see
       # whether it matches the current file path.
       return false unless @content_exclusion
-      return file_path =~ @content_exclusion ? true : false
+      file_path =~ @content_exclusion ? true : false
     end
 
 
@@ -540,7 +540,7 @@ module PreAssembly
     ####
 
     def load_provider_checksums
-      # Read the provider-supplied checksums_file, using its 
+      # Read the provider-supplied checksums_file, using its
       # content to populate a hash of expected checksums.
       # This method works with default output from md5sum.
       return unless @checksums_file
@@ -571,7 +571,7 @@ module PreAssembly
 
     def compute_checksum(file)
       @compute_checksum ? file.md5 : nil
-    end    
+    end
 
     ####
     # Object file validation.
@@ -579,20 +579,20 @@ module PreAssembly
 
      def validate_files(dobj)
        log "  - validate_files()"
-  
+
         i=0
         success=false
         failed_validation=false
         backtrace=""
         exception_message=""
         tally = Hash.new(0)           # A tally to facilitate testing.
-  
+
         until i == Dor::Config.dor.num_attempts || success || failed_validation do
           i+=1
           begin
             tally = Hash.new(0)           # A tally to facilitate testing.
             dobj.object_files.each do |f|
-              if not f.image?
+              if !f.image?
                 tally[:skipped] += 1
               elsif f.valid_image? && f.has_color_profile?
                 tally[:valid] += 1
@@ -611,7 +611,7 @@ module PreAssembly
             sleep Dor::Config.dor.sleep_time
           end
         end
-  
+
         if success == false && !failed_validation
           error_message = "validate_files failed after #{i} attempts \n"
           log error_message
@@ -621,23 +621,23 @@ module PreAssembly
         else
           return tally
         end
-  
+
      end
 
-    # confirm that the checksums provided match the checksums as computed 
+    # confirm that the checksums provided match the checksums as computed
     def confirm_checksums(dobj)
      # log "  - confirm_checksums()"
       result=false
       dobj.object_files.each { |f| result=(f.md5 == @provider_checksums[File.basename(f.path)]) }
-      return result
+      result
     end
-    
+
     # confirm that the all of the source IDs supplied within a manifest are locally unique
     def manifest_sourceids_unique?
       all_source_ids=manifest_rows.collect {|r| r[@manifest_cols[:source_id]]}
       all_source_ids.size == all_source_ids.uniq.size
     end
-    
+
     ####
     # Manifest.
     ####
@@ -653,7 +653,7 @@ module PreAssembly
         # Get label and source_id from column names declared in YAML config.
         label_value = (@manifest_cols[:label] ? r[@manifest_cols[:label]] : "")
         dobj.label         = label_value
-        dobj.source_id     = (r[@manifest_cols[:source_id]] + source_id_suffix) if @manifest_cols[:source_id] 
+        dobj.source_id     = (r[@manifest_cols[:source_id]] + source_id_suffix) if @manifest_cols[:source_id]
         # Also store a hash of all values from the manifest row, using column names as keys.
         dobj.manifest_row  = r
       end
@@ -672,38 +672,38 @@ module PreAssembly
     def process_digital_objects
       # Get the non-skipped objects to process, limited to n if the user asked for that
       o2p = pruned_containers(objects_to_process)
-      
+
       total_obj = o2p.size
       num_objects_to_process = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log_and_show "#{total_obj} objects to pre-assemble"
       log_and_show("**** limit of #{@limit_n} was applied after completed objects removed from set") if @limit_n
       log_and_show "#{@digital_objects.size} total objects found, #{num_objects_to_process} not yet complete, #{@skippables.size} already completed objects skipped"
-    
+
       n=0
       num_no_file_warnings=0
       avg_time_per_object=0
       total_time_remaining=0
-      
+
       start_time=Time.now
-      
+
       # Initialize the progress_log_file, unless we are resuming
       FileUtils.rm(@progress_log_file, :force => true) unless @resume
 
       # Start processing.
       o2p.each do |dobj|
-        
-        if @throttle_time.to_i > 0 
+
+        if @throttle_time.to_i > 0
           log_and_show "sleeping for #{@throttle_time.to_i} seconds"
           sleep @throttle_time.to_i
         end
-        
+
         log_and_show "#{total_obj-n} remaining in run | #{total_obj} running | #{num_objects_to_process-n} total incomplete | ~ remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
         puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if @show_progress
         num_no_file_warnings+=1 if dobj.object_files.size == 0
-        
+
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
@@ -736,17 +736,17 @@ module PreAssembly
 
         avg_time_per_object=total_time/n
         total_time_remaining=(avg_time_per_object * (num_objects_to_process-n)).floor
-        
+
         if (n % @garbage_collect_each_n) == 0 # garbage collect each specified number of objects
           puts "------GARBAGE COLLECTION RUNNING----" if @show_progress
-          GC.start 
+          GC.start
           GC::Profiler.clear
         end
       end
-   
+
       log_and_show "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
       log_and_show "#{total_obj} objects pre-assembled"
-    
+
     end
 
     def objects_to_process
@@ -754,22 +754,22 @@ module PreAssembly
       unless @accession_items.nil? # check to see if we are specifying certain objects to be accessioned
         unless @accession_items[:only].nil? # handle the "only" case for accession items specified
           objects.reject! do |dobj|
-             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
+             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
              !@accession_items[:only].include?(bundle_id)
-          end 
+          end
         end
         unless @accession_items[:except].nil? # handle the "except" case for accession items specified
           objects.reject! do |dobj|
-             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename 
+             bundle_id=dobj.druid ? dobj.druid.druid : dobj.container_basename
              @accession_items[:except].include?(bundle_id)
           end
-        end 
+        end
       end
-      return objects
+      objects
     end
 
     def log_progress_info(dobj)
-      return {
+      {
         :unadjusted_container => dobj.unadjusted_container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
@@ -800,8 +800,8 @@ module PreAssembly
       #   returns            foo/bar.txt
       bs = base.size
       return path[bs + 1 .. -1] if (
-        bs > 0 and 
-        path.size > bs and
+        bs > 0 &&
+        path.size > bs &&
         path.index(base) == 0
       )
       err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
@@ -819,14 +819,14 @@ module PreAssembly
     end
 
     def dir_glob(pattern)
-      return Dir.glob pattern
+      Dir.glob pattern
     end
 
     def find_files_recursively(path)
       # Takes a path to a file or dir. Returns all files (but not dirs)
       # contained in the path, recursively.
       patterns = [path, File.join(path, '**', '*')]
-      return Dir.glob(patterns).reject { |f| File.directory? f }
+      Dir.glob(patterns).reject { |f| File.directory? f }
     end
 
 
@@ -836,7 +836,7 @@ module PreAssembly
     def entries_in_bundle_directory
       @entries_in_bundle_directory || Dir.entries(@bundle_dir).reject {|f| f=='.' || f=='..'}
     end
-    
+
     # used to add characters to the reported message and bump up an error count incremeneter
     def report_error_message(message)
       @error_count+=1
@@ -847,12 +847,12 @@ module PreAssembly
       log message
       puts "#{Time.now}: #{message}" if @show_progress
     end
-        
+
     def source_id_suffix
       # Used during development to append a timestamp to source IDs.
       @uniqify_source_ids ? Time.now.strftime('_%s') : ''
     end
-    
+
   end
 
 end

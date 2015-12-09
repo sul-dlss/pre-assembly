@@ -9,12 +9,12 @@ describe PreAssembly::Bundle do
       :proj_revs_no_cm   => 'spec/test_data/project_config_files/local_dev_revs_no_contentMetadata.yaml',
       :proj_rumsey => 'spec/test_data/project_config_files/local_dev_rumsey.yaml',
       :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
-      :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',      
-      :proj_sohp4   => 'spec/test_data/project_config_files/local_dev_sohp4.yaml',   
-      :proj_sohp_files_only   => 'spec/test_data/project_config_files/local_dev_sohp_files_only.yaml',   
-      :proj_sohp_files_and_folders   => 'spec/test_data/project_config_files/local_dev_sohp_files_and_folders.yaml',   
-      :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',               
-      :proj_with_tag          => 'spec/test_data/project_config_files/local_dev_revs_old_druid_style.yaml'               
+      :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',
+      :proj_sohp4   => 'spec/test_data/project_config_files/local_dev_sohp4.yaml',
+      :proj_sohp_files_only   => 'spec/test_data/project_config_files/local_dev_sohp_files_only.yaml',
+      :proj_sohp_files_and_folders   => 'spec/test_data/project_config_files/local_dev_sohp_files_and_folders.yaml',
+      :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',
+      :proj_with_tag          => 'spec/test_data/project_config_files/local_dev_revs_old_druid_style.yaml'
     }
     @yaml={}
     @yaml_filenames.each {|key,value| @yaml[key]=File.read(value) }
@@ -43,7 +43,7 @@ describe PreAssembly::Bundle do
     it "should trim the trailing slash from the bundle directory" do
       @b.bundle_dir.should == 'spec/test_data/bundle_input_a'
     end
-        
+
     it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_md_template = nil
@@ -76,7 +76,7 @@ describe PreAssembly::Bundle do
       @b.apply_tag.should be_nil
       @b.apply_tag.blank?.should be_truthy
     end
-    
+
     it "should set the apply_tag parameter if set" do
       bundle_setup :proj_with_tag
       @b.apply_tag.should == "revs:batch1"
@@ -88,18 +88,18 @@ describe PreAssembly::Bundle do
       @b.apply_tag.blank?.should be_truthy
       bundle_setup :proj_rumsey
       @b.apply_tag.blank?.should be_truthy
-    end   
+    end
   end
-  
+
   ####################
 
   describe "setting set_druid_id() correctly" do
-  
+
     it "should set the set_druid_id to an array" do
       bundle_setup :proj_revs
       @b.set_druid_id.should == ['druid:yt502zj0924','druid:nt028fd5773']
     end
-    
+
     it "should set the set_druid_id to nil" do
       bundle_setup :proj_rumsey
       @b.set_druid_id.should be_nil
@@ -109,7 +109,7 @@ describe PreAssembly::Bundle do
       bundle_setup :proj_revs_no_cm
       @b.set_druid_id.should == ['druid:yt502zj0924']
     end
-    
+
   end
 
   ####################
@@ -145,9 +145,9 @@ describe PreAssembly::Bundle do
       exp_msg = /Manifest does not have a column called 'sourceid'/
       lambda { bundle_setup :proj_revs_bad_manifest }.should raise_error @exp_err, exp_msg
     end
-    
+
   end
-  
+
   ####################
 
   describe "import_csv()" do
@@ -177,9 +177,9 @@ describe PreAssembly::Bundle do
       manifest[2]['description'].should == 'yo, this is a description'
       manifest[2]['Description'].nil?.should be_truthy # case sensitive
     end
-    
+
   end
-  
+
   ####################
 
   describe "validate_usage()" do
@@ -280,14 +280,14 @@ describe PreAssembly::Bundle do
       @b.run_pre_assembly()
     end
 
-    describe "bundle_directory_is_valid?" do  
+    describe "bundle_directory_is_valid?" do
 
-      it "should return true when no validation is requested by client" do  
+      it "should return true when no validation is requested by client" do
         @b.validate_bundle_dir = {}
         @b.bundle_directory_is_valid?.should == true
       end
 
-      it "should return true if there are no validation errors, otherwise false" do  
+      it "should return true if there are no validation errors, otherwise false" do
         @b.validate_bundle_dir = { :code => 'some_validation_code.rb' }
         @b.stub(:write_validation_warnings)
         tests = {
@@ -314,7 +314,7 @@ describe PreAssembly::Bundle do
         [ :proj_revs,   3, 1, 1 ],
         [ :proj_rumsey, 3, 2, 2 ],
         [ :proj_folder_manifest, 3, 2, 2],
-        [ :proj_sohp_files_only, 2, 9, 9], 
+        [ :proj_sohp_files_only, 2, 9, 9],
         [ :proj_sohp_files_and_folders, 2, 25, 40]
       ]
       tests.each do |proj, n_dobj, n_stag, n_file|
@@ -322,7 +322,7 @@ describe PreAssembly::Bundle do
         @b.discover_objects
         dobjs = @b.digital_objects
         expect(dobjs.size).to eq(n_dobj)
-        dobjs.each do |dobj|          
+        dobjs.each do |dobj|
           dobj.stageable_items.size.should == n_stag
           dobj.object_files.size.should == n_file
 
@@ -461,7 +461,7 @@ describe PreAssembly::Bundle do
     it "should find expected files with correct relative paths" do
       bbase = File.basename(@b.bundle_dir)
       tests = [
-        # Stageables.    Expected relative paths.                 Type of item as stageables. 
+        # Stageables.    Expected relative paths.                 Type of item as stageables.
         [ @files,        @fs.map { |f| File.basename f     } ], # Files.
         [ @dirs,         @fs                                 ], # Directories.
         [ @b.bundle_dir, @fs.map { |f| File.join(bbase, f) } ], # Even higher directory.
@@ -780,16 +780,16 @@ describe PreAssembly::Bundle do
       @b.setup_paths
       @b.progress_log_file.should == 'spec/test_data/project_config_files/local_dev_sohp3_progress.yaml'
     end
-    
+
     it "should set the content_tag_override to the default value when not specified" do
       bundle_setup :proj_revs
       @ps['project_style'][:content_tag_override].should be_nil
-      @b.project_style[:content_tag_override].should be_falsey      
+      @b.project_style[:content_tag_override].should be_falsey
     end
-    
+
     it "should set the staging_dir to the default value if not specified in the YAML" do
       default_staging_directory=Assembly::ASSEMBLY_WORKSPACE
-      if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)        
+      if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)
         bundle_setup :proj_sohp2
         @b.setup_paths
         @b.staging_dir.should == default_staging_directory
@@ -799,7 +799,7 @@ describe PreAssembly::Bundle do
     end
 
   end
-  
+
   ####################
 
   describe "log_progress_info()" do
