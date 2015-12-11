@@ -29,8 +29,6 @@ abort "MODs template not found." unless File.file? mods_template_file
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'csv'
-require 'csv-mapper'
-include CsvMapper
 
 remediate_logic_file='/dor/preassembly/remediation/scripts/update_mods_remediation.rb' # the update mods remeditation class
 require remediate_logic_file
@@ -47,17 +45,18 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
 mods_template_xml=IO.read(mods_template_file)
 
 # read input manifest
-@items=CsvMapper.import(csv_in) do read_attributes_from_file end
+file_contents = IO.read(csv_in).encode("utf-8", replace: nil)
+csv = CSV.parse(file_contents, :headers => true)
+@items=csv.map { |row| row.to_hash.with_indifferent_access }
 num_rows=@items.size
 puts "Found #{num_rows} rows"
 
-@items.each_with_index do |row, x|
+@items.each_with_index do |manifest_row, x|
   print "#{x+1} of #{num_rows} : "
-  manifest_row  = Hash[row.each_pair.to_a]
   if manifest_row[:sourceid] # we have a sourceid column, look up the druid
     pids=Dor::SearchService.query_by_id("#{manifest_row[:sourceid].strip}")
     if pids.size != 1
-      puts "cannot find single pid for source id '#{row.sourceid}'"
+      puts "cannot find single pid for source id '#{manifest_row[:sourceid]}'"
       next
     else # found a single druid
       pid=pids.first
