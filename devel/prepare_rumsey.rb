@@ -16,7 +16,7 @@
 
 # parameters:
 base_content_folder='/maps/ThirdParty/Rumsey/content' # base folder to search for content
-staging_folder='/maps/ThirdParty/Rumsey/Batch4B/staging' # location to stage content to
+staging_folder='/maps/ThirdParty/Rumsey/Batch4A/staging' # location to stage content to
 # base_content_folder='/Users/petucket/Downloads' # base folder to search for content
 # staging_folder='/Users/petucket/Downloads/staging' # location to stage content to
 
@@ -24,6 +24,7 @@ content_metadata_filename='contentMetadata.xml'
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'optparse'
+require 'pathname'
 
 report=false # if set to true, will only show output and produce report, won't actually symlink files or create anything, can be overriden with --report switch
 content_metadata=false # if set to true, will also generate content-metadata from values supplied in spreadsheet, can be set via switch
@@ -173,8 +174,9 @@ else
           input_filename_leading_zeros=/^[0]*/.match(input_filename)[0].size
           if (input_filename_without_ext == filename) || (input_filename_leading_zeros > 0) # if the found file is an exact match with the data provided OR if it ends with the string and starts with leading zeros, symlink it
             message= "found #{input_file}, symlink to object folder #{object_folder} (#{input_filename_leading_zeros} filename leading zeros)"
-            output_file=File.join(object_folder,input_filename)
-            FileUtils.ln_s(input_file, output_file,:force=>true) unless (report || File.exists?(output_file))
+            output_file_full_path=File.join(object_folder,input_filename)
+            input_file_full_path=Pathname.new(File.join(base_content_folder,input_file)).cleanpath(true).to_s
+            FileUtils.ln_s(input_file_full_path, output_file_full_path,:force=>true) unless (report || File.exists?(output_file_full_path))
             num_files_copied+=1
             success=true
             CSV.open(csv_out, 'a') {|f|
