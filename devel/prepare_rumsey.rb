@@ -171,9 +171,9 @@ else
         files.each do |input_file|
           input_filename=File.basename(input_file)
           input_filename_without_ext=File.basename(input_file,File.extname(input_file))
-          input_filename_leading_zeros=/^[0]*/.match(input_filename)[0].size
+          input_filename_leading_zeros=/^[0]*#{input_filename}/.match(input_filename)[0].size
           if (input_filename_without_ext == filename) || (input_filename_leading_zeros > 0) # if the found file is an exact match with the data provided OR if it ends with the string and starts with leading zeros, symlink it
-            message= "found #{input_file}, symlink to object folder #{object_folder} (#{input_filename_leading_zeros} filename leading zeros)"
+            message= "found #{input_file}, symlink to object folder #{object_folder}"
             output_file_full_path=File.join(object_folder,input_filename)
             input_file_full_path=Pathname.new(File.join(base_content_folder,input_file)).cleanpath(true).to_s
             FileUtils.ln_s(input_file_full_path, output_file_full_path,:force=>true) unless (report || File.exists?(output_file_full_path))
@@ -214,7 +214,9 @@ else
   puts ""
   puts "Total objects staged: #{num_objects}"
   puts "Total files symlinked: #{num_files_copied}"
+  puts "Total rows: #{csv_data.size}"
   puts "Total files not found: #{num_files_not_found}"
+
 
 end # end check for content metadata or symlinking/report
 
