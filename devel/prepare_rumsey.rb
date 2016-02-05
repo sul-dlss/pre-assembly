@@ -5,20 +5,19 @@
 # June 17, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/prepare_rumsey.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv [--report] [--content-metadata] [--content-metadata-style map]
+# ROBOT_ENVIRONMENT=production ruby devel/prepare_rumsey.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey [--report] [--content-metadata] [--content-metadata-style map]
 
 # this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
 #  input CSV should have columns labeled "Object", "Image", and "Label"
 #   image is the filename, object is the object identifier (turned into a folder)
+# second parameter is folder to stage content to (if not provided, will use same path as csv file, and append "staging")
 #
 # if you set the --report switch, it will only produce the output report, it will not symlink any files
 # if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
 
 # parameters:
 base_content_folder='/maps/ThirdParty/Rumsey/content' # base folder to search for content
-staging_folder='/maps/ThirdParty/Rumsey/Batch4A/staging' # location to stage content to
 # base_content_folder='/Users/petucket/Downloads' # base folder to search for content
-# staging_folder='/Users/petucket/Downloads/staging' # location to stage content to
 
 content_metadata_filename='contentMetadata.xml'
 
@@ -30,8 +29,9 @@ report=false # if set to true, will only show output and produce report, won't a
 content_metadata=false # if set to true, will also generate content-metadata from values supplied in spreadsheet, can be set via switch
 cm_style='map' # defaults to map type content metaadata unless overriden
 
+help="Usage:\n    ruby prepare_rumsey.rb INPUT_CSV_FILE [STAGING_FOLDER] [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
 OptionParser.new do |opts|
-  opts.banner = "Usage:\n    ruby prepare_rumsey.rb INPUT_CSV_FILE [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
+  opts.banner = help
   opts.on("--report") do |dr|
     report=true
   end
@@ -43,12 +43,23 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-abort "Incorrect N of arguments." unless ARGV.size == 1
+if ARGV.size == 0
+  puts help
+  abort "Incorrect N of arguments."
+end
 csv_in = ARGV[0]
 
 source_path=File.dirname(csv_in)
 source_name=File.basename(csv_in,File.extname(csv_in))
 csv_out=File.join(source_path, source_name + "_log.csv")
+
+if ARGV.size == 1 # no staging path provided, use same as CSV In and append "staging"
+  staging_folder = File.join(source_path,"staging")
+else # use what was provided
+  staging_folder = ARGV[1]
+end
+
+abort "#{csv_in} not found" unless File.exists?(csv_in)
 
 unless File.exists?(csv_out) # if we don't already have a log file, write out the header row
   CSV.open(csv_out, 'a') {|f|
