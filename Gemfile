@@ -1,38 +1,40 @@
 source 'https://rubygems.org'
 
-gem 'nokogiri'
-gem 'equivalent-xml'
+gem 'actionmailer'
+gem 'actionpack'
 gem 'csv-mapper'
-gem 'dor-services', '~> 5.3', '>= 5.3.3'
-gem 'druid-tools'
-gem 'rest-client'
+gem 'equivalent-xml'
+gem 'nokogiri'
 gem 'rake'
 gem 'rdf'
-gem 'assembly-objectfile'
-gem 'assembly-image'
-gem 'assembly-utils'
-gem 'dir_validator'
-gem 'dor-workflow-service'
-gem 'actionpack'
-gem 'actionmailer'
-gem 'revs-utils'
-gem 'harvestdor'
-gem 'dor-fetcher'
-gem 'modsulator'
+gem 'rest-client'
 gem 'roo'
 gem 'ruby-prof'
+
+# Stanford gems
+gem 'assembly-image'
+gem 'assembly-objectfile'
+gem 'assembly-utils'
+gem 'dir_validator'
+gem 'dor-fetcher'
+gem 'dor-services', '~> 5.3', '>= 5.3.3'
+gem 'dor-workflow-service'
+gem 'druid-tools'
+gem 'harvestdor'
+gem 'modsulator'
+gem 'revs-utils'
 gem 'stanford-mods'
 
 group :test do
-  gem 'yard'
   gem 'rspec', '~> 2.6'
+  gem 'yard'
 end
 
 group :deployment do
   gem 'capistrano', "~> 3"
   gem 'capistrano-bundler'
-  gem 'dlss-capistrano', '~> 3.1'
   gem 'capistrano-rvm'
+  gem 'dlss-capistrano', '~> 3.1'
 end
 
 group :development do
