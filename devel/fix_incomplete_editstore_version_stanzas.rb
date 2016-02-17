@@ -67,7 +67,6 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
 
 
   item.datastreams['versionMetadata'].content = vmd.to_xml
-  item.versionMetadata.content_will_change!
   item.versionMetadata.save
   puts "#{druid} Completed"
 
@@ -80,7 +79,6 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   #   Dor::WorkflowService.delete_workflow('dor', row['druid'], 'versioningWF')
   #   item.open_new_version(:assume_accessioned=>true) # we are already doing all of our checks to see if updates are allowe and versioning is required
   #   item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
-  #   item.versionMetadata.content_will_change!
   #   item.versionMetadata.save
   #   v+=1
   # end
