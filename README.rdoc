@@ -105,6 +105,7 @@ Uses ruby 2.2.0
 2.4.5:: Add in retry logic around validate_files since it still seems to fail sporadically.  Update to the revs_create_yaml script.  Use new version of assembly-objectfile which gets mimetype from file extension.
 2.4.6:: Add garbage collection each X objects pre-assembled; add optional memory profiling
 2.4.7:: Do not add descmd xml template to every digital object when processing to lower memory usage.  Add a new script for easier batch processing.
+3.0.0:: Upgrade dor-services dependency to use latest dor-services 5.  create branch for 2.x legacy version (still using dor-services 4).
 
 To check which version is running, cd into the home directory of the project and look at the VERSION file:
 
