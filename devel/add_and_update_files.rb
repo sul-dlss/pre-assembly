@@ -1,3 +1,7 @@
+###
+# NOTE: legacy script for FRDA project ~2013, only here for historical reasons
+###
+
 # run with ruby devel/add_and_update_files.rb
 # must be run from lyberservices-prod to have access to all mounts and configuration
 

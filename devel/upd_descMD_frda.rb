@@ -127,7 +127,6 @@ def main() # Iterate over file of pid/druids to change
       # Replace descMetadata
       #puts "new title is #{new_title}"
       obj.datastreams['descMetadata'].content = xml_dm
-      obj.descMetadata.content_will_change!
       # Replace title in identityMetadata
       doc_id = obj.identityMetadata.ng_xml
       if doc_id.xpath('//identityMetadata/objectLabel').length == 1 and
@@ -135,7 +134,6 @@ def main() # Iterate over file of pid/druids to change
         idm = doc_id.xpath('//identityMetadata/objectLabel')
         idm[0].content = new_title
         obj.datastreams['identityMetadata'].content = doc_id.to_xml
-        obj.identityMetadata.content_will_change!
       end
       changes_made += 1
     else
@@ -151,7 +149,6 @@ def main() # Iterate over file of pid/druids to change
       nodes.first.parent.remove
       doc = Nokogiri.XML(doc.to_xml, &:noblanks)
       obj.datastreams['contentMetadata'].content = doc.to_xml
-      obj.contentMetadata.content_will_change!
       changes_made += 1
     else
       @log.info "No descMetadata found in contentMetadata for pid #{pid}"

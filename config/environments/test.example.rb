@@ -24,11 +24,11 @@ Dor::Config.configure do
     pass 'lyberteam'
   end
 
-  solrizer.url 'https://sul-solr-tester.stanford.edu/argo_test'
-  workflow.url 'http://sul-lyberservices-test.stanford.edu/workflow/'
+  solrizer.url 'https://sul-solr-tester.stanford.edu/argo_stage'
+  workflow.url 'https://sul-lyberservices-test.stanford.edu/workflow/'
 
   purl do
-     base_url 'http://purl-test.stanford.edu/'
+     base_url 'https://purl-test.stanford.edu/'
    end
 
    remediation do

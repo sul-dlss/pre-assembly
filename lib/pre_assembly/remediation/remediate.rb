@@ -126,7 +126,6 @@ module PreAssembly
        begin # try and open the version
          @fobj.open_new_version(:assume_accessioned=>true) unless @fobj.new_version_open?
          @fobj.versionMetadata.update_current_version({:description => "auto remediation #{@description}",:significance => :admin})
-         @fobj.versionMetadata.content_will_change!
          @success=true
        rescue Exception => e
          if e.message.downcase.include?('already opened')
@@ -141,7 +140,6 @@ module PreAssembly
      def close_version
        begin # try and close the version
          @fobj.close_version(:description => "auto remediation #{@description}", :significance => :admin) if @fobj.new_version_open?
-         @fobj.versionMetadata.content_will_change!
          @success=true
        rescue Exception => e
          @success=false
