@@ -1,0 +1,13 @@
+language: ruby
+
+sudo: false
+notifications:
+  email: false
+
+env:
+  global:
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+    - ROBOT_ENVIRONMENT=test
+
+rvm:
+  - 2.2.4
