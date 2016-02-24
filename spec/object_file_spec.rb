@@ -11,7 +11,7 @@ describe PreAssembly::ObjectFile do
   describe "initialization" do
 
     it "can initialize an ObjectFile" do
-      @f.should be_kind_of PreAssembly::ObjectFile
+      expect(@f).to be_kind_of PreAssembly::ObjectFile
     end
 
   end

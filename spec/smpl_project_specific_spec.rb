@@ -35,13 +35,13 @@ describe PreAssembly::DigitalObject do
 
       @dobj.create_technical_metadata
       exp_xml = noko_doc(@dobj.technical_md_xml)
-      exp_xml.css('technicalMetadata').size.should == 1 # one top level node
-      exp_xml.css('Mediainfo').size.should == 2 # two Mediainfo nodes
-      exp_xml.css('Count').size.should == 4 # four nodes that have file info
-      exp_xml.css('Count')[0].content.should == '279' # look for some specific bits in the files that have been assembled
-      exp_xml.css('Count')[1].content.should == '217'
-      exp_xml.css('Count')[2].content.should == '280'
-      exp_xml.css('Count')[3].content.should == '218'
+      expect(exp_xml.css('technicalMetadata').size).to eq(1) # one top level node
+      expect(exp_xml.css('Mediainfo').size).to eq(2) # two Mediainfo nodes
+      expect(exp_xml.css('Count').size).to eq(4) # four nodes that have file info
+      expect(exp_xml.css('Count')[0].content).to eq('279') # look for some specific bits in the files that have been assembled
+      expect(exp_xml.css('Count')[1].content).to eq('217')
+      expect(exp_xml.css('Count')[2].content).to eq('280')
+      expect(exp_xml.css('Count')[3].content).to eq('218')
     end
 
   end
@@ -88,7 +88,7 @@ describe PreAssembly::DigitalObject do
              </contentMetadata>
             END
       @dobj.create_content_metadata
-      noko_doc(@dobj.content_md_xml).should be_equivalent_to noko_doc(exp_xml)
+      expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to noko_doc(exp_xml)
     end
 
   end

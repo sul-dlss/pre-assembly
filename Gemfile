@@ -26,7 +26,7 @@ gem 'revs-utils'
 gem 'stanford-mods'
 
 group :test do
-  gem 'rspec', '~> 2.6'
+  gem 'rspec', '~> 3.0'
   gem 'yard'
 end
 

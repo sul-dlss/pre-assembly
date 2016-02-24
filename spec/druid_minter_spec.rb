@@ -8,13 +8,13 @@ describe PreAssembly::DruidMinter do
 
   it "should get a sequence of druids from calls to next()" do
     exp = @minter.current
-    3.times { @minter.next.should == exp.next! }
+    3.times { expect(@minter.next).to eq(exp.next!) }
   end
 
   it "should return unique string objects" do
     o1 = @minter.next
     o2 = @minter.next
-    o1.object_id.should_not == o2.object_id
+    expect(o1.object_id).not_to eq(o2.object_id)
   end
 
 end

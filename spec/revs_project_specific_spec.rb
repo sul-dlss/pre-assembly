@@ -223,7 +223,7 @@ describe PreAssembly::DigitalObject do
 
      it "create_desc_metadata_xml() should generate the expected xml text" do
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
    end
@@ -278,7 +278,7 @@ describe PreAssembly::DigitalObject do
 
      it "create_desc_metadata_xml() should generate the expected xml text" do
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
    end
@@ -337,7 +337,7 @@ describe PreAssembly::DigitalObject do
 
      it "create_desc_metadata_xml() should generate the expected xml text" do
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
    end
@@ -388,7 +388,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
@@ -447,7 +447,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive using alternate two year date format" do
@@ -502,7 +502,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive metadata using alternate date format and ignoring the bad year field" do
@@ -558,7 +558,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive metadata using date range with years" do
@@ -613,7 +613,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive metadata with no date or year" do
@@ -664,7 +664,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
      it "should create revs specific descriptive metadata with an alternate format authority" do
@@ -705,7 +705,7 @@ describe PreAssembly::DigitalObject do
         END
        @exp_xml = noko_doc @exp_xml
        @dobj.create_desc_metadata_xml
-       noko_doc(@dobj.desc_md_xml).should be_equivalent_to @exp_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
      end
 
    end
