@@ -3,8 +3,6 @@ module PreAssembly
   module Remediation
 
     class Item
-
-      WFS  = Dor::WorkflowService
       REPO = 'dor'
 
       attr_accessor :pid,:fobj,:message,:object_type,:success,:description,:data
@@ -170,22 +168,22 @@ module PreAssembly
 
     # Check if the object is full accessioned and ingested, either we have an accessioned lifecycle
     def is_ingested?
-      WFS.get_lifecycle(REPO, @pid, 'accessioned') ? true : false
+      Dor::Config.workflow.client.get_lifecycle(REPO, @pid, 'accessioned') ? true : false
     end
 
     def in_accessioning?
-      WFS.get_active_lifecycle(REPO, @pid, 'submitted') ? true : false
+      Dor::Config.workflow.client.get_active_lifecycle(REPO, @pid, 'submitted') ? true : false
     end
 
     # Check if the object is on ingest hold
     def ingest_hold?
       # accession2WF is temporary, and anything set to "waiting" in that workflow is really treated like a "hold" condition
-      WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold' || (WFS.get_workflow_status(REPO, @pid, 'accession2WF','sdr-ingest-transfer') == 'waiting' && WFS.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer').nil?)
+      Dor::Config.workflow.client.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer') == 'hold' || (Dor::Config.workflow.client.get_workflow_status(REPO, @pid, 'accession2WF','sdr-ingest-transfer') == 'waiting' && Dor::Config.workflow.client.get_workflow_status(REPO, @pid, 'accessionWF','sdr-ingest-transfer').nil?)
     end
 
     # Check if the object is submitted
     def is_submitted?
-      WFS.get_lifecycle(REPO, @pid, 'submitted').nil?
+      Dor::Config.workflow.client.get_lifecycle(REPO, @pid, 'submitted').nil?
     end
 
     end

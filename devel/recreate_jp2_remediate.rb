@@ -15,7 +15,7 @@ module RemediationLogic
       run_assembly_robot('jp2-create')
       run_assembly_robot('exif-collect')
       run_assembly_robot('checksum-compute')
-      Dor::WorkflowService.update_workflow_status('dor',@pid,'assemblyWF', 'accessioning-initiate', 'completed')
+      Dor::Config.workflow.client.update_workflow_status('dor',@pid,'assemblyWF', 'accessioning-initiate', 'completed')
     end
 
 end

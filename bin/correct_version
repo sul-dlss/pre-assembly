@@ -49,7 +49,7 @@ def correct_versioning_on_druid(druid)
   dor_version = item.current_version.to_i #gets current version
 
   begin
-    workflow_xml = Nokogiri.parse(Dor::WorkflowService.workflow_resource["dor/objects/#{druid}/workflows"].get) #get all the workflow xml as one chunk
+    workflow_xml = Nokogiri.parse(Dor::Config.workflow.client.workflow_resource["dor/objects/#{druid}/workflows"].get) #get all the workflow xml as one chunk
   rescue
     run_log.error("Failed to get workflow XML for #{druid}")
     @run_log.error $!.backtrace
@@ -86,7 +86,7 @@ def correct_versioning_on_druid(druid)
       end
 
       begin
-        Dor::WorkflowService.update_workflow_status(@target_repo, druid, @target_workflow, errorNode['name'], 'waiting')
+        Dor::Config.workflow.client.update_workflow_status(@target_repo, druid, @target_workflow, errorNode['name'], 'waiting')
         @ingest_error_log.info(druid)
       rescue
         @run_log.error("DorWorkflowservices error for #{druid}")
