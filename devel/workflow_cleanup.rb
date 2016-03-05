@@ -37,8 +37,8 @@ csv_data.each do |row|
   druid="druid:#{pid}"
 
   msg="#{n} of #{total}: #{druid}"
-  if Dor::WorkflowService.get_workflow_status('dor', druid, reference_workflow, step) == 'completed' && Dor::WorkflowService.get_workflow_status('dor', druid, workflow_to_fix, step) == 'waiting'
-    Dor::WorkflowService.update_workflow_status 'dor',druid,workflow_to_fix, step, "completed"
+  if Dor::Config.workflow.client.get_workflow_status('dor', druid, reference_workflow, step) == 'completed' && Dor::Config.workflow.client.get_workflow_status('dor', druid, workflow_to_fix, step) == 'waiting'
+    Dor::Config.workflow.client.update_workflow_status 'dor',druid,workflow_to_fix, step, "completed"
     puts "#{msg}: Set #{workflow_to_fix}:#{step} to completed"
     fixed+=1
   else

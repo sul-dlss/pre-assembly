@@ -23,5 +23,5 @@ puts "found #{completed_druids.size} druids"
 completed_druids.each_with_index do |druid,index|
   desc_filename=File.join(DruidTools::Druid.new(druid,'/dor/assembly').path(),'metadata','descMetadata.xml')
   puts "#{druid} [#{index+1} of #{completed_druids.size}]: reseting #{workflow}:#{step} to #{state}"
-  Dor::WorkflowService.update_workflow_status('dor',druid,workflow, step, state) unless dry_run
+  Dor::Config.workflow.client.update_workflow_status('dor',druid,workflow, step, state) unless dry_run
 end

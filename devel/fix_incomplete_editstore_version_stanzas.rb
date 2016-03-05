@@ -71,12 +71,12 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   puts "#{druid} Completed"
 
   #Clear the accessionWF so we can make new versions
-  # Dor::WorkflowService.delete_workflow('dor', row['druid'], 'accessionWF')
+  # Dor::Config.workflow.client.delete_workflow('dor', row['druid'], 'accessionWF')
 
   #Replace the ones we just removed with new ones
   # v = 2
   # while(v <= row['sdr-version'].to_i+1) do
-  #   Dor::WorkflowService.delete_workflow('dor', row['druid'], 'versioningWF')
+  #   Dor::Config.workflow.client.delete_workflow('dor', row['druid'], 'versioningWF')
   #   item.open_new_version(:assume_accessioned=>true) # we are already doing all of our checks to see if updates are allowe and versioning is required
   #   item.versionMetadata.update_current_version({:description => "descriptive metadata update from editstore",:significance => :admin})
   #   item.versionMetadata.save
@@ -84,7 +84,7 @@ CSV.foreach(ARGV[0], :headers => true) do |row|
   # end
 
   #Restart The Accessioning WF
-  Dor::WorkflowService.update_workflow_status 'dor', druid, 'accessionWF', 'sdr-ingest-transfer', 'waiting'
+  Dor::Config.workflow.client.update_workflow_status 'dor', druid, 'accessionWF', 'sdr-ingest-transfer', 'waiting'
 
   #Check for incomplete stanza
   #Delete incomplete stanza, lower number on all others
