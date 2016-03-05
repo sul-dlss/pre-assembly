@@ -3,7 +3,7 @@ lock '3.4.0'
 
 set :rvm_ruby_version, '2.2.4'      # Defaults to: 'default'
 set :application, 'pre-assembly'
-set :repo_url, 'git@github.com:sul-dlss/pre-assembly.git'
+set :repo_url, 'https://github.com/sul-dlss/pre-assembly.git'
 
 set :ssh_options, {
   keys: [Capistrano::OneTimeKey.temporary_ssh_private_key_path],
