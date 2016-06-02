@@ -1,4 +1,5 @@
 memory_report.txt
+*.log
 .rvmrc
 *.gem
 .rvmrc
