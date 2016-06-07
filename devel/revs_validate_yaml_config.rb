@@ -23,6 +23,7 @@ if File.directory?(input)
 
   FileUtils.cd(input)
   files=Dir.glob("**/**.yaml") + Dir.glob("**/**.YAML") # look for all yaml config files
+  files.sort!
   files.reject! {|file| file.include?("$RECYCLE.BIN")} # ignore stuff in the trash
 
   num_errors=0

@@ -30,7 +30,8 @@ elsif File.directory?(input)
   puts "Searching for CSV files..."
   num_errors=0
   FileUtils.cd(input)
-  files=Dir.glob("**/**.csv")
+  files=Dir.glob("**/**.csv") + Dir.glob("**/**.CSV")
+  files.sort!
   num_files=files.count
   puts "Found #{num_files} CSV files"
   files.each do |file|

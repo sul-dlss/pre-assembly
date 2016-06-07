@@ -41,15 +41,18 @@ if File.directory?(input)
   puts "Searching for CSV files..."
   FileUtils.cd(input)
   files=Dir.glob("**/**.csv") + Dir.glob("**/**.CSV")
+  files.sort!
   num_files=files.count
   puts "Found #{num_files} CSV files"
   puts ""
   puts "For each manifest, enter in the druid (with druid: prefix) of the collection that this YAML file relates to."
   puts "You can press return (blank) to skip the manifest."
+  puts ""
   files.each do |file|
 
     puts ""
-    print "#{file} - enter collection druid: "
+    puts "#{file}"
+    print "...enter collection druid (with druid: prefix): "
     collection_druid=STDIN.gets.chomp
 
     unless collection_druid.blank?
