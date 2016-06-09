@@ -17,6 +17,8 @@ end
 # General DLSS infrastructure.
 require 'dor-services'
 
+ActiveFedora::Base.logger.level = Logger::ERROR # make activefedora logging much less noisy
+
 # Environment.
 unless defined?(NO_ENVIRONMENT)
   ENV_FILE = PRE_ASSEMBLY_ROOT + "/config/environments/#{environment}.rb"
