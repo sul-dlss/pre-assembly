@@ -46,7 +46,6 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.4.0)
     assembly-image (1.6.8)
       activesupport (> 3)
       assembly-objectfile (>= 1.6.4)
@@ -111,9 +110,6 @@ GEM
     docopt (0.5.0)
     domain_name (0.5.20160216)
       unf (>= 0.0.5, < 1.0.0)
-    dor-fetcher (1.1.7)
-      addressable
-      rest-client
     dor-rights-auth (1.0.2)
       nokogiri
     dor-services (5.5.0)
@@ -336,7 +332,6 @@ DEPENDENCIES
   csv-mapper
   dir_validator
   dlss-capistrano (~> 3.1)
-  dor-fetcher
   dor-services (~> 5.5)
   druid-tools
   equivalent-xml

@@ -17,7 +17,7 @@ gem 'assembly-image'
 gem 'assembly-objectfile'
 gem 'assembly-utils'
 gem 'dir_validator'
-gem 'dor-fetcher'
+# gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
 gem 'dor-services', '~> 5.5'
 gem 'druid-tools'
 gem 'harvestdor'
