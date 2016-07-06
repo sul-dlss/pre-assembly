@@ -5,7 +5,8 @@ gem 'actionpack'
 gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
-gem 'rake'
+gem 'rake', '~> 10'  # pinned to 10, since assembly needs rake v10 (robot-controller pins it), and assembly and pre-assembly must
+                     #  match so that remediation scripts can call "run_robot" and execute assembly robots manually July 2016, Peter Mangiafico
 gem 'rdf'
 gem 'rest-client'
 gem 'roo'

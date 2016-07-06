@@ -239,7 +239,7 @@ GEM
       loofah (~> 2.0)
     rails-observers (0.1.2)
       activemodel (~> 4.0)
-    rake (11.1.2)
+    rake (10.5.0)
     rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
     rdf-rdfxml (1.0.1)
@@ -343,7 +343,7 @@ DEPENDENCIES
   harvestdor
   modsulator
   nokogiri
-  rake
+  rake (~> 10)
   rdf
   rest-client
   revs-utils (~> 2.1.15)
