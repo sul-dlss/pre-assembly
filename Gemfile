@@ -5,8 +5,7 @@ gem 'actionpack'
 gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
-gem 'rake', '~> 10'  # pinned to 10, since assembly needs rake v10 (robot-controller pins it), and assembly and pre-assembly must
-                     #  match so that remediation scripts can call "run_robot" and execute assembly robots manually July 2016, Peter Mangiafico
+gem 'rake'
 gem 'rdf'
 gem 'rest-client'
 gem 'roo'
@@ -18,7 +17,7 @@ gem 'assembly-objectfile'
 gem 'assembly-utils'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
-gem 'dor-services', '~> 5.5'
+gem 'dor-services', '~> 5.8.2'
 gem 'druid-tools'
 gem 'harvestdor'
 gem 'modsulator'
