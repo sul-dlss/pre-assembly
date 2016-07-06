@@ -46,7 +46,6 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.4.0)
     assembly-image (1.6.8)
       activesupport (> 3)
       assembly-objectfile (>= 1.6.4)
@@ -111,9 +110,6 @@ GEM
     docopt (0.5.0)
     domain_name (0.5.20160216)
       unf (>= 0.0.5, < 1.0.0)
-    dor-fetcher (1.1.7)
-      addressable
-      rest-client
     dor-rights-auth (1.0.2)
       nokogiri
     dor-services (5.5.0)
@@ -239,7 +235,7 @@ GEM
       loofah (~> 2.0)
     rails-observers (0.1.2)
       activemodel (~> 4.0)
-    rake (11.1.2)
+    rake (10.5.0)
     rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
     rdf-rdfxml (1.0.1)
@@ -336,14 +332,13 @@ DEPENDENCIES
   csv-mapper
   dir_validator
   dlss-capistrano (~> 3.1)
-  dor-fetcher
   dor-services (~> 5.5)
   druid-tools
   equivalent-xml
   harvestdor
   modsulator
   nokogiri
-  rake
+  rake (~> 10)
   rdf
   rest-client
   revs-utils (~> 2.1.15)

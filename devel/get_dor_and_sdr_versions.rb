@@ -1,3 +1,7 @@
+# NOTE: This script references the dor-fetcher gem, which is now commented out in the Gemfile since it is no longer supported
+#  If this script needs to be re-run, seek an upgrade path for the functionality provided by dor-services (getting druids goverened by an APO)
+#  Peter Mangiafico July 2016
+
 #! /usr/bin/env ruby
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
