@@ -54,6 +54,13 @@ if File.directory?(input)
     File.delete(full_path_to_exported_csv) if File.file?(full_path_to_exported_csv) # remove the CSV if it is there
     xlsx.to_csv(full_path_to_exported_csv) # export the CSV file
 
+    # downcase header line of csv
+    f=File.open(full_path_to_exported_csv,'r+')
+    header=f.each_line.first.downcase
+    f.pos=0
+    f.print header
+    f.close
+
     csv_data = RevsUtils.read_csv_with_headers(full_path_to_exported_csv)
     reg=RevsUtils.check_valid_to_register(csv_data) # check for valid registration
     headers=RevsUtils.check_headers(csv_data) # check for valid metadata columns
