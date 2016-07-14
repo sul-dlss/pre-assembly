@@ -232,7 +232,7 @@ GEM
       loofah (~> 2.0)
     rails-observers (0.1.2)
       activemodel (~> 4.0)
-    rake (10.5.0)
+    rake (11.2.2)
     rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
     rdf-rdfxml (1.0.1)
@@ -245,8 +245,8 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     retries (0.0.5)
-    revs-utils (2.1.17)
-      actionpack (>= 4.1.6)
+    revs-utils (2.1.19)
+      actionpack (~> 4)
       chronic
       countries (= 0.9.2)
       rake
@@ -338,7 +338,7 @@ DEPENDENCIES
   rake
   rdf
   rest-client
-  revs-utils (~> 2.1.15)
+  revs-utils (~> 2.1.19)
   roo
   rspec (~> 3.0)
   ruby-prof
