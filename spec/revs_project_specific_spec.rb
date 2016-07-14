@@ -143,6 +143,8 @@ describe PreAssembly::DigitalObject do
       <% if !manifest_row[:description].blank? %><note displayLabel="Description"><%=manifest_row[:description].strip%></note><% end %>
       <% if !manifest_row[:model_year].blank? %><note displayLabel="Model Year" ID="model_year"><%=manifest_row[:model_year].strip%></note><% end %>
       <% if !manifest_row[:group_or_class].blank? %><note displayLabel="Group or Class" ID="group"><%=manifest_row[:group_or_class].strip%></note><% end %>
+      <% if !manifest_row[:group].blank? %><note displayLabel="Car Group" ID="car_group"><%=manifest_row[:group].strip%></note><% end %>
+      <% if !manifest_row[:class].blank? %><note displayLabel="Car Class" ID="car_class"><%=manifest_row[:class].strip%></note><% end %>
       <% if !manifest_row[:race_data].blank? %><note displayLabel="Race Data" ID="race_data"><%=manifest_row[:race_data].strip%></note><% end %>
       <% if !manifest_row[:metadata_sources].blank? %><note displayLabel="Metadata Sources" ID="metadata_sources"><%=manifest_row[:metadata_sources].strip%></note><% end %>
       <% if !manifest_row[:vehicle_markings].blank? %><note displayLabel="Vehicle Markings" ID="vehicle_markings"><%=manifest_row[:vehicle_markings].strip%></note><% end %>
@@ -240,6 +242,8 @@ describe PreAssembly::DigitalObject do
          :format      => 'film',
          :location    => 'Raceway , Rome , Italy',
          :foo         =>  nil,
+         :group       => 'This is the car group',
+         :class       => 'This is the car class',
          :bar         =>  ''
        }
        @exp_xml = <<-END.gsub(/^ {8}/, '')
@@ -271,6 +275,8 @@ describe PreAssembly::DigitalObject do
          </titleInfo>
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
+         <note displayLabel="Car Group" ID="car_group">This is the car group</note>
+         <note displayLabel="Car Class" ID="car_class">This is the car class</note>
        </mods>
         END
        @exp_xml = noko_doc @exp_xml
