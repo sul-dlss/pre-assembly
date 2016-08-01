@@ -10,4 +10,5 @@ env:
     - ROBOT_ENVIRONMENT=test
 
 rvm:
-  - 2.2.4
+  - 2.2.4 # deployed
+  - 2.3.1
