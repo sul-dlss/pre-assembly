@@ -546,7 +546,7 @@ module PreAssembly
       return unless @checksums_file
       log "load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
-      read_exp_checksums.scan(checksum_regex).each { |file_name, md5| @provider_checksums[file_name] = md5 }
+      read_exp_checksums.scan(checksum_regex).each { |file_name, md5| @provider_checksums[file_name] = md5.strip }
     end
 
     def read_exp_checksums
