@@ -52,7 +52,7 @@ GEM
       mini_exiftool (~> 1.6)
       nokogiri
       uuidtools
-    assembly-objectfile (1.6.6)
+    assembly-objectfile (1.6.7)
       mime-types
       mini_exiftool
       nokogiri
@@ -175,7 +175,7 @@ GEM
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     mediashelf-loggable (0.4.10)
-    mime-types (2.99.2)
+    mime-types (2.99.3)
     mini_exiftool (1.7.0)
     mini_portile2 (2.1.0)
     minitest (5.9.0)
@@ -320,7 +320,7 @@ DEPENDENCIES
   actionmailer
   actionpack
   assembly-image
-  assembly-objectfile
+  assembly-objectfile (> 1.6.6)
   assembly-utils
   awesome_print
   capistrano (~> 3)

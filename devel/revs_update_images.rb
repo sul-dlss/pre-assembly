@@ -2,6 +2,7 @@
 # Iterate through each image in the manifest, use source ID to lookup DRUID, add the new image to the object, re-shelve it, and then
 # update contentMetadata using the remediation framework.  Since we are not re-generating descMetadata, the only required columns in
 # the manifest are 'sourceid' and 'filename' (include the header row with these columns)
+# If the filename is simply the sourceid with a .tif extension, you may leave off the filename column completely.
 
 # Peter Mangiafico
 # June 17, 2013
@@ -43,7 +44,12 @@ completed_druids=PreAssembly::Remediation::Item.get_druids(progress_log_file)
      if done
        puts "#{pid} : skipping, already completed"
      else
-       data={:source_path=>source_path,:filename=>row.filename}
+       if row.respond_to?(:filename) && !row.filename.blank?
+         filename = row.filename
+       else
+         filename = "#{row.sourceid}.tif"
+       end
+       data={:source_path=>source_path,:filename=>filename}
        item=PreAssembly::Remediation::Item.new(pid,data)
        item.description="Updating image from #{csv_in}" # added to the version description
        item.extend(RemediationLogic) # add in our project specific methods
