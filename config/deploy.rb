@@ -40,3 +40,6 @@ set :linked_dirs, %w{log config/certs config/environments tmp vendor/bundle}
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
+
+# ignore actionview update since dependencies are not allowing it to update to the latest 4.x, October 5, 2016
+set :bundle_audit_ignore, %w{CVE-2016-6316} 
