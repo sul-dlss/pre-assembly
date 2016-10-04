@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'actionmailer'
-gem 'actionpack'
+gem 'actionmailer', '< 5'
+gem 'actionpack', '< 5'
 gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
@@ -17,7 +17,7 @@ gem 'assembly-objectfile', '> 1.6.6'
 gem 'assembly-utils'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
-gem 'dor-services', '~> 5.8.2'
+gem 'dor-services', '< 6'
 gem 'druid-tools'
 gem 'harvestdor'
 gem 'modsulator'
