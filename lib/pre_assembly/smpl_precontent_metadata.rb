@@ -75,7 +75,7 @@ module PreAssembly
 
          load_manifest if @manifest.nil?
 
-         druid.gsub!('druid:','')
+         pid=druid.gsub!('druid:','')
 
          if @manifest[druid]
 

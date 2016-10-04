@@ -13,7 +13,7 @@ gem 'ruby-prof'
 
 # Stanford gems
 gem 'assembly-image'
-gem 'assembly-objectfile'
+gem 'assembly-objectfile', '> 1.6.6'
 gem 'assembly-utils'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
