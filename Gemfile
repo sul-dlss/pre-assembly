@@ -39,3 +39,7 @@ end
 group :development do
   gem 'awesome_print'
 end
+
+group :development, :test do
+  gem 'byebug'
+end
