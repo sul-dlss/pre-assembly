@@ -1,6 +1,12 @@
 # encoding: UTF-8
 
-# Run with
+# This class generates contentMetadata from a SMPL supplied manifest
+# see the "SMPL Content" section here for a description of the manifest:
+# https://consul.stanford.edu/pages/viewpage.action?pageId=136365158#AutomatedAccessioningandObjectRemediation(pre-assemblyandassembly)-SMPLContent
+
+# It is used by pre-assembly during the accessioning process in an automated way based on the pre-assembly config .yml file setting of content_md_creation
+
+# Test with
 # cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/ARS0022_speech/content_ready_for_accessioning/content',:csv_filename=>'smpl_manifest.csv',:verbose=>true)
 # cm.generate_cm('zx248jc1918')
 
@@ -8,11 +14,14 @@
 # cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
 # cm.generate_cm('oo000oo0001')
 
+
 module PreAssembly
 
     class Smpl
 
-       attr_accessor :manifest,:items,:csv_filename,:bundle_dir,:default_resource_type,:cm_type
+      include PreAssembly::Logging
+
+       attr_accessor :manifest,:rows,:csv_filename,:bundle_dir,:default_resource_type,:cm_type
 
        def initialize(params)
          @bundle_dir=params[:bundle_dir]
@@ -20,6 +29,7 @@ module PreAssembly
          @csv_filename=File.join(@bundle_dir,csv_file)
          @verbose=params[:verbose] || false
 
+         # default publish/shelve/preserve attributes per "type" as defined in smpl filenames
          @file_attributes={}
          @file_attributes['default']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
          @file_attributes['pm']={:publish=>'no',:shelve=>'no',:preserve=>'yes'}
@@ -32,48 +42,45 @@ module PreAssembly
          @cm_type="media"
 
          # read CSV
-         load_manifest
+         load_manifest # this will cache the entire manifest in @rows and @manifest
 
-         puts "found #{@items.size} items in manifest" if @verbose
+         puts "found #{@rows.size} rows in manifest" if @verbose
 
        end
 
        def load_manifest
 
-         # load manifest into @items
-         @items=PreAssembly::Bundle.import_csv(@csv_filename)
+         # load file into @rows and then build up @manifest
+         @rows=PreAssembly::Bundle.import_csv(@csv_filename)
 
          @manifest={}
 
-         @items.each do |row|
+         @rows.each do |row|
 
-            if (defined?(row[:druid_no_audio]) && row[:druid_no_audio]) # this column doesn't need to exist anymore, but we'll leave it here for backwards compatibility
-              druid=row[:druid_no_audio]
-            else
-              druid=get_druid(row[:filename])
-              role=get_role(row[:filename])
-              file_extension=File.extname(row[:filename])
-              # set the resource type if available, otherwise we'll use a default
-              resource_type=defined?(row[:resource_type]) ? row[:resource_type] || nil : nil
+            druid=get_druid(row[:filename])
+            role=get_role(row[:filename])
+            file_extension=File.extname(row[:filename])
+            # set the resource type if available, otherwise we'll use a default
+            resource_type=defined?(row[:resource_type]) ? row[:resource_type] || nil : nil
 
-              # set the publish/preserve/shelve if available, otherwise we'll use the default
-              publish=defined?(row[:publish]) ? row[:publish] || nil : nil
-              shelve=defined?(row[:shelve]) ? row[:shelve] || nil : nil
-              preserve=defined?(row[:preserve]) ? row[:preserve] || nil : nil
-            end
+            # set the thumb attribute for this resource if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
+            thumb=(defined?(row[:thumb]) && row[:thumb] && ['true','yes','thumb'].include?(row[:thumb].downcase)) ? true : false
 
-            manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
-            manifest[druid][:source_id]=row[:source_id] if (defined?(row[:source_id]) && row[:source_id])
-            manifest[druid][:files] << {:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row[:filename],:label=>row[:label],:sequence=>row[:sequence]}
+            # set the publish/preserve/shelve if available, otherwise we'll use the defaults
+            publish=defined?(row[:publish]) ? row[:publish] || nil : nil
+            shelve=defined?(row[:shelve]) ? row[:shelve] || nil : nil
+            preserve=defined?(row[:preserve]) ? row[:preserve] || nil : nil
 
-         end # loop over all items
+            @manifest[druid]={:source_id=>'',:files=>[]} if manifest[druid].nil?
+            @manifest[druid][:source_id]=row[:source_id] if (defined?(row[:source_id]) && row[:source_id])
+            @manifest[druid][:files] << {:thumb=>thumb,:publish=>publish,:shelve=>shelve,:preserve=>preserve,:resource_type=>resource_type,:role=>role,:file_extention=>file_extension,:filename=>row[:filename],:label=>row[:label],:sequence=>row[:sequence]}
+            
+         end # loop over all rows
 
        end # load_manifest
 
-        # generate content metadata for a specific druid in the manifest
+       # actually generate content metadata for a specific druid in the manifest
        def generate_cm(druid)
-
-         load_manifest if @manifest.nil?
 
          pid=druid.gsub!('druid:','')
 
@@ -87,7 +94,7 @@ module PreAssembly
            current_seq = ''
            resources={}
 
-           # bundle into resources based on sequence
+           # bundle the files into resources based on the sequence # defined in the manifest, a new sequence number triggers a new resource
            files.each do |file|
              seq=file[:sequence]
              label=file[:label] || ""
@@ -97,8 +104,9 @@ module PreAssembly
                current_seq = seq
              end
              resources[current_seq.to_i][:files] << file
+             resources[current_seq.to_i][:thumb]=file[:thumb] if file[:thumb] # any true/yes thumb attribute for any file in that resource triggers the whole resource as thumb=true
            end
-
+  
            # generate the base of the XML file for this new druid
            # generate content metadata
            builder = Nokogiri::XML::Builder.new { |xml|
@@ -107,7 +115,9 @@ module PreAssembly
 
               resources.keys.sort.each do |seq|
                 resource=resources[seq]
-                xml.resource(:sequence => seq.to_s, :id => "#{druid}_#{seq}",:type=>resource[:resource_type]) {
+                resource_attributes={:sequence => seq.to_s, :id => "#{druid}_#{seq}",:type=>resource[:resource_type]}
+                resource_attributes[:thumb]='yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
+                xml.resource(resource_attributes) {
                   xml.label resource[:label]
 
                   resource[:files].each do |file|
@@ -149,14 +159,13 @@ module PreAssembly
 
          end # end if druid found in manifest
 
-       end # generate_cm
-
+       end # end generate_cm
 
        def get_checksum(md5_file)
          s = IO.read(md5_file)
          checksums=s.scan(/[0-9a-fA-F]{32}/)
          checksums.first ? checksums.first.strip : ""
-       end #get_checksum
+       end # end get_checksum
 
 
        def get_role(filename)
@@ -172,8 +181,7 @@ module PreAssembly
          else
            matches.first.sub('_','').strip.upcase
          end
-       end # get_role
-
+       end # end get_role
 
        def get_druid(filename)
          matches=filename.scan(/[0-9a-zA-Z]{11}/)
