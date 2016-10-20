@@ -1,51 +1,59 @@
+GIT
+  remote: git://github.com/sul-dlss/revs-utils.git
+  revision: d2d1e15db6150d237328faa4f0b53e7abad2e6bc
+  branch: update-dependencies
+  specs:
+    revs-utils (2.1.22)
+      actionpack (>= 4, < 6)
+      chronic
+      countries (~> 1.0)
+      rake
+      rdf
+
 GEM
   remote: https://rubygems.org/
   specs:
-    actionmailer (4.2.5.2)
-      actionpack (= 4.2.5.2)
-      actionview (= 4.2.5.2)
-      activejob (= 4.2.5.2)
+    actionmailer (5.0.0.1)
+      actionpack (= 5.0.0.1)
+      actionview (= 5.0.0.1)
+      activejob (= 5.0.0.1)
       mail (~> 2.5, >= 2.5.4)
-      rails-dom-testing (~> 1.0, >= 1.0.5)
-    actionpack (4.2.5.2)
-      actionview (= 4.2.5.2)
-      activesupport (= 4.2.5.2)
-      rack (~> 1.6)
-      rack-test (~> 0.6.2)
-      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-dom-testing (~> 2.0)
+    actionpack (5.0.0.1)
+      actionview (= 5.0.0.1)
+      activesupport (= 5.0.0.1)
+      rack (~> 2.0)
+      rack-test (~> 0.6.3)
+      rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (4.2.5.2)
-      activesupport (= 4.2.5.2)
+    actionview (5.0.0.1)
+      activesupport (= 5.0.0.1)
       builder (~> 3.1)
       erubis (~> 2.7.0)
-      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    active-fedora (6.7.3)
-      activesupport (>= 3.0.0)
+    active-fedora (6.8.0)
+      activesupport (>= 3)
       deprecation
       mediashelf-loggable
       nom-xml (>= 0.5.1)
-      om (~> 3.0.0)
-      rdf
-      rdf-rdfxml (= 1.0.1)
+      om (~> 3.0)
+      rdf (~> 1.1, >= 1.1.1.1)
+      rdf-rdfxml (~> 1.1)
       rsolr
       rubydora (~> 1.6, >= 1.6.5)
-    activejob (4.2.5.2)
-      activesupport (= 4.2.5.2)
-      globalid (>= 0.3.0)
-    activemodel (4.2.5.2)
-      activesupport (= 4.2.5.2)
-      builder (~> 3.1)
-    activeresource (4.0.0)
-      activemodel (~> 4.0)
-      activesupport (~> 4.0)
-      rails-observers (~> 0.1.1)
-    activesupport (4.2.5.2)
+    activejob (5.0.0.1)
+      activesupport (= 5.0.0.1)
+      globalid (>= 0.3.6)
+    activemodel (5.0.0.1)
+      activesupport (= 5.0.0.1)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    airbrussh (1.1.1)
+      sshkit (>= 1.6.1, != 1.7.0)
     assembly-image (1.6.8)
       activesupport (> 3)
       assembly-objectfile (>= 1.6.4)
@@ -56,16 +64,11 @@ GEM
       mime-types
       mini_exiftool
       nokogiri
-    assembly-utils (1.4.6)
-      activeresource
-      activesupport
-      csv-mapper
-      dor-services (~> 5.3)
-      dor-workflow-service (>= 1.3.1)
+    assembly-utils (1.5.0)
+      dor-services (~> 5.5)
       druid-tools (>= 0.2.6)
-      fastercsv
       nokogiri
-    awesome_print (1.6.1)
+    awesome_print (1.7.0)
     bagit (0.3.2)
       docopt (~> 0.5.0)
       validatable (~> 1.6)
@@ -73,17 +76,20 @@ GEM
     bundler-audit (0.5.0)
       bundler (~> 1.2)
       thor (~> 0.18)
-    byebug (9.0.5)
-    capistrano (3.4.0)
+    byebug (9.0.6)
+    capistrano (3.6.1)
+      airbrussh (>= 1.0.0)
+      capistrano-harrow
       i18n
       rake (>= 10.0.0)
-      sshkit (~> 1.3)
-    capistrano-bundle_audit (0.0.5)
-      bundler-audit
+      sshkit (>= 1.9.0)
+    capistrano-bundle_audit (0.2.1)
+      bundler-audit (~> 0.5)
       capistrano (~> 3.0)
-    capistrano-bundler (1.1.4)
+    capistrano-bundler (1.2.0)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
+    capistrano-harrow (0.5.3)
     capistrano-one_time_key (0.0.1)
       capistrano (~> 3.0)
     capistrano-releaseboard (0.0.1)
@@ -91,10 +97,13 @@ GEM
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
+    capistrano-shared_configs (0.1.1)
     chronic (0.10.2)
+    concurrent-ruby (1.0.2)
     confstruct (0.2.7)
-    countries (0.9.2)
-      currencies (>= 0.4.0)
+    countries (1.2.5)
+      currencies (~> 0.4.2)
+      i18n_data (~> 0.7.0)
     csv-mapper (0.5.1)
       fastercsv
     currencies (0.4.2)
@@ -103,17 +112,18 @@ GEM
       activesupport
     diff-lcs (1.2.5)
     dir_validator (0.14.6)
-    dlss-capistrano (3.2.0)
+    dlss-capistrano (3.4.0)
       capistrano (~> 3.0)
-      capistrano-bundle_audit (>= 0.0.3)
+      capistrano-bundle_audit (>= 0.1.0)
       capistrano-one_time_key
       capistrano-releaseboard
+      capistrano-shared_configs
     docopt (0.5.0)
     domain_name (0.5.20160826)
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.2.0)
       nokogiri
-    dor-services (5.10.4)
+    dor-services (5.12.0)
       active-fedora (~> 6.0)
       activesupport (>= 3.2.18)
       confstruct (~> 0.2.7)
@@ -121,26 +131,26 @@ GEM
       dor-workflow-service (~> 2.0, >= 2.0.1)
       druid-tools (~> 0.4, >= 0.4.1)
       equivalent-xml (~> 0.5, >= 0.5.1)
-      json (~> 1.8.1)
+      json (>= 1.8.1)
       lyber-utils (~> 0.1.2)
       moab-versioning (~> 2.0)
-      modsulator (~> 0.0.7)
+      modsulator (>= 0.0.7, < 2)
       net-sftp (~> 2.1)
       nokogiri (~> 1.6)
       om (~> 3.0)
-      rdf (~> 1.1.7)
-      rest-client (~> 1.7)
+      rdf (~> 1.1, >= 1.1.7)
+      rest-client (>= 1.7, < 3)
       retries
       rsolr-ext (~> 1.0.3)
       ruby-cache (~> 0.3.0)
       ruby-graphviz
-      rubydora (~> 1.6.5)
+      rubydora (~> 1.6, >= 1.6.5)
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
       systemu (~> 2.6)
       uuidtools (~> 2.1.4)
-    dor-workflow-service (2.0.1)
-      activesupport (>= 3.2.1, < 5)
+    dor-workflow-service (2.1.0)
+      activesupport (>= 3.2.1, < 6)
       confstruct (>= 0.2.7, < 2)
       faraday (~> 0.9.2)
       net-http-persistent (~> 2.9.4)
@@ -153,18 +163,24 @@ GEM
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
-    globalid (0.3.6)
+    globalid (0.3.7)
       activesupport (>= 4.1.0)
-    harvestdor (0.2.0)
+    haml (4.0.7)
+      tilt
+    harvestdor (0.3.1)
       confstruct
+      faraday
+      net-http-persistent
       nokogiri
-    hooks (0.3.6)
-      uber (~> 0.0.4)
+    hooks (0.4.1)
+      uber (~> 0.0.14)
+    htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     i18n (0.7.0)
+    i18n_data (0.7.0)
     iso-639 (0.2.8)
-    json (1.8.3)
+    json (2.0.2)
     link_header (0.0.8)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -173,10 +189,12 @@ GEM
       nokogiri (>= 1.4.3.1)
       systemu (>= 1.2.0)
       validatable
-    mail (2.6.3)
-      mime-types (>= 1.16, < 3)
+    mail (2.6.4)
+      mime-types (>= 1.16, < 4)
     mediashelf-loggable (0.4.10)
-    mime-types (2.99.3)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
     mini_exiftool (1.7.0)
     mini_portile2 (2.1.0)
     minitest (5.9.1)
@@ -190,7 +208,7 @@ GEM
       iso-639
       nokogiri
       nom-xml (~> 0.6.0)
-    modsulator (0.0.7)
+    modsulator (1.0.1)
       activesupport (>= 3.0)
       equivalent-xml (>= 0.6.0)
       nokogiri
@@ -203,55 +221,50 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (3.2.0)
     netrc (0.11.0)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     nokogiri-happymapper (0.5.9)
       nokogiri (~> 1.5)
     nom-xml (0.6.0)
       activesupport (>= 3.2.18)
       i18n
       nokogiri
-    om (3.0.7)
+    om (3.1.1)
       activemodel
       activesupport
-      deprecation
-      mediashelf-loggable
       nokogiri (>= 1.4.2)
-      solrizer (~> 3.1.0)
-    pkg-config (1.1.7)
-    rack (1.6.4)
+      solrizer (~> 3.3)
+    rack (2.0.1)
     rack-test (0.6.3)
       rack (>= 1.0)
-    rails-deprecated_sanitizer (1.0.3)
-      activesupport (>= 4.2.0.alpha)
-    rails-dom-testing (1.0.7)
-      activesupport (>= 4.2.0.beta, < 5.0)
+    rails-dom-testing (2.0.1)
+      activesupport (>= 4.2.0, < 6.0)
       nokogiri (~> 1.6.0)
-      rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
-    rails-observers (0.1.2)
-      activemodel (~> 4.0)
-    rake (11.2.2)
-    rdf (1.1.17.1)
+    rake (11.3.0)
+    rdf (1.99.1)
       link_header (~> 0.0, >= 0.0.8)
-    rdf-rdfxml (1.0.1)
-      rdf (>= 1.0)
-      rdf-xsd (>= 1.0)
-    rdf-xsd (1.1.5.1)
-      rdf (~> 1.1, >= 1.1.9, < 1.99)
-    rest-client (1.8.0)
+    rdf-aggregate-repo (1.99.0)
+      rdf (~> 1.99)
+    rdf-rdfa (1.99.1)
+      haml (~> 4.0)
+      htmlentities (~> 4.3)
+      rdf (~> 1.99)
+      rdf-aggregate-repo (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-rdfxml (1.99.0)
+      htmlentities (~> 4.3)
+      rdf (~> 1.99)
+      rdf-rdfa (~> 1.99)
+      rdf-xsd (~> 1.99)
+    rdf-xsd (1.99.0)
+      rdf (~> 1.99)
+    rest-client (2.0.0)
       http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 3.0)
-      netrc (~> 0.7)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     retries (0.0.5)
-    revs-utils (2.1.19)
-      actionpack (~> 4)
-      chronic
-      countries (= 0.9.2)
-      rake
-      rdf
     roo (2.5.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
@@ -259,41 +272,39 @@ GEM
       builder (>= 2.1.2)
     rsolr-ext (1.0.3)
       rsolr (>= 1.0.2)
-    rspec (3.4.0)
-      rspec-core (~> 3.4.0)
-      rspec-expectations (~> 3.4.0)
-      rspec-mocks (~> 3.4.0)
-    rspec-core (3.4.3)
-      rspec-support (~> 3.4.0)
-    rspec-expectations (3.4.0)
+    rspec (3.5.0)
+      rspec-core (~> 3.5.0)
+      rspec-expectations (~> 3.5.0)
+      rspec-mocks (~> 3.5.0)
+    rspec-core (3.5.4)
+      rspec-support (~> 3.5.0)
+    rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.4.0)
-    rspec-mocks (3.4.1)
+      rspec-support (~> 3.5.0)
+    rspec-mocks (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.4.0)
-    rspec-support (3.4.1)
+      rspec-support (~> 3.5.0)
+    rspec-support (3.5.0)
     ruby-cache (0.3.0)
     ruby-graphviz (1.2.2)
-    ruby-prof (0.15.9)
-    rubydora (1.6.5)
+    ruby-prof (0.16.2)
+    rubydora (1.9.0)
       activemodel
       activesupport
       deprecation
       equivalent-xml
-      fastercsv
-      hooks (~> 0.3.0)
+      hooks (~> 0.3)
       mime-types
       nokogiri
       rest-client
     rubyzip (1.2.0)
-    solrizer (3.1.1)
+    solrizer (3.4.0)
       activesupport
       daemons
-      mediashelf-loggable (~> 0.4.7)
       nokogiri
       stomp
       xml-simple
-    sshkit (1.8.1)
+    sshkit (1.11.3)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     stanford-mods (2.3.1)
@@ -303,6 +314,7 @@ GEM
     systemu (2.6.5)
     thor (0.19.1)
     thread_safe (0.3.5)
+    tilt (2.0.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uber (0.0.15)
@@ -312,17 +324,17 @@ GEM
     uuidtools (2.1.5)
     validatable (1.6.7)
     xml-simple (1.1.5)
-    yard (0.8.7.6)
+    yard (0.9.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  actionmailer (< 5)
-  actionpack (< 5)
+  actionmailer (~> 5.0)
+  actionpack (~> 5.0)
   assembly-image
   assembly-objectfile (> 1.6.6)
-  assembly-utils
+  assembly-utils (~> 1.5)
   awesome_print
   byebug
   capistrano (~> 3)
@@ -340,7 +352,7 @@ DEPENDENCIES
   rake
   rdf
   rest-client
-  revs-utils (~> 2.1.19)
+  revs-utils (~> 2.1.19)!
   roo
   rspec (~> 3.0)
   ruby-prof
@@ -348,4 +360,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.13.4
+   1.13.5
