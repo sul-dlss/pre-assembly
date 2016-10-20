@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'actionmailer', '< 5'
-gem 'actionpack', '< 5'
+gem 'actionmailer', '~> 5.0'
+gem 'actionpack', '~> 5.0'
 gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
@@ -14,14 +14,14 @@ gem 'ruby-prof'
 # Stanford gems
 gem 'assembly-image'
 gem 'assembly-objectfile', '> 1.6.6'
-gem 'assembly-utils'
+gem 'assembly-utils', '~> 1.5'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
 gem 'dor-services', '< 6'
 gem 'druid-tools'
 gem 'harvestdor'
 gem 'modsulator'
-gem 'revs-utils', '~> 2.1.19'
+gem 'revs-utils', '~> 2.1.19', github: 'sul-dlss/revs-utils', branch: 'update-dependencies'
 gem 'stanford-mods'
 
 group :test do
