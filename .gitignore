@@ -1,3 +1,4 @@
+.byebug_history
 memory_report.txt
 *.log
 .rvmrc
