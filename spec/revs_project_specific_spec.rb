@@ -59,6 +59,13 @@ describe PreAssembly::DigitalObject do
     			</subject>
     		<% end %>
       <% end %>
+      <% [:people1,:people2,:people3,:people4,:people5,:people6,:people7,:people8,:people9,:people10].each do |alt_people_col| %>
+        <% if !manifest_row[alt_people_col].blank? %>
+          <subject displayLabel="People" authority="local">
+            <name type="personal"><namePart><%=manifest_row[alt_people_col].strip%></namePart></name>
+          </subject>
+        <% end %>
+      <% end %>
     	<% if !manifest_row[:entrant].blank? %>
     	  <% manifest_row[:entrant].split('|').each do |entrant| %>
       		<subject id="entrant" displayLabel="Entrant" authority="local">
@@ -175,6 +182,7 @@ describe PreAssembly::DigitalObject do
          :format      => 'color transparency',
          :vehicle_markings         =>  '123',
          :inst_notes         =>  '456',
+         :people      =>  'Doe, John | Smith, Fred',
          :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States',
          :hide        =>  'X'
        }
@@ -194,6 +202,12 @@ describe PreAssembly::DigitalObject do
                <city>San Mateo</city>
                <citySection>Bay Motor Speedway</citySection>
              </hierarchicalGeographic>
+           </subject>
+           <subject displayLabel="People" authority="local">
+             <name type="personal"><namePart>Doe, John</namePart></name>
+           </subject>
+           <subject displayLabel="People" authority="local">
+             <name type="personal"><namePart>Smith, Fred</namePart></name>
            </subject>
            <subject displayLabel="Marque" authority="lcsh" authorityURI="http://id.loc.gov/authorities/subjects">
              <topic valueURI="http://id.loc.gov/authorities/subjects/sh85050464">Ford</topic>
@@ -708,6 +722,58 @@ describe PreAssembly::DigitalObject do
              <extent>5" x 6"</extent>
            </physicalDescription>
          </relatedItem>
+         <titleInfo>
+           <title>a label</title>
+         </titleInfo>
+         <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
+         <note displayLabel="Description">this is a description  another description  other stuff</note>
+       </mods>
+        END
+       @exp_xml = noko_doc @exp_xml
+       @dobj.create_desc_metadata_xml
+       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+     end
+
+     it "should create revs specific descriptive metadata with an alternate people columns" do
+       @dobj.druid = @druid
+       @dobj.manifest_row = {
+         :sourceid    => 'foo-1',
+         :label       => 'a label',
+         :entrant     => 'Donald Duck',
+         :format      => 'black-and-white negative',
+         :description => 'this is a description > another description < other stuff',
+         :people1 => 'Doe, John',
+         :people2 => 'Smith, Fred',
+         :people4 => 'Ortiz, David',
+       }
+       @exp_xml = <<-END.gsub(/^ {8}/, '')
+       <?xml version="1.0"?>
+       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+         <typeOfResource>still image</typeOfResource>
+         <genre authority="aat">digital image</genre>
+         <subject displayLabel="Subject" authority="lcsh">
+           <topic>Automobile</topic>
+           <topic>History</topic>
+         </subject>
+         <relatedItem type="original">
+           <physicalDescription>
+             <form authority="aat">black-and-white negatives</form>
+           </physicalDescription>
+         </relatedItem>
+         <subject id="entrant" displayLabel="Entrant" authority="local">
+           <name type="personal">
+             <namePart>Donald Duck</namePart>
+           </name>
+         </subject>
+         <subject displayLabel="People" authority="local">
+           <name type="personal"><namePart>Doe, John</namePart></name>
+         </subject>
+         <subject displayLabel="People" authority="local">
+           <name type="personal"><namePart>Smith, Fred</namePart></name>
+         </subject>
+         <subject displayLabel="People" authority="local">
+           <name type="personal"><namePart>Ortiz, David</namePart></name>
+         </subject>
          <titleInfo>
            <title>a label</title>
          </titleInfo>
