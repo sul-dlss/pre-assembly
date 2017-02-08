@@ -1,5 +1,5 @@
 #! /bin/bash
-# run with 
+# run with
 #  ROBOT_ENVIRONMENT=production bundle exec bin/batch_run YAML_CONFIG [LIMIT_N]
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
@@ -11,27 +11,29 @@ else
 fi
 
 echo ""
-date  
+date
 echo "PROCESSING $yaml"
 echo "LIMIT = $limit"
 
 num_objects="$(bin/get_total_objects $yaml)"
 num_runs=$[num_objects/limit + 1]
+i="0"
 
-echo "$num_objects incomplete objects to process; will require $num_runs runs with limit of $limit"
+echo "$num_objects incomplete objects to process; will require an estimated $num_runs runs with limit of $limit"
 
 echo ""
 
-for (( i=1; i<=$num_runs; i++ ))
- do
+while [  $num_objects -gt 0 ]; do
    echo "-------------------------------"
    echo "  ON RUN NUMBER $i OF $num_runs"
    cmd="bundle exec bin/pre-assemble $yaml --limit $limit --resume"
    echo $cmd
    echo "-------------------------------"
    bash -c "$cmd"
+   i=$[$i + 1]
+   num_objects="$(bin/get_total_objects $yaml)"
  done
 
- echo "" 
- echo "ALL $num_runs RUNS COMPLETED"
+ echo ""
+ echo "COMPLETED $num_runs RUNS - THERE ARE $num_objects objects LEFT"
  date
