@@ -21,7 +21,7 @@ gem 'dor-services', '< 6'
 gem 'druid-tools'
 gem 'harvestdor'
 gem 'modsulator'
-gem 'revs-utils', '~> 2.1.23'
+gem 'revs-utils', '~> 2.1.24'
 gem 'stanford-mods'
 
 group :test do
