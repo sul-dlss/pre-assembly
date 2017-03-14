@@ -184,7 +184,7 @@ module PreAssembly
       end
 
       # now check all files in the bundle directory against the manifest to report on files not referenced
-      if using_manifest && show_other
+      if using_manifest && show_other && entries_in_bundle_directory.size > 0
         puts "\nExtra Files/Dir Report (items in bundle directory not in manifest, except manifest itself and checksum file):"
         entries_in_bundle_directory.each { |dir_item| puts "* #{dir_item}" unless (all_object_containers.include?(dir_item.to_s.strip) || skipped_files.include?(dir_item.to_s.strip) || dir_item.to_s.strip[0..1]=='._')}
       end
