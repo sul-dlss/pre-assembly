@@ -17,7 +17,7 @@ echo "LIMIT = $limit"
 
 num_objects="$(bin/get_total_objects $yaml)"
 num_runs=$[num_objects/limit + 1]
-i="0"
+i="1"
 
 echo "$num_objects incomplete objects to process; will require an estimated $num_runs runs with limit of $limit"
 
@@ -35,5 +35,8 @@ while [  $num_objects -gt 0 ]; do
  done
 
  echo ""
- echo "COMPLETED $num_runs RUNS - THERE ARE $num_objects objects LEFT"
+ echo "COMPLETED $num_runs RUNS"
+ if [ "$num_objects" -ne "0" ] ; then
+    echo "***** WARNING! THERE ARE $num_objects OBJECTS LEFT *****"
+ fi
  date
