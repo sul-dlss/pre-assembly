@@ -92,12 +92,15 @@ total_to_process=total_druids-total_completed
 puts "Input file: #{input_file}"
 puts "Found #{total_to_process} to remediate.  Total in file: #{total_druids}.  Already completed: #{total_completed}"
 puts "Started at #{Time.now}"
+puts ""
 $stdout.flush
 
 start_time=Time.now
 total_success=0
 total_failure=0
 count=0
+avg_time_per_object=0
+total_time_remaining=0
 
 druids.each do |druid|
   done=completed_druids.include?(druid)
@@ -107,7 +110,6 @@ druids.each do |druid|
     item.description=File.basename(remediate_logic_file) # added to the version description
     item.extend(RemediationLogic) # add in our project specific methods
     success=item.remediate
-    success=true
     if success
       total_success += 1
       result="success"
@@ -115,7 +117,13 @@ druids.each do |druid|
       result="FAILURE"
       total_failure += 1
     end
-    status = "#{druid} : #{result} : #{count} of #{total_to_process} (#{total_to_process-count} remaining) : #{Time.now}"
+    total_time=Time.now-start_time
+
+    remaining_to_process=total_to_process-count
+    avg_time_per_object=total_time/count
+    total_time_remaining=(avg_time_per_object * remaining_to_process).floor
+
+    status = "#{druid} : #{result} : #{count} of #{total_to_process} (#{remaining_to_process} remaining) : #{Time.now} : ~#{PreAssembly::Logging.seconds_to_string(total_time_remaining)} left"
     item.log_to_progress_file(progress_log_file)
     item.log_to_csv(csv_out)
     puts status
@@ -126,7 +134,9 @@ end
 end_time=Time.now
 total_time=((end_time-start_time) / 1.hour).round(2)
 
+puts ""
 puts "Input file: #{input_file}"
+puts "Output file: #{csv_out}"
 puts "Ended at #{end_time}.  Total time: #{total_time} hours.  Average time per object: #{(total_time*3600/total_to_process).round(2)} seconds"
 puts "Total in file: #{total_druids}. Total processed: #{total_to_process}. Successful: #{total_success}. Completed previously: #{total_completed}.  Failed: #{total_failure}"
 
