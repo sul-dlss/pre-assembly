@@ -1,6 +1,3 @@
-# config valid only for Capistrano 3
-lock '3.4.0'
-
 set :rvm_ruby_version, '2.2.4'      # Defaults to: 'default'
 set :application, 'pre-assembly'
 set :repo_url, 'https://github.com/sul-dlss/pre-assembly.git'
@@ -42,4 +39,4 @@ set :linked_dirs, %w{log config/certs config/environments tmp vendor/bundle}
 # set :keep_releases, 5
 
 # ignore actionview update since dependencies are not allowing it to update to the latest 4.x, October 5, 2016
-set :bundle_audit_ignore, %w{CVE-2016-6316} 
+set :bundle_audit_ignore, %w{CVE-2016-6316}
