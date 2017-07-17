@@ -806,7 +806,6 @@ module PreAssembly
         path.index(base) == 0
       )
       err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
-      Honeybadger.notify(ArgumentError)
       raise ArgumentError, err_msg
     end
 
@@ -817,7 +816,6 @@ module PreAssembly
       bd = File.dirname(path)
       return bd unless bd == '.'
       err_msg = "Bad arg to get_base_dir(#{path.inspect})"
-      Honeybadger.notify(ArgumentError)
       raise ArgumentError, err_msg
     end
 
