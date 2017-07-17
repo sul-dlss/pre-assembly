@@ -93,6 +93,7 @@ module PreAssembly
 
           @success=false
           @message="#{e.message}"
+          Honeybadger.notify(e)
 
         end
 
