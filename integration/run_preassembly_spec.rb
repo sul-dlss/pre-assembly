@@ -22,7 +22,14 @@ describe "Pre-assembly integration" do
   ]
 
   PROJECTS.each do |p|
-    it(p) { run_integration_tests p }
+     # The Revs Project tests try to register objects during integration tests, 
+     # and the SURI service tries to make a Fedora connection, breaking the tests.
+     # Disable them for now so at least the other integration tests can run -- July 17, 2017 Peter Mangiafico
+    if p.match(/(revs)/)
+      xit(p)
+    else
+      it(p) { run_integration_tests p }
+    end
   end
 
   ####
