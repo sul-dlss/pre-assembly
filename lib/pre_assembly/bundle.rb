@@ -584,8 +584,7 @@ module PreAssembly
         i=0
         success=false
         failed_validation=false
-        backtrace=""
-        exception_message=""
+        exception=nil
         tally = Hash.new(0)           # A tally to facilitate testing.
 
         until i == Dor::Config.dor.num_attempts || success || failed_validation do
@@ -607,8 +606,7 @@ module PreAssembly
           rescue Exception => e
             raise e if failed_validation # just raise the exception as normal if we have a failed file validation
             log "      ** VALIDATE_FILES FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-            backtrace=e.backtrace
-            exception_message=e.message
+            exception = e
             sleep Dor::Config.dor.sleep_time
           end
         end
@@ -616,9 +614,10 @@ module PreAssembly
         if success == false && !failed_validation
           error_message = "validate_files failed after #{i} attempts \n"
           log error_message
-          error_message += "exception: #{exception_message}\n"
-          error_message += "backtrace: #{backtrace}"
-          raise error_message
+          error_message += "exception: #{exception.message}\n"
+          error_message += "backtrace: #{exception.backtrace}"
+          Honeybadger.notify(exception)
+          raise exception
         else
           return tally
         end
@@ -723,6 +722,7 @@ module PreAssembly
           #   - from that point, raise a PreAssembly::PreAssembleError
           #   - then catch such errors here, allowing the current
           #     digital object to fail but the remaining objects to be processed.
+          Honeybadger.notify(e)
           raise e
 
         ensure
@@ -806,6 +806,7 @@ module PreAssembly
         path.index(base) == 0
       )
       err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
+      Honeybadger.notify(ArgumentError)
       raise ArgumentError, err_msg
     end
 
@@ -816,6 +817,7 @@ module PreAssembly
       bd = File.dirname(path)
       return bd unless bd == '.'
       err_msg = "Bad arg to get_base_dir(#{path.inspect})"
+      Honeybadger.notify(ArgumentError)
       raise ArgumentError, err_msg
     end
 

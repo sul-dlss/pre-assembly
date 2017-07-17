@@ -18,6 +18,7 @@ require 'pre_assembly/smpl_precontent_metadata'
 require 'assembly-utils'
 require 'assembly-image'
 require 'rest_client'
+require 'honeybadger'
 
 # map the content type tags set inside an object to content metadata creation styles supported by the assembly-objectfile gem
 # format is 'tag_value' => 'gem style name'
