@@ -1,3 +1,4 @@
+{<img src="https://travis-ci.org/sul-dlss/pre-assembly.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/sul-dlss/pre-assembly]
 =Pre-assembly
 
 This is a Ruby implementation of services needed to prepare objects to be assembled and then accessioned into the SUL digital library.
@@ -58,7 +59,7 @@ Uses ruby 2.2.0
 1.10.3:: show detailed exception messages if initiate_accessioning_workflow step fails after several attempts (useful for debugging)
 1.10.4:: update discovery report
 1.10.5:: update README to indicate new convenience methods available in assembly-utils, update required version of assembly-utils
-1.10.6:: Update service_root configuration to allow different service URLs (e.g. with or without v1) for test and production
+1.10.6:: Update dor_services url configuration to allow different service URLs (e.g. with or without v1) for test and production
 1.10.7:: Allow the dor register call to retry 5 (configurable) times, sleeping between each call in order to avoid pre-assembly crashing if the dor web service is temporarily unavailable
 1.10.8:: Add a new parameter to allow pre-assembly to be throttled (add a sleep time between objects)
 1.10.9:: Catch errors on register_object_in_set method call, and allow for retries before raising an exception
