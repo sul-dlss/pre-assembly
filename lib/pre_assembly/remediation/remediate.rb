@@ -70,7 +70,7 @@ module PreAssembly
           if should_remediate? # should_remediate? == true
 
             if updates_allowed?
-                if versioning_required? # object can be updated directly, no versioning needed
+                if versioning_required?
                     update_object_with_versioning
                     @message='remediated with versioning' if @success
                 else
