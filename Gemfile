@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'actionmailer', '< 5'
-gem 'actionpack', '< 5'
+gem 'actionmailer', '~> 4.2.10'
+gem 'actionpack', '~> 4.2.10'
 gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
