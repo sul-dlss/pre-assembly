@@ -418,7 +418,7 @@ module PreAssembly
       # find all technical metadata files and just append the xml to the combined technicalMetadata
       current_directory=Dir.pwd
       FileUtils.cd(File.join(@bundle_dir,container_basename))
-      tech_md_filenames=Dir.glob("**/*_techmd.xml")
+      tech_md_filenames=Dir.glob("**/*_techmd.xml").sort
       tech_md_filenames.each do |filename|
          tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
          tm.root << tech_md_xml.root
