@@ -8,6 +8,7 @@ gem 'nokogiri'
 gem 'rake'
 gem 'rdf'
 gem 'rest-client'
+gem 'retries'
 gem 'roo'
 gem 'ruby-prof'
 
