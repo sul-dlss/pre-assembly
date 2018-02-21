@@ -162,36 +162,11 @@ module PreAssembly
     end
 
     def get_pid_from_suri
-
-      i=0
-      success=false
-      backtrace=""
-      exception_message=""
-      result=nil
-
-      until i == Dor::Config.dor.num_attempts || success do
-        i+=1
-        begin
-          result = Dor::SuriService.mint_id
-          success = (result.class == String)
-        rescue Exception => e
-          log "      ** GET_PID_FROM_SURI FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          backtrace=e.backtrace
-          exception_message=e.message
-          sleep Dor::Config.dor.sleep_time
-        end
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('GET_PID_FROM_SURI', method(:log))) do
+        result = Dor::SuriService.mint_id
+        raise PreAssembly::UnknownError unless result.class == String
+        result
       end
-
-      if success == false || result.nil?
-        error_message = "get_pid_from_suri failed after #{i} attempts\n"
-        log error_message
-        error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}"
-        raise error_message
-      else
-        return result
-      end
-
     end
 
     def get_pid_from_druid_minter
@@ -258,48 +233,33 @@ module PreAssembly
     end
 
     def register_in_dor(params)
-
-      i=0
-      success=false
-      backtrace=""
-      exception_message=""
-      result=nil
-
-      until i == Dor::Config.dor.num_attempts || success do
-        i+=1
-        begin
-          result = Dor::RegistrationService.register_object params
-          success = (result.class == Dor::Item)
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('REGISTER_IN_DOR', method(:log), params)) do
+        result = begin
+          Dor::RegistrationService.register_object params
         rescue Exception => e
           source_id="#{@project_name}:#{@source_id}"
           log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          sourceid_pids=Dor::SearchService.query_by_id(source_id)
-          all_pids=sourceid_pids << @pid
-          all_pids.each do |pid|
-            begin
-              Dor::SearchService.solr.delete_by_id(pid)  # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
-              Dor::Config.fedora.client["objects/#{pid}"].delete
-            rescue Exception => e1
-              log "      ... could not delete object with #{pid} or source id #{source_id} : #{e1.message} ..."
-            end
-          end
-          Dor::SearchService.solr.commit
-          backtrace=e.backtrace
-          exception_message=e.message
-          sleep Dor::Config.dor.sleep_time
+          delete_objects_from_workspace_by_source_id(source_id)
+          nil
+        end
+
+        raise PreAssembly::UnknownError unless result.class == Dor::Item
+        result
+      end
+    end
+
+    def delete_objects_from_workspace_by_source_id(source_id)
+      sourceid_pids = Dor::SearchService.query_by_id(source_id)
+      all_pids= sourceid_pids << @pid
+      all_pids.each do |pid|
+        begin
+          Dor::SearchService.solr.delete_by_id(pid)  # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
+          Dor::Config.fedora.client["objects/#{pid}"].delete
+        rescue Exception => e
+          log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
         end
       end
-
-      if success == false || result.nil?
-        error_message = "register_in_dor failed after #{i} attempts; with params of #{params} \n"
-        log error_message
-        error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}"
-        raise error_message
-      else
-        return result
-      end
-
+      Dor::SearchService.solr.commit
     end
 
     def registration_params
@@ -320,32 +280,13 @@ module PreAssembly
       return unless @set_druid_id && @project_style[:should_register]
       log "    - add_dor_object_to_set(#{@set_druid_id})"
 
-      i=0
-      success=false
-      exception=nil
-      until i == Dor::Config.dor.num_attempts || success do
-        i+=1
-        begin
-          Array(@set_druid_id).each do |druid|
-            @dor_object.add_relationship *add_member_relationship_params(druid)
-            @dor_object.add_relationship *add_collection_relationship_params(druid)
-          end
-          success = @dor_object.save
-        rescue Exception => e
-          log "      ** ADD_DOR_OBJECT_TO_SET FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          exception = e
-          sleep Dor::Config.dor.sleep_time
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('ADD_DOR_OBJECT_TO_SET', method(:log))) do
+        Array(@set_druid_id).each do |druid|
+          @dor_object.add_relationship *add_member_relationship_params(druid)
+          @dor_object.add_relationship *add_collection_relationship_params(druid)
         end
+        raise PreAssembly::UnknownError unless @dor_object.save
       end
-
-      if success == false
-        error_message = "add_dor_object_to_set failed after #{i} attempts; for druid=#{pid} and set=#{@set_druid_id} \n"
-        log error_message
-        wrapped_exception = e.exception(error_message + e.message)
-        wrapped_exception.set_backtrace(e.backtrace)
-        raise wrapped_exception
-      end
-
     end
 
     def add_member_relationship_params(druid)
@@ -555,31 +496,11 @@ module PreAssembly
       log "    - initialize_assembly_workflow()"
       url = assembly_workflow_url
 
-      i=0
-      success=false
-      backtrace=""
-      exception_message=""
-      until i == Dor::Config.dor.num_attempts || success do
-        i+=1
-        begin
-          result = RestClient.post url, {}
-          success = true if result && [200,201,202,204].include?(result.code)
-        rescue Exception => e
-          log "      ** INITIALIZE ASSEMBLY WORKFLOW FAILED **, and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          backtrace=e.backtrace
-          exception_message=e.message
-          sleep Dor::Config.dor.sleep_time
-        end
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
+        result = RestClient.post url, {}
+        raise PreAssembly::UnknownError unless result && [200,201,202,204].include?(result.code)
+        result
       end
-
-      if success == false
-        error_message = "initialize_assembly_workflow failed after #{i} attempts; with URL of #{url} \n"
-        log error_message
-        error_message += "exception: #{exception_message}\n"
-        error_message += "backtrace: #{backtrace}"
-        raise error_message
-      end
-
     end
 
     def assembly_workflow_url

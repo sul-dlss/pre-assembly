@@ -220,7 +220,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "can exercise method using stubbed exernal calls" do
-      @dobj.dor_object = double('dor_object', :add_relationship => nil, :save => nil)
+      @dobj.dor_object = double('dor_object', :add_relationship => nil, :save => true)
       @dobj.add_dor_object_to_set
     end
 

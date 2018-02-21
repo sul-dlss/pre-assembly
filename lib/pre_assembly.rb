@@ -31,4 +31,12 @@ CONTENT_TYPE_TAG_MAPPING = {
   'Map'=>:map
 }
 
+module PreAssembly
+  def self.retry_handler(method_name, logger, params = {})
+    Proc.new do |exception, attempt_number, total_delay|
+      logger.send "      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor.num_attempts}; delayed #{Dor::Config.dor.total_delay} seconds"
+    end
+  end
 
+  UnknownError = Class.new(StandardError)
+end
