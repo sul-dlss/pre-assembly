@@ -279,8 +279,8 @@ module PreAssembly
             begin
               Dor::SearchService.solr.delete_by_id(pid)  # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
               Dor::Config.fedora.client["objects/#{pid}"].delete
-            rescue Exception => e
-              log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
+            rescue Exception => e1
+              log "      ... could not delete object with #{pid} or source id #{source_id} : #{e1.message} ..."
             end
           end
           Dor::SearchService.solr.commit
@@ -584,7 +584,7 @@ module PreAssembly
 
     def assembly_workflow_url
       druid = @pid.include?('druid') ? @pid : "druid:#{@pid}"
-      "#{Dor::Config.dor.service_root}/objects/#{druid}/apo_workflows/assemblyWF"
+      "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
     end
 
   end
