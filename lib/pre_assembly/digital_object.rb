@@ -584,7 +584,7 @@ module PreAssembly
 
     def assembly_workflow_url
       druid = @pid.include?('druid') ? @pid : "druid:#{@pid}"
-      "#{Dor::Config.dor.service_root}/objects/#{druid}/apo_workflows/assemblyWF"
+      "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
     end
 
   end
