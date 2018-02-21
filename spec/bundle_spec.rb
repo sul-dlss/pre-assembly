@@ -55,15 +55,15 @@ describe PreAssembly::Bundle do
       expect(template.size).to be > 0
     end
 
-    it "setup_other() should prune @publish_attr" do
+    it "setup_other() should prune @file_attr" do
       # All keys are present.
-      ks = @b.publish_attr.keys.map { |k| k.to_s }
+      ks = @b.file_attr.keys.map { |k| k.to_s }
       expect(ks.sort).to eq(%w(preserve publish shelve))
       # Keys with nil values should be removed.
-      @b.publish_attr[:preserve] = nil
-      @b.publish_attr[:publish]  = nil
+      @b.file_attr[:preserve] = nil
+      @b.file_attr[:publish]  = nil
       @b.setup_other
-      expect(@b.publish_attr.keys).to eq([:shelve])
+      expect(@b.file_attr.keys).to eq([:shelve])
     end
 
   end

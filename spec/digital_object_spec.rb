@@ -426,7 +426,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='none'
       @dobj.project_style[:content_structure]='simple_book'
-      @dobj.publish_attr=nil
+      @dobj.file_attr=nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -448,7 +448,7 @@ describe PreAssembly::DigitalObject do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style]='filename'
       @dobj.project_style[:content_structure]='simple_book'
-      @dobj.publish_attr=nil
+      @dobj.file_attr=nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -494,7 +494,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:content_tag_override]=true        # this allows override of content structure
       allow(@dobj).to receive(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
       @dobj.project_style[:should_register]=false
-      @dobj.publish_attr=nil
+      @dobj.file_attr=nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -563,7 +563,7 @@ describe PreAssembly::DigitalObject do
       @dobj.project_style[:content_structure]='simple_image' # this is the default
       allow(@dobj).to receive(:content_type_tag).and_return('File')       # this is what the object tag says, but it should be ignored since overriding is not allowed
       @dobj.project_style[:should_register]=false
-      @dobj.publish_attr={'image/jp2'=>{:publish=>'yes',:shelve=>'yes',:preserve=>'no'},'image/tiff'=>{:publish=>'no',:shelve=>'no',:preserve=>'yes'}}
+      @dobj.file_attr={'image/jp2'=>{:publish=>'yes',:shelve=>'yes',:preserve=>'no'},'image/tiff'=>{:publish=>'no',:shelve=>'no',:preserve=>'yes'}}
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
