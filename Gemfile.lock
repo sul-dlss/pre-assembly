@@ -169,6 +169,12 @@ GEM
     i18n (0.9.3)
       concurrent-ruby (~> 1.0)
     iso-639 (0.2.8)
+    jettywrapper (2.0.4)
+      activesupport (>= 3.0.0)
+      childprocess
+      i18n
+      logger
+      rubyzip (~> 1.0)
     json (1.8.6)
     link_header (0.0.8)
     loofah (2.1.1)
@@ -292,6 +298,11 @@ GEM
       nokogiri
       rest-client
     rubyzip (1.2.0)
+    solr_wrapper (1.2.0)
+      faraday
+      retriable
+      ruby-progressbar
+      rubyzip
     solrizer (3.1.1)
       activesupport
       daemons
@@ -341,15 +352,18 @@ DEPENDENCIES
   druid-tools
   equivalent-xml
   harvestdor
+  jettywrapper
   modsulator
   nokogiri
   rake
   rdf
   rest-client
+  retries
   revs-utils (~> 2.1.24)
   roo
   rspec (~> 3.0)
   ruby-prof
+  solr_wrapper
   stanford-mods
   yard
 
