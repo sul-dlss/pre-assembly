@@ -20,7 +20,7 @@ module PreAssembly
       :apply_tag,
       :apo_druid_id,
       :set_druid_id,
-      :publish_attr,
+      :file_attr,
       :bundle_dir,
       :staging_dir,
       :desc_md_template_xml,
@@ -58,6 +58,7 @@ module PreAssembly
 
     def initialize(params = {})
       INIT_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
+      @file_attr ||= params[:publish_attr]
       setup
     end
 
@@ -463,7 +464,7 @@ module PreAssembly
         # otherwise use the content metadata generation gem
         params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}
 
-        params.merge!(:add_file_attributes=>true,:file_attributes=>@publish_attr.stringify_keys) unless @publish_attr.nil?
+        params.merge!(:add_file_attributes=>true,:file_attributes=>@file_attr.stringify_keys) unless @file_attr.nil?
 
         @content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
 
