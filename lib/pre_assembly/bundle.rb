@@ -31,7 +31,7 @@ module PreAssembly
       :apply_tag,
       :apo_druid_id,
       :set_druid_id,
-      :publish_attr,
+      :file_attr,
       :compute_checksum,
       :init_assembly_wf,
       :content_md_creation,
@@ -84,6 +84,7 @@ module PreAssembly
       Assembly::Utils.values_to_symbols! params[:project_style]
       cmc          = params[:content_md_creation]
       cmc[:style]  = cmc[:style].to_sym
+      params[:file_attr] ||= params[:publish_attr]
       @user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
 
@@ -115,8 +116,8 @@ module PreAssembly
       @manifest_rows          = nil
       @content_exclusion      = Regexp.new(@content_exclusion) if @content_exclusion
       @validate_bundle_dir  ||= {}
-      @publish_attr           = {} if @publish_attr.nil?
-      @publish_attr.delete_if { |k,v| v.nil? }
+      @file_attr              = {} if @file_attr.nil?
+      @file_attr.delete_if { |k,v| v.nil? }
       @set_druid_id = [@set_druid_id] if @set_druid_id && @set_druid_id.class == String # convert set_druid_id to 1 element array if its single valued and exists
     end
 
@@ -428,7 +429,7 @@ module PreAssembly
           :apply_tag            => @apply_tag,
           :apo_druid_id         => @apo_druid_id,
           :set_druid_id         => @set_druid_id,
-          :publish_attr         => @publish_attr,
+          :file_attr            => @file_attr,
           :init_assembly_wf     => @init_assembly_wf,
           :content_md_creation  => @content_md_creation,
           :container            => container,
