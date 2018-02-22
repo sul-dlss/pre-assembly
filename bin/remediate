@@ -10,7 +10,8 @@
 # eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
 
 # You can specify an optional number of seconds to pause between each object (in seconds) after the remediation logic filename.  If left off, no
-# pause between objects will occur.
+# pause between objects will occur. This can be useful for large remediation jobs that are a low priority, which allows them to run at a slower pace
+# and thus generating less concurrent load on the system while other higher priority jobs are running concurrently.
 # You can also add in optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.
 # Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!  If you want to add these
 # parameters, you must also specify the pause time (which could be 0).
