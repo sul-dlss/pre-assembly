@@ -819,7 +819,10 @@ You can re-run the remediation with the same CSV file and it will automatically 
 You can also add optional parameters to override defaults for checking if items are in accessioning or if they require versioning and set to false.
 Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!
 
-ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb ignore_versioning ignore_accessioning
+ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS] ignore_versioning ignore_accessioning
+
+Finally, you can specify a pause time in seconds per object. This can be useful for large remediation jobs that are a low priority, which allows them
+to run at a slower pace and thus generating less concurrent load on the system while other higher priority jobs are running concurrently.
 
 === MODs Remediation
 
