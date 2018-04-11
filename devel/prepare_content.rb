@@ -1,35 +1,36 @@
-# Used to stage content from Rumsey format to folder structure ready for accessioning.
+# Used to stage content from Rumsey or other similar format to folder structure ready for accessioning.
 # Iterate through each row in the manifest, find files, generate contentMetadata and symlink to new location.
+# Set the base content folder below!
 
 # Peter Mangiafico
-# June 17, 2015
+# November 14, 2017
+# see https://consul.stanford.edu/pages/viewpage.action?pageId=146704638 for more documentation
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/prepare_rumsey.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey [--report] [--content-metadata] [--content-metadata-style map]
+# ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+#  e.g.
+# ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 
-# this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
-#  input CSV should have columns labeled "Object", "Image", and "Label"
-#   image is the filename, object is the object identifier (turned into a folder)
-# second parameter is folder to stage content to (if not provided, will use same path as csv file, and append "staging")
+# the first parameter is the input CSV (with columns labeled "Object", "Image", and "Label" (image is the filename, object is the object identifier which can be turned into a folder)
+# second parameter is the full path to the content folder that will be searched
+# third parameter is optional and is the full path to a folder to stage content to (if not provided, will use same path as csv file, and append "staging")
 #
 # if you set the --report switch, it will only produce the output report, it will not symlink any files
 # if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
-
-# parameters:
-base_content_folder='/maps/ThirdParty/Rumsey/content' # base folder to search for content
-# base_content_folder='/Users/petucket/Downloads' # base folder to search for content
-
-content_metadata_filename='contentMetadata.xml'
+# if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'optparse'
 require 'pathname'
 
+content_metadata_filename='contentMetadata.xml'
 report=false # if set to true, will only show output and produce report, won't actually symlink files or create anything, can be overriden with --report switch
 content_metadata=false # if set to true, will also generate content-metadata from values supplied in spreadsheet, can be set via switch
-cm_style='map' # defaults to map type content metaadata unless overriden
+cm_style='map' # defaults to map type content metadata unless overriden
+no_object_folders=false # if false, then each new object will be in a separately created folder, with symlinks contained inside it; if true, you will get a flat list
 
-help="Usage:\n    ruby prepare_rumsey.rb INPUT_CSV_FILE [STAGING_FOLDER] [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
+
+help="Usage:\n    ruby prepare_content.rb INPUT_CSV_FILE BASE_CONTENT_FOLDER [STAGING_FOLDER] [--no-object-folders] [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
 OptionParser.new do |opts|
   opts.banner = help
   opts.on("--report") do |dr|
@@ -41,22 +42,26 @@ OptionParser.new do |opts|
   opts.on("--content_metadata_style [STYLE]") do |st|
     cm_style=st
   end
+  opts.on("--no-object-folders") do |ob|
+    no_object_folders=true
+  end
 end.parse!
 
-if ARGV.size == 0
+if ARGV.size < 2
   puts help
-  abort "Incorrect N of arguments."
+  abort "Incorrect number of argument provided - you need to supply an input CSV file and the folder to search for."
 end
 csv_in = ARGV[0]
+base_content_folder = ARGV[1]
 
 source_path=File.dirname(csv_in)
 source_name=File.basename(csv_in,File.extname(csv_in))
 csv_out=File.join(source_path, source_name + "_log.csv")
 
-if ARGV.size == 1 # no staging path provided, use same as CSV In and append "staging"
+if ARGV.size == 2 # no staging path provided, use same as CSV In and append "staging"
   staging_folder = File.join(source_path,"staging")
 else # use what was provided
-  staging_folder = ARGV[1]
+  staging_folder = ARGV[2]
 end
 
 abort "#{csv_in} not found" unless File.exists?(csv_in)
@@ -69,16 +74,17 @@ unless File.exists?(csv_out) # if we don't already have a log file, write out th
 end
 
 # read in existing log file
-log_file_data=RevsUtils.read_csv_with_headers(csv_out)
+log_file_data = CSV.parse(IO.read(csv_out), :headers => true).map { |row| row.to_hash.with_indifferent_access }
 
 # read input manifest
-csv_data = RevsUtils.read_csv_with_headers(csv_in)
+csv_data = CSV.parse(IO.read(csv_in), :headers => true).map { |row| row.to_hash.with_indifferent_access }
 
 start_time=Time.now
 puts ""
-puts "Rumsey Prepare"
-puts "Only producting report" if report
+puts "***Prepare Content***"
+puts "Only producing report" if report
 puts "Producing content metadata with style '#{cm_style}'" if content_metadata
+puts "Creating object folders" unless no_object_folders
 puts "Input CSV File: #{csv_in}"
 puts "Logging to: #{csv_out}"
 puts "Base Content Folder: #{base_content_folder}"
@@ -136,10 +142,12 @@ if content_metadata # create the content metadata
 
   puts ""
 
-# either a report or symlink operation
-else
+else # either a report or symlink operation
 
   FileUtils.cd(base_content_folder)
+  FileUtils.mkdir_p staging_folder unless report
+  files_to_search = Dir.glob("**/**")
+  files_to_search.reject!{|f| f == '.' || f == '..' || f == '.DS_Store'}
 
   csv_data.each do |row|
 
@@ -160,45 +168,43 @@ else
     previously_found=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "true" }.size) > 0
     previously_missed=(log_file_data.select {|row| row["Image"] == row_filename && row["Success"].downcase == "false" }.size) > 0
 
-    unless previously_found # only look for this file if it has not already been found according to the log file
+    unless previously_found # only look for this file if it has not already been found according to the output log file
 
       object_folder=File.join(staging_folder,object)
 
-      unless found_objects.include? object # we have a new object
-        FileUtils.mkdir_p object_folder unless report
+      unless found_objects.include? object # check to see if we have a new object so we can create a new output folder for it
+        msg = "...#{Time.now}: Found new object: '#{object}'"
+        unless no_object_folders || report
+          FileUtils.mkdir_p object_folder
+          msg += " - creating object folder '#{object_folder}' if it does not exist"
+        end
         found_objects << object
-        puts "...#{Time.now}: Found new object: '#{object}', creating object folder '#{object_folder}' if needed"
         num_objects+=1
+        puts msg
       end # end we have an object
 
       # now search for any file which ends with the filename (trying to catch cases where the filename has 0s at the beginning that were dropped from the spreadsheet)
       puts "......#{Time.now}: looking for file '#{filename}', object '#{object}', label '#{label}'"
-      search_string="find . -iname '*#{filename}.*' -type f -print"
-      search_result=`#{search_string}`
-      files=search_result.split(/\n/)
+      files_found = files_to_search.grep(/[0]*#{filename}\.\S+/)
+      files_found_basenames = files_found.map{|file| File.basename(file)}
 
       # if found, symlink files that match or that end with the filename but have any number of leading zeros
-      if files.size > 0
-        files.each do |input_file|
-          input_filename=File.basename(input_file)
-          input_filename_without_ext=File.basename(input_file,File.extname(input_file))
-          input_filename_leading_zeros=/^[0]*#{input_filename}/.match(input_filename)[0].size
-          if (input_filename_without_ext == filename) || (input_filename_leading_zeros > 0) # if the found file is an exact match with the data provided OR if it ends with the string and starts with leading zeros, symlink it
-            message= "found #{input_file}, symlink to object folder #{object_folder}"
-            output_file_full_path=File.join(object_folder,input_filename)
-            input_file_full_path=Pathname.new(File.join(base_content_folder,input_file)).cleanpath(true).to_s
-            FileUtils.ln_s(input_file_full_path, output_file_full_path,:force=>true) unless (report || File.exists?(output_file_full_path))
-            num_files_copied+=1
-            success=true
-            CSV.open(csv_out, 'a') {|f|
-              output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
-              f << output_row
-            }
-            puts "......#{message}"
-          end # end check for matching filename
-        end # end loop over all matches
-
-      end # end check for files.size > 0
+      files_found.each do |input_file|
+        input_filename=File.basename(input_file)
+        if /^[0]*#{filename}\.\S+/.match(input_filename) # the found file matches the supplied filename with only leading 0s allowed, so it matches!       
+          message= "found #{input_file}, symlink to object folder #{object_folder}"
+          output_file_full_path = no_object_folders ? File.join(staging_folder,input_filename) : (File.join(object_folder,input_filename))
+          input_file_full_path = Pathname.new(File.join(base_content_folder,input_file)).cleanpath(true).to_s
+          FileUtils.ln_s(input_file_full_path, output_file_full_path,:force=>true) unless (report || File.exists?(output_file_full_path))
+          num_files_copied+=1
+          success=true
+          CSV.open(csv_out, 'a') {|f|
+            output_row=[object,filename,input_filename,sequence,label,druid,success,message,Time.now]
+            f << output_row
+          }
+          puts "......#{message}"
+        end
+      end # end loop over all matches
 
       # do not log if it was previously missed and we missed it again
       if (!previously_missed && !success)
@@ -227,7 +233,6 @@ else
   puts "Total files symlinked: #{num_files_copied}"
   puts "Total rows: #{csv_data.size}"
   puts "Total files not found: #{num_files_not_found}"
-
 
 end # end check for content metadata or symlinking/report
 
