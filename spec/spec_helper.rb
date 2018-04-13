@@ -1,6 +1,8 @@
 require 'tmpdir'
 require 'equivalent-xml/rspec_matchers'
 require 'byebug'
+require 'coveralls'
+Coveralls.wear!
 
 puts "running in #{ENV['ROBOT_ENVIRONMENT']} mode"
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
