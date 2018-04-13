@@ -1,5 +1,8 @@
 =Pre-assembly
 
+{<img src="https://coveralls.io/repos/github/sul-dlss/pre-assembly/badge.svg" alt="Coverage Status" />}[https://coveralls.io/github/sul-dlss/pre-assembly]
+
+
 This is a Ruby implementation of services needed to prepare objects to be assembled and then accessioned into the SUL digital library.
 
 Uses ruby 2.2.0
