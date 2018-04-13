@@ -16,3 +16,4 @@ pkg/*
 tags
 tmp
 /workflow_service.log*
+coverage
