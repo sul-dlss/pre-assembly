@@ -20,7 +20,7 @@ GEM
       erubis (~> 2.7.0)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
-    active-fedora (8.4.1)
+    active-fedora (8.4.2)
       active-triples (~> 0.4.0)
       activesupport (>= 3.0.0)
       deprecation
@@ -48,10 +48,9 @@ GEM
       tzinfo (~> 1.1)
     airbrussh (1.3.0)
       sshkit (>= 1.6.1, != 1.7.0)
-    assembly-image (1.6.9)
+    assembly-image (1.7.0)
       assembly-objectfile (>= 1.6.4)
       mini_exiftool (>= 1.6, < 3)
-      uuidtools
     assembly-objectfile (1.7.1)
       mime-types
       mini_exiftool
@@ -61,14 +60,11 @@ GEM
       druid-tools (>= 0.2.6)
       nokogiri
     awesome_print (1.8.0)
-    bagit (0.4.1)
-      docopt (~> 0.5.0)
-      validatable (~> 1.6)
     builder (3.2.3)
     bundler-audit (0.6.0)
       bundler (~> 1.2)
       thor (~> 0.18)
-    byebug (10.0.0)
+    byebug (10.0.2)
     capistrano (3.10.1)
       airbrussh (>= 1.0.0)
       i18n
@@ -86,7 +82,7 @@ GEM
       capistrano (~> 3.0)
       sshkit (~> 1.2)
     capistrano-shared_configs (0.2.2)
-    childprocess (0.8.0)
+    childprocess (0.9.0)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
     concurrent-ruby (1.0.5)
@@ -108,23 +104,20 @@ GEM
       capistrano-bundle_audit (>= 0.1.0)
       capistrano-one_time_key
       capistrano-shared_configs
-    docopt (0.5.0)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
     dor-rights-auth (1.3.0)
       nokogiri
-    dor-services (5.26.1)
+    dor-services (5.28.0)
       active-fedora (>= 6.0, < 9.a)
       activesupport (>= 3.2.18)
       confstruct (~> 0.2.7)
       dor-rights-auth (~> 1.0, >= 1.2.0)
       dor-workflow-service (~> 2.0, >= 2.0.1)
-      druid-tools (~> 0.4, >= 0.4.1)
+      druid-tools (>= 0.4.1)
       equivalent-xml (~> 0.5, >= 0.5.1)
       json (>= 1.8.1)
-      lyber-utils (~> 0.1.2)
-      moab-versioning (~> 2.0)
-      modsulator (>= 0.0.7, < 2)
+      moab-versioning (~> 4.0)
       net-sftp (~> 2.1)
       nokogiri (~> 1.6)
       om (~> 3.0)
@@ -137,6 +130,7 @@ GEM
       rubydora (~> 1.6, >= 1.6.5)
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
+      stanford-mods-normalizer (~> 0.1)
       systemu (~> 2.6)
       uuidtools (~> 2.1.4)
     dor-workflow-service (2.2.1)
@@ -146,7 +140,7 @@ GEM
       net-http-persistent (>= 2.9.4, < 4.a)
       nokogiri (~> 1.6)
       retries
-    druid-tools (0.4.1)
+    druid-tools (1.0.0)
     edtf (3.0.4)
       activesupport (>= 3.0, < 6.0)
     equivalent-xml (0.6.0)
@@ -155,7 +149,7 @@ GEM
     faraday (0.14.0)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
-    ffi (1.9.21)
+    ffi (1.9.23)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     haml (4.0.7)
@@ -165,7 +159,7 @@ GEM
       faraday
       net-http-persistent
       nokogiri
-    honeybadger (3.1.2)
+    honeybadger (3.3.0)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
@@ -186,11 +180,6 @@ GEM
     loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    lyber-utils (0.1.2)
-      bagit (>= 0.1.0)
-      nokogiri (>= 1.4.3.1)
-      systemu (>= 1.2.0)
-      validatable
     mail (2.7.0)
       mini_mime (>= 0.1.1)
     mime-types (3.1)
@@ -200,22 +189,22 @@ GEM
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
-    moab-versioning (2.1.0)
+    moab-versioning (4.2.1)
       confstruct
+      druid-tools (>= 1.0.0)
       json
       nokogiri
       nokogiri-happymapper
-      systemu
     mods (2.3.1)
       edtf
       iso-639
       nokogiri
       nom-xml (~> 0.6.0)
-    modsulator (1.0.5)
+    modsulator (1.0.4)
       activesupport
       equivalent-xml (>= 0.6.0)
       nokogiri
-      roo (= 2.5.1)
+      roo (>= 1.1)
     multipart-post (2.0.0)
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
@@ -238,7 +227,7 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    rack (1.6.8)
+    rack (1.6.9)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails-deprecated_sanitizer (1.0.3)
@@ -249,7 +238,7 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
-    rake (12.3.0)
+    rake (12.3.1)
     rdf (1.99.1)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (1.99.0)
@@ -281,7 +270,7 @@ GEM
       countries (= 0.9.2)
       rake
       rdf
-    roo (2.5.1)
+    roo (2.7.1)
       nokogiri (~> 1)
       rubyzip (~> 1.1, < 2.0.0)
     rsolr (2.1.0)
@@ -331,6 +320,8 @@ GEM
     stanford-mods (2.5.1)
       activesupport
       mods (~> 2.2)
+    stanford-mods-normalizer (0.1.0)
+      nokogiri (~> 1.8)
     stomp (1.4.4)
     systemu (2.6.5)
     thor (0.20.0)
@@ -343,7 +334,6 @@ GEM
       unf_ext
     unf_ext (0.0.7.5)
     uuidtools (2.1.5)
-    validatable (1.6.7)
     xml-simple (1.1.5)
     yard (0.9.12)
 
