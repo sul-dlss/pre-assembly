@@ -31,6 +31,7 @@ group :test do
   gem 'yard'
   gem 'solr_wrapper'
   gem 'jettywrapper'
+  gem 'coveralls', require: false
 end
 
 group :deployment do
