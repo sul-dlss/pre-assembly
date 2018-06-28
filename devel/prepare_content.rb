@@ -7,7 +7,11 @@
 # see https://consul.stanford.edu/pages/viewpage.action?pageId=146704638 for more documentation
 #
 # Run with
+<<<<<<< HEAD
 # RAILS_ENV=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+=======
+# ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--exact-match] [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+>>>>>>> 738216a... change requested by maps accessioning team in prep script to allow for differing algorithms when searching for files
 #  e.g.
 # RAILS_ENV=production ruby devel/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 
@@ -18,6 +22,8 @@
 # if you set the --report switch, it will only produce the output report, it will not symlink any files
 # if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
 # if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
+# if you set the --exact-match switch, then only files which match exactly (but not case sensitive) will be found; the normal finding algorithm allows for also matching files that have any number of leading 0s
+#                file extensions do not matter when matching
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require 'optparse'
@@ -28,6 +34,7 @@ report = false # if set to true, will only show output and produce report, won't
 content_metadata = false # if set to true, will also generate content-metadata from values supplied in spreadsheet, can be set via switch
 cm_style = 'map' # defaults to map type content metadata unless overriden
 no_object_folders = false # if false, then each new object will be in a separately created folder, with symlinks contained inside it; if true, you will get a flat list
+exact_match = false # if set to true, only files that match exactly (but case insensitive) will be found; any files with leading 0s will NOT match
 
 help = "Usage:\n    ruby prepare_content.rb INPUT_CSV_FILE BASE_CONTENT_FOLDER [STAGING_FOLDER] [--no-object-folders] [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
 OptionParser.new do |opts|
@@ -43,6 +50,9 @@ OptionParser.new do |opts|
   end
   opts.on("--no-object-folders") do |_ob|
     no_object_folders = true
+  end
+  opts.on("--exact-match") do |ob|
+    exact_match = true
   end
 end.parse!
 
@@ -84,6 +94,7 @@ puts "***Prepare Content***"
 puts "Only producing report" if report
 puts "Producing content metadata with style '#{cm_style}'" if content_metadata
 puts "Creating object folders" unless no_object_folders
+puts "Exact match algorithm" if exact_match
 puts "Input CSV File: #{csv_in}"
 puts "Logging to: #{csv_out}"
 puts "Base Content Folder: #{base_content_folder}"
@@ -181,13 +192,16 @@ else # either a report or symlink operation
 
       # now search for any file which ends with the filename (trying to catch cases where the filename has 0s at the beginning that were dropped from the spreadsheet)
       puts "......#{Time.now}: looking for file '#{filename}', object '#{object}', label '#{label}'"
-      files_found = files_to_search.grep(/[0]*#{filename}\.\S+/)
+      files_found = files_to_search.grep(/^[0]*#{filename}\.\S+/i) # allow for leading zeros and case insensitivy; we will further refine later according to options set
       files_found_basenames = files_found.map { |file| File.basename(file) }
 
-      # if found, symlink files that match or that end with the filename but have any number of leading zeros
+      # if found, symlink files that match
       files_found.each do |input_file|
         input_filename = File.basename(input_file)
-        if /^[0]*#{filename}\.\S+/.match(input_filename) # the found file matches the supplied filename with only leading 0s allowed, so it matches!
+        # match check, if exact match, do not look for leading zeros, but allow for case insensitivy
+        #  if not exact match, allow leading 0s, keep case sensitivity
+        matched = exact_match ? /^#{filename}\.\S+/i.match(input_filename) : /^[0]*#{filename}\.\S+/.match(input_filename)
+        if matched # the found file matches the supplied filename
           message = "found #{input_file}, symlink to object folder #{object_folder}"
           output_file_full_path = no_object_folders ? File.join(staging_folder, input_filename) : (File.join(object_folder, input_filename))
           input_file_full_path = Pathname.new(File.join(base_content_folder, input_file)).cleanpath(true).to_s
