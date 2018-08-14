@@ -34,7 +34,7 @@ completed_druids = PreAssembly::Remediation::Item.get_druids(progress_log_file)
 # read input manifest
 @items = CsvMapper.import(csv_in) do read_attributes_from_file end
 
-@items.each_with_index do |row, x|
+@items.each_with_index do |row, _x|
   pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
     puts "cannot find single pid for source id #{row.sourceid}"

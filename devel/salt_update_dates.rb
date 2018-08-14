@@ -32,7 +32,7 @@ completed_druids = PreAssembly::Remediation::Item.get_druids(progress_log_file)
 # read input manifest
 @items = CsvMapper.import(csv_in) do read_attributes_from_file end
 
-@items.each_with_index do |row, x|
+@items.each_with_index do |row, _x|
   manifest_row = Hash[row.each_pair.to_a]
   pid = manifest_row[:druid]
   done = completed_druids.include?(pid)

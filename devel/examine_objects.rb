@@ -91,8 +91,8 @@ require 'logger'
   cm_file = File.join(druid_tree_path(druid, Dor::Config.content.content_base_dir), 'metadata', 'contentMetadata.xml')
   tif_file = File.join(druid_tree_path(druid, Dor::Config.content.content_base_dir), 'content', tif_filename)
   puts "Workspace folder exists = #{File.directory?(object_location)}"
-  puts "#{tif_file} exists = #{File.exists?(tif_file)}" unless (tif_filename.nil? || tif_filename == '')
-  puts "#{cm_file} exists = #{File.exists?(cm_file)}"
+  puts "#{tif_file} exists = #{File.exist?(tif_file)}" unless (tif_filename.nil? || tif_filename == '')
+  puts "#{cm_file} exists = #{File.exist?(cm_file)}"
   # puts ''
   # pp i.contentMetadata.ng_xml.to_s
   puts '----'

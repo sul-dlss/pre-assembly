@@ -16,7 +16,7 @@ module PreAssembly
       @@log       ||= Logger.new(log_file)
       @@log.level   = LEVELS[:info]
 
-      @@log.formatter = proc do |severity, datetime, progname, msg|
+      @@log.formatter = proc do |severity, datetime, _progname, msg|
         LOG_FORMAT % [severity, datetime.strftime(TIME_FORMAT), msg]
       end
     end

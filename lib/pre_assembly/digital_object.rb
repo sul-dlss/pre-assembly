@@ -56,7 +56,7 @@ module PreAssembly
     ####
 
     def initialize(params = {})
-      INIT_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
+      INIT_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
       @file_attr ||= params[:publish_attr]
       setup
     end
@@ -188,7 +188,7 @@ module PreAssembly
       Dor::SearchService.query_by_id :barcode => barcode
     end
 
-    def get_dor_item_apos(pid)
+    def get_dor_item_apos(_pid)
       get_dor_object
       @dor_object.nil? ? [] : @dor_object.admin_policy_object
     end

@@ -85,7 +85,7 @@ module PreAssembly
       cmc[:style]  = cmc[:style].to_sym
       params[:file_attr] ||= params[:publish_attr]
       @user_params = params
-      YAML_PARAMS.each { |p| instance_variable_set "@#{p.to_s}", params[p] }
+      YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
 
       # Other setup work.
       setup_paths
@@ -115,7 +115,7 @@ module PreAssembly
       @content_exclusion      = Regexp.new(@content_exclusion) if @content_exclusion
       @validate_bundle_dir  ||= {}
       @file_attr              = {} if @file_attr.nil?
-      @file_attr.delete_if { |k, v| v.nil? }
+      @file_attr.delete_if { |_k, v| v.nil? }
       @set_druid_id = [@set_druid_id] if @set_druid_id && @set_druid_id.class == String # convert set_druid_id to 1 element array if its single valued and exists
     end
 
@@ -282,7 +282,7 @@ module PreAssembly
       validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
       validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
 
-      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:style] == :smpl && !File.exists?(File.join(@bundle_dir, @content_md_creation[:smpl_manifest]))
+      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{@bundle_dir}." if @content_md_creation[:style] == :smpl && !File.exist?(File.join(@bundle_dir, @content_md_creation[:smpl_manifest]))
 
       unless validation_errors.blank?
         validation_errors = ['Configuration errors found:'] + validation_errors
@@ -363,7 +363,7 @@ module PreAssembly
     ####
     def cleanup(steps = [], dry_run = false)
       log "cleanup()"
-      if File.exists?(@progress_log_file)
+      if File.exist?(@progress_log_file)
         druids = Assembly::Utils.get_druids_from_log(@progress_log_file)
       else
         puts "#{@progress_log_file} not found!  Cannot proceed"
@@ -377,7 +377,7 @@ module PreAssembly
     # validating code.
     ####
 
-    def bundle_directory_is_valid?(io = STDOUT)
+    def bundle_directory_is_valid?(_io = STDOUT)
       # Do nothing if no validation code was supplied.
       return true unless @validate_bundle_dir[:code]
       # Run validations and return true/false accordingly.

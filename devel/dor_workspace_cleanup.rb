@@ -42,7 +42,7 @@ csv_data.each do |row|
     if Assembly::Utils.updates_allowed?(druid)
       paths_to_cleanup.each do |root_dir|
         folder = DruidTools::Druid.new(druid, root_dir).path()
-        if Dir.exists?(folder)
+        if Dir.exist?(folder)
           FileUtils.rm_r(folder)
           deleted_from << root_dir
         end

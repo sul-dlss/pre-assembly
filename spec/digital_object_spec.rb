@@ -71,7 +71,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should return the druid of the object with the matching APO" do
-      @druids.each_with_index do |druid, i|
+      @druids.each_with_index do |_druid, i|
         @stubbed_return_vals[i] = true
         allow(@dobj).to receive(:apo_matches_exactly_one?).and_return *@stubbed_return_vals
         expect(@dobj.get_pid_from_container_barcode).to eq(@druids[i])
@@ -266,8 +266,8 @@ describe PreAssembly::DigitalObject do
         files.each_with_index do |f, i|
           src = @dobj.stageable_items[i]
           cpy = File.join @dobj.content_dir, f
-          expect(File.exists?(src)).to eq(true)
-          expect(File.exists?(cpy)).to eq(true)
+          expect(File.exist?(src)).to eq(true)
+          expect(File.exist?(cpy)).to eq(true)
         end
       end
     end
@@ -292,8 +292,8 @@ describe PreAssembly::DigitalObject do
         files.each_with_index do |f, i|
           src = @dobj.stageable_items[i]
           cpy = File.join @dobj.content_dir, f
-          expect(File.exists?(src)).to eq(true)
-          expect(File.exists?(cpy)).to eq(true)
+          expect(File.exist?(src)).to eq(true)
+          expect(File.exist?(cpy)).to eq(true)
           expect(File.symlink?(cpy)).to eq(true)
         end
       end
@@ -369,7 +369,7 @@ describe PreAssembly::DigitalObject do
         @dobj.druid_tree_dir = tmp_area
         file_name = File.join(tmp_area, "metadata", @dobj.content_md_file)
 
-        expect(File.exists?(file_name)).to eq(false)
+        expect(File.exist?(file_name)).to eq(false)
         @dobj.write_content_metadata
         expect(noko_doc(File.read file_name)).to be_equivalent_to @exp_xml
       end
@@ -714,7 +714,7 @@ describe PreAssembly::DigitalObject do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
         file_name = File.join(tmp_area, "metadata", @dobj.desc_md_file)
-        expect(File.exists?(file_name)).to eq(false)
+        expect(File.exist?(file_name)).to eq(false)
         @dobj.write_desc_metadata
         expect(noko_doc(File.read file_name)).to be_equivalent_to @exp_xml
       end

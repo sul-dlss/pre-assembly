@@ -30,7 +30,7 @@ def check_args(args)
 
   if args.size != 2
     return -1
-  elsif !File.exists?(get_file_path(args[0])) &&
+  elsif !File.exist?(get_file_path(args[0])) &&
         !File.exists(get_file_path(args[1]))
     return -1
   else
@@ -103,7 +103,7 @@ def main() # Iterate over file of pid/druids to change
   File.open(get_file_path(ARGV[1])).each do |pid|
     pid.chomp!
     @log.info '====================='
-    @log.info "#{Time.now.to_s}"
+    @log.info "#{Time.now}"
     @log.info "Processing pid #{pid}"
 
     changes_made = 0
@@ -114,7 +114,7 @@ def main() # Iterate over file of pid/druids to change
 
     # Get XML from file if available & use to change descMetadata and identityMetadata
     # puts "Getting XML file ..."
-    if pid_to_file[pid] and File.exists?("#{@mods_path}#{pid_to_file[pid]}")
+    if pid_to_file[pid] and File.exist?("#{@mods_path}#{pid_to_file[pid]}")
       xml_dm = read_xml(pid, pid_to_file)
       xml_dm = cleanup_guill(xml_dm)
       new_title = get_title(xml_dm) # get new_title here to use below for identityMetadata

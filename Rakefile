@@ -37,7 +37,7 @@ if ['test', 'development'].include? ENV['ROBOT_ENVIRONMENT']
 
   namespace :repo do
     desc "Load XML file(s) into repo (fedora and solr), default: contents of 'load_order' file. With a glob: rake repo:load[fedora_conf/data/*.xml]"
-    task :load, [:glob] do |task, args|
+    task :load, [:glob] do |_task, args|
       require 'active_fedora'
       puts "travis_fold:start:repo-load\r" if ENV['TRAVIS'] == 'true'
 
@@ -57,7 +57,7 @@ if ['test', 'development'].include? ENV['ROBOT_ENVIRONMENT']
       file_list.each do |file|
         i += 1
 
-        handler = proc do |e, attempt_number, total_delay|
+        handler = proc do |e, _attempt_number, _total_delay|
           puts STDERR.puts "ERROR loading #{file}:\n#{e.message}\n#{e.backtrace.join "\n"}"
           errors << file
         end
