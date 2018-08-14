@@ -1,4 +1,4 @@
-set :rvm_ruby_version, '2.2.4'      # Defaults to: 'default'
+set :rvm_ruby_version, '2.2.4' # Defaults to: 'default'
 set :application, 'pre-assembly'
 set :repo_url, 'https://github.com/sul-dlss/pre-assembly.git'
 

@@ -26,25 +26,25 @@ end
 # Load YAML config file for the bundle of materials to be pre-assembled.
 help "Incorrect N of arguments." if ARGV.size == 0
 druid = ARGV[0]
-druid=druid.downcase.gsub('druid:','')
+druid = druid.downcase.gsub('druid:', '')
 base_output_path = ARGV[1] || File.expand_path(File.dirname(__FILE__))
-output_path=File.join(base_output_path,druid)
+output_path = File.join(base_output_path, druid)
 
 puts "Downloading #{druid} to #{output_path}"
 
 FileUtils.mkdir_p output_path
 
-response=RestClient.get "http://purl.stanford.edu/#{druid}.xml"
-ng=Nokogiri::XML(response)
+response = RestClient.get "http://purl.stanford.edu/#{druid}.xml"
+ng = Nokogiri::XML(response)
 
-files=ng.css('//contentMetadata/resource/file')
+files = ng.css('//contentMetadata/resource/file')
 
 files.each do |file|
- filename=File.join(output_path,file['id'])
- stacks_path=File.join(Assembly::Utils.get_staging_path(druid,'/stacks'),file['id'])
- puts "...downloading #{filename}"
- copy_command="rsync -vOlt lyberadmin@stacks.stanford.edu:#{stacks_path} #{filename}"
- `#{copy_command}`
+  filename = File.join(output_path, file['id'])
+  stacks_path = File.join(Assembly::Utils.get_staging_path(druid, '/stacks'), file['id'])
+  puts "...downloading #{filename}"
+  copy_command = "rsync -vOlt lyberadmin@stacks.stanford.edu:#{stacks_path} #{filename}"
+  `#{copy_command}`
 end
 
 puts "Done"

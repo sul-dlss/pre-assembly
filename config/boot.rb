@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'logger'
 
-environment  = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
+environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
 PRE_ASSEMBLY_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
@@ -14,7 +14,7 @@ unless defined?(NO_ENVIRONMENT)
   ENV_FILE = PRE_ASSEMBLY_ROOT + "/config/environments/#{environment}.rb"
   require ENV_FILE
   Dor::Config.dor_services.url ||= Dor::Config.dor.service_root
-  Dor::Config.workflow.client.configure(Dor::Config.workflow.url,:dor_services_url => Dor::Config.dor_services.url.gsub('/v1',''))
+  Dor::Config.workflow.client.configure(Dor::Config.workflow.url, :dor_services_url => Dor::Config.dor_services.url.gsub('/v1', ''))
 end
 
 # Project dir in load path.

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe PreAssembly::DruidMinter do
-
   before(:all) do
     @minter = PreAssembly::DruidMinter
   end
@@ -16,5 +15,4 @@ describe PreAssembly::DruidMinter do
     o2 = @minter.next
     expect(o1.object_id).not_to eq(o2.object_id)
   end
-
 end

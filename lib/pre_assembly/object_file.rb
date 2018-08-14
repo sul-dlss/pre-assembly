@@ -1,7 +1,6 @@
 require 'assembly-objectfile'
 
 class PreAssembly::ObjectFile < Assembly::ObjectFile
-
   attr_accessor(
     :relative_path,
     :exclude_from_content,
@@ -20,13 +19,11 @@ class PreAssembly::ObjectFile < Assembly::ObjectFile
   end
 
   def checksum=(value)
-    @checksum=value
-    self.provider_md5=value # this is an attribute of the Assembly::ObjectFile class
+    @checksum = value
+    self.provider_md5 = value # this is an attribute of the Assembly::ObjectFile class
   end
 
   def <=>(other)
     @relative_path <=> other.relative_path
   end
-
 end
-

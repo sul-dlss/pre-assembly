@@ -1,12 +1,10 @@
 require 'spec_helper'
 
 describe PreAssembly::DigitalObject do
-
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
-
     before(:each) do
-      @bundle_dir=File.join(PRE_ASSEMBLY_ROOT,'spec/test_data/bundle_input_e')
-      @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>'smpl_manifest.csv',:bundle_dir=>@bundle_dir,:verbose=>false)
+      @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
+      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
     end
@@ -29,17 +27,15 @@ describe PreAssembly::DigitalObject do
       expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
       expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
-
   end # end no thumb declaration
-  
+
   describe 'SMPL content metadata generation with thumb declaration' do
-    
     before(:each) do
-      @bundle_dir=File.join(PRE_ASSEMBLY_ROOT,'spec/test_data/bundle_input_e')
+      @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
     end
 
     it "should generate content metadata from a SMPL manifest with a thumb column set to yes" do
-      @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>'smpl_manifest_with_thumb.csv',:bundle_dir=>@bundle_dir,:verbose=>false)
+      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
       @dobj1.create_content_metadata
@@ -49,7 +45,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should generate content metadata from a SMPL manifest with a thumb column set to true" do
-      @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>'smpl_manifest_with_thumb_true.csv',:bundle_dir=>@bundle_dir,:verbose=>false)
+      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
       @dobj1.create_content_metadata
@@ -59,7 +55,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should generate content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
-      @smpl_manifest=PreAssembly::Smpl.new(:csv_filename=>'smpl_manifest_thumb_no.csv',:bundle_dir=>@bundle_dir,:verbose=>false)
+      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
       @dobj1.create_content_metadata
@@ -67,11 +63,10 @@ describe PreAssembly::DigitalObject do
       expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
       expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
-    
   end # end with thumb declaration
 
   # some helper methods for these tests
-  
+
   def setup_dobj(druid)
     ps = {
       :apo_druid_id  => 'qq333xx4444',
@@ -83,7 +78,7 @@ describe PreAssembly::DigitalObject do
       :project_style => {},
       :bundle_dir    => @bundle_dir,
       :smpl_manifest => @smpl_manifest,
-      :content_md_creation => {:style=>:smpl}
+      :content_md_creation => { :style => :smpl }
     }
     dobj         = PreAssembly::DigitalObject.new ps
     pid          = "druid:#{druid}"
@@ -91,12 +86,12 @@ describe PreAssembly::DigitalObject do
     dobj.druid = dt
     dobj.pid = pid
     dobj.container = druid
-    dobj.content_md_creation[:style]='smpl'
+    dobj.content_md_creation[:style] = 'smpl'
     return dobj
   end
-  
+
   def exp_xml_object_aa111aa1111
-   <<-END.gsub(/^ {8}/, '')
+    <<-END.gsub(/^ {8}/, '')
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1">
@@ -132,11 +127,11 @@ describe PreAssembly::DigitalObject do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-        END
+    END
   end
-    
+
   def exp_xml_object_aa111aa1111_with_thumb
-   <<-END.gsub(/^ {8}/, '')
+    <<-END.gsub(/^ {8}/, '')
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1" thumb="yes">
@@ -172,9 +167,9 @@ describe PreAssembly::DigitalObject do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-        END
+    END
   end
-  
+
   def exp_xml_object_bb222bb2222
     <<-END.gsub(/^ {8}/, '')
             <?xml version="1.0"?>
@@ -198,7 +193,6 @@ describe PreAssembly::DigitalObject do
                 <file id="bb222bb2222.pdf" preserve="yes" publish="yes" shelve="yes"/>
               </resource>
             </contentMetadata>
-        END
+    END
   end
-    
 end

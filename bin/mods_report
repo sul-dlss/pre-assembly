@@ -22,33 +22,33 @@ params['config_filename'] = yaml_config
 output_directory = ARGV.shift
 help "Output directory not found or not a directory." unless File.directory? output_directory
 
-mods_template_file=File.join(params['bundle_dir'],params['desc_md_template'])
-manifest_file=File.join(params['bundle_dir'],params['manifest'])
+mods_template_file = File.join(params['bundle_dir'], params['desc_md_template'])
+manifest_file = File.join(params['bundle_dir'], params['manifest'])
 
 # read in MODs template
-mods_template_xml=IO.read(mods_template_file)
+mods_template_xml = IO.read(mods_template_file)
 
 # read input manifest
-@items=PreAssembly::Bundle.import_csv(manifest_file)
-limit=params['limit_n']
+@items = PreAssembly::Bundle.import_csv(manifest_file)
+limit = params['limit_n']
 
 puts "Generating #{@items.size} MODs files from #{manifest_file} using MODs template of #{mods_template_file}"
 puts "limiting to #{limit}" unless limit.blank?
 
 @items.each_with_index do |manifest_row, x|
- break if (!limit.blank? && x > limit)
- druid=manifest_row[:druid]
- sourceid=manifest_row[params['manifest_cols']['source_id']]
- identifier=druid.blank? ? sourceid : druid # what we will call the filename, either by druid or sourceid depending on the project
- druid = druid.blank? ? "druid:oo000oo0001" : druid # we need a druid to instantiate the object, use the real druid if possible, otherwise just make one up
- dig_obj=PreAssembly::DigitalObject.new(:pid=>druid)
- dig_obj.manifest_row=manifest_row
- dig_obj.desc_md_template_xml=mods_template_xml
- if dig_obj.create_desc_metadata_xml
-   output_mods_file=File.join(output_directory,"#{identifier.gsub('druid:','')}.xml")
-   File.open(output_mods_file, 'w') { |fh| fh.puts dig_obj.desc_md_xml }
-   puts "Saving MODs for sourceID #{identifier}  [#{x} of #{@items.size}]"
- else
-   puts "Error: cannot generate desc md xml for #{identifier} [#{x} of #{@items.size}]"
-  end
+  break if (!limit.blank? && x > limit)
+  druid = manifest_row[:druid]
+  sourceid = manifest_row[params['manifest_cols']['source_id']]
+  identifier = druid.blank? ? sourceid : druid # what we will call the filename, either by druid or sourceid depending on the project
+  druid = druid.blank? ? "druid:oo000oo0001" : druid # we need a druid to instantiate the object, use the real druid if possible, otherwise just make one up
+  dig_obj = PreAssembly::DigitalObject.new(:pid => druid)
+  dig_obj.manifest_row = manifest_row
+  dig_obj.desc_md_template_xml = mods_template_xml
+  if dig_obj.create_desc_metadata_xml
+    output_mods_file = File.join(output_directory, "#{identifier.gsub('druid:', '')}.xml")
+    File.open(output_mods_file, 'w') { |fh| fh.puts dig_obj.desc_md_xml }
+    puts "Saving MODs for sourceID #{identifier}  [#{x} of #{@items.size}]"
+  else
+    puts "Error: cannot generate desc md xml for #{identifier} [#{x} of #{@items.size}]"
+   end
 end
