@@ -16,23 +16,22 @@ require 'csv'
 require 'csv-mapper'
 include CsvMapper
 
-source_path=File.dirname(csv_in)
+source_path = File.dirname(csv_in)
 
 # read input manifest
-@items=CsvMapper.import(csv_in) do read_attributes_from_file end
+@items = CsvMapper.import(csv_in) do read_attributes_from_file end
 
-all_pids=[]
-all_filenames=[]
+all_pids = []
+all_filenames = []
 
 @items.each_with_index do |row, x|
-  pids=Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
+  pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
     puts "cannot find single pid for source id #{row.sourceid}"
   else
     all_filenames << "\"#{row.sourceid}.tif\""
     all_pids << "\"#{pids.first}\""
    end
-
 end
 
 puts

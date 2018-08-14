@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe PreAssembly::DigitalObject do
-
   before(:each) do
     @ps = {
       :apo_druid_id  => 'druid:qq333xx4444',
@@ -9,12 +8,12 @@ describe PreAssembly::DigitalObject do
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',
-      :publish_attr  => { 'default' => {:publish => 'yes', :shelve => 'yes', :preserve => 'yes' }},
-      :project_style => {:should_register=>true},
+      :publish_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
+      :project_style => { :should_register => true },
       :content_md_creation => {},
-      :bundle_dir    => 'spec/test_data/bundle_input_g',
+      :bundle_dir => 'spec/test_data/bundle_input_g',
       :new_druid_tree_format => true,
-      :staging_style=>'copy'
+      :staging_style => 'copy'
     }
     @dobj         = PreAssembly::DigitalObject.new @ps
 
@@ -25,7 +24,7 @@ describe PreAssembly::DigitalObject do
     @dobj.object_files = []
   end
 
-  def add_object_files(extension='tif')
+  def add_object_files(extension = 'tif')
     (1..2).each do |i|
       f = "image#{i}.#{extension}"
       @dobj.object_files.push PreAssembly::ObjectFile.new(
@@ -37,21 +36,17 @@ describe PreAssembly::DigitalObject do
     end
   end
 
-
   ####################
 
   describe "initialization and other setup" do
-
     it "can initialize a digital object" do
       expect(@dobj).to be_kind_of PreAssembly::DigitalObject
     end
-
   end
 
   ####################
 
   describe "determining druid: get_pid_from_container_barcode()" do
-
     before(:each) do
       @druids = %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222)
       apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999)
@@ -83,18 +78,16 @@ describe PreAssembly::DigitalObject do
         @stubbed_return_vals[i] = false
       end
     end
-
   end
 
   ####################
 
   describe "determining the druid: other" do
-
     it "determine_druid() should set correct values for @pid and @druid" do
       # Setup.
       dru = 'aa111bb2222'
       @dobj.project_style[:get_druid_from] = :container
-      @dobj.container     = "foo/bar/#{dru}"
+      @dobj.container = "foo/bar/#{dru}"
       # Before and after assertions.
       expect(@dobj.pid).to   eq('')
       expect(@dobj.druid).to eq(nil)
@@ -125,13 +118,11 @@ describe PreAssembly::DigitalObject do
       apos.push z
       expect(@dobj.apo_matches_exactly_one?(apos)).to eq(false)  # Too many.
     end
-
   end
 
   ####################
 
   describe "register()" do
-
     it "should do nothing if should_register is false" do
       @dobj.project_style[:should_register] = false
       expect(@dobj).not_to receive :register_in_dor
@@ -158,36 +149,32 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should add a new tag to the registration params if set" do
-
-      @ps[:apply_tag]='Foo : Bar'
+      @ps[:apply_tag] = 'Foo : Bar'
       dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
       expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
 
-      @ps[:apply_tag]='Foo : Bar'
+      @ps[:apply_tag] = 'Foo : Bar'
       dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
       expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
 
-      @ps[:apply_tag]=nil
+      @ps[:apply_tag] = nil
       dobj_with_tag = PreAssembly::DigitalObject.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
       expect(rps[:tags]).to eq(["Project : ProjectBar"])
-
     end
-
   end
 
   ####################
 
   describe "add_dor_object_to_set()" do
-
     it "should do nothing when @set_druid_id is false" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
@@ -210,7 +197,7 @@ describe PreAssembly::DigitalObject do
     it "should call add_relationship when not null the correct number of times for more than one set druids passed in" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
-      @dobj.set_druid_id = ['druid:oo000oo0001','druid:oo000oo0002']
+      @dobj.set_druid_id = ['druid:oo000oo0001', 'druid:oo000oo0002']
       expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0001').exactly(1).times
       expect(@dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0001').exactly(1).times
       expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0002').exactly(1).times
@@ -231,13 +218,11 @@ describe PreAssembly::DigitalObject do
       arps = expect(@dobj.add_member_relationship_params('druid:mm111nn2222')).to eq(exp1)
       arps = expect(@dobj.add_collection_relationship_params('druid:mm111nn2222')).to eq(exp2)
     end
-
   end
 
   ####################
 
   describe "unregister()" do
-
     before(:each) do
       @dobj.dor_object = 1234
       allow(Assembly::Utils).to receive :delete_from_dor
@@ -256,25 +241,22 @@ describe PreAssembly::DigitalObject do
       expect(@dobj.dor_object).to eq(nil)
       expect(@dobj.reg_by_pre_assembly).to eq(false)
     end
-
   end
-
 
   ####################
 
   describe "file staging" do
-
     it "should be able to copy stageable items successfully" do
       @dobj.druid = @druid
 
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         # Add some stageable items to the digital object, and create those files.
-        files                 = [1,2,3].map { |n| "image#{n}.tif" }
+        files                 = [1, 2, 3].map { |n| "image#{n}.tif" }
         @dobj.bundle_dir      = tmp_area
         @dobj.staging_dir     = "#{tmp_area}/target"
         @dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         @dobj.stageable_items.each { |si| FileUtils.touch si }
-        @dobj.staging_style='copy'
+        @dobj.staging_style = 'copy'
 
         # Stage the files via copy.
         FileUtils.mkdir @dobj.staging_dir
@@ -293,14 +275,14 @@ describe PreAssembly::DigitalObject do
     it "should be able to symlink stageable items successfully" do
       @dobj.druid = @druid
 
-       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
-        #Add some stageable items to the digital object, and create those files.
-        files                 = [1,2,3].map { |n| "image#{n}.tif" }
+      Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
+        # Add some stageable items to the digital object, and create those files.
+        files = [1, 2, 3].map { |n| "image#{n}.tif" }
         @dobj.bundle_dir      = tmp_area
         @dobj.staging_dir     = "#{tmp_area}/target"
         @dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         @dobj.stageable_items.each { |si| FileUtils.touch si }
-        @dobj.staging_style='symlink'
+        @dobj.staging_style = 'symlink'
 
         # Stage the files via symlink.
         FileUtils.mkdir @dobj.staging_dir
@@ -314,19 +296,17 @@ describe PreAssembly::DigitalObject do
           expect(File.exists?(cpy)).to eq(true)
           expect(File.symlink?(cpy)).to eq(true)
         end
-     end
+      end
     end
-
   end
 
   ####################
 
   describe "default content metadata" do
-
     before(:each) do
       @dobj.druid = @druid
-      @dobj.content_md_creation[:style]='default'
-      @dobj.project_style[:content_structure]='simple_image'
+      @dobj.content_md_creation[:style] = 'default'
+      @dobj.project_style[:content_structure] = 'simple_image'
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -373,11 +353,11 @@ describe PreAssembly::DigitalObject do
       # All of them are included in content.
       expect(@dobj.content_object_files.size).to eq(n)
       # Now exclude some. Make sure we got correct N of items.
-      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      (0...m).each { |i| @dobj.object_files[i].exclude_from_content = true }
       ofiles = @dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m .. -1].sort)
+      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
     it "should generate the expected xml text" do
@@ -387,19 +367,17 @@ describe PreAssembly::DigitalObject do
     it "should be able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join(tmp_area,"metadata",@dobj.content_md_file)
+        file_name = File.join(tmp_area, "metadata", @dobj.content_md_file)
 
         expect(File.exists?(file_name)).to eq(false)
         @dobj.write_content_metadata
         expect(noko_doc(File.read file_name)).to be_equivalent_to @exp_xml
       end
     end
-
   end
 
   #########
   describe "check the druid tree directories and content and metadata locations using both the new style and the old style" do
-
     it "should have the correct druid tree folders using the new style" do
       @dobj.druid = @druid
       @dobj.new_druid_tree_format = true
@@ -415,18 +393,16 @@ describe PreAssembly::DigitalObject do
       expect(@dobj.metadata_dir).to eq('gn/330/dv/6119')
       expect(@dobj.content_dir).to eq('gn/330/dv/6119')
     end
-
   end
 
   ####################
 
   describe "no content metadata generated" do
-
     before(:each) do
       @dobj.druid = @druid
-      @dobj.content_md_creation[:style]='none'
-      @dobj.project_style[:content_structure]='simple_book'
-      @dobj.file_attr=nil
+      @dobj.content_md_creation[:style] = 'none'
+      @dobj.project_style[:content_structure] = 'simple_book'
+      @dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -435,7 +411,6 @@ describe PreAssembly::DigitalObject do
     it "should not generate any xml text" do
       expect(@dobj.content_md_xml).to eq("")
     end
-
   end
 
   ####################
@@ -443,12 +418,11 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "bundled by filename, simple book content metadata without file attributes" do
-
     before(:each) do
       @dobj.druid = @druid
-      @dobj.content_md_creation[:style]='filename'
-      @dobj.project_style[:content_structure]='simple_book'
-      @dobj.file_attr=nil
+      @dobj.content_md_creation[:style] = 'filename'
+      @dobj.project_style[:content_structure] = 'simple_book'
+      @dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -480,21 +454,19 @@ describe PreAssembly::DigitalObject do
     it "should generate the expected xml text" do
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
-
   end
 
   ####################
 
   describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
-
     before(:each) do
       @dobj.druid = @druid
-      @dobj.content_md_creation[:style]='default'
-      @dobj.project_style[:content_structure]='simple_image' # this is the default
-      @dobj.project_style[:content_tag_override]=true        # this allows override of content structure
-      allow(@dobj).to receive(:content_type_tag).and_return('File')       # this is what the object tag says, so we should get the file type out
-      @dobj.project_style[:should_register]=false
-      @dobj.file_attr=nil
+      @dobj.content_md_creation[:style] = 'default'
+      @dobj.project_style[:content_structure] = 'simple_image' # this is the default
+      @dobj.project_style[:content_tag_override] = true        # this allows override of content structure
+      allow(@dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
+      @dobj.project_style[:should_register] = false
+      @dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -541,11 +513,11 @@ describe PreAssembly::DigitalObject do
       # All of them are included in content.
       expect(@dobj.content_object_files.size).to eq(n)
       # Now exclude some. Make sure we got correct N of items.
-      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      (0...m).each { |i| @dobj.object_files[i].exclude_from_content = true }
       ofiles = @dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m .. -1].sort)
+      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
     it "should generate the expected xml text" do
@@ -556,14 +528,13 @@ describe PreAssembly::DigitalObject do
 
   ####################
   describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
-
     before(:each) do
       @dobj.druid = @druid
-      @dobj.content_md_creation[:style]='default'
-      @dobj.project_style[:content_structure]='simple_image' # this is the default
-      allow(@dobj).to receive(:content_type_tag).and_return('File')       # this is what the object tag says, but it should be ignored since overriding is not allowed
-      @dobj.project_style[:should_register]=false
-      @dobj.file_attr={'image/jp2'=>{:publish=>'yes',:shelve=>'yes',:preserve=>'no'},'image/tiff'=>{:publish=>'no',:shelve=>'no',:preserve=>'yes'}}
+      @dobj.content_md_creation[:style] = 'default'
+      @dobj.project_style[:content_structure] = 'simple_image' # this is the default
+      allow(@dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
+      @dobj.project_style[:should_register] = false
+      @dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
       add_object_files('tif')
       add_object_files('jp2')
       @dobj.create_content_metadata
@@ -610,32 +581,29 @@ describe PreAssembly::DigitalObject do
       # All of them are included in content.
       expect(@dobj.content_object_files.size).to eq(n)
       # Now exclude some. Make sure we got correct N of items.
-      (0 ... m).each { |i| @dobj.object_files[i].exclude_from_content = true }
+      (0...m).each { |i| @dobj.object_files[i].exclude_from_content = true }
       ofiles = @dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m .. -1].sort)
+      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
     it "should generate the expected xml text when overriding is explicitly not allowed" do
-      @dobj.project_style[:content_tag_override]=false       # this prevents override of content structure
+      @dobj.project_style[:content_tag_override] = false # this prevents override of content structure
       expect(@dobj.content_md_creation_style).to eq(:simple_image)
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
 
     it "should generate the expected xml text when overriding is not specified" do
-      @dobj.project_style[:content_tag_override]=nil       # this prevents override of content structure
+      @dobj.project_style[:content_tag_override] = nil # this prevents override of content structure
       expect(@dobj.content_md_creation_style).to eq(:simple_image)
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
-
   end
 
   ####################
 
-
   describe "descriptive metadata" do
-
     before(:each) do
       @dobj.druid = @druid
       @dobj.manifest_row = {
@@ -734,19 +702,18 @@ describe PreAssembly::DigitalObject do
         'year'        => '2012',
         'description' => 'this is a description > another description < other stuff',
         'format'      => 'film',
-        'foo'        =>  '123',
-        'bar'         => '456',
+        'foo' => '123',
+        'bar' => '456',
       }
       @dobj.create_desc_metadata_xml
       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
     end
 
-
     it "should be able to write the desc_metadata XML to a file" do
       @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
-        file_name = File.join(tmp_area, "metadata",@dobj.desc_md_file)
+        file_name = File.join(tmp_area, "metadata", @dobj.desc_md_file)
         expect(File.exists?(file_name)).to eq(false)
         @dobj.write_desc_metadata
         expect(noko_doc(File.read file_name)).to be_equivalent_to @exp_xml
@@ -754,7 +721,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "should generate descMetadata correctly given a manifest row as loaded from the csv" do
-      manifest=PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
+      manifest = PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
       @dobj.manifest_row = Hash[manifest[2].each_pair.to_a]
 
       @dobj.desc_md_template_xml = IO.read("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/mods_template.xml")
@@ -794,13 +761,11 @@ describe PreAssembly::DigitalObject do
 
       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to exp_xml
     end
-
   end
 
   ####################
 
   describe "initiate assembly workflow" do
-
     it "initialize_assembly_workflow() should do nothing if init_assembly_wf is false" do
       @dobj.init_assembly_wf = false
       expect(@dobj).not_to receive :assembly_workflow_url
@@ -815,12 +780,10 @@ describe PreAssembly::DigitalObject do
     end
 
     it "assembly_workflow_url() should add the druid: prefix to the pid if it is missing, like it might be in the manifest" do
-      @dobj.pid = @pid.gsub('druid:','')
+      @dobj.pid = @pid.gsub('druid:', '')
       url = @dobj.assembly_workflow_url
       expect(url).to match(/^http.+assemblyWF$/)
       expect(url.include?(@pid)).to eq(true)
     end
-
   end
-
 end

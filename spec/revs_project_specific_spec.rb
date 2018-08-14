@@ -2,9 +2,8 @@ require 'spec_helper'
 require 'revs-utils'
 
 describe PreAssembly::DigitalObject do
-
   before(:each) do
-    @ps = {:apo_druid_id  => 'druid:qq333xx4444',:set_druid_id  => 'druid:mm111nn2222',:source_id => 'SourceIDFoo',:project_name => 'ProjectBar',:label=> 'LabelQuux',:project_style => {},:content_md_creation => {}}
+    @ps = { :apo_druid_id => 'druid:qq333xx4444', :set_druid_id => 'druid:mm111nn2222', :source_id => 'SourceIDFoo', :project_name => 'ProjectBar', :label => 'LabelQuux', :project_style => {}, :content_md_creation => {} }
     @dobj         = PreAssembly::DigitalObject.new @ps
 
     @dru          = 'gn330dv6119'
@@ -164,29 +163,27 @@ describe PreAssembly::DigitalObject do
       <% if !manifest_row[:has_more_metadata].blank? %><note type="source note" displayLabel="Has More Metadata" ID="has_more_metadata">yes</note><% end %>
     </mods>
     END
-
   end
 
   ####################
 
-   describe "revs specific descriptive metadata using special lookup methods, with a hidden image" do
-
-     before(:each) do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'this is < a label with an & that will break XML unless it is escaped',
-         :year        => '2012',
-         :marque      => 'Ford|Jaguar|Pegaso automobile|Suzuki automobiles',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'color transparency',
-         :vehicle_markings         =>  '123',
-         :inst_notes         =>  '456',
-         :people      =>  'Doe, John | Smith, Fred',
-         :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States',
-         :hide        =>  'X'
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+  describe "revs specific descriptive metadata using special lookup methods, with a hidden image" do
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'this is < a label with an & that will break XML unless it is escaped',
+        :year        => '2012',
+        :marque      => 'Ford|Jaguar|Pegaso automobile|Suzuki automobiles',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'color transparency',
+        :vehicle_markings => '123',
+        :inst_notes => '456',
+        :people      =>  'Doe, John | Smith, Fred',
+        :location    =>  'Bay Motor Speedway | San Mateo (Calif.) | United States',
+        :hide        =>  'X'
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
          <?xml version="1.0"?>
          <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
            <typeOfResource>still image</typeOfResource>
@@ -237,34 +234,32 @@ describe PreAssembly::DigitalObject do
            <note displayLabel="Vehicle Markings" ID="vehicle_markings">123</note>
            <note type="source note" displayLabel="Institution Notes" ID="inst_notes">456</note>
          </mods>
-       END
-       @exp_xml = noko_doc @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
 
-     it "create_desc_metadata_xml() should generate the expected xml text" do
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+    it "create_desc_metadata_xml() should generate the expected xml text" do
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
+  end
 
-   end
-
-   describe "revs specific descriptive metadata using other lookup methods for location tags with just the country known" do
-
-     before(:each) do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => '9/2/2012',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'film',
-         :location    => 'Raceway , Rome , Italy',
-         :foo         =>  nil,
-         :group       => 'This is the car group',
-         :class       => 'This is the car class',
-         :bar         =>  ''
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+  describe "revs specific descriptive metadata using other lookup methods for location tags with just the country known" do
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => '9/2/2012',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'film',
+        :location    => 'Raceway , Rome , Italy',
+        :foo         =>  nil,
+        :group       => 'This is the car group',
+        :class       => 'This is the car class',
+        :bar         =>  ''
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -296,31 +291,29 @@ describe PreAssembly::DigitalObject do
          <note displayLabel="Car Group" ID="car_group">This is the car group</note>
          <note displayLabel="Car Class" ID="car_class">This is the car class</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
 
-     it "create_desc_metadata_xml() should generate the expected xml text" do
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+    it "create_desc_metadata_xml() should generate the expected xml text" do
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
+  end
 
-   end
-
-   describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities and multiple formats with format correction, and preserving some odd date value" do
-
-     before(:each) do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => 'something weird',
-         :format      => 'black-and-white negative| color transparencies',
-         :year        => 'blot',
-         :description => 'this is a description > another description < other stuff',
-         :location    => 'Raceway | Random City | Random Country'
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+  describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities and multiple formats with format correction, and preserving some odd date value" do
+    before(:each) do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => 'something weird',
+        :format      => 'black-and-white negative| color transparencies',
+        :year        => 'blot',
+        :description => 'this is a description > another description < other stuff',
+        :location    => 'Raceway | Random City | Random Country'
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -355,32 +348,30 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+    end
 
-     it "create_desc_metadata_xml() should generate the expected xml text" do
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+    it "create_desc_metadata_xml() should generate the expected xml text" do
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
+  end
 
-   end
-
-   describe "use specific location fields instead of generic location field" do
-
-     it "should create revs specific descriptive metadata using city, state and country fields instead of location and using a year" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :year        => '2012',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :location    => '',
-         :city        => 'Berlin',
-         :country     => 'Germany'
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+  describe "use specific location fields instead of generic location field" do
+    it "should create revs specific descriptive metadata using city, state and country fields instead of location and using a year" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :year        => '2012',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :location    => '',
+        :city        => 'Berlin',
+        :country     => 'Germany'
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -409,26 +400,26 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => '9/2/2012',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :entrant     => 'Donald Duck | Mickey Mouse',
-         :city        => 'Munich',
-         :state       => 'Bavaria',
-         :country     => 'Germany'
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata using city, state and country fields instead of location with location field left off" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => '9/2/2012',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :entrant     => 'Donald Duck | Mickey Mouse',
+        :city        => 'Munich',
+        :state       => 'Bavaria',
+        :country     => 'Germany'
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -468,27 +459,27 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive using alternate two year date format" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => '05/12/55',
-         :entrant     => 'Donald Duck',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :city        => 'Munich',
-         :state       => 'Bavaria',
-         :country     => 'Germany',
-         :location    => nil
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive using alternate two year date format" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => '05/12/55',
+        :entrant     => 'Donald Duck',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :city        => 'Munich',
+        :state       => 'Bavaria',
+        :country     => 'Germany',
+        :location    => nil
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -523,28 +514,28 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata using alternate date format and ignoring the bad year field" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => '1965-04-12',
-         :year        => 'some crap',
-         :entrant     => 'Donald Duck',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :city        => 'Munich',
-         :state       => 'Bavaria',
-         :country     => 'Germany',
-         :location    => nil
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata using alternate date format and ignoring the bad year field" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => '1965-04-12',
+        :year        => 'some crap',
+        :entrant     => 'Donald Duck',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :city        => 'Munich',
+        :state       => 'Bavaria',
+        :country     => 'Germany',
+        :location    => nil
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -579,27 +570,27 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata using date range with years" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :date        => '1965-1969',
-         :entrant     => 'Donald Duck',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :city        => 'Munich',
-         :state       => 'Bavaria',
-         :country     => 'Germany',
-         :location    => nil
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata using date range with years" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :date        => '1965-1969',
+        :entrant     => 'Donald Duck',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :city        => 'Munich',
+        :state       => 'Bavaria',
+        :country     => 'Germany',
+        :location    => nil
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -634,26 +625,26 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata with no date or year" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :entrant     => 'Donald Duck',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :city        => 'Munich',
-         :state       => 'Bavaria',
-         :country     => 'Germany',
-         :location    => nil
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata with no date or year" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :entrant     => 'Donald Duck',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :city        => 'Munich',
+        :state       => 'Bavaria',
+        :country     => 'Germany',
+        :location    => nil
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -685,24 +676,24 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata with an alternate format authority and image size" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :entrant     => 'Donald Duck',
-         :description => 'this is a description > another description < other stuff',
-         :format      => 'black-and-white negative',
-         :format_authority => 'alternate',
-         :original_size => '5" x 6"'
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata with an alternate format authority and image size" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :entrant     => 'Donald Duck',
+        :description => 'this is a description > another description < other stuff',
+        :format      => 'black-and-white negative',
+        :format_authority => 'alternate',
+        :original_size => '5" x 6"'
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -728,25 +719,25 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
 
-     it "should create revs specific descriptive metadata with an alternate people columns" do
-       @dobj.druid = @druid
-       @dobj.manifest_row = {
-         :sourceid    => 'foo-1',
-         :label       => 'a label',
-         :entrant     => 'Donald Duck',
-         :format      => 'black-and-white negative',
-         :description => 'this is a description > another description < other stuff',
-         :people1 => 'Doe, John',
-         :people2 => 'Smith, Fred',
-         :people4 => 'Ortiz, David',
-       }
-       @exp_xml = <<-END.gsub(/^ {8}/, '')
+    it "should create revs specific descriptive metadata with an alternate people columns" do
+      @dobj.druid = @druid
+      @dobj.manifest_row = {
+        :sourceid    => 'foo-1',
+        :label       => 'a label',
+        :entrant     => 'Donald Duck',
+        :format      => 'black-and-white negative',
+        :description => 'this is a description > another description < other stuff',
+        :people1 => 'Doe, John',
+        :people2 => 'Smith, Fred',
+        :people4 => 'Ortiz, David',
+      }
+      @exp_xml = <<-END.gsub(/^ {8}/, '')
        <?xml version="1.0"?>
        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
          <typeOfResource>still image</typeOfResource>
@@ -780,12 +771,10 @@ describe PreAssembly::DigitalObject do
          <identifier type="local" displayLabel="Revs ID">foo-1</identifier>
          <note displayLabel="Description">this is a description  another description  other stuff</note>
        </mods>
-        END
-       @exp_xml = noko_doc @exp_xml
-       @dobj.create_desc_metadata_xml
-       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
-     end
-
-   end
-
+      END
+      @exp_xml = noko_doc @exp_xml
+      @dobj.create_desc_metadata_xml
+      expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
+    end
+  end
 end

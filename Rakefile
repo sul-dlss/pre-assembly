@@ -25,16 +25,14 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
-
 if ['test', 'development'].include? ENV['ROBOT_ENVIRONMENT']
   require 'jettywrapper'
   Jettywrapper.hydra_jetty_version = 'v7.3.0' # this keeps us on fedora 3, hydra-jetty v8.x moves to fedora 4.
 
-
   def load_order_files(fedora_files)
     data_path = File.expand_path('../fedora_conf/data/', __FILE__)
-    fedora_files.delete_if {|f| f.strip.empty? }
-    fedora_files.map {|f| File.join(data_path, f.strip) }
+    fedora_files.delete_if { |f| f.strip.empty? }
+    fedora_files.map { |f| File.join(data_path, f.strip) }
   end
 
   namespace :repo do

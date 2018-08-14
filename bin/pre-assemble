@@ -13,13 +13,11 @@ OptionParser.new do |opts|
   opts.on("-l [LIMIT]", "--limit [LIMIT]", "Limit") do |l|
     options[:limit] = l || 200
   end
-
 end.parse!
 
 abort "Incorrect N of arguments - you did not supply a YAML file." unless ARGV.size == 1
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
-
 
 yaml_config = ARGV.shift
 abort "YAML file not found." unless File.file? yaml_config
@@ -29,7 +27,7 @@ params['resume'] = true if options[:resume]
 params['limit_n'] = options[:limit].to_i if options[:limit]
 params['config_filename'] = yaml_config
 
-#Run pre-assembly.
+# Run pre-assembly.
 begin
   b = PreAssembly::Bundle.new params
   b.run_pre_assembly

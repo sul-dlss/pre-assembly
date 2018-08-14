@@ -1,17 +1,16 @@
 #! /usr/bin/env ruby
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
-
 # Run with
 # ROBOT_ENVIRONMENT=test bin/remediate_version apo_1 apo_2
-#Don't include druid:
-#At least one APO druid is needed
-#When testing or debugging, use an APO with few children if possible, large harvests can take quite a significant amount of time
+# Don't include druid:
+# At least one APO druid is needed
+# When testing or debugging, use an APO with few children if possible, large harvests can take quite a significant amount of time
 
-#This script handles cases ther accessionWF lacks an entry for the current workflow in versionMetadata, but accession WF is only behind.  It uses the following remediation procedure
+# This script handles cases ther accessionWF lacks an entry for the current workflow in versionMetadata, but accession WF is only behind.  It uses the following remediation procedure
 
-#This will fix errors such as:
-#sdr-ingest-transfer : druid:bj072xp1435 - Item error; caused by #<RuntimeError: Version mismatch in /dor/workspace/bj/072/xp/1435/bj072xp1435/metadata/versionMetadata.xml, expected 2, found 3>
+# This will fix errors such as:
+# sdr-ingest-transfer : druid:bj072xp1435 - Item error; caused by #<RuntimeError: Version mismatch in /dor/workspace/bj/072/xp/1435/bj072xp1435/metadata/versionMetadata.xml, expected 2, found 3>
 
 require 'rubygems'
 require 'dor-services'
@@ -19,24 +18,22 @@ require 'dor-workflow-service'
 require 'harvestdor'
 require 'logger'
 
-#Set Up the Various Paths
+# Set Up the Various Paths
 current_path = File.dirname(File.expand_path(__FILE__))
 log_path = current_path.split("/bin")[0] + "/log/correct_version/#{Time.now.to_i}/"
 @target_repo = "dor"
 @target_workflow = "accessionWF"
 
-#Make Sure at least APO Druid was provided
+# Make Sure at least APO Druid was provided
 abort("At least one APO druid is required.") if ARGV.size == 0
 
-#Set up the Overall Run Log
+# Set up the Overall Run Log
 FileUtils.mkdir_p(log_path)
-@run_log = Logger.new(log_path+"run.log")
-@no_action_log = Logger.new(log_path+"versions_match.log")
-@no_ingest_error_log = Logger.new(log_path+"one_version_ahead_no_ingest_error.log")
-@ingest_error_log = Logger.new(log_path+"two_versions_ahead_and_ingest_error.log")
+@run_log = Logger.new(log_path + "run.log")
+@no_action_log = Logger.new(log_path + "versions_match.log")
+@no_ingest_error_log = Logger.new(log_path + "one_version_ahead_no_ingest_error.log")
+@ingest_error_log = Logger.new(log_path + "two_versions_ahead_and_ingest_error.log")
 @too_many_ahead_log = Logger.new(log_path + "too_many_versions_ahead.log")
-
-
 
 def correct_versioning_on_druid(druid)
   begin
@@ -46,21 +43,21 @@ def correct_versioning_on_druid(druid)
     return
   end
 
-  dor_version = item.current_version.to_i #gets current version
+  dor_version = item.current_version.to_i # gets current version
 
   begin
-    workflow_xml = Nokogiri.parse(Dor::Config.workflow.client.workflow_resource["dor/objects/#{druid}/workflows"].get) #get all the workflow xml as one chunk
+    workflow_xml = Nokogiri.parse(Dor::Config.workflow.client.workflow_resource["dor/objects/#{druid}/workflows"].get) # get all the workflow xml as one chunk
   rescue
     run_log.error("Failed to get workflow XML for #{druid}")
     @run_log.error $!.backtrace
     return
   end
 
-  if workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version}']").size > 0 #Test to if we have the latest dor workflow
-    #If we have the latest worflow, we're good, at least for the purpose of this script
+  if workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version}']").size > 0 # Test to if we have the latest dor workflow
+    # If we have the latest worflow, we're good, at least for the purpose of this script
     @no_action_log.info(druid)
 
-  elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version-1}']").size > 0
+  elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version - 1}']").size > 0
     begin
       item.initialize_workflow(@target_workflow)
       @no_ingest_error_log.info(druid)
@@ -69,10 +66,10 @@ def correct_versioning_on_druid(druid)
       @run_log.error $!.backtrace
     end
 
-  elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version-2}']").size > 0
-    errorNode =  workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@status='error']").first
+  elsif workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@version='#{dor_version - 2}']").size > 0
+    errorNode = workflow_xml.xpath("//workflow[@id='#{@target_workflow}']/process[@status='error']").first
     unless errorNode.nil?
-      #We need to delete the latest version metadata
+      # We need to delete the latest version metadata
       vmd = item.datastreams['versionMetadata'].ng_xml
       vmd.xpath("//versionMetadata/version[@versionId=#{dor_version}]").remove
       item.datastreams['versionMetadata'].content = vmd.to_xml
@@ -93,43 +90,36 @@ def correct_versioning_on_druid(druid)
         @run_log.error $!.backtrace
       end
 
-
     end
 
   else
-    #We're more than ahead, log this as a Case 3 error and handle it elsewhere
+    # We're more than ahead, log this as a Case 3 error and handle it elsewhere
     @too_many_ahead_log.info(druid)
   end
 end
 
-
-
-#TODO: Lots of stuff ripe for parallelization here
+# TODO: Lots of stuff ripe for parallelization here
 ARGV.each do |apo|
   @run_log.info("Starting version fixes for #{apo}")
 
-  #oais_returned = true
+  # oais_returned = true
   begin
     client = Harvestdor::Client.new
     oais = client.oai_headers(:set => "is_governed_by_#{apo}")
   rescue
     @run_log.error("#{apo} failed.  Possibly an invalid druid.")
     @run_log.error $!.backtrace
-    #oais_return = false
-    next #Skip to the next APO
+    # oais_return = false
+    next # Skip to the next APO
   end
 
-
-    @run_log.info("#{oais.size} records returned for APO #{apo}")
-    oais.each do |oai|
-      #Get the Druid Out of the Identifier
-      tuple = oai.identifier.split(':')
-      druid = tuple[tuple.size-1] #This will not have the druid: prefix
-      druid = ("druid:" + druid).strip #Add druid back on TODO:  Could be regex and avoid these three steps
-      correct_versioning_on_druid(druid)
-
-    end
-     @run_log.info("Completed version fixes for #{apo}")
-
+  @run_log.info("#{oais.size} records returned for APO #{apo}")
+  oais.each do |oai|
+    # Get the Druid Out of the Identifier
+    tuple = oai.identifier.split(':')
+    druid = tuple[tuple.size - 1] # This will not have the druid: prefix
+    druid = ("druid:" + druid).strip # Add druid back on TODO:  Could be regex and avoid these three steps
+    correct_versioning_on_druid(druid)
+  end
+  @run_log.info("Completed version fixes for #{apo}")
 end
-

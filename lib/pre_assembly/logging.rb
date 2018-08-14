@@ -1,7 +1,5 @@
 module PreAssembly
-
   module Logging
-
     LEVELS = {
       :fatal => Logger::FATAL,
       :error => Logger::ERROR,
@@ -28,7 +26,6 @@ module PreAssembly
     end
 
     def self.seconds_to_string(s)
-
       # d = days, h = hours, m = minutes, s = seconds
       m = (s / 60).floor
       s = s % 60
@@ -49,7 +46,5 @@ module PreAssembly
       return "s" unless number == 1
       ""
     end
-
   end
-
 end

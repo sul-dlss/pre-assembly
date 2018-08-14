@@ -10,7 +10,7 @@ end
 help "Incorrect N of arguments." if ARGV.size == 0
 yaml_config = ARGV[0]
 
-report_params={}
+report_params = {}
 report_params[:confirm_checksums] = ARGV.include? 'confirm_checksums'
 report_params[:check_sourceids] = ARGV.include? 'check_sourceids'
 report_params[:no_check_reg] = ARGV.include? 'no_check_reg'

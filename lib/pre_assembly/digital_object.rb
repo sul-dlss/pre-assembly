@@ -1,14 +1,13 @@
 # encoding: UTF-8
+
 require 'modsulator'
 
 module PreAssembly
-
   class DigitalObject
-
     include PreAssembly::Logging
 
     # include any project specific files
-    Dir[File.dirname(__FILE__) + '/project/*.rb'].each {|file| include "PreAssembly::Project::#{File.basename(file).gsub('.rb','').camelize}".constantize }
+    Dir[File.dirname(__FILE__) + '/project/*.rb'].each { |file| include "PreAssembly::Project::#{File.basename(file).gsub('.rb', '').camelize}".constantize }
 
     INIT_PARAMS = [
       :container,
@@ -78,17 +77,15 @@ module PreAssembly
       @technical_md_xml    = ''
       @desc_md_xml         = ''
 
-
       @pre_assem_finished = false
       @content_structure  = (@project_style ? @project_style[:content_structure] : 'file')
-
     end
 
-    def stager(source,destination)
+    def stager(source, destination)
       if @staging_style.nil? || @staging_style == 'copy'
         FileUtils.cp_r source, destination
       else
-        FileUtils.ln_s source, destination, :force=>true
+        FileUtils.ln_s source, destination, :force => true
       end
     end
 
@@ -102,34 +99,33 @@ module PreAssembly
     end
 
     def default_content_md_creation_style
-       @project_style[:content_structure].to_sym
+      @project_style[:content_structure].to_sym
     end
 
     # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||=  (@new_druid_tree_format ? DruidTools::Druid.new(@druid.id,@staging_dir).path() : Assembly::Utils.get_staging_path(@druid.id,@staging_dir))
+      @druid_tree_dir ||= (@new_druid_tree_format ? DruidTools::Druid.new(@druid.id, @staging_dir).path() : Assembly::Utils.get_staging_path(@druid.id, @staging_dir))
     end
 
     def druid_tree_dir=(value)
-      @druid_tree_dir=value
+      @druid_tree_dir = value
     end
 
     # the content subfolder
     def content_dir
-      @content_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir,'content') : druid_tree_dir)
+      @content_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir, 'content') : druid_tree_dir)
     end
 
     # the metadata subfolder
     def metadata_dir
-      @metadata_dir ||=  (@new_druid_tree_format ? File.join(druid_tree_dir,'metadata') : druid_tree_dir)
+      @metadata_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir, 'metadata') : druid_tree_dir)
     end
 
     ####
     # The main process.
     ####
 
-    def pre_assemble(desc_md_xml=nil)
-
+    def pre_assemble(desc_md_xml = nil)
       @desc_md_template_xml = desc_md_xml
 
       log "  - pre_assemble(#{@source_id}) started"
@@ -145,7 +141,6 @@ module PreAssembly
       initialize_assembly_workflow
       log "    - pre_assemble(#{@pid}) finished"
     end
-
 
     ####
     # Determining the druid.
@@ -182,7 +177,7 @@ module PreAssembly
       barcode = container_basename
       pids    = query_dor_by_barcode(barcode)
       pids.each do |pid|
-        @pid=pid
+        @pid = pid
         apo_pids = get_dor_item_apos.map { |apo| apo.pid }
         return pid if apo_matches_exactly_one?(apo_pids)
       end
@@ -221,7 +216,6 @@ module PreAssembly
       File.basename(@container)
     end
 
-
     ####
     # Registration and other Dor interactions.
     ####
@@ -238,7 +232,7 @@ module PreAssembly
         result = begin
           Dor::RegistrationService.register_object params
         rescue Exception => e
-          source_id="#{@project_name}:#{@source_id}"
+          source_id = "#{@project_name}:#{@source_id}"
           log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{@pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           delete_objects_from_workspace_by_source_id(source_id)
           nil
@@ -251,10 +245,10 @@ module PreAssembly
 
     def delete_objects_from_workspace_by_source_id(source_id)
       sourceid_pids = Dor::SearchService.query_by_id(source_id)
-      all_pids= sourceid_pids << @pid
+      all_pids = sourceid_pids << @pid
       all_pids.each do |pid|
         begin
-          Dor::SearchService.solr.delete_by_id(pid)  # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
+          Dor::SearchService.solr.delete_by_id(pid) # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
           Dor::Config.fedora.client["objects/#{pid}"].delete
         rescue Exception => e
           log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
@@ -264,7 +258,7 @@ module PreAssembly
     end
 
     def registration_params
-      tags=["Project : #{@project_name}"]
+      tags = ["Project : #{@project_name}"]
       tags << @apply_tag unless @apply_tag.blank?
       {
         :object_type  => 'item',
@@ -303,8 +297,7 @@ module PreAssembly
       # but will not unregister the object
       log "  - prepare_for_reaccession(#{@druid})"
 
-      Assembly::Utils.cleanup_object(@druid.druid,[:stacks,:stage,:symlinks])
-
+      Assembly::Utils.cleanup_object(@druid.druid, [:stacks, :stage, :symlinks])
     end
 
     def unregister
@@ -341,10 +334,8 @@ module PreAssembly
     # Technical metadata combined file for SMPL.
     ####
     def generate_technical_metadata
-
       create_technical_metadata
       write_technical_metadata
-
     end
 
     def create_technical_metadata
@@ -353,21 +344,20 @@ module PreAssembly
 
       tm = Nokogiri::XML::Document.new
       tm_node = Nokogiri::XML::Node.new("technicalMetadata", tm)
-      tm_node['objectId']=@pid
-      tm_node['datetime']=Time.now.utc.strftime("%Y-%m-%d-T%H:%M:%SZ")
+      tm_node['objectId'] = @pid
+      tm_node['datetime'] = Time.now.utc.strftime("%Y-%m-%d-T%H:%M:%SZ")
       tm << tm_node
 
       # find all technical metadata files and just append the xml to the combined technicalMetadata
-      current_directory=Dir.pwd
-      FileUtils.cd(File.join(@bundle_dir,container_basename))
-      tech_md_filenames=Dir.glob("**/*_techmd.xml").sort
+      current_directory = Dir.pwd
+      FileUtils.cd(File.join(@bundle_dir, container_basename))
+      tech_md_filenames = Dir.glob("**/*_techmd.xml").sort
       tech_md_filenames.each do |filename|
-         tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir,container_basename,filename)))
-         tm.root << tech_md_xml.root
+        tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir, container_basename, filename)))
+        tm.root << tech_md_xml.root
       end
       FileUtils.cd(current_directory)
-      @technical_md_xml=tm.to_xml
-
+      @technical_md_xml = tm.to_xml
     end
 
     def write_technical_metadata
@@ -384,10 +374,8 @@ module PreAssembly
     # Content metadata.
     ####
     def generate_content_metadata
-
       create_content_metadata
       write_content_metadata
-
     end
 
     def create_content_metadata
@@ -396,21 +384,20 @@ module PreAssembly
       # Custom methods are defined in the project_specific.rb file
 
       # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
-      if !['default','filename','dpg','none'].include? @content_md_creation[:style].to_s
+      if !['default', 'filename', 'dpg', 'none'].include? @content_md_creation[:style].to_s
 
         @content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
 
       elsif @content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
 
         # otherwise use the content metadata generation gem
-        params={:druid=>@druid.id,:objects=>content_object_files,:add_exif=>false,:bundle=>@content_md_creation[:style].to_sym,:style=>content_md_creation_style}
+        params = { :druid => @druid.id, :objects => content_object_files, :add_exif => false, :bundle => @content_md_creation[:style].to_sym, :style => content_md_creation_style }
 
-        params.merge!(:add_file_attributes=>true,:file_attributes=>@file_attr.stringify_keys) unless @file_attr.nil?
+        params.merge!(:add_file_attributes => true, :file_attributes => @file_attr.stringify_keys) unless @file_attr.nil?
 
         @content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
 
       end
-
     end
 
     def write_content_metadata
@@ -428,7 +415,6 @@ module PreAssembly
       # normalizer = Normalizer.new
       # normalizer.normalize_document(mods_xml_doc.root) # normalize it
       # File.open(file_name, 'w') { |fh| fh.puts mods_xml_doc.to_xml } # write out normalized result
-
     end
 
     def content_object_files
@@ -454,7 +440,7 @@ module PreAssembly
       manifest_row = @manifest_row
 
       # XML escape all of the entries in the manifest row so they won't break the XML
-      manifest_row.each {|k,v| manifest_row[k]=Nokogiri::XML::Text.new(v,Nokogiri::XML('')).to_s if v }
+      manifest_row.each { |k, v| manifest_row[k] = Nokogiri::XML::Text.new(v, Nokogiri::XML('')).to_s if v }
 
       # ensure access with symbol or string keys
       manifest_row = manifest_row.with_indifferent_access
@@ -468,9 +454,8 @@ module PreAssembly
       # double brackets: "blah [[column_name]] blah".
       # Here we replace those placeholders with the corresponding value
       # from the manifest row.
-      @manifest_row.each { |k,v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
+      @manifest_row.each { |k, v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
       true
-
     end
 
     def write_desc_metadata
@@ -491,7 +476,6 @@ module PreAssembly
     ####
 
     def initialize_assembly_workflow
-
       # Call web service to add assemblyWF to the object in DOR.
       return unless @init_assembly_wf
       log "    - initialize_assembly_workflow()"
@@ -499,7 +483,7 @@ module PreAssembly
 
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
         result = RestClient.post url, {}
-        raise PreAssembly::UnknownError unless result && [200,201,202,204].include?(result.code)
+        raise PreAssembly::UnknownError unless result && [200, 201, 202, 204].include?(result.code)
         result
       end
     end
@@ -508,7 +492,5 @@ module PreAssembly
       druid = @pid.include?('druid') ? @pid : "druid:#{@pid}"
       "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
     end
-
   end
-
 end

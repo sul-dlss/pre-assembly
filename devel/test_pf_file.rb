@@ -4,7 +4,7 @@
 
 #############################
 def get_pid_to_file(pf_file)
-############################
+  ############################
 
   pf_file = @base_path + pf_file if pf_file !~ /@base_path/
 
@@ -17,21 +17,15 @@ def get_pid_to_file(pf_file)
   end
 
   pid_to_file
-
 end # get_pid_to_file
 
 #########
 def main()
-#########
+  #########
 
   pid_to_file = get_pid_to_file(ARGV[0])
 
   puts pid_to_file.inspect
-
 end
 
 main()
-
-
-
-

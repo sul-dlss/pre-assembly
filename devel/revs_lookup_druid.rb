@@ -15,29 +15,27 @@ require 'csv'
 require 'csv-mapper'
 include CsvMapper
 
-source_path=File.dirname(csv_in)
-source_name=File.basename(csv_in,File.extname(csv_in))
-csv_out=File.join(source_path, source_name + "_output.csv")
+source_path = File.dirname(csv_in)
+source_name = File.basename(csv_in, File.extname(csv_in))
+csv_out = File.join(source_path, source_name + "_output.csv")
 
 # read input manifest
-@items=CsvMapper.import(csv_in) do read_attributes_from_file end
+@items = CsvMapper.import(csv_in) do read_attributes_from_file end
 puts "Found #{@items.size} source ids in #{source_name}"
 puts ""
 
 CSV.open(csv_out, "wb") do |csv|
-
-  csv << ['druid','sourceid']
+  csv << ['druid', 'sourceid']
   @items.each_with_index do |row, x|
-    pids=Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
+    pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
     if pids.size != 1
-      puts "#{x+1} of #{@items.size}: cannot find single pid for source id #{row.sourceid}"
+      puts "#{x + 1} of #{@items.size}: cannot find single pid for source id #{row.sourceid}"
     else
-      pid=pids.first
-      puts "#{x+1} of #{@items.size}: found #{pid} for #{row.sourceid}"
-      csv << [pid,row.sourceid]
+      pid = pids.first
+      puts "#{x + 1} of #{@items.size}: found #{pid} for #{row.sourceid}"
+      csv << [pid, row.sourceid]
     end
   end
-
 end
 
 puts ""

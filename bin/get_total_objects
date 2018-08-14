@@ -18,8 +18,8 @@ params['show_progress'] = false
 begin
   b = PreAssembly::Bundle.new params
   b.discover_objects
-  total_objects=b.digital_objects.size
-  objects_remaining=b.objects_to_process.size
+  total_objects = b.digital_objects.size
+  objects_remaining = b.objects_to_process.size
   puts objects_remaining
 rescue PreAssembly::BundleUsageError => e
   help e.message

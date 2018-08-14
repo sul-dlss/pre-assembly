@@ -1,7 +1,6 @@
 require 'dir_validator'
 
 module PreAssembly
-
   # This example illustrates how to use DirValidator in a pre-assembly context.
   #
   # Define a module method validate_bundle_directory() that takes the
@@ -19,6 +18,4 @@ module PreAssembly
     end
     dv
   end
-
 end
-

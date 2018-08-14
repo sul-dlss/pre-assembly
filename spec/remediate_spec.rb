@@ -18,7 +18,7 @@ describe PreAssembly::Remediation::Item do
       @progress_log_file = @log_dir + "/progress_log_file.yml"
     end
     after(:each) do
-       # File.delete(@csv_filename)
+      # File.delete(@csv_filename)
     end
     it "ensures a log file exists" do
       File.delete(@csv_filename) if File.exist?(@csv_filename)
