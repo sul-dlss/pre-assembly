@@ -1,7 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 # rspec expect{...} is conventional
-Style/SpaceBeforeBlockBraces:
+Layout/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
