@@ -304,13 +304,6 @@ git clone git@github.com:sul-dlss/pre-assembly.git
 cd pre-assembly
 ```
 
-Copy the default configs and use them for local and test.
-
-```bash
-cp config/environments/test.example.rb config/environments/test.rb
-cp config/environments/test.example.rb config/environments/development.rb
-```
-
 You will need to have a certificate to access DOR-test in order to run integration tests from your laptop.  The certificates are placed
 in your laptop's "config/certs" folder and are referenced in the "config/environments/test.rb" file.  Talk to DevOps to get a certificate.
 
