@@ -60,6 +60,7 @@ GEM
       dor-services (~> 5.5)
       druid-tools (>= 0.2.6)
       nokogiri
+    ast (2.4.0)
     awesome_print (1.8.0)
     bagit (0.4.1)
       docopt (~> 0.5.0)
@@ -181,6 +182,7 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     iso-639 (0.2.8)
+    jaro_winkler (1.5.1)
     jettywrapper (2.0.4)
       activesupport (>= 3.0.0)
       childprocess
@@ -246,6 +248,10 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
+    parallel (1.12.1)
+    parser (2.5.1.2)
+      ast (~> 2.4.0)
+    powerpack (0.1.2)
     rack (1.6.8)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -257,6 +263,7 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rainbow (3.0.0)
     rake (12.3.0)
     rdf (1.99.1)
       link_header (~> 0.0, >= 0.0.8)
@@ -308,6 +315,16 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
+    rubocop (0.58.2)
+      jaro_winkler (~> 1.5.1)
+      parallel (~> 1.10)
+      parser (>= 2.5, != 2.5.1.1)
+      powerpack (~> 0.1)
+      rainbow (>= 2.2.2, < 4.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (~> 1.0, >= 1.0.1)
+    rubocop-rspec (1.27.0)
+      rubocop (>= 0.56.0)
     ruby-cache (0.3.0)
     ruby-graphviz (1.2.3)
     ruby-prof (0.17.0)
@@ -358,6 +375,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.5)
+    unicode-display_width (1.4.0)
     uuidtools (2.1.5)
     validatable (1.6.7)
     xml-simple (1.1.5)
@@ -396,6 +414,8 @@ DEPENDENCIES
   revs-utils (~> 2.1.24)
   roo
   rspec (~> 3.0)
+  rubocop (~> 0.58)
+  rubocop-rspec
   ruby-prof
   solr_wrapper
   stanford-mods
