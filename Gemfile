@@ -26,6 +26,7 @@ gem 'modsulator'
 gem 'revs-utils'
 gem 'stanford-mods'
 gem 'rails', '~> 5.2', '>= 5.2.1'
+gem 'sqlite3'
 
 group :test do
   gem 'rspec', '~> 3.0'
@@ -44,6 +45,7 @@ end
 
 group :development do
   gem 'awesome_print'
+  gem 'listen'
 end
 
 group :development, :test do
