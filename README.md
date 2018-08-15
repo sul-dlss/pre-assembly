@@ -1,7 +1,7 @@
 # Pre-assembly
-
-[<img src="https://coveralls.io/repos/github/sul-dlss/pre-assembly/badge.svg"
-alt="Coverage Status" />](https://coveralls.io/github/sul-dlss/pre-assembly)
+[![Build Status](https://travis-ci.org/sul-dlss/pre-assembly.svg?branch=master)](https://travis-ci.org/sul-dlss/pre-assembly)
+[![Coverage Status](https://coveralls.io/repos/github/sul-dlss/pre-assembly/badge.svg?branch=master)](https://coveralls.io/github/sul-dlss/pre-assembly?branch=master)
+[![GitHub version](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly.svg)](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly)
 
 This is a Ruby implementation of services needed to prepare objects to be
 assembled and then accessioned into the SUL digital library.
