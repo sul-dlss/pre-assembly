@@ -1,38 +1,18 @@
 require 'spec_helper'
 
 describe PreAssembly::Bundle do
-  before(:all) do
-    @yaml_filenames = {
-      :proj_revs => 'spec/test_data/project_config_files/local_dev_revs.yaml',
-      :proj_revs_bad_manifest => 'spec/test_data/project_config_files/local_dev_revs_bad_manifest.yaml',
-      :proj_revs_no_cm => 'spec/test_data/project_config_files/local_dev_revs_no_contentMetadata.yaml',
-      :proj_rumsey => 'spec/test_data/project_config_files/local_dev_rumsey.yaml',
-      :proj_sohp2   => 'spec/test_data/project_config_files/local_dev_sohp2.yaml',
-      :proj_sohp3   => 'spec/test_data/project_config_files/local_dev_sohp3.yaml',
-      :proj_sohp4   => 'spec/test_data/project_config_files/local_dev_sohp4.yaml',
-      :proj_sohp_files_only => 'spec/test_data/project_config_files/local_dev_sohp_files_only.yaml',
-      :proj_sohp_files_and_folders => 'spec/test_data/project_config_files/local_dev_sohp_files_and_folders.yaml',
-      :proj_folder_manifest   => 'spec/test_data/project_config_files/local_dev_folder_manifest.yaml',
-      :proj_with_tag          => 'spec/test_data/project_config_files/local_dev_revs_old_druid_style.yaml'
-    }
-    @yaml = {}
-    @yaml_filenames.each { |key, value| @yaml[key] = File.read(value) }
-    @md5_regex = /^[0-9a-f]{32}$/
-  end
+  let(:md5_regex) { /^[0-9a-f]{32}$/ }
 
   def bundle_setup(proj)
-    @ps = YAML.load @yaml[proj]
-    @ps['config_filename'] = @yaml_filenames[proj]
+    filename = "spec/test_data/project_config_files/#{proj}.yaml"
+    @ps = YAML.load(File.read(filename))
+    @ps['config_filename'] = filename
     @ps['show_progress'] = false
     @b = PreAssembly::Bundle.new @ps
   end
 
-  ####################
-
   describe "initialize() and other setup" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "can initialize a Bundle" do
       expect(@b).to be_kind_of PreAssembly::Bundle
@@ -45,7 +25,7 @@ describe PreAssembly::Bundle do
     it "load_desc_md_template() should return nil or String" do
       # Return nil if no template.
       @b.desc_md_template = nil
-      expect(@b.load_desc_md_template).to eq(nil)
+      expect(@b.load_desc_md_template).to be_nil
       # Otherwise, read the template and return its content.
       @b.desc_md_template = @b.path_in_bundle('mods_template.xml')
       template = @b.load_desc_md_template
@@ -55,8 +35,7 @@ describe PreAssembly::Bundle do
 
     it "setup_other() should prune @file_attr" do
       # All keys are present.
-      ks = @b.file_attr.keys.map { |k| k.to_s }
-      expect(ks.sort).to eq(%w(preserve publish shelve))
+      expect(@b.file_attr.keys.map(&:to_s).sort).to eq(%w(preserve publish shelve))
       # Keys with nil values should be removed.
       @b.file_attr[:preserve] = nil
       @b.file_attr[:publish]  = nil
@@ -65,54 +44,33 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
-  describe "apply_tag settings" do
+  describe '#apply_tag' do
     it "should set apply_tag to nil if not set in the yaml file" do
-      bundle_setup :proj_revs
-      expect(@b.apply_tag).to be_nil
-      expect(@b.apply_tag.blank?).to be_truthy
+      expect(bundle_setup(:proj_revs).apply_tag).to be_nil
     end
-
     it "should set the apply_tag parameter if set" do
-      bundle_setup :proj_with_tag
-      expect(@b.apply_tag).to eq("revs:batch1")
-      expect(@b.apply_tag.blank?).to be_falsey
+      expect(bundle_setup(:proj_revs_old_druid).apply_tag).to eq("revs:batch1")
     end
-
     it "should set the apply_tag to empty string or nil and be blank if set this way in config file" do
-      bundle_setup :proj_revs_no_cm
-      expect(@b.apply_tag.blank?).to be_truthy
-      bundle_setup :proj_rumsey
-      expect(@b.apply_tag.blank?).to be_truthy
+      expect(bundle_setup(:proj_revs_no_cm).apply_tag).to be_blank
+      expect(bundle_setup(:proj_rumsey).apply_tag).to be_blank
     end
   end
 
-  ####################
-
-  describe "setting set_druid_id() correctly" do
+  describe '#set_druid_id' do
     it "should set the set_druid_id to an array" do
-      bundle_setup :proj_revs
-      expect(@b.set_druid_id).to eq(['druid:yt502zj0924', 'druid:nt028fd5773'])
+      expect(bundle_setup(:proj_revs).set_druid_id).to eq(['druid:yt502zj0924', 'druid:nt028fd5773'])
     end
-
     it "should set the set_druid_id to nil" do
-      bundle_setup :proj_rumsey
-      expect(@b.set_druid_id).to be_nil
+      expect(bundle_setup(:proj_rumsey).set_druid_id).to be_nil
     end
-
     it "should set the set_druid_id to a single value arrayed if one value is passed in a string" do
-      bundle_setup :proj_revs_no_cm
-      expect(@b.set_druid_id).to eq(['druid:yt502zj0924'])
+      expect(bundle_setup(:proj_revs_no_cm).set_druid_id).to eq(['druid:yt502zj0924'])
     end
   end
 
-  ####################
-
-  describe "load_skippables()" do
-    before(:each) do
-      bundle_setup :proj_rumsey
-    end
+  describe '#load_skippables' do
+    before { bundle_setup :proj_rumsey }
 
     it "should do nothing if @resume is false" do
       @b.resume = false
@@ -129,53 +87,39 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
-  describe "validate_usage() with bad manifest" do
+  describe '#validate_usage with bad manifest' do
     it "should raise an exception since the sourceID column is misspelled" do
-      @exp_err = PreAssembly::BundleUsageError
       exp_msg = /Manifest does not have a column called 'sourceid'/
-      expect { bundle_setup :proj_revs_bad_manifest }.to raise_error @exp_err, exp_msg
+      expect { bundle_setup(:proj_revs_bad_manifest) }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
   end
 
-  ####################
+  describe '#import_csv' do
+    let(:manifest) do
+      PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
+    end
 
-  describe "import_csv()" do
     it "should load a CSV as a hash with indifferent access" do
-      filename = "#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv"
-      manifest = PreAssembly::Bundle.import_csv(filename)
-      expect(manifest.class).to eq(Array)
+      expect(manifest).to be_an(Array)
       expect(manifest.size).to eq(3)
       headers = %w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
-      headers_as_symbols = headers.map { |header| header.to_sym }
-      manifest.each do |row| # rows should be accessible as keys by header, both as string and symbols
-        headers.each do |header|
-          expect(row.key?(header)).to be_truthy
-          expect(row.key?(header.to_sym)).to be_truthy
-        end
-      end
+      # rows should be accessible as keys by header, both as string and symbols
+      expect(manifest).to all(include(*headers))
+      expect(manifest).to all(include(*headers.map(&:to_sym)))
       # test some specific values by key and string -- if the column is totally missing at the end, it might have a value of nil (like in the first row, missing the description column)
-      expect(manifest[0][:description].nil?).to be_truthy
-      expect(manifest[0]['description'].nil?).to be_truthy
-      expect(manifest[1][:description].nil?).to be_falsey
-      expect(manifest[1]['description'].nil?).to be_falsey
+      expect(manifest[0][:description]).to be_nil
+      expect(manifest[0]['description']).to be_nil
       expect(manifest[1][:description]).to eq('')
-      expect(manifest[2][:description].nil?).to be_falsey
-      expect(manifest[2]['description'].nil?).to be_falsey
+      expect(manifest[1]['description']).not_to be_nil
       expect(manifest[2][:description]).to eq('yo, this is a description')
       expect(manifest[2]['description']).to eq('yo, this is a description')
-      expect(manifest[2]['Description'].nil?).to be_truthy # case sensitive
+      expect(manifest[2]['Description']).to be_nil # AKA Hashes, how do they work?
     end
   end
 
-  ####################
-
-  describe "validate_usage()" do
-    before(:each) do
-      bundle_setup :proj_revs
-      @b.user_params = Hash[@b.required_user_params.map { |p| [p, ''] }]
-      @exp_err = PreAssembly::BundleUsageError
+  describe '#validate_usage' do
+    before do
+      bundle_setup(:proj_revs).user_params = Hash[@b.required_user_params.map { |p| [p, ''] }]
     end
 
     it "required_files() should return expected N of items" do
@@ -195,25 +139,25 @@ describe PreAssembly::Bundle do
     end
 
     it "should not raise an exception if requirements are satisfied" do
-      @b.validate_usage
+      expect { @b.validate_usage }.not_to raise_error
     end
 
     it "should raise exception if a user parameter is missing" do
       @b.user_params.delete :bundle_dir
       exp_msg = /^Configuration errors found:  Missing parameter: /
-      expect { @b.validate_usage }.to raise_error @exp_err, exp_msg
+      expect { @b.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
 
     it "should raise exception if required directory not found" do
       @b.bundle_dir = '__foo_bundle_dir###'
       exp_msg = /^Configuration errors found:  Required directory not found/
-      expect { @b.validate_usage }.to raise_error @exp_err, exp_msg
+      expect { @b.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
 
     it "should raise exception if required file not found" do
       @b.manifest = '__foo_manifest###'
       exp_msg = /^Configuration errors found:  Required file not found/
-      expect { @b.validate_usage }.to raise_error @exp_err, exp_msg
+      expect { @b.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
 
     it "should raise exception if use_container and get_druid_from are incompatible" do
@@ -221,17 +165,13 @@ describe PreAssembly::Bundle do
       exp_msg = /^Configuration errors found:  If stageable_discovery:use_container=true, you cannot use get_druid_from='container'/
       [:container, :container_barcode].each do |gdf|
         @b.project_style[:get_druid_from] = gdf
-        expect { @b.validate_usage }.to raise_error @exp_err, exp_msg
+        expect { @b.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
       end
     end
   end
 
-  ####################
-
   describe "main process" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "can exercise run_log_msg()" do
       expect(@b.run_log_msg).to be_kind_of String
@@ -239,17 +179,13 @@ describe PreAssembly::Bundle do
 
     it "can exercise processed_pids()" do
       exp_pids = [11, 22, 33]
-      @b.digital_objects = exp_pids.map { |p| double 'dobj', :pid => p }
+      @b.digital_objects = exp_pids.map { |p| double('dobj', :pid => p) }
       expect(@b.processed_pids).to eq(exp_pids)
     end
   end
 
-  ####################
-
   describe "bundle directory validation using DirValidator" do
-    before(:each) do
-      bundle_setup :proj_rumsey
-    end
+    before { bundle_setup :proj_rumsey }
 
     it "run_pre_assembly() should short-circuit if the bundle directory is invalid" do
       allow(@b).to receive('bundle_directory_is_valid?').and_return(false)
@@ -261,10 +197,10 @@ describe PreAssembly::Bundle do
         :delete_digital_objects,
       ]
       methods.each { |m| expect(@b).not_to receive(m) }
-      @b.run_pre_assembly()
+      @b.run_pre_assembly
     end
 
-    describe "bundle_directory_is_valid?" do
+    describe '#bundle_directory_is_valid?' do
       it "should return true when no validation is requested by client" do
         @b.validate_bundle_dir = {}
         expect(@b.bundle_directory_is_valid?).to eq(true)
@@ -286,21 +222,19 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
-  describe "object discovery: discover_objects()" do
-    it "discover_objects() should find the correct N objects, stageables, and files" do
+  describe 'object discovery: #discover_objects' do
+    it "should find the correct N objects, stageables, and files" do
       tests = [
         [:proj_revs,   3, 1, 1],
         [:proj_rumsey, 3, 2, 2],
-        [:proj_folder_manifest, 3, 2, 2],
-        [:proj_sohp_files_only, 2, 9, 9],
-        [:proj_sohp_files_and_folders, 2, 25, 40]
+        [:folder_manifest, 3, 2, 2],
+        [:sohp_files_only, 2, 9, 9],
+        [:sohp_files_and_folders, 2, 25, 40]
       ]
       tests.each do |proj, n_dobj, n_stag, n_file|
-        bundle_setup proj
-        @b.discover_objects
-        dobjs = @b.digital_objects
+        b = bundle_setup(proj)
+        b.discover_objects
+        dobjs = b.digital_objects
         expect(dobjs.size).to eq(n_dobj)
         dobjs.each do |dobj|
           expect(dobj.stageable_items.size).to eq(n_stag)
@@ -309,25 +243,21 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "discover_objects() should handle containers correctly" do
+    it "should handle containers correctly" do
       # A project that uses containers as stageables.
       # In this case, the bundle_dir serves as the container.
-      bundle_setup :proj_revs
-      @b.discover_objects
-      expect(@b.digital_objects[0].container).to eq(@b.bundle_dir)
+      b = bundle_setup(:proj_revs)
+      b.discover_objects
+      expect(b.digital_objects[0].container).to eq(b.bundle_dir)
       # A project that does not.
-      bundle_setup :proj_rumsey
-      @b.discover_objects
-      expect(@b.digital_objects[0].container.size).to be > @b.bundle_dir.size
+      b = bundle_setup(:proj_rumsey)
+      b.discover_objects
+      expect(b.digital_objects[0].container.size).to be > b.bundle_dir.size
     end
   end
 
-  ####################
-
   describe "object discovery: containers" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
       items = [0, 11, 22, 33, 44, 55, 66, 77]
@@ -351,21 +281,14 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
   describe "object discovery: discovery via manifest and crawl" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "discover_containers_via_manifest() should return expected information" do
-      col_name  = :col_foo
-      vals      = %w(123.tif 456.tif 789.tif)
-      exp       = vals.map { |v| @b.path_in_bundle v }
-      fake_rows = vals.map { |v| { col_name => v } }
-      @b.manifest_cols[:object_container] = col_name
-      allow(@b).to receive(:manifest_rows).and_return fake_rows
-      expect(@b.discover_containers_via_manifest).to eq(exp)
+      vals = %w(123.tif 456.tif 789.tif)
+      @b.manifest_cols[:object_container] = :col_foo
+      allow(@b).to receive(:manifest_rows).and_return(vals.map { |v| { :col_foo => v } })
+      expect(@b.discover_containers_via_manifest).to eq(vals.map { |v| @b.path_in_bundle v })
     end
 
     it "discover_items_via_crawl() should return expected information" do
@@ -374,7 +297,7 @@ describe PreAssembly::Bundle do
         '123.tif', '456.tif', '456.TIF',
       ]
       items = items.map { |i| @b.path_in_bundle i }
-      allow(@b).to receive(:dir_glob).and_return items
+      allow(@b).to receive(:dir_glob).and_return(items)
       # No regex filtering.
       @b.object_discovery = { :regex => '', :glob => '' }
       expect(@b.discover_items_via_crawl(@b.bundle_dir, @b.object_discovery)).to eq(items.sort)
@@ -387,34 +310,25 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
   describe "object discovery: stageable_items_for" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "stageable_items_for() should return [container] if use_container is true" do
-      container = 'foo.tif'
       @b.stageable_discovery[:use_container] = true
-      expect(@b.stageable_items_for(container)).to eq([container])
+      expect(@b.stageable_items_for('foo.tif')).to eq(['foo.tif'])
     end
 
     it "stageable_items_for() should return expected crawl results" do
-      bundle_setup :proj_rumsey
-      container = @b.path_in_bundle "cb837cp4412"
+      b = bundle_setup(:proj_rumsey)
+      container = b.path_in_bundle "cb837cp4412"
       exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
-      expect(@b.stageable_items_for(container)).to eq(exp)
+      expect(b.stageable_items_for(container)).to eq(exp)
     end
   end
 
-  ####################
-
   describe "object discovery: discover_object_files()" do
-    before(:each) do
-      bundle_setup :proj_rumsey
-      ds = %w(cb837cp4412 cm057cr1745 cp898cs9946)
-      @fs = %w(
+    let(:fs) do
+      %w(
         cb837cp4412/2874009.tif
         cb837cp4412/descMetadata.xml
         cm057cr1745/2874008.tif
@@ -422,52 +336,42 @@ describe PreAssembly::Bundle do
         cp898cs9946/2874018.tif
         cp898cs9946/descMetadata.xml
       )
-      @files = @fs.map { |f| @b.path_in_bundle f }
-      @dirs = ds.map { |d| @b.path_in_bundle d }
-
-      @get_paths     = lambda { |fs| fs.map { |f| f.path } }
-      @get_rel_paths = lambda { |fs| fs.map { |f| f.relative_path } }
     end
+    let(:files) { fs.map { |f| @b.path_in_bundle f } }
+    let(:dirs) { %w(cb837cp4412 cm057cr1745 cp898cs9946).map { |d| @b.path_in_bundle d } }
+
+    before { bundle_setup :proj_rumsey }
 
     it "should find expected files with correct relative paths" do
-      bbase = File.basename(@b.bundle_dir)
       tests = [
         # Stageables.    Expected relative paths.                 Type of item as stageables.
-        [@files,        @fs.map { |f| File.basename f }], # Files.
-        [@dirs,         @fs], # Directories.
-        [@b.bundle_dir, @fs.map { |f| File.join(bbase, f) }], # Even higher directory.
+        [files,         fs.map { |f| File.basename f }], # Files.
+        [dirs,          fs], # Directories.
+        [@b.bundle_dir, fs.map { |f| File.join(File.basename(@b.bundle_dir), f) }], # Even higher directory.
       ]
       tests.each do |stageables, exp_relative_paths|
-        # The full paths of the object files should never change,
-        # but the relative paths varies, depending on the stageables.
+        # Full paths of object files should never change, but the relative paths varies, depending on the stageables.
         ofiles = @b.discover_object_files(stageables)
-        expect(@get_paths.call(ofiles)).to     eq(@files)
-        expect(@get_rel_paths.call(ofiles)).to eq(exp_relative_paths)
+        expect(ofiles.map(&:path)).to eq(files)
+        expect(ofiles.map(&:relative_path)).to eq(exp_relative_paths)
       end
     end
   end
 
-  ####################
-
   describe "object discovery: other" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "actual_container() should behave as expected" do
-      p = 'foo/bar'
-      f = 'x.tif'
-      c = "#{p}/#{f}"
+      path = "foo/bar/x.tif"
       # Return the container unmodified.
       @b.stageable_discovery[:use_container] = false
-      expect(@b.actual_container(c)).to eq(c)
+      expect(@b.actual_container(path)).to eq(path)
       # Adjust the container value.
       @b.stageable_discovery[:use_container] = true
-      expect(@b.actual_container(c)).to eq(p)
+      expect(@b.actual_container(path)).to eq('foo/bar')
     end
 
     it "should be able to exercise all_object_files()" do
-      bundle_setup :proj_revs
       fake_files = [[1, 2], [3, 4], [5, 6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
       @b.digital_objects = fake_dobjs
@@ -475,7 +379,6 @@ describe PreAssembly::Bundle do
     end
 
     it "new_object_file() should return an ObjectFile with expected path values" do
-      bundle_setup :proj_revs
       allow(@b).to receive(:exclude_from_path).and_return(false)
       tests = [
         # Stageable is a file:
@@ -514,41 +417,29 @@ describe PreAssembly::Bundle do
     end
 
     it "exclude_from_content() should behave correctly" do
-      tests = {
-        "image1.tif"       => false,
-        "descMetadata.xml" => true,
-      }
-      bundle_setup :proj_rumsey
-      tests.each do |f, exp|
-        path = @b.path_in_bundle f
-        expect(@b.exclude_from_content(path)).to eq(exp)
-      end
+      b = bundle_setup(:proj_rumsey)
+      expect(b.exclude_from_content(b.path_in_bundle('image1.tif'))).to be_falsey
+      expect(b.exclude_from_content(b.path_in_bundle('descMetadata.xml'))).to be_truthy
     end
   end
-
-  ####################
 
   describe "checksums: load_checksums()" do
     it "should load checksums and attach them to the ObjectFiles" do
-      bundle_setup :proj_rumsey
-      @b.discover_objects
-      @b.all_object_files.each { |f|    expect(f.checksum).to eq(nil) }
-      @b.digital_objects.each  { |dobj| @b.load_checksums(dobj) }
-      @b.all_object_files.each { |f|    expect(f.checksum).to match(@md5_regex) }
+      b = bundle_setup(:proj_rumsey)
+      b.discover_objects
+      b.all_object_files.each { |f|    expect(f.checksum).to be_nil }
+      b.digital_objects.each  { |dobj| b.load_checksums(dobj) }
+      b.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
     end
   end
 
-  ####################
-
   describe "checksums: load_provider_checksums()" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "should do nothing when no checksums file is present" do
-      bundle_setup :proj_rumsey
-      expect(@b).not_to receive(:read_exp_checksums)
-      @b.load_provider_checksums
+      b = bundle_setup(:proj_rumsey)
+      expect(b).not_to receive(:read_exp_checksums)
+      b.load_provider_checksums
     end
 
     it "empty string yields no checksums" do
@@ -571,65 +462,57 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
   describe "checksums: retrieving and computing" do
-    before(:each) do
-      bundle_setup :proj_revs
-      @file_path = @b.path_in_bundle 'image1.tif'
-      @file = Assembly::ObjectFile.new(@file_path)
-      @checksum_type = :md5
-    end
+    let(:file_path) { @b.path_in_bundle 'image1.tif' }
+    let(:file) { Assembly::ObjectFile.new(file_path) }
+
+    before { bundle_setup :proj_revs }
 
     it "retrieve_checksum() should return provider checksum when it is available" do
       fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
-      @b.provider_checksums = { @file_path => fake_md5 }
-      expect(@b).not_to receive :compute_checksum
-      expect(@b.retrieve_checksum(@file)).to eq(fake_md5)
+      @b.provider_checksums = { file_path => fake_md5 }
+      expect(@b).not_to receive(:compute_checksum)
+      expect(@b.retrieve_checksum(file)).to eq(fake_md5)
     end
 
     it "retrieve_checksum() should compute checksum when checksum is not available" do
       @b.provider_checksums = {}
-      expect(@b).to receive :compute_checksum
-      @b.retrieve_checksum @file
+      expect(@b).to receive(:compute_checksum)
+      @b.retrieve_checksum(file)
     end
 
     it "compute_checksum() should return nil if @compute_checksum is false" do
       @b.compute_checksum = false
-      expect(@b.compute_checksum(@file)).to eq(nil)
+      expect(@b.compute_checksum(file)).to be_nil
     end
 
     it "compute_checksum() should return an md5 checksum" do
-      c = @b.compute_checksum @file
-      expect(c).to be_kind_of String
-      expect(c).to match(@md5_regex)
+      expect(@b.compute_checksum(file)).to be_a(String).and match(md5_regex)
     end
   end
 
-  ####################
-
-  describe "process_manifest()" do
+  describe '#process_manifest' do
     it "should do nothing for bundles that do not use a manifest" do
-      bundle_setup :proj_rumsey
-      @b.discover_objects
-      expect(@b).not_to receive :manifest_rows
-      @b.process_manifest
+      b = bundle_setup(:proj_rumsey)
+      b.discover_objects
+      expect(b).not_to receive :manifest_rows
+      b.process_manifest
     end
 
     it "should augment the digital objects with additional information" do
-      bundle_setup :proj_revs
+      b = bundle_setup(:proj_revs)
       # Discover the objects: we should find some.
-      @b.discover_objects
-      expect(@b.digital_objects.size).to eq(3)
+      b.discover_objects
+      expect(b.digital_objects.size).to eq(3)
       # Before processing manifest: various attributes should be nil or default value.
-      @b.digital_objects.each do |dobj|
+      b.digital_objects.each do |dobj|
         expect(dobj.label).to        eq(Dor::Config.dor.default_label)
-        expect(dobj.source_id).to    eq(nil)
-        expect(dobj.manifest_row).to eq(nil)
+        expect(dobj.source_id).to    be_nil
+        expect(dobj.manifest_row).to be_nil
       end
       # And now those attributes should have content.
-      @b.process_manifest
-      @b.digital_objects.each do |dobj|
+      b.process_manifest
+      b.digital_objects.each do |dobj|
         expect(dobj.label).to be_kind_of String
         expect(dobj.label).not_to eq(Dor::Config.dor.default_label)
         expect(dobj.source_id).to be_kind_of    String
@@ -638,32 +521,23 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
-  describe "manifest_rows()" do
+  describe '#manifest_rows' do
     it "should load the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
-      bundle_setup :proj_revs
-      meth_name = :load_manifest_rows_from_csv
-      expect(@b).not_to receive(meth_name)
-      3.times { @b.manifest_rows.size == 3 }
+      b = bundle_setup(:proj_revs)
+      expect(b).not_to receive(:load_manifest_rows_from_csv)
+      3.times { b.manifest_rows.size == 3 }
     end
 
     it "should return empty array for bundles that do not use a manifest" do
-      bundle_setup :proj_rumsey
-      expect(@b.manifest_rows).to eq([])
+      expect(bundle_setup(:proj_rumsey).manifest_rows).to eq([])
     end
   end
 
-  ####################
+  describe '#validate_files' do
+    before { bundle_setup(:proj_rumsey).discover_objects }
 
-  describe "validate_files()" do
-    before(:each) do
-      bundle_setup :proj_rumsey
-      @b.discover_objects
-    end
-
-    it "should return expected tally if all images are valid",
-       :skip => "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem" do
+    it "should return expected tally if all images are valid" do
+      skip "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem"
       @b.digital_objects.each do |dobj|
         expect(@b.validate_files(dobj)).to eq({ :valid => 1, :skipped => 1 })
       end
@@ -682,100 +556,89 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
-  describe "objects_to_process()" do
+  describe '#objects_to_process' do
     it "should have the correct list of objects to re-accession if specified with only option" do
-      bundle_setup :proj_sohp3
-      @b.discover_objects
-      expect(@b.digital_objects.size).to eq(2)
-      o2p = @b.objects_to_process
+      b = bundle_setup(:proj_sohp3)
+      b.discover_objects
+      expect(b.digital_objects.size).to eq(2)
+      o2p = b.objects_to_process
       expect(o2p.size).to eq(1)
     end
 
     it "should have the correct list of objects to accession if specified with except option" do
-      bundle_setup :proj_sohp4
-      @b.discover_objects
-      expect(@b.digital_objects.size).to eq(2)
-      o2p = @b.objects_to_process
+      b = bundle_setup(:proj_sohp4)
+      b.discover_objects
+      expect(b.digital_objects.size).to eq(2)
+      o2p = b.objects_to_process
       expect(o2p.size).to eq(0)
     end
 
     it "should return all objects if there are no skippables" do
-      bundle_setup :proj_revs
-      @b.discover_objects
-      @b.skippables = {}
-      expect(@b.objects_to_process).to eq(@b.digital_objects)
+      b = bundle_setup(:proj_revs)
+      b.discover_objects
+      b.skippables = {}
+      expect(b.objects_to_process).to eq(b.digital_objects)
     end
 
     it "should return a filtered list of digital objects" do
-      bundle_setup :proj_revs
-      @b.discover_objects
-      @b.skippables = {}
-      @b.skippables[@b.digital_objects[-1].unadjusted_container] = true
-      o2p = @b.objects_to_process
-      expect(o2p.size).to eq(@b.digital_objects.size - 1)
-      expect(o2p).to eq(@b.digital_objects[0..-2])
+      b = bundle_setup(:proj_revs)
+      b.discover_objects
+      b.skippables = {}
+      b.skippables[b.digital_objects[-1].unadjusted_container] = true
+      o2p = b.objects_to_process
+      expect(o2p.size).to eq(b.digital_objects.size - 1)
+      expect(o2p).to eq(b.digital_objects[0..-2])
     end
   end
 
-  ####################
-
   describe "setup_paths and defaults" do
     it "should set the staging_dir to the value specified in YAML" do
-      bundle_setup :proj_revs
-      @b.setup_paths
-      expect(@b.staging_dir).to eq('tmp')
+      b = bundle_setup(:proj_revs)
+      b.setup_paths
+      expect(b.staging_dir).to eq('tmp')
     end
 
     it "should set the progress log file to match the input yaml file if no progress log is specified in YAML" do
-      bundle_setup :proj_sohp3
-      @b.setup_paths
-      expect(@b.progress_log_file).to eq('spec/test_data/project_config_files/local_dev_sohp3_progress.yaml')
+      b = bundle_setup(:proj_sohp3)
+      b.setup_paths
+      expect(b.progress_log_file).to eq('spec/test_data/project_config_files/proj_sohp3_progress.yaml')
     end
 
     it "should set the content_tag_override to the default value when not specified" do
-      bundle_setup :proj_revs
+      b = bundle_setup(:proj_revs)
       expect(@ps['project_style'][:content_tag_override]).to be_nil
-      expect(@b.project_style[:content_tag_override]).to be_falsey
+      expect(b.project_style[:content_tag_override]).to be_falsey
     end
 
     it "should set the staging_dir to the default value if not specified in the YAML" do
       default_staging_directory = Assembly::ASSEMBLY_WORKSPACE
       if File.exists?(default_staging_directory) && File.directory?(default_staging_directory)
-        bundle_setup :proj_sohp2
-        @b.setup_paths
-        expect(@b.staging_dir).to eq(default_staging_directory)
+        b = bundle_setup(:proj_sohp2)
+        b.setup_paths
+        expect(b.staging_dir).to eq(default_staging_directory)
       else
         expect { bundle_setup :proj_sohp2 }.to raise_error PreAssembly::BundleUsageError
       end
     end
   end
 
-  ####################
-
   describe "log_progress_info()" do
     it "should return expected info about a digital object" do
-      bundle_setup :proj_revs
-      @b.discover_objects
-      dobj = @b.digital_objects[0]
-      exp =  {
+      b = bundle_setup(:proj_revs)
+      b.discover_objects
+      dobj = b.digital_objects[0]
+      exp = {
         :unadjusted_container => dobj.unadjusted_container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
         :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
-      expect(@b.log_progress_info(dobj)).to eq(exp)
+      expect(b.log_progress_info(dobj)).to eq(exp)
     end
   end
 
-  ####################
-
   describe "delete_digital_objects()" do
-    before(:each) do
-      bundle_setup :proj_revs
-      @b.digital_objects = []
-    end
+    before { bundle_setup(:proj_revs).digital_objects = [] }
 
     it "should do nothing if @cleanup == false" do
       @b.cleanup = false
@@ -790,10 +653,8 @@ describe PreAssembly::Bundle do
     end
   end
 
-  ####################
-
   describe "file and directory utilities" do
-    before(:each) do
+    before do
       bundle_setup :proj_revs
       @relative = 'abc/def.jpg'
       @full     = @b.path_in_bundle @relative
@@ -808,14 +669,11 @@ describe PreAssembly::Bundle do
     end
 
     it "relative_path() should raise error if given bogus arguments" do
-      f       = 'fubb.txt'
-      base    = 'foo/bar'
-      path    = "#{base}/#{f}"
-      exp_err = ArgumentError
+      path = "foo/bar/fubb.txt"
       exp_msg = /^Bad args to relative_path/
-      expect { @b.relative_path('',   path) }.to raise_error exp_err, exp_msg
-      expect { @b.relative_path(path, path) }.to raise_error exp_err, exp_msg
-      expect { @b.relative_path('xx', path) }.to raise_error exp_err, exp_msg
+      expect { @b.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
+      expect { @b.relative_path(path, path) }.to raise_error(ArgumentError, exp_msg)
+      expect { @b.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
     end
 
     it "get_base_dir() should return expected value" do
@@ -823,11 +681,10 @@ describe PreAssembly::Bundle do
     end
 
     it "get_base_dir() should raise error if given bogus arguments" do
-      exp_err  = ArgumentError
       exp_msg  = /^Bad arg to get_base_dir/
       bad_args = ['foo.txt', '', 'x\y\foo.txt']
       bad_args.each do |arg|
-        expect { @b.get_base_dir(arg) }.to raise_error exp_err, exp_msg
+        expect { @b.get_base_dir(arg) }.to raise_error(ArgumentError, exp_msg)
       end
     end
 
@@ -857,19 +714,15 @@ describe PreAssembly::Bundle do
         ],
       }
       exp.each do |proj, files|
-        bundle_setup proj
-        exp_files = files.map { |f| @b.path_in_bundle f }
-        expect(@b.find_files_recursively(@b.bundle_dir).sort).to eq(exp_files)
+        b = bundle_setup(proj)
+        exp_files = files.map { |f| b.path_in_bundle f }
+        expect(b.find_files_recursively(b.bundle_dir).sort).to eq(exp_files)
       end
     end
   end
 
-  ####################
-
   describe "misc utilities" do
-    before(:each) do
-      bundle_setup :proj_revs
-    end
+    before { bundle_setup :proj_revs }
 
     it "source_id_suffix() should be empty if not making unique source IDs" do
       @b.uniqify_source_ids = false
