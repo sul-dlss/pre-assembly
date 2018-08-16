@@ -27,6 +27,7 @@ gem 'revs-utils'
 gem 'stanford-mods'
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'sqlite3'
+gem 'turbolinks'
 
 group :test do
   gem 'rspec', '~> 3.0'

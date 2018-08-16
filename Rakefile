@@ -73,3 +73,6 @@ if ['test', 'development'].include? ENV['ROBOT_ENVIRONMENT']
     end
   end # :repo
 end
+
+require_relative 'config/application'
+Rails.application.load_tasks
