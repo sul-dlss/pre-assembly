@@ -9,7 +9,7 @@ describe PreAssembly::Remediation::Item do
     end
   end
   context "logging" do
-    before(:each) do
+    before do
       @pid = "druid:cs575bk5522"
       @item = PreAssembly::Remediation::Item.new(@pid)
       @log_dir = File.dirname(__FILE__) + "/test_data/logging"

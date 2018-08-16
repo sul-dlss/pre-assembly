@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PreAssembly::DigitalObject do
-  before(:each) do
+  before do
     @ps = {
       :apo_druid_id  => 'druid:qq333xx4444',
       :set_druid_id  => 'druid:mm111nn2222',
@@ -47,7 +47,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "determining druid: get_pid_from_container_barcode()" do
-    before(:each) do
+    before do
       @druids = %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222)
       apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999)
       apos = apos.map { |a| double('apo', :pid => a) }
@@ -223,7 +223,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "unregister()" do
-    before(:each) do
+    before do
       @dobj.dor_object = 1234
       allow(Assembly::Utils).to receive :delete_from_dor
       allow(Assembly::Utils).to receive :set_workflow_step_to_error
@@ -303,7 +303,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "default content metadata" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style] = 'default'
       @dobj.project_style[:content_structure] = 'simple_image'
@@ -398,7 +398,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "no content metadata generated" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style] = 'none'
       @dobj.project_style[:content_structure] = 'simple_book'
@@ -418,7 +418,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "bundled by filename, simple book content metadata without file attributes" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style] = 'filename'
       @dobj.project_style[:content_structure] = 'simple_book'
@@ -459,7 +459,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style] = 'default'
       @dobj.project_style[:content_structure] = 'simple_image' # this is the default
@@ -528,7 +528,7 @@ describe PreAssembly::DigitalObject do
 
   ####################
   describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.content_md_creation[:style] = 'default'
       @dobj.project_style[:content_structure] = 'simple_image' # this is the default
@@ -604,7 +604,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "descriptive metadata" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.manifest_row = {
         :sourceid    => 'foo-1',

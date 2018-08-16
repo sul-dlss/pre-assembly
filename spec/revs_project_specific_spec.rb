@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'revs-utils'
 
 describe PreAssembly::DigitalObject do
-  before(:each) do
+  before do
     @ps = { :apo_druid_id => 'druid:qq333xx4444', :set_druid_id => 'druid:mm111nn2222', :source_id => 'SourceIDFoo', :project_name => 'ProjectBar', :label => 'LabelQuux', :project_style => {}, :content_md_creation => {} }
     @dobj         = PreAssembly::DigitalObject.new @ps
 
@@ -168,7 +168,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "revs specific descriptive metadata using special lookup methods, with a hidden image" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.manifest_row = {
         :sourceid    => 'foo-1',
@@ -245,7 +245,7 @@ describe PreAssembly::DigitalObject do
   end
 
   describe "revs specific descriptive metadata using other lookup methods for location tags with just the country known" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.manifest_row = {
         :sourceid    => 'foo-1',
@@ -302,7 +302,7 @@ describe PreAssembly::DigitalObject do
   end
 
   describe "revs specific descriptive metadata using other lookup methods for location tags with no known entities and multiple formats with format correction, and preserving some odd date value" do
-    before(:each) do
+    before do
       @dobj.druid = @druid
       @dobj.manifest_row = {
         :sourceid    => 'foo-1',

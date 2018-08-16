@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PreAssembly::ObjectFile do
-  before(:each) do
+  before do
     @f = PreAssembly::ObjectFile.new(
       :path => 'spec/test_data/bundle_input_a/image1.tif'
     )
