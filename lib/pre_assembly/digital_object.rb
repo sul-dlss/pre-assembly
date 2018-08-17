@@ -43,7 +43,7 @@ module PreAssembly
                   :pre_assem_finished,
                   :content_structure
 
-    attr_writer :dor_object
+    attr_writer :dor_object, :druid_tree_dir
     attr_accessor :druid, :source_id, :manifest_row
 
     INIT_PARAMS.each { |p| attr_accessor p }
@@ -54,7 +54,7 @@ module PreAssembly
 
     def initialize(params = {})
       INIT_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
-      @file_attr ||= params[:publish_attr]
+      self.file_attr ||= params[:publish_attr]
       setup
     end
 
@@ -67,20 +67,21 @@ module PreAssembly
       self.content_md_xml     = ''
       self.technical_md_xml   = ''
       self.desc_md_xml        = ''
-      self.content_structure  = (@project_style ? @project_style[:content_structure] : 'file')
+      self.content_structure  = (project_style ? project_style[:content_structure] : 'file')
     end
 
     def stager(source, destination)
-      if @staging_style.nil? || @staging_style == 'copy'
+      if staging_style.nil? || staging_style == 'copy'
         FileUtils.cp_r source, destination
       else
         FileUtils.ln_s source, destination, :force => true
       end
     end
 
+    # set this object's content_md_creation_style
     def content_md_creation_style
-      # set this object's content_md_creation_style
-      if (@project_style[:should_register]) || (!@project_style[:content_tag_override]) || (@project_style[:content_tag_override] && content_type_tag.blank?) # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
+      # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
+      if project_style[:should_register] || !project_style[:content_tag_override] || (project_style[:content_tag_override] && content_type_tag.blank?)
         default_content_md_creation_style
       else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
         CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
@@ -88,26 +89,21 @@ module PreAssembly
     end
 
     def default_content_md_creation_style
-      @project_style[:content_structure].to_sym
+      project_style[:content_structure].to_sym
     end
 
     # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||= (@new_druid_tree_format ? DruidTools::Druid.new(druid.id, @staging_dir).path() : Assembly::Utils.get_staging_path(druid.id, @staging_dir))
+      @druid_tree_dir ||= (new_druid_tree_format ? DruidTools::Druid.new(druid.id, staging_dir).path() : Assembly::Utils.get_staging_path(druid.id, staging_dir))
     end
 
-    def druid_tree_dir=(value)
-      @druid_tree_dir = value
-    end
-
-    # the content subfolder
     def content_dir
-      @content_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir, 'content') : druid_tree_dir)
+      @content_dir ||= (new_druid_tree_format ? File.join(druid_tree_dir, 'content') : druid_tree_dir)
     end
 
     # the metadata subfolder
     def metadata_dir
-      @metadata_dir ||= (@new_druid_tree_format ? File.join(druid_tree_dir, 'metadata') : druid_tree_dir)
+      @metadata_dir ||= (new_druid_tree_format ? File.join(druid_tree_dir, 'metadata') : druid_tree_dir)
     end
 
     ####
@@ -115,16 +111,16 @@ module PreAssembly
     ####
 
     def pre_assemble(desc_md_xml = nil)
-      @desc_md_template_xml = desc_md_xml
+      self.desc_md_template_xml = desc_md_xml
 
       log "  - pre_assemble(#{source_id}) started"
       determine_druid
 
-      prepare_for_reaccession if @reaccession
+      prepare_for_reaccession if reaccession
       register
       add_dor_object_to_set
       stage_files
-      generate_content_metadata unless @content_md_creation[:style].to_s == 'none'
+      generate_content_metadata unless content_md_creation[:style].to_s == 'none'
       generate_technical_metadata
       generate_desc_metadata
       initialize_assembly_workflow
@@ -136,7 +132,7 @@ module PreAssembly
     ####
 
     def determine_druid
-      k = @project_style[:get_druid_from]
+      k = project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
       self.pid = method("get_pid_from_#{k}").call
       self.druid = DruidTools::Druid.new(pid)
@@ -195,7 +191,7 @@ module PreAssembly
     end
 
     def container_basename
-      File.basename(@container)
+      File.basename(container)
     end
 
     ####
@@ -203,7 +199,7 @@ module PreAssembly
     ####
 
     def register
-      return unless @project_style[:should_register]
+      return unless project_style[:should_register]
       log "    - register(#{pid})"
       self.dor_object      = register_in_dor(registration_params)
       self.reg_by_pre_assembly = true
@@ -214,7 +210,7 @@ module PreAssembly
         result = begin
           Dor::RegistrationService.register_object params
         rescue Exception => e
-          source_id = "#{@project_name}:#{source_id}"
+          source_id = "#{project_name}:#{source_id}"
           log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
           delete_objects_from_workspace_by_source_id(source_id)
           nil
@@ -240,25 +236,25 @@ module PreAssembly
     end
 
     def registration_params
-      tags = ["Project : #{@project_name}"]
-      tags << @apply_tag unless @apply_tag.blank?
+      tags = ["Project : #{project_name}"]
+      tags << apply_tag unless apply_tag.blank?
       {
         :object_type  => 'item',
-        :admin_policy => @apo_druid_id,
-        :source_id    => { @project_name => source_id },
+        :admin_policy => apo_druid_id,
+        :source_id    => { project_name => source_id },
         :pid          => pid,
-        :label        => @label.blank? ? Dor::Config.dor.default_label : @label,
+        :label        => label.blank? ? Dor::Config.dor.default_label : label,
         :tags         => tags,
       }
     end
 
     def add_dor_object_to_set
       # Add the object to a set (a sub-collection).
-      return unless @set_druid_id && @project_style[:should_register]
-      log "    - add_dor_object_to_set(#{@set_druid_id})"
+      return unless set_druid_id && project_style[:should_register]
+      log "    - add_dor_object_to_set(#{set_druid_id})"
 
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('ADD_DOR_OBJECT_TO_SET', method(:log))) do
-        Array(@set_druid_id).each do |druid|
+        Array(set_druid_id).each do |druid|
           dor_object.add_relationship *add_member_relationship_params(druid)
           dor_object.add_relationship *add_collection_relationship_params(druid)
         end
@@ -326,18 +322,17 @@ module PreAssembly
 
       # find all technical metadata files and just append the xml to the combined technicalMetadata
       current_directory = Dir.pwd
-      FileUtils.cd(File.join(@bundle_dir, container_basename))
-      tech_md_filenames = Dir.glob("**/*_techmd.xml").sort
-      tech_md_filenames.each do |filename|
-        tech_md_xml = Nokogiri::XML(File.open(File.join(@bundle_dir, container_basename, filename)))
+      FileUtils.cd(File.join(bundle_dir, container_basename))
+      Dir.glob("**/*_techmd.xml").sort.each do |filename|
+        tech_md_xml = Nokogiri::XML(File.open(File.join(bundle_dir, container_basename, filename)))
         tm.root << tech_md_xml.root
       end
       FileUtils.cd(current_directory)
       self.technical_md_xml = tm.to_xml
     end
 
+    # write technical metadata out to a file only if it exists
     def write_technical_metadata
-      # write technical metadata out to a file only if it exists
       return if technical_md_xml.blank?
 
       file_name = File.join metadata_dir, @technical_md_file
@@ -358,26 +353,25 @@ module PreAssembly
     # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
     def create_content_metadata
       if !['default', 'filename', 'dpg', 'none'].include? @content_md_creation[:style].to_s
-        @content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
-      elsif @content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
-
+        self.content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
+      elsif content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
         # otherwise use the content metadata generation gem
-        params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => @content_md_creation[:style].to_sym, :style => content_md_creation_style }
+        params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => content_md_creation[:style].to_sym, :style => content_md_creation_style }
 
-        params.merge!(:add_file_attributes => true, :file_attributes => @file_attr.stringify_keys) unless @file_attr.nil?
+        params.merge!(:add_file_attributes => true, :file_attributes => file_attr.stringify_keys) unless file_attr.nil?
 
-        @content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
+        self.content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
       end
     end
 
     # write content metadata out to a file
     def write_content_metadata
-      return if @content_md_creation[:style].to_s == 'none'
-      file_name = File.join metadata_dir, @content_md_file
+      return if content_md_creation[:style].to_s == 'none'
+      file_name = File.join(metadata_dir, content_md_file)
       log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
 
-      File.open(file_name, 'w') { |fh| fh.puts @content_md_xml }
+      File.open(file_name, 'w') { |fh| fh.puts content_md_xml }
 
       # NOTE: This is being skipped because it now removes empty nodes, and we need an a node like this: <file id="filename" /> when first starting with contentMetadat
       #        If this node gets removed, then nothing works.  - Peter Mangiafico, October 3, 2015
@@ -389,7 +383,7 @@ module PreAssembly
 
     # Object files that should be included in content metadata.
     def content_object_files
-      @object_files.reject { |ofile| ofile.exclude_from_content }.sort
+      object_files.reject { |ofile| ofile.exclude_from_content }.sort
     end
 
     ####
@@ -398,7 +392,7 @@ module PreAssembly
 
     def generate_desc_metadata
       # Do nothing for bundles that don't suppy a template.
-      return unless @desc_md_template_xml
+      return unless desc_md_template_xml
       create_desc_metadata_xml
       write_desc_metadata
     end
@@ -413,22 +407,21 @@ module PreAssembly
       self.manifest_row = manifest_row.with_indifferent_access
 
       # Run the XML template through ERB.
-      template     = ERB.new(@desc_md_template_xml, nil, '>')
-      @desc_md_xml = template.result(binding)
+      self.desc_md_xml = ERB.new(desc_md_template_xml, nil, '>').result(binding)
 
       # The manifest_row is a hash, with column names as the key.
       # In the template, as a conviennce we allow users to put specific column placeholders inside
       # double brackets: "blah [[column_name]] blah".
       # Here we replace those placeholders with the corresponding value from the manifest row.
-      manifest_row.each { |k, v| @desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
+      manifest_row.each { |k, v| desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
       true
     end
 
     def write_desc_metadata
-      file_name = File.join metadata_dir, @desc_md_file
+      file_name = File.join(metadata_dir, desc_md_file)
       log "    - write_desc_metadata_xml(#{file_name})"
       create_object_directories
-      File.open(file_name, 'w') { |fh| fh.puts @desc_md_xml }
+      File.open(file_name, 'w') { |fh| fh.puts desc_md_xml }
     end
 
     def create_object_directories
@@ -443,7 +436,7 @@ module PreAssembly
 
     def initialize_assembly_workflow
       # Call web service to add assemblyWF to the object in DOR.
-      return unless @init_assembly_wf
+      return unless init_assembly_wf
       log "    - initialize_assembly_workflow()"
       url = assembly_workflow_url
 
