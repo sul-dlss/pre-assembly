@@ -20,23 +20,6 @@ Lint/AmbiguousOperator:
     - 'lib/pre_assembly/digital_object.rb'
     - 'spec/digital_object_spec.rb'
 
-# Offense count: 27
-# Cop supports --auto-correct.
-Lint/DeprecatedClassMethods:
-  Exclude:
-    - 'devel/add_and_update_files.rb'
-    - 'devel/dor_workspace_cleanup.rb'
-    - 'devel/examine_objects.rb'
-    - 'devel/mjf_transform.rb'
-    - 'devel/prepare_content.rb'
-    - 'devel/pub_purl.rb'
-    - 'devel/retrieve_content.rb'
-    - 'devel/upd_descMD_frda.rb'
-    - 'lib/pre_assembly/bundle.rb'
-    - 'lib/pre_assembly/reporting.rb'
-    - 'spec/bundle_spec.rb'
-    - 'spec/digital_object_spec.rb'
-
 # Offense count: 2
 Lint/DuplicateMethods:
   Exclude:
@@ -57,53 +40,10 @@ Lint/RescueException:
     - 'lib/pre_assembly/remediation/remediate.rb'
 
 # Offense count: 3
-# Cop supports --auto-correct.
-Lint/ScriptPermission:
-  Exclude:
-    - 'devel/pub_purl.rb'
-    - 'devel/test_pf_file.rb'
-    - 'devel/upd_descMD_frda.rb'
-
-# Offense count: 3
 Lint/ShadowingOuterLocalVariable:
   Exclude:
     - 'Rakefile'
     - 'devel/prepare_content.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
-  Exclude:
-    - 'devel/pub_purl.rb'
-    - 'devel/upd_descMD_frda.rb'
-    - 'lib/pre_assembly/bundle.rb'
-    - 'lib/pre_assembly/digital_object.rb'
-
-# Offense count: 17
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'Rakefile'
-    - 'bin/pre-assemble'
-    - 'devel/prepare_content.rb'
-    - 'devel/revs_get_druid_from_sourceid.rb'
-    - 'devel/revs_update_images.rb'
-    - 'devel/revs_update_metadata.rb'
-    - 'devel/salt_update_dates.rb'
-    - 'devel/salt_update_doc_types.rb'
-    - 'lib/pre_assembly.rb'
-    - 'lib/pre_assembly/bundle.rb'
-    - 'lib/pre_assembly/logging.rb'
-    - 'spec/digital_object_spec.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/pre_assembly/bundle.rb'
-    - 'lib/pre_assembly/digital_object.rb'
 
 # Offense count: 25
 Lint/UselessAssignment:

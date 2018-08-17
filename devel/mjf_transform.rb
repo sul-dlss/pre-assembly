@@ -33,7 +33,7 @@ puts ""
 def file_cleanup(folder, existing_files_to_remove)
   existing_files_to_remove.each do |filename|
     full_path = File.join(folder, filename)
-    if File.exists?(full_path)
+    if File.exist?(full_path)
       puts "...Deleting existing file #{full_path}"
       File.delete(full_path)
     end
@@ -133,7 +133,7 @@ Dir.chdir(content_path)
                   xml_file_params.merge!({ :preserve => 'yes', :publish  => 'no', :shelve   => 'no' })
                 end # end case file_type
 
-                if File.exists?(File.join(content_sub_folder, relative_path_to_file)) # this confirms the existence of the file on the original file system before adding the new node to the contentMetadata
+                if File.exist?(File.join(content_sub_folder, relative_path_to_file)) # this confirms the existence of the file on the original file system before adding the new node to the contentMetadata
                   xml.file(xml_file_params) {
                     xml.checksum(file.attributes['CHECKSUM'].value, :type => 'md5')
                   } # end builder file node

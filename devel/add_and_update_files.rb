@@ -66,7 +66,7 @@ def add_or_replace_files(objects)
     path_to_new_file = File.join(@base_path, file_path)
     base_filename = File.basename(file_path)
 
-    unless File.exists? path_to_new_file
+    unless File.exist? path_to_new_file
 
       puts "*****New file '#{path_to_new_file}' not found"
       @log.error "*****New file '#{path_to_new_file}' not found"
@@ -184,9 +184,9 @@ end
 
 # returns the location of a content file, which can be in the old location if not found in the new location, e.g.  aa/111/bb/2222/aa111bb2222/content or  aa/111/bb/2222/
 def content_file(druid, root_dir, filename)
-  if File.exists?(path_to_content_file(druid, root_dir, filename))
+  if File.exist?(path_to_content_file(druid, root_dir, filename))
     return path_to_content_file(druid, root_dir, filename)
-  elsif File.exists?(old_path_to_file(druid, root_dir, filename))
+  elsif File.exist?(old_path_to_file(druid, root_dir, filename))
     return old_path_to_file(druid, root_dir, filename)
   else
     return nil

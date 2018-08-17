@@ -41,7 +41,7 @@ require 'logger'
 
   # write out content metadata from object unless a version already exists in the directory
   cm_file = File.join(metadata_folder(druid), 'contentMetadata.xml')
-  unless File.exists?(cm_file)
+  unless File.exist?(cm_file)
     File.open(cm_file, 'w') { |fh| fh.puts @fobj.contentMetadata.ng_xml.to_s }
     puts 'write contentMetadata.xml'
   end
@@ -54,5 +54,5 @@ require 'logger'
   source = File.join(base_content_directory, content_subfolder, filename)
   dest = File.join(content_folder(druid), filename)
 
-  FileUtils.cp(source, dest) unless File.exists?(dest) && !File.exists?(source)
+  FileUtils.cp(source, dest) unless File.exist?(dest) && !File.exist?(source)
 end

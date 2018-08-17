@@ -30,7 +30,7 @@ def check_args(args)
 
   if args.size != 1
     return -1
-  elsif !File.exists?(get_file_path(args[0]))
+  elsif !File.exist?(get_file_path(args[0]))
     return -1
   else
     return 0
@@ -59,7 +59,7 @@ def main() # Iterate over file of pid/druids to publish metadata for
         # RUN YOUR CODE HERE
         pid.chomp!
         @log.info '====================='
-        @log.info "#{Time.now.to_s}"
+        @log.info "#{Time.now}"
         @log.info "Processing pid #{pid}"
         obj = Dor::Item.find(pid)
         obj.publish_metadata

@@ -24,7 +24,7 @@ module PreAssembly
 
       # determine checks to actually be performed, based on user parameters and configuration setings
       using_manifest = @manifest && @object_discovery[:use_manifest]
-      using_smpl_manifest = (@content_md_creation[:style] == :smpl) && File.exists?(File.join(@bundle_dir, @content_md_creation[:smpl_manifest]))
+      using_smpl_manifest = (@content_md_creation[:style] == :smpl) && File.exist?(File.join(@bundle_dir, @content_md_creation[:smpl_manifest]))
 
       show_smpl_cm = (params[:show_smpl_cm] && using_smpl_manifest) || false
 

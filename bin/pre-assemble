@@ -7,7 +7,7 @@ options = {}
 
 OptionParser.new do |opts|
   opts.banner = "Usage:\n    pre-assemble YAML_CONFIG_FILE [--resume] [--limit 200]\n"
-  opts.on("-r", "--resume", "Resume") do |r|
+  opts.on("-r", "--resume", "Resume") do |_r|
     options[:resume] = true
   end
   opts.on("-l [LIMIT]", "--limit [LIMIT]", "Limit") do |l|

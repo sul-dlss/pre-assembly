@@ -24,7 +24,7 @@ source_path = File.dirname(csv_in)
 all_pids = []
 all_filenames = []
 
-@items.each_with_index do |row, x|
+@items.each_with_index do |row, _x|
   pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
     puts "cannot find single pid for source id #{row.sourceid}"

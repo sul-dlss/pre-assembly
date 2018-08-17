@@ -32,16 +32,16 @@ no_object_folders = false # if false, then each new object will be in a separate
 help = "Usage:\n    ruby prepare_content.rb INPUT_CSV_FILE BASE_CONTENT_FOLDER [STAGING_FOLDER] [--no-object-folders] [--report] [--content_metadata] [--content_metadata_style STYLE]\n"
 OptionParser.new do |opts|
   opts.banner = help
-  opts.on("--report") do |dr|
+  opts.on("--report") do |_dr|
     report = true
   end
-  opts.on("--content_metadata") do |cm|
+  opts.on("--content_metadata") do |_cm|
     content_metadata = true
   end
   opts.on("--content_metadata_style [STYLE]") do |st|
     cm_style = st
   end
-  opts.on("--no-object-folders") do |ob|
+  opts.on("--no-object-folders") do |_ob|
     no_object_folders = true
   end
 end.parse!
@@ -63,9 +63,9 @@ else # use what was provided
   staging_folder = ARGV[2]
 end
 
-abort "#{csv_in} not found" unless File.exists?(csv_in)
+abort "#{csv_in} not found" unless File.exist?(csv_in)
 
-unless File.exists?(csv_out) # if we don't already have a log file, write out the header row
+unless File.exist?(csv_out) # if we don't already have a log file, write out the header row
   CSV.open(csv_out, 'a') { |f|
     output_row = ["Object", "Image", "Filename", "Sequence", "Label", "Druid", "Success", "Message", "Time"]
     f << output_row
@@ -191,7 +191,7 @@ else # either a report or symlink operation
           message = "found #{input_file}, symlink to object folder #{object_folder}"
           output_file_full_path = no_object_folders ? File.join(staging_folder, input_filename) : (File.join(object_folder, input_filename))
           input_file_full_path = Pathname.new(File.join(base_content_folder, input_file)).cleanpath(true).to_s
-          FileUtils.ln_s(input_file_full_path, output_file_full_path, :force => true) unless (report || File.exists?(output_file_full_path))
+          FileUtils.ln_s(input_file_full_path, output_file_full_path, :force => true) unless (report || File.exist?(output_file_full_path))
           num_files_copied += 1
           success = true
           CSV.open(csv_out, 'a') { |f|
