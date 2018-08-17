@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe PreAssembly::DigitalObject do
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
-    before(:each) do
+    before do
       @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
       @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
@@ -30,7 +30,7 @@ describe PreAssembly::DigitalObject do
   end # end no thumb declaration
 
   describe 'SMPL content metadata generation with thumb declaration' do
-    before(:each) do
+    before do
       @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
     end
 
