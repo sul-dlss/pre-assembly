@@ -68,17 +68,17 @@ module PreAssembly
     # Initialization.
     ####
 
+    # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
     def self.import_csv(filename)
-      # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
       file_contents = IO.read(filename).encode("utf-8", replace: nil)
       csv = CSV.parse(file_contents, :headers => true)
       csv.map { |row| row.to_hash.with_indifferent_access }
       # return CsvMapper.import(filename) do read_attributes_from_file end
     end
 
+    # Unpack the user-supplied parameters, after converting
+    # all hash keys and some hash values to symbols.
     def initialize(params = {})
-      # Unpack the user-supplied parameters, after converting
-      # all hash keys and some hash values to symbols.
       params = Assembly::Utils.symbolize_keys params
       Assembly::Utils.values_to_symbols! params[:project_style]
       cmc          = params[:content_md_creation]
@@ -165,8 +165,8 @@ module PreAssembly
       [@bundle_dir, @staging_dir]
     end
 
+    # If a file parameter from the YAML is non-nil, the file must exist.
     def required_files
-      # If a file parameter from the YAML is non-nil, the file must exist.
       [
         @manifest,
         @checksums_file,
@@ -193,8 +193,8 @@ module PreAssembly
       ]
     end
 
+    # spit out some dire warning messages if you set certain parameters that are only applicable for developers
     def show_developer_setting_warning
-      # spit out some dire warning messages if you set certain parameters that are only applicable for developers
       warning = []
       warning << '* get_druid_from=druid_minter' if @project_style[:get_druid_from] == :druid_minter
       warning << '* init_assembly_wf=false' unless @init_assembly_wf
@@ -204,9 +204,9 @@ module PreAssembly
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if @show_progress && warning.size > 0
     end
 
+    # Validate parameters supplied via user script.
+    # Unit testing often bypasses such checks.
     def validate_usage
-      # Validate parameters supplied via user script.
-      # Unit testing often bypasses such checks.
       return unless @validate_usage
 
       validation_errors = []
@@ -294,9 +294,8 @@ module PreAssembly
     # The main process.
     ####
 
+    # Runs the pre-assembly process and returns an array of PIDs of the digital objects processed.
     def run_pre_assembly
-      # Runs the pre-assembly process and returns an array of PIDs
-      # of the digital objects processed.
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       puts "#{Time.now}: Pre-assembly started for #{@project_name}" if @show_progress
@@ -358,9 +357,7 @@ module PreAssembly
       end
     end
 
-    ####
     # Cleanup of objects and associated files in specified environment using logfile as input
-    ####
     def cleanup(steps = [], dry_run = false)
       log "cleanup()"
       if File.exist?(@progress_log_file)
@@ -391,9 +388,9 @@ module PreAssembly
       end
     end
 
+    # Require the DirValidator code, run it, and return the validator.
     def run_dir_validation_code
-      # Require the DirValidator code, run it, and return the validator.
-      require @validate_bundle_dir[:code]
+      require @validate_bundle_dir[:code] # FIXME: Security hazard
       dv = PreAssembly.validate_bundle_directory(@bundle_dir)
       dv
     end
@@ -409,9 +406,9 @@ module PreAssembly
     # Discovery of object containers and stageable items.
     ####
 
+    # Discovers the digital object containers and the stageable items within them.
+    # For each container, creates a new Digitalobject.
     def discover_objects
-      # Discovers the digital object containers and the stageable items within them.
-      # For each container, creates a new Digitalobject.
       log "discover_objects()"
       object_containers.each do |c|
         container    = actual_container(c)
@@ -442,17 +439,17 @@ module PreAssembly
       log "discover_objects(found #{@digital_objects.count} objects)"
     end
 
+    # If user configured pre-assembly to process a limited N of objects,
+    # return the requested number of object containers.
     def pruned_containers(containers)
-      # If user configured pre-assembly to process a limited N of objects,
-      # return the requested number of object containers.
       j = @limit_n ? @limit_n - 1 : -1
       containers[0..j]
     end
 
+    # Every object must reside in a single container: either a file or a directory.
+    # Those containers are either (a) specified in a manifest or (b) discovered
+    # through a pattern-based crawl of the bundle_dir.
     def object_containers
-      # Every object must reside in a single container: either a file or a directory.
-      # Those containers are either (a) specified in a manifest or (b) discovered
-      # through a pattern-based crawl of the bundle_dir.
       if @object_discovery[:use_manifest]
         return discover_containers_via_manifest
       else
@@ -460,21 +457,21 @@ module PreAssembly
       end
     end
 
+    # Discover object containers from a manifest.
+    # The relative path to the container is supplied in one of the
+    # manifest columns. The column name to use is configured by the
+    # user invoking the pre-assembly script.
     def discover_containers_via_manifest
-      # Discover object containers from a manifest.
-      # The relative path to the container is supplied in one of the
-      # manifest columns. The column name to use is configured by the
-      # user invoking the pre-assembly script.
       col_name = @manifest_cols[:object_container]
       manifest_rows.map { |r| path_in_bundle r[col_name] }
     end
 
+    # A method to discover object containers or stageable items.
+    # Takes a root path (e.g, bundle_dir) and a discovery data structure.
+    # The latter drives the two-stage discovery process:
+    #   - A glob pattern to obtain a list of dirs and/or files.
+    #   - A regex to filter that list.
     def discover_items_via_crawl(root, discovery_info)
-      # A method to discover object containers or stageable items.
-      # Takes a root path (e.g, bundle_dir) and a discovery data structure.
-      # The latter drives the two-stage discovery process:
-      #   - A glob pattern to obtain a list of dirs and/or files.
-      #   - A regex to filter that list.
       glob    = discovery_info[:glob]
       regex   = Regexp.new(discovery_info[:regex]) if discovery_info[:regex]
       pattern = File.join root, glob
@@ -488,9 +485,9 @@ module PreAssembly
       items.sort
     end
 
+    # When the discovered object's container functions as the stageable item,
+    # we adjust the value that will serve as the DigitalObject container.
     def actual_container(container)
-      # When the discovered object's container functions as the stageable item,
-      # we adjust the value that will serve as the DigitalObject container.
       @stageable_discovery[:use_container] ? get_base_dir(container) : container
     end
 
@@ -499,8 +496,8 @@ module PreAssembly
       discover_items_via_crawl(container, @stageable_discovery)
     end
 
+    # Returns a list of the ObjectFiles for a digital object.
     def discover_object_files(stageable_items)
-      # Returns a list of the ObjectFiles for a digital object.
       object_files = []
       Array(stageable_items).each do |stageable|
         find_files_recursively(stageable).each do |file_path|
@@ -510,9 +507,9 @@ module PreAssembly
       object_files
     end
 
+    # A convenience method to return all ObjectFiles for all digital objects.
+    # Also used for stubbing during testing.
     def all_object_files
-      # A convenience method to return all ObjectFiles for all digital objects.
-      # Also used for stubbing during testing.
       @digital_objects.map { |dobj| dobj.object_files }.flatten
     end
 
@@ -524,9 +521,9 @@ module PreAssembly
       )
     end
 
+    # If user supplied a content exclusion regex pattern, see
+    # whether it matches the current file path.
     def exclude_from_content(file_path)
-      # If user supplied a content exclusion regex pattern, see
-      # whether it matches the current file path.
       return false unless @content_exclusion
       file_path =~ @content_exclusion ? true : false
     end
@@ -535,33 +532,33 @@ module PreAssembly
     # Checksums.
     ####
 
+    # Read the provider-supplied checksums_file, using its
+    # content to populate a hash of expected checksums.
+    # This method works with default output from md5sum.
     def load_provider_checksums
-      # Read the provider-supplied checksums_file, using its
-      # content to populate a hash of expected checksums.
-      # This method works with default output from md5sum.
       return unless @checksums_file
       log "load_provider_checksums()"
       checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
       read_exp_checksums.scan(checksum_regex).each { |file_name, md5| @provider_checksums[file_name] = md5.strip }
     end
 
+    # Read checksums file. Wrapped in a method for unit testing.  Normalize CR/LF to be sure regex works
     def read_exp_checksums
-      # Read checksums file. Wrapped in a method for unit testing.  Normalize CR/LF to be sure regex works
       IO.read(@checksums_file).gsub(/\r\n?/, "\n")
     end
 
+    # Takes a DigitalObject. For each of its ObjectFiles,
+    # sets the checksum attribute.
     def load_checksums(dobj)
-      # Takes a DigitalObject. For each of its ObjectFiles,
-      # sets the checksum attribute.
       log "  - load_checksums()"
       dobj.object_files.each do |file|
         file.checksum = retrieve_checksum(file)
       end
     end
 
+    # Takes a path to a file. Returns md5 checksum, which either (a) came
+    # from a provider-supplied checksums file, or (b) is computed here.
     def retrieve_checksum(file)
-      # Takes a path to a file. Returns md5 checksum, which either (a) came
-      # from a provider-supplied checksums file, or (b) is computed here.
       @provider_checksums[file.path] ||= compute_checksum(file)
     end
 
@@ -636,9 +633,9 @@ module PreAssembly
     # Manifest.
     ####
 
+    # For bundles using a manifest, adds the manifest info to the digital objects.
+    # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
     def process_manifest
-      # For bundles using a manifest, adds the manifest info to the digital objects.
-      # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
       return unless @object_discovery[:use_manifest]
       log "process_manifest()"
       mrows = manifest_rows # Convenience variable, and used for testing.
@@ -653,9 +650,9 @@ module PreAssembly
       end
     end
 
+    # On first call, loads the manifest data (does not reload on subsequent calls).
+    # If bundle is not using a manifest, just loads and returns emtpy array.
     def manifest_rows
-      # On first call, loads the manifest data (does not reload on subsequent calls).
-      # If bundle is not using a manifest, just loads and returns emtpy array.
       return @manifest_rows if @manifest_rows
       @manifest_rows = @object_discovery[:use_manifest] ? self.class.import_csv(@manifest) : []
     end
@@ -783,11 +780,11 @@ module PreAssembly
       File.join @bundle_dir, rel_path
     end
 
+    # Returns the portion of the path after the base. For example:
+    #   base     BLAH/BLAH
+    #   path     BLAH/BLAH/foo/bar.txt
+    #   returns            foo/bar.txt
     def relative_path(base, path)
-      # Returns the portion of the path after the base. For example:
-      #   base     BLAH/BLAH
-      #   path     BLAH/BLAH/foo/bar.txt
-      #   returns            foo/bar.txt
       bs = base.size
       return path[bs + 1..-1] if (
         bs > 0 &&
@@ -798,10 +795,10 @@ module PreAssembly
       raise ArgumentError, err_msg
     end
 
+    # Returns the portion of the path before basename. For example:
+    #   path     BLAH/BLAH/foo/bar.txt
+    #   returns  BLAH/BLAH/foo
     def get_base_dir(path)
-      # Returns the portion of the path before basename. For example:
-      #   path     BLAH/BLAH/foo/bar.txt
-      #   returns  BLAH/BLAH/foo
       bd = File.dirname(path)
       return bd unless bd == '.'
       err_msg = "Bad arg to get_base_dir(#{path.inspect})"
