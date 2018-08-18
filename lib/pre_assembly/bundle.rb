@@ -53,11 +53,12 @@ module PreAssembly
       :garbage_collect_each_n
     ]
 
+    attr_writer :manifest_rows
     attr_accessor :user_params,
                   :provider_checksums,
                   :digital_objects,
                   :skippables,
-                  :sample_manifest,
+                  :smpl_manifest,
                   :desc_md_template_xml
 
     YAML_PARAMS.each { |p| attr_accessor p }
@@ -82,7 +83,7 @@ module PreAssembly
       cmc          = params[:content_md_creation]
       cmc[:style]  = cmc[:style].to_sym
       params[:file_attr] ||= params[:publish_attr]
-      @user_params = params
+      self.user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
 
       # Other setup work.
@@ -96,45 +97,44 @@ module PreAssembly
     end
 
     def setup_paths
-      @manifest         = path_in_bundle @manifest         unless @manifest.nil?
-      @checksums_file   = path_in_bundle @checksums_file   unless @checksums_file.nil?
-      if !@desc_md_template.nil? && !(Pathname.new @desc_md_template).absolute? # check for a desc MD template being defined and not being absolute
-        @desc_md_template = path_in_bundle(@desc_md_template) # set it relative to the bundle
+      self.manifest       &&= path_in_bundle(manifest)
+      self.checksums_file &&= path_in_bundle(checksums_file)
+      if !desc_md_template.nil? && !(Pathname.new desc_md_template).absolute? # check for a desc MD template being defined and not being absolute
+        self.desc_md_template = path_in_bundle(desc_md_template) # set it relative to the bundle
       end
-      @staging_dir = Assembly::ASSEMBLY_WORKSPACE if @staging_dir.nil? # if the user didn't supply a staging_dir, use the default
-      @progress_log_file = File.join(File.dirname(@config_filename), File.basename(@config_filename, '.yaml') + '_progress.yaml') if @progress_log_file.nil? # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
+      self.staging_dir = Assembly::ASSEMBLY_WORKSPACE if staging_dir.nil? # if the user didn't supply a staging_dir, use the default
+      self.progress_log_file = File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml') unless progress_log_file # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
     end
 
     def setup_other
-      @provider_checksums     = {}
-      @digital_objects        = []
-      @skippables             = {}
-      @manifest_rows          = nil
-      @content_exclusion      = Regexp.new(@content_exclusion) if @content_exclusion
-      @validate_bundle_dir  ||= {}
-      @file_attr              = {} if @file_attr.nil?
-      @file_attr.delete_if { |_k, v| v.nil? }
-      @set_druid_id = [@set_druid_id] if @set_druid_id && @set_druid_id.class == String # convert set_druid_id to 1 element array if its single valued and exists
+      self.provider_checksums     = {}
+      self.digital_objects        = []
+      self.skippables             = {}
+      self.content_exclusion &&= Regexp.new(content_exclusion)
+      self.validate_bundle_dir  ||= {}
+      self.file_attr            ||= {}
+      self.file_attr.delete_if { |_k, v| v.nil? }
+      self.set_druid_id = [set_druid_id] if set_druid_id && set_druid_id.is_a?(String) # convert set_druid_id to 1 element array if its single valued and exists
     end
 
     def setup_defaults
-      @garbage_collect_each_n = 50 if @garbage_collect_each_n.nil? # when to run garbage collection manually
-      @profile = false if @profile.nil? # default to no profiling
-      @validate_files = true if @validate_files.nil? # default to validating files if not provided
-      @new_druid_tree_format = true if @new_druid_tree_format.nil? # default to new style druid tree format
-      @throttle_time = 0 if @throttle_time.nil? # no throttle time if not supplied
-      @staging_style = 'copy' if @staging_style.nil? # staging style defaults to copy
-      @project_style[:content_tag_override] = false if @project_style[:content_tag_override].nil? # default to false
-      @content_md_creation[:smpl_manifest] = 'smpl_manifest.csv' if @content_md_creation[:smpl_manifest].nil? # default filename for smpl manifest
+      self.garbage_collect_each_n ||= 50  # when to run garbage collection manually
+      self.profile = false if profile.nil?
+      self.validate_files = true if @validate_files.nil? # FIXME: conflict between attribute and non-getter method #validate_files
+      self.new_druid_tree_format = true if new_druid_tree_format.nil?
+      self.throttle_time ||= 0
+      self.staging_style ||= 'copy'
+      project_style[:content_tag_override] = false if project_style[:content_tag_override].nil?
+      content_md_creation[:smpl_manifest] ||= 'smpl_manifest.csv'
     end
 
     def load_desc_md_template
-      return nil unless @desc_md_template && File.readable?(@desc_md_template)
-      @desc_md_template_xml = IO.read(@desc_md_template)
+      return nil unless desc_md_template && File.readable?(desc_md_template)
+      self.desc_md_template_xml = IO.read(desc_md_template)
     end
 
     def load_skippables
-      return unless @resume
+      return unless resume
       docs = YAML.load_stream(Assembly::Utils.read_file(progress_log_file))
       docs = docs.documents if docs.respond_to? :documents
       docs.each do |yd|
@@ -205,7 +205,7 @@ module PreAssembly
     # Validate parameters supplied via user script.
     # Unit testing often bypasses such checks.
     def validate_usage
-      return unless @validate_usage
+      return unless @validate_usage # FIXME: attribute/method name conflict
 
       validation_errors = []
 
@@ -228,59 +228,59 @@ module PreAssembly
       bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
       validation_errors <<  "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
 
-      validation_errors <<  "Staging directory '#{@staging_dir}' not writable." unless File.writable?(@staging_dir)
-      validation_errors <<  "Progress log file '#{@progress_log_file}' or directory not writable." unless File.writable?(File.dirname(@progress_log_file))
+      validation_errors <<  "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
+      validation_errors <<  "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
-      if @project_style[:should_register] # if should_register=true, check some stuff
-        validation_errors << "The APO DRUID must be set if should_register = true." if @apo_druid_id.blank? # APO can't be blank
-        validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if @project_style[:get_druid_from] == :manifest # can't use manifest to get druid if not yet registered
-        validation_errors << "If should_register=true, then you must use a manifest." unless @object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
-        validation_errors << "If should_register=true, it does not make sense to have project_style:content_tag_override=true since objects are not registered yet." if @project_style[:content_tag_override]
+      if project_style[:should_register] # if should_register=true, check some stuff
+        validation_errors << "The APO DRUID must be set if should_register = true." if apo_druid_id.blank? # APO can't be blank
+        validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if project_style[:get_druid_from] == :manifest # can't use manifest to get druid if not yet registered
+        validation_errors << "If should_register=true, then you must use a manifest." unless object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
+        validation_errors << "If should_register=true, it does not make sense to have project_style:content_tag_override=true since objects are not registered yet." if project_style[:content_tag_override]
       else # if should_register=false, check some stuff
-        if @project_style[:get_druid_from] != :container_barcode
-          validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (@apo_druid_id || @set_druid_id) # APO and SET should not be set
+        if project_style[:get_druid_from] != :container_barcode
+          validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (apo_druid_id || set_druid_id) # APO and SET should not be set
         else
-          validation_errors << "The APO DRUID must be set if project_style:get_druid_from = container_barcode." if @apo_druid_id.blank? # APO DRUID must be added for container_barcode projects
-          validation_errors << "The SET DRUID should not be set if project_style:get_druid_from = container_barcode." if @set_druid_id # SET DRUID must not be set for container_barcode projects
+          validation_errors << "The APO DRUID must be set if project_style:get_druid_from = container_barcode." if apo_druid_id.blank? # APO DRUID must be added for container_barcode projects
+          validation_errors << "The SET DRUID should not be set if project_style:get_druid_from = container_barcode." if set_druid_id # SET DRUID must not be set for container_barcode projects
         end
-        validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if @project_style[:get_druid_from] == :suri # can't use SURI to get druid
-        validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if @project_style[:get_druid_from] == :manifest && @object_discovery[:use_manifest] == false # can't use SURI to get druid
+        validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if project_style[:get_druid_from] == :suri # can't use SURI to get druid
+        validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if project_style[:get_druid_from] == :manifest && object_discovery[:use_manifest] == false # can't use SURI to get druid
       end
 
-      if @object_discovery[:use_manifest] # if we are using a manifest, check some stuff
-        validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless @object_discovery[:glob].nil? && @object_discovery[:regex].nil? # glob and regex should be nil
-        if @manifest.blank?
+      if object_discovery[:use_manifest] # if we are using a manifest, check some stuff
+        validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless object_discovery[:glob].nil? && object_discovery[:regex].nil? # glob and regex should be nil
+        if manifest.blank?
           validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
         else # let's see if the columns the user claims are there exist in the actual manifest
           if manifest_rows.size == 0
             validation_errors << "Manifest does not have any rows!"
-          elsif @manifest_cols.blank? || @manifest_cols[:object_container].blank?
+          elsif manifest_cols.blank? || manifest_cols[:object_container].blank?
             validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
           else
-            validation_errors << "Manifest does not have a column called '#{@manifest_cols[:object_container]}'" unless manifest_rows.first.keys.include?(@manifest_cols[:object_container].to_s)
-            validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (@manifest_cols[:source_id].blank? || @manifest_cols[:label].blank?) && @project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
-            validation_errors << "Manifest does not have a column called '#{@manifest_cols[:source_id]}'" if !@manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(@manifest_cols[:source_id].to_s)
-            validation_errors << "Manifest does not have a column called '#{@manifest_cols[:label]}'" if !@manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(@manifest_cols[:label].to_s)
-            validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if @project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
+            validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'" unless manifest_rows.first.keys.include?(manifest_cols[:object_container].to_s)
+            validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (manifest_cols[:source_id].blank? || manifest_cols[:label].blank?) && project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
+            validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(manifest_cols[:source_id].to_s)
+            validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(manifest_cols[:label].to_s)
+            validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
            end
         end
       else # if we are not using a manifest, check some stuff
-        validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if @object_discovery[:glob].blank? # glob must be set
-        validation_errors << "Manifest and desc_md_template files should be set to nil if object_discovery:use_manifest=false." unless @manifest.blank? && @desc_md_template.blank?
+        validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if object_discovery[:glob].blank? # glob must be set
+        validation_errors << "Manifest and desc_md_template files should be set to nil if object_discovery:use_manifest=false." unless manifest.blank? && desc_md_template.blank?
       end
 
-      if @stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
-        validation_errors << "If stageable_discovery:use_container=true, you cannot use get_druid_from='container'." if @project_style[:get_druid_from].to_s =~ /^container/ # if you are staging the entire container, it doesn't make sense to use the container to get the druid
+      if stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
+        validation_errors << "If stageable_discovery:use_container=true, you cannot use get_druid_from='container'." if project_style[:get_druid_from].to_s =~ /^container/ # if you are staging the entire container, it doesn't make sense to use the container to get the druid
       else # if we are not staging the whole container, check some stuff
-        validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if @stageable_discovery[:glob].blank? # glob must be set
+        validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if stageable_discovery[:glob].blank? # glob must be set
       end
 
       # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values
-      validation_errors << "The project_style:content_structure value of '#{@project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? @project_style[:content_structure]
-      validation_errors << "The project_style:get_druid_from value of '#{@project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? @project_style[:get_druid_from]
-      validation_errors << "The content_md_creation:style value of '#{@content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? @content_md_creation[:style]
+      validation_errors << "The project_style:content_structure value of '#{project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? project_style[:content_structure]
+      validation_errors << "The project_style:get_druid_from value of '#{project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? project_style[:get_druid_from]
+      validation_errors << "The content_md_creation:style value of '#{content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? content_md_creation[:style]
 
-      validation_errors << "The SMPL manifest #{@content_md_creation[:smpl_manifest]} was not found in #{bundle_dir}." if @content_md_creation[:style] == :smpl && !File.exist?(File.join(bundle_dir, @content_md_creation[:smpl_manifest]))
+      validation_errors << "The SMPL manifest #{content_md_creation[:smpl_manifest]} was not found in #{bundle_dir}." if content_md_creation[:style] == :smpl && !File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
 
       unless validation_errors.blank?
         validation_errors = ['Configuration errors found:'] + validation_errors
@@ -304,7 +304,7 @@ module PreAssembly
 
       # load up the SMPL manifest if we are using that style
       if content_md_creation[:style] == :smpl
-        @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false)
+        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false)
       end
 
       discover_objects
@@ -420,7 +420,7 @@ module PreAssembly
           :object_files         => object_files,
           :new_druid_tree_format => new_druid_tree_format,
           :staging_style        => staging_style,
-          :smpl_manifest        => @smpl_manifest
+          :smpl_manifest        => smpl_manifest
         }
         dobj = DigitalObject.new params
         digital_objects.push dobj
@@ -458,11 +458,10 @@ module PreAssembly
     #   - A glob pattern to obtain a list of dirs and/or files.
     #   - A regex to filter that list.
     def discover_items_via_crawl(root, discovery_info)
-      glob    = discovery_info[:glob]
-      regex   = Regexp.new(discovery_info[:regex]) if discovery_info[:regex]
-      pattern = File.join root, glob
-      items   = []
-      dir_glob(pattern).each do |item|
+      glob  = discovery_info[:glob]
+      regex = Regexp.new(discovery_info[:regex]) if discovery_info[:regex]
+      items = []
+      dir_glob(File.join(root, glob)).each do |item|
         rel_path = relative_path root, item
         next unless regex.nil? || rel_path =~ regex
         next if discovery_info[:files_only] && File.directory?(item)
@@ -618,7 +617,7 @@ module PreAssembly
     ####
 
     # For bundles using a manifest, adds the manifest info to the digital objects.
-    # Assumes a parallelism between the @digital_objects and @manifest_rows arrays.
+    # Assumes a parallelism between the @digital_objects and manifest_rows arrays.
     def process_manifest
       return unless object_discovery[:use_manifest]
       log "process_manifest()"
@@ -627,10 +626,10 @@ module PreAssembly
         r = mrows[i]
         # Get label and source_id from column names declared in YAML config.
         label_value = (manifest_cols[:label] ? r[manifest_cols[:label]] : "")
-        dobj.label         = label_value
-        dobj.source_id     = (r[manifest_cols[:source_id]] + source_id_suffix) if manifest_cols[:source_id]
+        dobj.label        = label_value
+        dobj.source_id    = (r[manifest_cols[:source_id]] + source_id_suffix) if manifest_cols[:source_id]
         # Also store a hash of all values from the manifest row, using column names as keys.
-        dobj.manifest_row  = r
+        dobj.manifest_row = r
       end
     end
 
@@ -638,7 +637,7 @@ module PreAssembly
     # If bundle is not using a manifest, just loads and returns emtpy array.
     def manifest_rows
       return @manifest_rows if @manifest_rows
-      @manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
+      self.manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
     end
 
     ####
@@ -652,8 +651,8 @@ module PreAssembly
       num_objects_to_process = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log_and_show "#{total_obj} objects to pre-assemble"
-      log_and_show("**** limit of #{limit_n} was applied after completed objects removed from set") if @limit_n
-      log_and_show "#{digital_objects.size} total objects found, #{num_objects_to_process} not yet complete, #{@skippables.size} already completed objects skipped"
+      log_and_show("**** limit of #{limit_n} was applied after completed objects removed from set") if limit_n
+      log_and_show "#{digital_objects.size} total objects found, #{num_objects_to_process} not yet complete, #{skippables.size} already completed objects skipped"
 
       n = 0
       num_no_file_warnings = 0
