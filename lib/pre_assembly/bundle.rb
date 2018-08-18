@@ -3,7 +3,6 @@
 require 'csv'
 require 'ostruct'
 require 'pathname'
-# require 'ruby-prof' # necessary to get ruby profiling working, but causes issues/errors with rest-client if required
 
 module PreAssembly
   class BundleUsageError < StandardError
@@ -48,9 +47,7 @@ module PreAssembly
       :new_druid_tree_format,
       :validate_bundle_dir,
       :throttle_time,
-      :staging_style,
-      :profile,
-      :garbage_collect_each_n
+      :staging_style
     ]
 
     attr_writer :manifest_rows
@@ -118,8 +115,6 @@ module PreAssembly
     end
 
     def setup_defaults
-      self.garbage_collect_each_n ||= 50  # when to run garbage collection manually
-      self.profile = false if profile.nil?
       self.validate_files = true if @validate_files.nil? # FIXME: conflict between attribute and non-getter method #validate_files
       self.new_druid_tree_format = true if new_druid_tree_format.nil?
       self.throttle_time ||= 0
@@ -185,9 +180,7 @@ module PreAssembly
         :staging_style,
         :validate_bundle_dir,
         :throttle_time,
-        :apply_tag,
-        :profile,
-        :garbage_collect_each_n
+        :apply_tag
       ]
     end
 
@@ -198,7 +191,6 @@ module PreAssembly
       warning << '* init_assembly_wf=false' unless init_assembly_wf
       warning << '* uniqify_source_ids=true' if uniqify_source_ids
       warning << '* cleanup=true' if @cleanup
-      warning << "* memory profiling enabled" if profile
       puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if show_progress && warning.size > 0
     end
 
@@ -300,8 +292,6 @@ module PreAssembly
 
       return unless bundle_directory_is_valid?
 
-      RubyProf.start if profile # start profiling
-
       # load up the SMPL manifest if we are using that style
       if content_md_creation[:style] == :smpl
         self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false)
@@ -312,16 +302,7 @@ module PreAssembly
       process_manifest
       process_digital_objects
       delete_digital_objects
-
       puts "#{Time.now}: Pre-assembly completed for #{project_name}" if show_progress
-
-      # stop profiling and print a graph profile to text
-      if profile
-        result = RubyProf.stop
-        printer = RubyProf::GraphPrinter.new(result)
-        File.open('memory_report.txt', 'w') { |file| printer.print(file) }
-      end
-
       processed_pids
     end
 
@@ -706,12 +687,6 @@ module PreAssembly
 
         avg_time_per_object = total_time / n
         total_time_remaining = (avg_time_per_object * (num_objects_to_process - n)).floor
-
-        if (n % garbage_collect_each_n) == 0 # garbage collect each specified number of objects
-          puts "------GARBAGE COLLECTION RUNNING----" if show_progress
-          GC.start
-          GC::Profiler.clear
-        end
       end
 
       log_and_show "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)

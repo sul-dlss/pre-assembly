@@ -622,7 +622,7 @@ describe PreAssembly::Bundle do
     end
   end
 
-  describe "log_progress_info()" do
+  describe "#log_progress_info" do
     it "should return expected info about a digital object" do
       b = bundle_setup(:proj_revs)
       b.discover_objects
@@ -637,7 +637,7 @@ describe PreAssembly::Bundle do
     end
   end
 
-  describe "delete_digital_objects()" do
+  describe "#delete_digital_objects" do
     before { bundle_setup(:proj_revs).digital_objects = [] }
 
     it "should do nothing if @cleanup == false" do
@@ -660,15 +660,15 @@ describe PreAssembly::Bundle do
       @full     = @b.path_in_bundle @relative
     end
 
-    it "path_in_bundle() should return expected value" do
+    it "#path_in_bundle should return expected value" do
       expect(@b.path_in_bundle(@relative)).to eq(@full)
     end
 
-    it "relative_path() should return expected value" do
+    it "#relative_path should return expected value" do
       expect(@b.relative_path(@b.bundle_dir, @full)).to eq(@relative)
     end
 
-    it "relative_path() should raise error if given bogus arguments" do
+    it "#relative_path should raise error if given bogus arguments" do
       path = "foo/bar/fubb.txt"
       exp_msg = /^Bad args to relative_path/
       expect { @b.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
@@ -676,11 +676,11 @@ describe PreAssembly::Bundle do
       expect { @b.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
     end
 
-    it "get_base_dir() should return expected value" do
+    it "#get_base_dir should return expected value" do
       expect(@b.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
 
-    it "get_base_dir() should raise error if given bogus arguments" do
+    it "#get_base_dir should raise error if given bogus arguments" do
       exp_msg  = /^Bad arg to get_base_dir/
       bad_args = ['foo.txt', '', 'x\y\foo.txt']
       bad_args.each do |arg|
@@ -688,12 +688,12 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "dir_glob() should return expected information" do
+    it "#dir_glob should return expected information" do
       exp = [1, 2, 3].map { |n| @b.path_in_bundle "image#{n}.tif" }
       expect(@b.dir_glob(@b.path_in_bundle "*.tif")).to eq(exp)
     end
 
-    it "find_files_recursively() should return expected information" do
+    it "#find_files_recursively should return expected information" do
       exp = {
         :proj_revs => [
           "checksums.txt",

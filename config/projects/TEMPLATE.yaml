@@ -354,9 +354,6 @@ uniqify_source_ids:     false  # If true, pre-assembly attacheds a timestamp to 
 cleanup:                 false  # If true, pre-assembly deletes objects from DOR after
                            # pre-assembly finishes. Relevant only during development.
 
-profile:                 false # NOT CURRENTLY WORKING...if true, then ruby profiling will be done for memory usage, defaults to false if left off
-garbage_collect_each_n:  50    # manually run garbage collection each time this number of objects is pre-assembled (defaults to 50 if left off)
-
 # These options provides a means to use the dir_validator gem to validate
 # the contents of the bundle directory. Supply the path to the Ruby code that will
 # perform the validation (see spec/test_data/project_config_files/local_dev_rumsey.rb
