@@ -8,7 +8,7 @@ memory_report.txt
 .DS_Store
 .bundle
 config/certs/*
-config/environments/*.rb
+config/cli_environments/development.rb
 spec/test_data/logging/*
 doc/*
 log/*

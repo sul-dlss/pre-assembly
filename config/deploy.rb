@@ -30,7 +30,7 @@ set :deploy_to, '/home/lyberadmin/pre-assembly'
 set :linked_files, %w{config/honeybadger.yml}
 
 # Default value for linked_dirs is []
-set :linked_dirs, %w{log config/certs config/environments tmp vendor/bundle}
+set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
