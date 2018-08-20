@@ -45,7 +45,6 @@ group :deployment do
 end
 
 group :development do
-  gem 'awesome_print'
   gem 'listen'
 end
 
