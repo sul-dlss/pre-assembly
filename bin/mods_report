@@ -7,7 +7,7 @@
 # January 21, 2014
 #
 # Run with
-# ROBOT_ENVIRONMENT=test bin/mods_report YAML_CONFIG_FILE.yml OUTPUT_DIRECTORY
+# RAILS_ENV=test bin/mods_report YAML_CONFIG_FILE.yml OUTPUT_DIRECTORY
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 def help(error_msg)

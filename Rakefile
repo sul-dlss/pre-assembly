@@ -18,7 +18,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 task :default => :spec
 
-if ['test', 'development'].include? ENV['ROBOT_ENVIRONMENT']
+if ['test', 'development'].include? ENV['RAILS_ENV']
   require 'jettywrapper'
   Jettywrapper.hydra_jetty_version = 'v7.3.0' # this keeps us on fedora 3, hydra-jetty v8.x moves to fedora 4.
 

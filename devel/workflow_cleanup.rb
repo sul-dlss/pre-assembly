@@ -2,7 +2,7 @@
 # run with
 # ruby devel/workflow_cleanup.rb argo_report.csv
 
-ENV['ROBOT_ENVIRONMENT'] = 'production' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'production' # environment to run under (i.e. which fedora instance to hit)
 
 step = 'sdr-ingest-transfer' # the step to look at
 workflow_to_fix = 'accession2WF' # the workflow that needs its step set to completed from waiting

@@ -8,7 +8,7 @@
 # June 17, 2013
 #
 # Run with
-# ROBOT_ENVIRONMENT=test ruby devel/revs_update_images.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+# RAILS_ENV=test ruby devel/revs_update_images.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 # this will only run on lyberservices-prod since it needs access to the image remediation file
 

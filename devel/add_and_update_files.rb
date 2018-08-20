@@ -6,7 +6,7 @@
 # must be run from lyberservices-prod to have access to all mounts and configuration
 
 # !/usr/bin/env ruby
-ENV['ROBOT_ENVIRONMENT'] = 'production' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'production' # environment to run under (i.e. which fedora instance to hit)
 
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
@@ -49,7 +49,7 @@ def add_or_replace_files(objects)
   puts ""
   puts Time.now
   @log.info Time.now
-  puts "Environment: #{ENV['ROBOT_ENVIRONMENT']}"
+  puts "Environment: #{ENV['RAILS_ENV']}"
   puts "Dry run" if @dry_run
   puts "Number of objects: #{objects.size}"
   @log.info "Number of objects: #{objects.size}"

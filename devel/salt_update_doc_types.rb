@@ -6,7 +6,7 @@
 # February 3, 2016
 #
 # Run with
-# ROBOT_ENVIRONMENT=production nohup ruby devel/salt_update_doc_types.rb /dor/preassembly/remediation/salt/feigenbaum_updated_doc_types_final.csv > feigenbaum_update_doc_types.out 2>&1&
+# RAILS_ENV=production nohup ruby devel/salt_update_doc_types.rb /dor/preassembly/remediation/salt/feigenbaum_updated_doc_types_final.csv > feigenbaum_update_doc_types.out 2>&1&
 
 # this will only run on lyberservices-prod since it needs access to the remediation file
 

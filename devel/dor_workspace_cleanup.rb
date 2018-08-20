@@ -3,7 +3,7 @@
 # csv file needs a header of of at least "Druid", one druid per row
 # ruby devel/dor_workspace_cleanup.rb druids.csv
 
-ENV['ROBOT_ENVIRONMENT'] = 'production' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'production' # environment to run under (i.e. which fedora instance to hit)
 
 paths_to_cleanup = ['/dor/assembly', '/dor/workspace']
 

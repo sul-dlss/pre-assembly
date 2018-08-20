@@ -2,11 +2,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 # If you have a spreadsheet that has all dor-versions and sdr-versions filled in, run with:
-# ROBOT_ENVIRONMENT=test devel/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS
+# RAILS_ENV=test devel/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS
 # CSV is expected to have headers of druid, dor_version, sdr_version
 
 # If you have only a .csv containing druids, run with
-# ROBOT_ENVIRONMENT=test devel/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS http://sdr-service-url.edu sdrUserName sdrPassword
+# RAILS_ENV=test devel/fix_incomplete_edistore_version_stanzas.rb PATH_TO_CSV_OF_DRUIDS http://sdr-service-url.edu sdrUserName sdrPassword
 
 require 'rubygems'
 require 'dor-services'

@@ -1,7 +1,7 @@
 # run with ruby devel/performance_test.rb
 
 # !/usr/bin/env ruby
-ENV['ROBOT_ENVIRONMENT'] = 'test' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'test' # environment to run under (i.e. which fedora instance to hit)
 
 ENABLE_SOLR_UPDATES = false
 

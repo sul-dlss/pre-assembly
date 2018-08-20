@@ -7,7 +7,7 @@
 # April 9, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production nohup ruby devel/revs_run_discovery_reports.rb /dor/staging/Revs > discovery_reports.log & # supply folder to iterate over
+# RAILS_ENV=production nohup ruby devel/revs_run_discovery_reports.rb /dor/staging/Revs > discovery_reports.log & # supply folder to iterate over
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]

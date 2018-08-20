@@ -7,7 +7,7 @@
 # April 5, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_prepare_manifests.rb /Volumes/REVS  # supply folder to iterate over
+# RAILS_ENV=production ruby devel/revs_prepare_manifests.rb /Volumes/REVS  # supply folder to iterate over
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]

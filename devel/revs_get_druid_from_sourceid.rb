@@ -4,7 +4,7 @@
 # November 17, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_get_druid_from_sourceid.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+# RAILS_ENV=production ruby devel/revs_get_druid_from_sourceid.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 # this will only run on lyberservices-prod since it needs access to the image remediation file
 

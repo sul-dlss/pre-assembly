@@ -5,7 +5,7 @@
 # September 29, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_lookup_druid.rb /dor/preassembly/remediation/imagecorrections.csv
+# RAILS_ENV=production ruby devel/revs_lookup_druid.rb /dor/preassembly/remediation/imagecorrections.csv
 
 help "Incorrect N of arguments." if ARGV.size != 1
 csv_in = ARGV[0]
