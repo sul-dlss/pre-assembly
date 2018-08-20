@@ -2,11 +2,11 @@
 config/honeybadger.yml
 memory_report.txt
 *.log
-.rvmrc
 *.gem
 .rvmrc
 .DS_Store
 .bundle
+.yardoc
 config/certs/*
 config/cli_environments/development.rb
 spec/test_data/logging/*
