@@ -1,9 +1,5 @@
-require 'rubygems'
-require 'rake'
-require 'bundler'
-require 'retries'
-
-Dir.glob('lib/tasks/*.rake').each { |r| import r }
+require_relative 'config/application'
+require 'rspec/core/rake_task'
 
 begin
   Bundler.setup(:default, :development)
@@ -13,12 +9,9 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
-desc 'Get application version'
-task :app_version do
-  puts File.read(File.expand_path('../VERSION', __FILE__)).match('[\w\.]+')[0]
-end
+Rails.application.load_tasks
 
-require 'rspec/core/rake_task'
+Dir.glob('lib/tasks/*.rake').each { |r| import r }
 
 desc "Run specs"
 RSpec::Core::RakeTask.new(:spec)

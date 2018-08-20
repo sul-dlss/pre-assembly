@@ -340,7 +340,7 @@ If you are a mac user, use homebrew to install it (if you don't have homebrew in
 To run all tests, use the command below.  Note that to run integration tests,
 you will need to be connected to the VPN (even if on campus).
 
-  `bin/run_all_tests`
+  `bundle exec rspec`
 
 To run the unit tests (fast) and the integration tests (slower) separately,
 use the commands below.  As noted above, integration tests require VPN.
