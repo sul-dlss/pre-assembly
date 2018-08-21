@@ -7,7 +7,6 @@ notifications:
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - RAILS_ENV=test
 
 rvm:
   - 2.4.4
