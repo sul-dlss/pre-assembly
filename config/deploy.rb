@@ -1,4 +1,3 @@
-set :rvm_ruby_version, '2.2.4' # Defaults to: 'default'
 set :application, 'pre-assembly'
 set :repo_url, 'https://github.com/sul-dlss/pre-assembly.git'
 
@@ -25,6 +24,9 @@ set :deploy_to, '/home/lyberadmin/pre-assembly'
 
 # Default value for :pty is false
 # set :pty, true
+
+# update shared_configs before restarting app 
+before 'deploy:restart', 'shared_configs:update'
 
 # Default value for :linked_files is []
 set :linked_files, %w{config/honeybadger.yml}
