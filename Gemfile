@@ -29,6 +29,10 @@ gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'sqlite3'
 gem 'turbolinks'
 
+gem 'resque', '~> 1.27'
+gem 'resque-lock'
+gem 'resque-pool'
+
 group :test do
   gem 'rspec', '~> 3.0'
   gem 'yard'
