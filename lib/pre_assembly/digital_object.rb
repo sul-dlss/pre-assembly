@@ -80,10 +80,11 @@ module PreAssembly
 
     # set this object's content_md_creation_style
     def content_md_creation_style
-      # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
-      if project_style[:should_register] || !project_style[:content_tag_override] || (project_style[:content_tag_override] && content_type_tag.blank?)
+      # if this object needs to be registered, we will set the content type specified in YAML config no matter what
+      # if this object does NOT to be registered (:should_register == false) and the user has NOT asked for overrides (content_tag_override == false), we will also just set the content type specified in YAML config
+      if @project_style[:should_register] || !@project_style[:content_tag_override]
         default_content_md_creation_style
-      else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
+      else # this means the object is pre-registered and the user has asked us to set the content type from the object if possible (if object type can't be determined, use the content type specified in YAML config)
         CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
       end
     end
