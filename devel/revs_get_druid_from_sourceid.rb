@@ -20,10 +20,8 @@ source_path = File.dirname(csv_in)
 
 # read input manifest
 @items = CsvMapper.import(csv_in) do read_attributes_from_file end
-
 all_pids = []
 all_filenames = []
-
 @items.each_with_index do |row, _x|
   pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
@@ -31,7 +29,7 @@ all_filenames = []
   else
     all_filenames << "\"#{row.sourceid}.tif\""
     all_pids << "\"#{pids.first}\""
-   end
+  end
 end
 
 puts

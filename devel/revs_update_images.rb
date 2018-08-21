@@ -38,25 +38,25 @@ completed_druids = PreAssembly::Remediation::Item.get_druids(progress_log_file)
   pids = Dor::SearchService.query_by_id("Revs:#{row.sourceid}")
   if pids.size != 1
     puts "cannot find single pid for source id #{row.sourceid}"
+    next
+  end
+  pid = pids.first
+  done = completed_druids.include?(pid)
+  if done
+    puts "#{pid} : skipping, already completed"
+    next
+  end
+  if row.respond_to?(:filename) && !row.filename.blank?
+    filename = row.filename
   else
-    pid = pids.first
-    done = completed_druids.include?(pid)
-    if done
-      puts "#{pid} : skipping, already completed"
-    else
-      if row.respond_to?(:filename) && !row.filename.blank?
-        filename = row.filename
-      else
-        filename = "#{row.sourceid}.tif"
-      end
-      data = { :source_path => source_path, :filename => filename }
-      item = PreAssembly::Remediation::Item.new(pid, data)
-      item.description = "Updating image from #{csv_in}" # added to the version description
-      item.extend(RemediationLogic) # add in our project specific methods
-      success = item.remediate
-      item.log_to_progress_file(progress_log_file)
-      item.log_to_csv(csv_out)
-      puts "#{pid} : #{success}"
-    end
-   end
+    filename = "#{row.sourceid}.tif"
+  end
+  data = { :source_path => source_path, :filename => filename }
+  item = PreAssembly::Remediation::Item.new(pid, data)
+  item.description = "Updating image from #{csv_in}" # added to the version description
+  item.extend(RemediationLogic) # add in our project specific methods
+  success = item.remediate
+  item.log_to_progress_file(progress_log_file)
+  item.log_to_csv(csv_out)
+  puts "#{pid} : #{success}"
 end

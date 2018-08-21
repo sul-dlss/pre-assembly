@@ -164,12 +164,8 @@ Dir.chdir(content_path)
       f = File.open(output_dm, 'w') { |fh| fh.puts mods.to_xml.gsub(/^\s*\n/, "") }
       FileUtils.chmod(0644, output_dm)
       puts "...Writing #{descriptive_xml_filename}"
-
     end # end finding XML file
-
   else
-
     puts "**** ERROR: Could not locate content folder within the '#{folder}/data' folder"
-
-   end # end check for content subfolder
+  end # end check for content subfolder
 end # end loop over all input rows in spreadsheet

@@ -42,7 +42,7 @@ module PreAssembly
       load_manifest # this will cache the entire manifest in @rows and @manifest
 
       puts "found #{@rows.size} rows in manifest" if @verbose
-     end
+    end
 
     def load_manifest
       # load file into @rows and then build up @manifest
@@ -61,27 +61,24 @@ module PreAssembly
         thumb = (defined?(row[:thumb]) && row[:thumb] && ['true', 'yes', 'thumb'].include?(row[:thumb].downcase)) ? true : false
 
         # set the publish/preserve/shelve if available, otherwise we'll use the defaults
-        publish = defined?(row[:publish]) ? row[:publish] || nil : nil
-        shelve = defined?(row[:shelve]) ? row[:shelve] || nil : nil
+        publish  = defined?(row[:publish])  ? row[:publish]  || nil : nil
+        shelve   = defined?(row[:shelve])   ? row[:shelve]   || nil : nil
         preserve = defined?(row[:preserve]) ? row[:preserve] || nil : nil
 
         @manifest[druid] = { :source_id => '', :files => [] } if manifest[druid].nil?
         @manifest[druid][:source_id] = row[:source_id] if (defined?(row[:source_id]) && row[:source_id])
         @manifest[druid][:files] << { :thumb => thumb, :publish => publish, :shelve => shelve, :preserve => preserve, :resource_type => resource_type, :role => role, :file_extention => file_extension, :filename => row[:filename], :label => row[:label], :sequence => row[:sequence] }
       end # loop over all rows
-     end # load_manifest
+    end # load_manifest
 
     # actually generate content metadata for a specific druid in the manifest
     def generate_cm(druid)
       pid = druid.gsub!('druid:', '')
 
       if @manifest[druid]
-
         current_directory = Dir.pwd
-
-        files = @manifest[druid][:files]
+        files     = @manifest[druid][:files]
         source_id = @manifest[druid][:source_id]
-
         current_seq = ''
         resources = {}
 
@@ -114,9 +111,9 @@ module PreAssembly
                   role = file[:role]
                   file_attributes = @file_attributes[role.downcase] || @file_attributes['default']
 
-                  publish = file[:publish] || file_attributes[:publish] || "true"
+                  publish  = file[:publish] || file_attributes[:publish] || "true"
                   preserve = file[:preserve] || file_attributes[:preserve] || "true"
-                  shelve = file[:shelve] || file_attributes[:shelve] || "true"
+                  shelve   = file[:shelve] || file_attributes[:shelve] || "true"
 
                   # look for a checksum file named the same as this file
                   checksum = nil
@@ -136,42 +133,32 @@ module PreAssembly
         FileUtils.cd(current_directory)
 
         return builder.to_xml
-
       else # no druid found in mainfest
-
         return ""
-
-      end # end if druid found in manifest
-     end # end generate_cm
+      end
+    end
 
     def get_checksum(md5_file)
       s = IO.read(md5_file)
       checksums = s.scan(/[0-9a-fA-F]{32}/)
       checksums.first ? checksums.first.strip : ""
-     end # end get_checksum
+    end
 
     def get_role(filename)
       matches = filename.scan(/_pm|_sl|_sh/)
       if matches.size == 0
-        if ['.tif', '.tiff', '.jpg', '.jpeg', '.jp2'].include? File.extname(filename).downcase
-          return 'Images'
-        elsif ['.pdf', '.txt', '.doc'].include? File.extname(filename).downcase
-          return "Transcript"
-        else
-          return ""
-         end
+        return 'Images' if ['.tif', '.tiff', '.jpg', '.jpeg', '.jp2'].include? File.extname(filename).downcase
+        return 'Transcript' if ['.pdf', '.txt', '.doc'].include? File.extname(filename).downcase
+        return ''
       else
         matches.first.sub('_', '').strip.upcase
       end
-     end # end get_role
+    end
 
     def get_druid(filename)
       matches = filename.scan(/[0-9a-zA-Z]{11}/)
-      if matches.size == 0
-        return ""
-      else
-        matches.first.strip
-      end
-     end # get_druid
-  end # Smpl class
-end # preassembly module
+      return '' if matches.size == 0
+      matches.first.strip
+    end
+  end
+end
