@@ -57,5 +57,5 @@ mods_template_xml = IO.read(mods_template_file)
       item.log_to_csv(csv_out)
       puts "#{pid} : #{success}"
     end
-   end
+  end
 end

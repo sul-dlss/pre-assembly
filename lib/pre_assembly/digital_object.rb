@@ -201,7 +201,7 @@ module PreAssembly
     def register
       return unless project_style[:should_register]
       log "    - register(#{pid})"
-      self.dor_object      = register_in_dor(registration_params)
+      self.dor_object = register_in_dor(registration_params)
       self.reg_by_pre_assembly = true
     end
 

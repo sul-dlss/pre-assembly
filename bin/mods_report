@@ -50,5 +50,5 @@ puts "limiting to #{limit}" unless limit.blank?
     puts "Saving MODs for sourceID #{identifier}  [#{x} of #{@items.size}]"
   else
     puts "Error: cannot generate desc md xml for #{identifier} [#{x} of #{@items.size}]"
-   end
+  end
 end
