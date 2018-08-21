@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'logger'
 
-environment = ENV['ROBOT_ENVIRONMENT'] ||= 'development'
+environment = ENV['RAILS_ENV'] ||= 'development'
 PRE_ASSEMBLY_ROOT = File.expand_path(File.dirname(__FILE__) + '/..')
 CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 

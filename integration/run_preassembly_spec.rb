@@ -1,4 +1,4 @@
-ENV['ROBOT_ENVIRONMENT'] = 'test'
+ENV['RAILS_ENV'] = 'test'
 
 helper = File.expand_path(File.dirname(__FILE__) + '/../spec/spec_helper')
 require helper

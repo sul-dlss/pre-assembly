@@ -2,7 +2,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 # Run with
-# ROBOT_ENVIRONMENT=test bin/remediate_version apo_1 apo_2
+# RAILS_ENV=test bin/remediate_version apo_1 apo_2
 # Don't include druid:
 # At least one APO druid is needed
 # When testing or debugging, use an APO with few children if possible, large harvests can take quite a significant amount of time

@@ -115,13 +115,13 @@ subdirectory.
 
         ssh lyberadmin@sul-lyberadmin-test.stanford.edu
         cd pre-assembly/current
-        ROBOT_ENVIRONMENT=test bin/discovery_report YAML_FILE
+        RAILS_ENV=test bin/discovery_report YAML_FILE
 
     You will probably want to run this against a specific environment so it
     can connect to DOR and confirm registration on the appropriate server,
     e.g:
 
-        ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE
+        RAILS_ENV=production bin/discovery_report YAML_FILE
 
     You will see a report containing:
     *   the total number of objects discovered
@@ -150,7 +150,7 @@ subdirectory.
     To send the report to a CSV file for better sorting and viewing in Excel,
     send the output to a file using normal UNIX syntax, e.g.:
 
-        ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
+        RAILS_ENV=production bin/discovery_report YAML_FILE > /full/path/to/report/filename.csv
 
     When sending output to a CSV, you will not see any terminal output while
     the report is running.
@@ -174,7 +174,7 @@ subdirectory.
 
     e.g.
 
-        ROBOT_ENVIRONMENT=production bin/discovery_report YAML_FILE confirm_checksums check_sourceids > report.csv
+        RAILS_ENV=production bin/discovery_report YAML_FILE confirm_checksums check_sourceids > report.csv
 
 7.  To run pre-assembly locally:
 
@@ -192,13 +192,13 @@ bin/pre-assemble YAML_FILE --limit --resume
 bin/pre-assemble YAML_FILE --limit=100 --resume
 ```
 
-    Again, you can add ROBOT_ENVIRONMENT=XXXX to the beginning of the command
+    Again, you can add RAILS_ENV=XXXX to the beginning of the command
     to run in test, production or other modes as needed.
 
 8.  Running in the production environment:
 
     *   Navigate to the production box, in the pre-assembly area.
-    *   Set `ROBOT_ENVIRONMENT=production`
+    *   Set `RAILS_ENV=production`
     *   Run pre-assembly with nohup and in the background (`&`).
     *   Optionally, include the `--resume` option to override the resume parameter and set to true.
     *   Optionally, include the `--limit` option to override the limit
@@ -209,12 +209,12 @@ bin/pre-assemble YAML_FILE --limit=100 --resume
 
         ssh lyberadmin@sul-lyberservices-prod.stanford.edu
         cd /home/lyberadmin/pre-assembly/current
-        ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE &
+        RAILS_ENV=production nohup bin/pre-assemble YAML_FILE &
 
     If you want to run multiple nohup jobs simultaneously, you can redirect
     screen output to a different log file:
 
-        ROBOT_ENVIRONMENT=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
+        RAILS_ENV=production nohup bin/pre-assemble YAML_FILE > another_nohup_filename.out 2>&1&
 
     Various ways to monitor progress:
     1.  The workflow grid in Argo, using your project tag to filter.
@@ -244,10 +244,10 @@ used.
 
     e.g.
 
-    nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
+    nohup RAILS_ENV=production bin/batch_run /dor/staging/Revs/mail_box4.yaml > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
     # will run ALL of the incomplete items in that YAML file in the background, but in groups of the default size of 200, sending output for all runs to the mailander_box4_batch.out file
 
-    nohup ROBOT_ENVIRONMENT=production bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
+    nohup RAILS_ENV=production bin/batch_run /dor/staging/Revs/mail_box4.yaml 100 > /dor/preassembly/revs/mailander_box4_batch.out 2>&1&
     # will run ALL of the incomplete items in that YAML file in the background, but in groups of 100, sending output for all runs to the mailander_box4_batch.out file
 
 ## Expert Cheatsheet
@@ -256,11 +256,11 @@ Here's a quick summary of the basic execution steps:
 ```bash
 # Goto VM and select environment
 ssh lyberadmin@lyberservices-prod
-export ROBOT_ENVIRONMENT=production
+export RAILS_ENV=production
 
 # Goto project directory and copy YAML and related files
 cd MyProject
-YAML=MyProject_$ROBOT_ENVIRONMENT.yaml
+YAML=MyProject_$RAILS_ENV.yaml
 BUNDLEDIR=`grep bundle_dir: $YAML | cut -d \' -f2`
 cp $YAML $BUNDLEDIR
 # optionally copy other required files to $BUNDLEDIR
@@ -315,7 +315,7 @@ in your laptop's "config/certs" folder and are referenced in the "config/environ
 
 To make your life easier, it's easiest to put this in your bash profile so you don't need to identify each time you run a command on your laptop during development:
 
-`export ROBOT_ENVIRONMENT=local`
+`export RAILS_ENV=local`
 
 ## Running tests
 
@@ -352,7 +352,7 @@ bundle exec rspec integration # DOR access required, VPN
 
 ## Environments
 
-Use the `ROBOT_ENVIRONMENT=xxxxx` in front of commands to run in a specific
+Use the `RAILS_ENV=xxxxx` in front of commands to run in a specific
 environment.  Current available environments are:
 
 - `local`: your laptop
@@ -377,7 +377,7 @@ screen
 ```
 You can then start pre-assembly without `nohup`, just like you would locally:
 ```bash
-ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE
+RAILS_ENV=production bin/pre-assemble YAML_FILE
 ```
 
 You can then detach from the screen by pressing ctrl-a, ctrl-d and then exit
@@ -469,7 +469,7 @@ try loading the YAML again on the console to confirm.
 
         $ ssh lyberadmin@lyberservices-prod
         $ cd ~/pre-assembly/current
-        $ ROBOT_ENVIRONMENT=production bin/console
+        $ RAILS_ENV=production bin/console
         > a=Assembly::Image.new('/full/path/to/image')
         > a.jp2able? # (if "false" then diagnose the problem further)
         > a.exif['profiledescription'] # (if "nil" then it is missing color profile)
@@ -508,7 +508,7 @@ continue with any other objects that it hadn't done yet. To do this, use the
 --resume flag when you run pre-assembly:
 
 ```bash
-ROBOT_ENVIRONMENT=production bin/pre-assemble YAML_FILE --resume
+RAILS_ENV=production bin/pre-assemble YAML_FILE --resume
 ```
 
 ## Post Accessioning Reports
@@ -537,13 +537,13 @@ DOR tagged with a specific project tag. This is useful for a global project
 overview and is cumulative (i.e. as more objects are added with that tag, the
 report will be bigger if run again).
 ```bash
-ROBOT_ENVIRONMENT=production bin/project_tag_report PROJECT_TAG
+RAILS_ENV=production bin/project_tag_report PROJECT_TAG
 ```
 where PROJECT_TAG is the Argo project tag (e.g. "Revs"). If your project tag
 has spaces in it, be sure to use quotes, like this:
 
 ```bash
-ROBOT_ENVIRONMENT=production bin/generate_collection_report "Stanford Oral History Project"
+RAILS_ENV=production bin/generate_collection_report "Stanford Oral History Project"
 ```
 
 The second report is called a "completion_report" and uses the pre-assembly
@@ -551,9 +551,9 @@ YAML configuration file to determine the successfully accessioned objects.
 Only those objects are included in the report. The report is run with:
 
 ```bash
-ROBOT_ENVIRONMENT=production bin/completion_report YAML_FILE
+RAILS_ENV=production bin/completion_report YAML_FILE
 # for example:
-ROBOT_ENVIRONMENT=production bin/completion_report /thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml
+RAILS_ENV=production bin/completion_report /thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml
 ```
 
 ## Manifests
@@ -662,7 +662,7 @@ MODs files, one per object.  So if you have a large number of rows in your
 manifest, you will end up with many files in your output directory.
 
 ```bash
-ROBOT_ENVIRONMENT=production bundle exec bin/mods_report YAML_CONFIG_FILE
+RAILS_ENV=production bundle exec bin/mods_report YAML_CONFIG_FILE
 OUTPUT_DIRECTORY
 ```
 
@@ -738,7 +738,7 @@ then execute cleanup on those objects. Use the following script to perform a
 cleanup:
 
 ```bash
-ROBOT_ENVIRONMENT=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
+RAILS_ENV=xxx bin/cleanup YAML_PROGRESS_LOG_FILE steps
 ```
 
 where steps is a comma delimited list of any or all of the following steps
@@ -754,7 +754,7 @@ and you must be able to authenticate to the relevant stacks server
 - `workflows`: remove the assemblyWF and accessionWF workflows for the objects
 
 
-You can also specify the environment using `ROBOT_ENVIRONMENT`, just as with a
+You can also specify the environment using `RAILS_ENV`, just as with a
 pre-assembly run. Since this script is destructive, you will need to confirm
 each step. It is always best to run this script on the test (or production)
 server, since then it will have full access to the stacks.
@@ -762,12 +762,12 @@ server, since then it will have full access to the stacks.
 For example, when on `sul-lyberservices-test`:
 
 ```bash
-ROBOT_ENVIRONMENT=test bin/cleanup tmp/revs.yaml symlinks,stage,dor
+RAILS_ENV=test bin/cleanup tmp/revs.yaml symlinks,stage,dor
 ```
 
 The second way to perform a cleanup is from a bin/console prompt running the
 appropriate environment. You can then specify a specific list of druids and
-steps (as an array of symbols) to cleanup, e.g. in `ROBOT_ENVIRONMENT=test bin/console`:
+steps (as an array of symbols) to cleanup, e.g. in `RAILS_ENV=test bin/console`:
 ```ruby
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
 steps=[:symlinks,:stage,:dor,:stacks,:workflows]
@@ -779,7 +779,7 @@ Assembly::Utils.cleanup(:druids=>druids,:steps=>steps,:dry_run=>true)
 If you are working in the console, and want to read your YAML configuration
 file (for example, to determine where your progress log file is located), you
 can use the following methods to load the configuration into a ruby hash, e.g. in
-`ROBOT_ENVIRONMENT=test bin/console`:
+`RAILS_ENV=test bin/console`:
 
 ```ruby
 config_filename='/thumpers/dpgthumper2-smpl/SC1017_SOHP/sohp_prod_accession.yaml'
@@ -794,7 +794,7 @@ You can then use these values in other utility methods as needed.
 If you want to find the druids from your progress log file that are either
 completed or not completed, you can use a method that will give you an array
 of relevant druids. You can then use this array in 'workflow_status' method
-noted above or in the other utility methods, e.g. in `ROBOT_ENVIRONMENT=test bin/console`:
+noted above or in the other utility methods, e.g. in `RAILS_ENV=test bin/console`:
 
 ```ruby
 completed_druids=Assembly::Utils.get_druids_from_log('/dor/preassembly/sohp_accession_log.yaml',true)
@@ -806,7 +806,7 @@ Assembly::Utils.workflow_status(:druids=>failed_druids,:workflows=>[:assembly,:a
 
 If you want to find druids by source_id, use the utility method
 Assembly::Utils.get_druids_by_sourceid(source_ids=[]) to do this. You can then
-use the array of druids in the other utility methods, e.g. in `ROBOT_ENVIRONMENT=test bin/console`
+use the array of druids in the other utility methods, e.g. in `RAILS_ENV=test bin/console`
 
 ```ruby
 source_ids=%w{foo:123 bar:456}
@@ -819,7 +819,7 @@ Assembly::Utils.workflow_status(:druids=>druids,:workflows=>[:assembly,:accessio
 If you want to check on the status of objects in DOR without using Argo, you
 can do this using the following method. You can specify assembly and/or
 accession workflows (as symbols), and also a filename if you want the report
-written to disk in CSV format. In `ROBOT_ENVIRONMENT=test bin/console`:
+written to disk in CSV format. In `RAILS_ENV=test bin/console`:
 
 ```ruby
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
@@ -868,7 +868,7 @@ a tag, both of the following commands work for **ALL** objects in DOR, they
 are not specific to your project. If you do supply a tag, it should be exact
 (e.g. 'Project : Revs'), and if you have a lot of objects in DOR in a specific
 error state, the call may take a long time, since it will need to look up each
-object in DOR.  In `ROBOT_ENVIRONMENT=test bin/console`:
+object in DOR.  In `RAILS_ENV=test bin/console`:
 
 ```ruby
 result=Assembly::Utils.get_errored_objects_for_workstep('accessionWF','content-metadata')
@@ -899,7 +899,7 @@ Assembly::Utils.reset_workflow_states method. Provide a list of druids in an
 array, and a hash containing workflow names (e.g. 'assemblyWF' or
 'accessionWF') as the keys, and arrays of steps as the corresponding values
 (e.g. `['checksum-compute','jp2-create']`) and they will all be reset to
-"waiting". E.g., in `ROBOT_ENVIRONMENT=test bin/console`:
+"waiting". E.g., in `RAILS_ENV=test bin/console`:
 
 ```ruby
 druids=%w{druid:aa111aa1111 druid:bb222bb2222}
@@ -961,12 +961,12 @@ remediation twice, so you should keep that file in the same location as the
 input CSV if you need to resume a large remediation.  In each case, the file
 will always be appended to.
 ```bash
-ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.CSV[or LOG_FILE.YAML]
+RAILS_ENV=production bin/remediate INPUT_FILE.CSV[or LOG_FILE.YAML]
 REMEDIATE_LOGIC_FILENAME.rb
 ```
 For long running actions, you can run in nohup mode:
 ```bash
-ROBOT_ENVIRONMENT=production nohup bin/remediate INPUT_FILE.CSV[or
+RAILS_ENV=production nohup bin/remediate INPUT_FILE.CSV[or
 LOG_FILE.YAML] REMEDIATE_LOGIC_FILENAME.rb &
 ```
 
@@ -982,7 +982,7 @@ items are in accessioning or if they require versioning and set to false. Only
 do this if you are sure you know what you are doing for scripts that for some
 reason will not work with versioning!
 ```bash
-ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv
+RAILS_ENV=production bin/remediate INPUT_FILE.csv
 REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS] ignore_versioning
 ignore_accessioning
 ```

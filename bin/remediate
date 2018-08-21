@@ -5,9 +5,9 @@
 # The code handles all logging and versioning as needed.
 
 # Run with
-# ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS]
+# RAILS_ENV=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS]
 
-# eg. ROBOT_ENVIRONMENT=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
+# eg. RAILS_ENV=production bin/remediate /dor/preassembly/remediation/revs_all_pids.csv /dor/preassembly/remediation/scripts/revs_rights_remediate.rb
 
 # You can specify an optional number of seconds to pause between each object (in seconds) after the remediation logic filename.  If left off, no
 # pause between objects will occur. This can be useful for large remediation jobs that are a low priority, which allows them to run at a slower pace
@@ -16,7 +16,7 @@
 # Only do this if you are sure you know what you are doing for scripts that for some reason will not work with versioning!  If you want to add these
 # parameters, you must also specify the pause time (which could be 0).
 
-# ROBOT_ENVIRONMENT=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS] ignore_versioning ignore_accessioning
+# RAILS_ENV=production bin/remediate INPUT_FILE.csv REMEDIATE_LOGIC_FILENAME.rb [PAUSE_TIME_IN_SECONDS] ignore_versioning ignore_accessioning
 
 # INPUT_FILE can be either a pre-assembly generated YAML log file or a CSV file with one column containing at least a list of druids
 # If a pre-assembly YAML log file is passed in, the successfully accessioned druids will be used.
@@ -45,7 +45,7 @@ require 'csv'
 require 'csv-mapper'
 
 def help(error_msg)
-  abort "#{error_msg}\n\nUsage:\n  ROBOT_ENVIRONMENT=XXXXX remediate INPUT_FILE REMEDIATE_LOGIC_FILENAME [PAUSE_TIME_SECONDS]\n"
+  abort "#{error_msg}\n\nUsage:\n  RAILS_ENV=XXXXX remediate INPUT_FILE REMEDIATE_LOGIC_FILENAME [PAUSE_TIME_SECONDS]\n"
 end
 
 help "Incorrect N of arguments." if ARGV.size < 2

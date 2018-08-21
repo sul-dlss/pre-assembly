@@ -7,7 +7,7 @@ notifications:
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
-    - ROBOT_ENVIRONMENT=test
+    - RAILS_ENV=test
 
 rvm:
   - 2.3.7 # deployed
