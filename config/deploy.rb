@@ -39,3 +39,4 @@ set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
 # set :keep_releases, 5
 
 set :honeybadger_env, fetch(:stage)
+

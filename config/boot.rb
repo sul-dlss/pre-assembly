@@ -24,9 +24,3 @@ PreAssembly::Logging.setup PRE_ASSEMBLY_ROOT, environment
 
 # Load the project and its dependencies.
 require 'pre_assembly'
-
-require 'revs-utils'
-
-class RevsUtils
-  extend Revs::Utils
-end
