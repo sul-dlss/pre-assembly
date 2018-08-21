@@ -9,6 +9,8 @@ memory_report.txt
 .yardoc
 config/certs/*
 config/cli_environments/development.rb
+config/cli_environments/stage.rb
+config/cli_environments/local.rb
 spec/test_data/logging/*
 doc/*
 log/*
