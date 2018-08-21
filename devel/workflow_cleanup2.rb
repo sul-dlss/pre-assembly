@@ -2,7 +2,7 @@
 # run with
 # ruby devel/workflow_cleanup2.rb argo_report.csv
 
-ENV['ROBOT_ENVIRONMENT'] = 'production' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'production' # environment to run under (i.e. which fedora instance to hit)
 
 workflow_to_fix = 'versioningWF' # the workflow that needs its step set to completed from waiting
 steps_to_fix = %w{submit-version start-accession}

@@ -6,7 +6,7 @@
 # April 10, 2015
 #
 # Run with
-#  ROBOT_ENVIRONMENT=production ruby devel/revs_create_yaml.rb /dor/staging/Revs
+#  RAILS_ENV=production ruby devel/revs_create_yaml.rb /dor/staging/Revs
 STDOUT.sync = true
 
 ARCHIVE_DRUIDS = { :revs => 'druid:nt028fd5773', :roadandtrack => 'druid:mr163sv5231' } # a hash of druids of the master archives, keys are arbitrary but druids must match the druids in DOR

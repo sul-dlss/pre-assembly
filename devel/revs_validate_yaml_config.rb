@@ -5,7 +5,7 @@
 # April 9, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/revs_validate_yaml_config.rb /dor/staging/Revs # supply folder to iterate over
+# RAILS_ENV=production ruby devel/revs_validate_yaml_config.rb /dor/staging/Revs # supply folder to iterate over
 
 help "Incorrect N of arguments." if ARGV.size != 1
 input = ARGV[0]

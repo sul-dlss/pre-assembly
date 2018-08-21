@@ -7,9 +7,9 @@
 # see https://consul.stanford.edu/pages/viewpage.action?pageId=146704638 for more documentation
 #
 # Run with
-# ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+# RAILS_ENV=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 #  e.g.
-# ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+# RAILS_ENV=production ruby devel/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 
 # the first parameter is the input CSV (with columns labeled "Object", "Image", and "Label" (image is the filename, object is the object identifier which can be turned into a folder)
 # second parameter is the full path to the content folder that will be searched

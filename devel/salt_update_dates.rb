@@ -6,7 +6,7 @@
 # May 16, 2015
 #
 # Run with
-# ROBOT_ENVIRONMENT=production nohup ruby devel/salt_update_dates.rb /dor/preassembly/remediation/salt/feigenbaum_remediate_exhibit_dates_manifest.csv > feigenbaum_update_dates.out 2>&1&
+# RAILS_ENV=production nohup ruby devel/salt_update_dates.rb /dor/preassembly/remediation/salt/feigenbaum_remediate_exhibit_dates_manifest.csv > feigenbaum_update_dates.out 2>&1&
 
 # this will only run on lyberservices-prod since it needs access to the remediation file
 

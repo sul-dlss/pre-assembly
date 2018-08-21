@@ -2,7 +2,7 @@
 # must be run from lyberservices-prod to have access to all mounts and configuration
 
 # !/usr/bin/env ruby
-ENV['ROBOT_ENVIRONMENT'] = 'production' # environment to run under (i.e. which fedora instance to hit)
+ENV['RAILS_ENV'] = 'production' # environment to run under (i.e. which fedora instance to hit)
 
 # search possible locations for object (new and old style)
 def path_to_object(druid, root_dir)

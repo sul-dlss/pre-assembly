@@ -6,7 +6,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 
 # Run with
-# ROBOT_ENVIRONMENT=test devel/FILENAME fetcher-service-url apo-druid sdr-url sdr-user-name sdr-password
+# RAILS_ENV=test devel/FILENAME fetcher-service-url apo-druid sdr-url sdr-user-name sdr-password
 
 require 'rubygems'
 require 'dor-services'

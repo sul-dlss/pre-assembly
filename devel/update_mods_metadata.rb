@@ -12,10 +12,10 @@
 #
 # Run with
 
-# ROBOT_ENVIRONMENT=production ruby devel/update_mods_metadata.rb [full_path_to_manifest_csv] [full_path_to_mods_template]
+# RAILS_ENV=production ruby devel/update_mods_metadata.rb [full_path_to_manifest_csv] [full_path_to_mods_template]
 
 # e.g.
-# ROBOT_ENVIRONMENT=production ruby devel/update_mods_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv /dor/staging/revs/mods_template.xml
+# RAILS_ENV=production ruby devel/update_mods_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv /dor/staging/revs/mods_template.xml
 
 # this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
 $stdout.sync = true

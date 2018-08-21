@@ -334,7 +334,7 @@ module PreAssembly
         :project_name  => @project_name,
         :bundle_dir    => @bundle_dir,
         :staging_dir   => @staging_dir,
-        :environment   => ENV['ROBOT_ENVIRONMENT'],
+        :environment   => ENV['RAILS_ENV'],
         :resume        => @resume,
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')

@@ -6,7 +6,7 @@
 # June 14, 2013
 #
 # Run with
-# ROBOT_ENVIRONMENT=test ruby devel/revs_update_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
+# RAILS_ENV=test ruby devel/revs_update_metadata.rb /dor/preassembly/remediation/manifest_phillips_1954-test.csv
 
 # this will only run on lyberservices-prod since it needs access to the MODs template and mods remediation file
 
