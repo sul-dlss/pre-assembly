@@ -134,13 +134,6 @@ module PreAssembly
         }
       end
 
-<<<<<<< HEAD
-      def run_assembly_robot(name)
-        `BUNDLE_GEMFILE=~/assembly/current/Gemfile ROBOT_ENVIROMENT=#{ENV['RAILS_ENV']} bundle exec ~/assembly/current/bin/run_robot dor:assemblyWF:#{name} -e #{ENV['RAILS_ENV']} -d #{@pid}`
-      end
-
-=======
->>>>>>> 5a7f89f... remove the run_assembly_robot in remediation
       def updates_allowed?
         @updates_allowed ||= Dor::Config.remediation.check_for_in_accessioning ? !in_accessioning? && is_ingested? : true
       end

@@ -44,5 +44,5 @@ puts "Generating #{@items.size} MODs files from #{manifest_file} using MODs temp
     puts "Saving MODs for sourceID #{identifier}  [#{x} of #{@items.size}]"
   else
     puts "Error: cannot generate desc md xml for #{identifier} [#{x} of #{@items.size}]"
-   end
+  end
 end

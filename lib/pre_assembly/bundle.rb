@@ -254,7 +254,7 @@ module PreAssembly
             validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(manifest_cols[:source_id].to_s)
             validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(manifest_cols[:label].to_s)
             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
-           end
+          end
         end
       else # if we are not using a manifest, check some stuff
         validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if object_discovery[:glob].blank? # glob must be set
