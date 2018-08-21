@@ -8,8 +8,8 @@ SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start do
   track_files "bin/**/*"
 end
-ENV['ROBOT_ENVIRONMENT'] ||= "test"
-puts "running in #{ENV['ROBOT_ENVIRONMENT']} mode"
+ENV['RAILS_ENV'] ||= "test"
+puts "running in #{ENV['RAILS_ENV']} mode"
 bootfile = File.expand_path(File.dirname(__FILE__) + '/../config/boot')
 require bootfile
 

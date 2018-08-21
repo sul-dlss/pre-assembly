@@ -1,6 +1,6 @@
 #! /bin/bash
 # run with
-#  ROBOT_ENVIRONMENT=production bundle exec bin/batch_run YAML_CONFIG [LIMIT_N]
+#  RAILS_ENV=production bundle exec bin/batch_run YAML_CONFIG [LIMIT_N]
 
 # Load YAML config file for the bundle of materials to be pre-assembled.
 yaml=$1
