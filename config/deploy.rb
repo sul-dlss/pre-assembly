@@ -40,3 +40,11 @@ set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
 
 set :honeybadger_env, fetch(:stage)
 
+
+Rake::Task["honeybadger:deploy"].clear
+namespace :honeybadger do
+  desc 'Notify Honeybadger of the deployment.'
+  task :deploy => [:'deploy:set_current_revision'] do
+    puts "Temoporarily disabling honeybadger deploy notification, until we fix it."
+  end
+end
