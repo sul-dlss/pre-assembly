@@ -1,73 +1,69 @@
 require 'spec_helper'
 
 describe PreAssembly::DigitalObject do
+  let(:bundle_dir) { File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e') }
+
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
-    before do
-      @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
-      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => @bundle_dir, :verbose => false)
-      @dobj1         = setup_dobj('aa111aa1111')
-      @dobj2         = setup_dobj('bb222bb2222')
+    let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
+    let(:dobj2) { setup_dobj('bb222bb2222', smpl_manifest) }
+    let(:smpl_manifest) do
+      PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => bundle_dir, :verbose => false)
     end
 
     it "generates technicalMetadata for SMPL by combining all existing _techmd.xml files" do
-      @dobj1.create_technical_metadata
-      exp_xml = noko_doc(@dobj1.technical_md_xml)
+      dobj1.create_technical_metadata
+      exp_xml = noko_doc(dobj1.technical_md_xml)
       expect(exp_xml.css('technicalMetadata').size).to eq(1) # one top level node
       expect(exp_xml.css('Mediainfo').size).to eq(2) # two Mediainfo nodes
-      expect(exp_xml.css('Count').size).to eq(4) # four nodes that have file info
-      expect(exp_xml.css('Count')[0].content).to eq('279') # look for some specific bits in the files that have been assembled
-      expect(exp_xml.css('Count')[1].content).to eq('217')
-      expect(exp_xml.css('Count')[2].content).to eq('280')
-      expect(exp_xml.css('Count')[3].content).to eq('218')
+      counts = exp_xml.css('Count')
+      expect(counts.size).to eq(4) # four nodes that have file info
+      # look for some specific bits in the files that have been assembled
+      expect(counts.map(&:content)).to eq(['279', '217', '280', '218'])
     end
 
     it "generates content metadata from a SMPL manifest with no thumb columns" do
-      @dobj1.create_content_metadata
-      @dobj2.create_content_metadata
-      expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-      expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      dobj1.create_content_metadata
+      dobj2.create_content_metadata
+      expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+      expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
   end # end no thumb declaration
 
   describe 'SMPL content metadata generation with thumb declaration' do
-    before do
-      @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
-    end
-
     it "generates content metadata from a SMPL manifest with a thumb column set to yes" do
-      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => @bundle_dir, :verbose => false)
-      @dobj1         = setup_dobj('aa111aa1111')
-      @dobj2         = setup_dobj('bb222bb2222')
-      @dobj1.create_content_metadata
-      @dobj2.create_content_metadata
-      expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-      expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir, :verbose => false)
+      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
+      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+      dobj1.create_content_metadata
+      dobj2.create_content_metadata
+      expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+      expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
     it "generates content metadata from a SMPL manifest with a thumb column set to true" do
-      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => @bundle_dir, :verbose => false)
-      @dobj1         = setup_dobj('aa111aa1111')
-      @dobj2         = setup_dobj('bb222bb2222')
-      @dobj1.create_content_metadata
-      @dobj2.create_content_metadata
-      expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-      expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => bundle_dir, :verbose => false)
+      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
+      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+      dobj1.create_content_metadata
+      dobj2.create_content_metadata
+      expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+      expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
     it "generates content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
-      @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => @bundle_dir, :verbose => false)
-      @dobj1         = setup_dobj('aa111aa1111')
-      @dobj2         = setup_dobj('bb222bb2222')
-      @dobj1.create_content_metadata
-      @dobj2.create_content_metadata
-      expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-      expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => bundle_dir, :verbose => false)
+      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
+      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+      dobj1.create_content_metadata
+      dobj2.create_content_metadata
+      expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+      expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
   end # end with thumb declaration
 
   # some helper methods for these tests
 
-  def setup_dobj(druid)
+  def setup_dobj(druid, smpl_manifest)
     ps = {
       :apo_druid_id  => 'qq333xx4444',
       :set_druid_id  => 'mm111nn2222',
@@ -76,18 +72,16 @@ describe PreAssembly::DigitalObject do
       :label         => 'LabelQuux',
       :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
-      :bundle_dir    => @bundle_dir,
-      :smpl_manifest => @smpl_manifest,
+      :bundle_dir    => bundle_dir,
+      :smpl_manifest => smpl_manifest,
       :content_md_creation => { :style => :smpl }
     }
-    dobj         = PreAssembly::DigitalObject.new ps
-    pid          = "druid:#{druid}"
-    dt           = DruidTools::Druid.new pid
-    dobj.druid = dt
-    dobj.pid = pid
+    dobj = PreAssembly::DigitalObject.new(ps)
+    dobj.pid = "druid:#{druid}"
+    dobj.druid = DruidTools::Druid.new(dobj.pid)
     dobj.container = druid
     dobj.content_md_creation[:style] = 'smpl'
-    return dobj
+    dobj
   end
 
   def exp_xml_object_aa111aa1111
