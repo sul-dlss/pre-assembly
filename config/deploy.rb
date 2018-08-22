@@ -1,5 +1,5 @@
 set :application, 'pre-assembly'
-set :repo_url, 'https://github.com/sul-dlss/pre-assembly.git'
+set :repo_url, 'ssh://git@github.com/sul-dlss/pre-assembly'
 
 set :ssh_options, {
   keys: [Capistrano::OneTimeKey.temporary_ssh_private_key_path],
@@ -11,7 +11,7 @@ set :ssh_options, {
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
 # Default deploy_to directory is /var/www/my_app
-set :deploy_to, '/home/lyberadmin/pre-assembly'
+set :deploy_to, '/opt/app/preassembly/pre-assembly'
 
 # Default value for :scm is :git
 # set :scm, :git
@@ -25,7 +25,7 @@ set :deploy_to, '/home/lyberadmin/pre-assembly'
 # Default value for :pty is false
 # set :pty, true
 
-# update shared_configs before restarting app 
+# update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
 
 # Default value for :linked_files is []
