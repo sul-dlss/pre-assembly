@@ -9,3 +9,19 @@ Layout/SpaceBeforeBlockBraces:
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
+
+RSpec/ContextWording:
+  Enabled: false # too dogmatic
+
+RSpec/ExampleLength:
+  Max: 25
+
+# we like 'expect(x).to receive' better than 'have_received'
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/NestedGroups:
+  Max: 4 # default: 3
