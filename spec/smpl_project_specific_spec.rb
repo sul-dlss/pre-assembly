@@ -9,7 +9,7 @@ describe PreAssembly::DigitalObject do
       @dobj2         = setup_dobj('bb222bb2222')
     end
 
-    it "should generate technicalMetadata for SMPL by combining all existing _techmd.xml files" do
+    it "generates technicalMetadata for SMPL by combining all existing _techmd.xml files" do
       @dobj1.create_technical_metadata
       exp_xml = noko_doc(@dobj1.technical_md_xml)
       expect(exp_xml.css('technicalMetadata').size).to eq(1) # one top level node
@@ -21,7 +21,7 @@ describe PreAssembly::DigitalObject do
       expect(exp_xml.css('Count')[3].content).to eq('218')
     end
 
-    it "should generate content metadata from a SMPL manifest with no thumb columns" do
+    it "generates content metadata from a SMPL manifest with no thumb columns" do
       @dobj1.create_content_metadata
       @dobj2.create_content_metadata
       expect(noko_doc(@dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
@@ -34,7 +34,7 @@ describe PreAssembly::DigitalObject do
       @bundle_dir = File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e')
     end
 
-    it "should generate content metadata from a SMPL manifest with a thumb column set to yes" do
+    it "generates content metadata from a SMPL manifest with a thumb column set to yes" do
       @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
@@ -44,7 +44,7 @@ describe PreAssembly::DigitalObject do
       expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
-    it "should generate content metadata from a SMPL manifest with a thumb column set to true" do
+    it "generates content metadata from a SMPL manifest with a thumb column set to true" do
       @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')
@@ -54,7 +54,7 @@ describe PreAssembly::DigitalObject do
       expect(noko_doc(@dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
-    it "should generate content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
+    it "generates content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
       @smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => @bundle_dir, :verbose => false)
       @dobj1         = setup_dobj('aa111aa1111')
       @dobj2         = setup_dobj('bb222bb2222')

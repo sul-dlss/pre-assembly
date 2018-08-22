@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe PreAssembly::ObjectFile do
   before do
-    @f = PreAssembly::ObjectFile.new(
+    @f = described_class.new(
       :path => 'spec/test_data/bundle_input_a/image1.tif'
     )
   end
 
   describe "initialization" do
     it "can initialize an ObjectFile" do
-      expect(@f).to be_kind_of PreAssembly::ObjectFile
+      expect(@f).to be_kind_of described_class
     end
   end
 end

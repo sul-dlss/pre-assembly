@@ -15,7 +15,7 @@ describe PreAssembly::DigitalObject do
       :new_druid_tree_format => true,
       :staging_style => 'copy'
     }
-    @dobj         = PreAssembly::DigitalObject.new @ps
+    @dobj         = described_class.new @ps
 
     @dru          = 'gn330dv6119'
     @pid          = "druid:#{@dru}"
@@ -40,7 +40,7 @@ describe PreAssembly::DigitalObject do
 
   describe "initialization and other setup" do
     it "can initialize a digital object" do
-      expect(@dobj).to be_kind_of PreAssembly::DigitalObject
+      expect(@dobj).to be_kind_of described_class
     end
   end
 
@@ -58,19 +58,19 @@ describe PreAssembly::DigitalObject do
       @stubbed_return_vals = @druids.map { false }
     end
 
-    it "should return DruidMinter.next if get_druid_from=druid_minter" do
+    it "returns DruidMinter.next if get_druid_from=druid_minter" do
       exp = PreAssembly::DruidMinter.current
       @dobj.project_style[:get_druid_from] = :druid_minter
       expect(@dobj).not_to receive :container_basename
       expect(@dobj.get_pid_from_druid_minter).to eq(exp.next)
     end
 
-    it "should return nil whether there are no matches" do
+    it "returns nil whether there are no matches" do
       allow(@dobj).to receive(:apo_matches_exactly_one?).and_return *@stubbed_return_vals
       expect(@dobj.get_pid_from_container_barcode).to eq(nil)
     end
 
-    it "should return the druid of the object with the matching APO" do
+    it "returns the druid of the object with the matching APO" do
       @druids.each_with_index do |_druid, i|
         @stubbed_return_vals[i] = true
         allow(@dobj).to receive(:apo_matches_exactly_one?).and_return *@stubbed_return_vals
@@ -123,7 +123,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "register()" do
-    it "should do nothing if should_register is false" do
+    it "does nothing if should_register is false" do
       @dobj.project_style[:should_register] = false
       expect(@dobj).not_to receive :register_in_dor
       @dobj.register
@@ -148,23 +148,23 @@ describe PreAssembly::DigitalObject do
       expect(rps[:label]).to eq("LabelQuux")
     end
 
-    it "should add a new tag to the registration params if set" do
+    it "adds a new tag to the registration params if set" do
       @ps[:apply_tag] = 'Foo : Bar'
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps
+      dobj_with_tag = described_class.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
       expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
 
       @ps[:apply_tag] = 'Foo : Bar'
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps
+      dobj_with_tag = described_class.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
       expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
 
       @ps[:apply_tag] = nil
-      dobj_with_tag = PreAssembly::DigitalObject.new @ps
+      dobj_with_tag = described_class.new @ps
       rps = dobj_with_tag.registration_params
       expect(rps).to             be_kind_of Hash
       expect(rps[:tags]).to      be_kind_of Array
@@ -175,7 +175,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "add_dor_object_to_set()" do
-    it "should do nothing when @set_druid_id is false" do
+    it "does nothing when @set_druid_id is false" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
       @dobj.set_druid_id = nil
@@ -185,23 +185,23 @@ describe PreAssembly::DigitalObject do
       @dobj.add_dor_object_to_set
     end
 
-    it "should call add_relationship when not null the correct number of times for a single set druid passed in" do
+    it "calls add_relationship when not null the correct number of times for a single set druid passed in" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
-      expect(@dobj).to receive(:add_member_relationship_params).with('druid:mm111nn2222').exactly(1).times
-      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:mm111nn2222').exactly(1).times
-      expect(fake).to receive(:add_relationship).exactly(2).times
+      expect(@dobj).to receive(:add_member_relationship_params).with('druid:mm111nn2222').once
+      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:mm111nn2222').once
+      expect(fake).to receive(:add_relationship).twice
       @dobj.add_dor_object_to_set
     end
 
-    it "should call add_relationship when not null the correct number of times for more than one set druids passed in" do
+    it "calls add_relationship when not null the correct number of times for more than one set druids passed in" do
       fake = double('dor_object', :add_relationship => 11, :save => 22)
       @dobj.dor_object = fake
       @dobj.set_druid_id = ['druid:oo000oo0001', 'druid:oo000oo0002']
-      expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0001').exactly(1).times
-      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0001').exactly(1).times
-      expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0002').exactly(1).times
-      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0002').exactly(1).times
+      expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0001').once
+      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0001').once
+      expect(@dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0002').once
+      expect(@dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0002').once
       expect(fake).to receive(:add_relationship).exactly(4).times
       @dobj.add_dor_object_to_set
     end
@@ -229,7 +229,7 @@ describe PreAssembly::DigitalObject do
       allow(Assembly::Utils).to receive :set_workflow_step_to_error
     end
 
-    it "should do nothing unless the digitial object was registered by pre-assembly" do
+    it "does nothing unless the digitial object was registered by pre-assembly" do
       expect(@dobj).not_to receive :delete_from_dor
       @dobj.reg_by_pre_assembly = false
       @dobj.unregister
@@ -246,7 +246,7 @@ describe PreAssembly::DigitalObject do
   ####################
 
   describe "file staging" do
-    it "should be able to copy stageable items successfully" do
+    it "is able to copy stageable items successfully" do
       @dobj.druid = @druid
 
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
@@ -272,7 +272,7 @@ describe PreAssembly::DigitalObject do
       end
     end
 
-    it "should be able to symlink stageable items successfully" do
+    it "is able to symlink stageable items successfully" do
       @dobj.druid = @druid
 
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
@@ -360,11 +360,11 @@ describe PreAssembly::DigitalObject do
       expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
-    it "should generate the expected xml text" do
+    it "generates the expected xml text" do
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
 
-    it "should be able to write the content_metadata XML to a file" do
+    it "is able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
         file_name = File.join(tmp_area, "metadata", @dobj.content_md_file)
@@ -378,7 +378,7 @@ describe PreAssembly::DigitalObject do
 
   #########
   describe "check the druid tree directories and content and metadata locations using both the new style and the old style" do
-    it "should have the correct druid tree folders using the new style" do
+    it "has the correct druid tree folders using the new style" do
       @dobj.druid = @druid
       @dobj.new_druid_tree_format = true
       expect(@dobj.druid_tree_dir).to eq('gn/330/dv/6119/gn330dv6119')
@@ -386,7 +386,7 @@ describe PreAssembly::DigitalObject do
       expect(@dobj.content_dir).to eq('gn/330/dv/6119/gn330dv6119/content')
     end
 
-    it "should have the correct druid tree folders using the old style" do
+    it "has the correct druid tree folders using the old style" do
       @dobj.druid = @druid
       @dobj.new_druid_tree_format = false
       expect(@dobj.druid_tree_dir).to eq('gn/330/dv/6119')
@@ -408,7 +408,7 @@ describe PreAssembly::DigitalObject do
       @dobj.create_content_metadata
     end
 
-    it "should not generate any xml text" do
+    it "does not generate any xml text" do
       expect(@dobj.content_md_xml).to eq("")
     end
   end
@@ -451,7 +451,7 @@ describe PreAssembly::DigitalObject do
       @exp_xml = noko_doc @exp_xml
     end
 
-    it "should generate the expected xml text" do
+    it "generates the expected xml text" do
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
   end
@@ -520,7 +520,7 @@ describe PreAssembly::DigitalObject do
       expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
-    it "should generate the expected xml text" do
+    it "generates the expected xml text" do
       expect(@dobj.content_md_creation_style).to eq(:file)
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
@@ -588,13 +588,13 @@ describe PreAssembly::DigitalObject do
       expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
     end
 
-    it "should generate the expected xml text when overriding is explicitly not allowed" do
+    it "generates the expected xml text when overriding is explicitly not allowed" do
       @dobj.project_style[:content_tag_override] = false # this prevents override of content structure
       expect(@dobj.content_md_creation_style).to eq(:simple_image)
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
     end
 
-    it "should generate the expected xml text when overriding is not specified" do
+    it "generates the expected xml text when overriding is not specified" do
       @dobj.project_style[:content_tag_override] = nil # this prevents override of content structure
       expect(@dobj.content_md_creation_style).to eq(:simple_image)
       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml
@@ -709,7 +709,7 @@ describe PreAssembly::DigitalObject do
       expect(noko_doc(@dobj.desc_md_xml)).to be_equivalent_to @exp_xml
     end
 
-    it "should be able to write the desc_metadata XML to a file" do
+    it "is able to write the desc_metadata XML to a file" do
       @dobj.create_desc_metadata_xml
       Dir.mktmpdir(*@tmp_dir_args) do |tmp_area|
         @dobj.druid_tree_dir = tmp_area
@@ -720,7 +720,7 @@ describe PreAssembly::DigitalObject do
       end
     end
 
-    it "should generate descMetadata correctly given a manifest row as loaded from the csv" do
+    it "generates descMetadata correctly given a manifest row as loaded from the csv" do
       manifest = PreAssembly::Bundle.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
       @dobj.manifest_row = Hash[manifest[2].each_pair.to_a]
 
