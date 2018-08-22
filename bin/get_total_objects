@@ -16,7 +16,7 @@ params['show_progress'] = false
 
 # get total number of objects
 begin
-  b = PreAssembly::Bundle.new params
+  b = PreAssembly::Bundle.new(PreAssembly::BundleContext.new(params))
   b.discover_objects
   total_objects = b.digital_objects.size
   objects_remaining = b.objects_to_process.size

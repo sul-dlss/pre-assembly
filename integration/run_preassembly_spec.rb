@@ -149,7 +149,7 @@ describe "Pre-assembly integration" do
     @params[:bundle_dir] = File.join(PRE_ASSEMBLY_ROOT, @params[:bundle_dir])
     @params[:validate_bundle_dir][:code] = File.join(PRE_ASSEMBLY_ROOT, @params[:validate_bundle_dir][:code]) if @params[:validate_bundle_dir]
     # Create the bundle.
-    @b = PreAssembly::Bundle.new @params
+    @b = PreAssembly::Bundle.new(PreAssembly::BundleContext.new(@params))
 
     # Set values needed for assertions.
     exp        = @expected[proj.to_sym]

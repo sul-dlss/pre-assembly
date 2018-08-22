@@ -23,7 +23,7 @@ params = YAML.load(File.read yaml_config)
 params['config_filename'] = yaml_config
 
 begin
-  b = PreAssembly::Bundle.new params
+  b = PreAssembly::Bundle.new(PreAssembly::BundleContext.new(params))
   b.discovery_report(report_params)
 rescue PreAssembly::BundleUsageError => e
   help e.message
