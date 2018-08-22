@@ -50,9 +50,8 @@ module PreAssembly
       :staging_style
     ]
 
-    attr_writer :manifest_rows
+    attr_writer :manifest_rows, :provider_checksums
     attr_accessor :user_params,
-                  :provider_checksums,
                   :digital_objects,
                   :skippables,
                   :smpl_manifest,
@@ -104,7 +103,6 @@ module PreAssembly
     end
 
     def setup_other
-      self.provider_checksums     = {}
       self.digital_objects        = []
       self.skippables             = {}
       self.content_exclusion &&= Regexp.new(content_exclusion)
@@ -296,9 +294,7 @@ module PreAssembly
       if content_md_creation[:style] == :smpl
         self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false)
       end
-
       discover_objects
-      load_provider_checksums
       process_manifest
       process_digital_objects
       delete_digital_objects
@@ -498,14 +494,14 @@ module PreAssembly
     # Checksums.
     ####
 
-    # Read the provider-supplied checksums_file, using its
-    # content to populate a hash of expected checksums.
+    # Read the provider-supplied checksums_file, using its content to populate a hash of expected checksums.
     # This method works with default output from md5sum.
-    def load_provider_checksums
-      return unless checksums_file
-      log "load_provider_checksums()"
-      checksum_regex = %r{^MD5 \((.+)\) = (\w{32})$}
-      read_exp_checksums.scan(checksum_regex).each { |file_name, md5| provider_checksums[file_name] = md5.strip }
+    def provider_checksums
+      return @provider_checksums if @provider_checksums
+      return @provider_checksums = {} unless checksums_file
+      log "provider_checksums()"
+      regex = %r{^MD5 \((.+)\) = (\w{32})$}
+      @provider_checksums = read_exp_checksums.scan(regex).map { |filename, md5| [filename, md5.strip] }.to_h
     end
 
     # Read checksums file. Wrapped in a method for unit testing.  Normalize CR/LF to be sure regex works

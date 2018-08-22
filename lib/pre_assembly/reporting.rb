@@ -77,7 +77,6 @@ module PreAssembly
 
       unique_objects = 0
       discover_objects
-      load_provider_checksums if confirming_checksums
       process_manifest
 
       objects_in_bundle_directory = @digital_objects.collect { |dobj| dobj.container_basename }

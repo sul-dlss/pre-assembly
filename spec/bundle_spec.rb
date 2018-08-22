@@ -179,13 +179,7 @@ describe PreAssembly::Bundle do
   describe "bundle directory validation using DirValidator" do
     it '#run_pre_assembly short-circuit if the bundle directory is invalid' do
       allow(rumsey).to receive('bundle_directory_is_valid?').and_return(false)
-      methods = [
-        :discover_objects,
-        :load_provider_checksums,
-        :process_manifest,
-        :process_digital_objects,
-        :delete_digital_objects,
-      ]
+      methods = [:discover_objects, :process_manifest, :process_digital_objects, :delete_digital_objects]
       methods.each { |m| expect(rumsey).not_to receive(m) }
       rumsey.run_pre_assembly
     end
@@ -402,6 +396,13 @@ describe PreAssembly::Bundle do
     end
   end
 
+  describe '#confirm_checksums' do
+    it 'returns false unless all checksums match' do
+      revs.discover_objects
+      revs.confirm_checksums(revs.digital_objects.first)
+    end
+  end
+
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
       rumsey.discover_objects
@@ -411,15 +412,14 @@ describe PreAssembly::Bundle do
     end
   end
 
-  describe '#load_provider_checksums' do
+  describe '#provider_checksums' do
     it "does nothing when no checksums file is present" do
       expect(rumsey).not_to receive(:read_exp_checksums)
-      rumsey.load_provider_checksums
+      rumsey.provider_checksums
     end
 
     it "empty string yields no checksums" do
       allow(revs).to receive(:read_exp_checksums).and_return('')
-      revs.load_provider_checksums
       expect(revs.provider_checksums).to eq({})
     end
 
@@ -432,7 +432,6 @@ describe PreAssembly::Bundle do
       }
       checksum_string = checksum_data.map { |f, c| "MD5 (#{f}) = #{c}\n" }.join ''
       allow(revs).to receive(:read_exp_checksums).and_return(checksum_string)
-      revs.load_provider_checksums
       expect(revs.provider_checksums).to eq(checksum_data)
     end
   end
