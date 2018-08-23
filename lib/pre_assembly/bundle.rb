@@ -575,7 +575,8 @@ module PreAssembly
       end
     end
 
-    # confirm that the checksums provided match the checksums as computed
+    # for on object, confirm that the checksums provided match freshly computed checksums
+    # @param [PreAssembly::DigitalObject] dobj
     def confirm_checksums(dobj)
       # log "  - confirm_checksums()"
       result = false
