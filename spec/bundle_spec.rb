@@ -654,21 +654,20 @@ describe PreAssembly::Bundle do
   end
 
   describe "file and directory utilities" do
-    before do
-      bundle_setup :proj_revs
-      @relative = 'abc/def.jpg'
-      @full     = @b.path_in_bundle @relative
+    let(:relative) { 'abc/def.jpg' }
+    let(:full) { @b.path_in_bundle(relative) }
+
+    before { bundle_setup :proj_revs }
+
+    it "#path_in_bundle returns expected value" do
+      expect(@b.path_in_bundle(relative)).to eq('spec/test_data/bundle_input_a/abc/def.jpg')
     end
 
-    it "#path_in_bundle should return expected value" do
-      expect(@b.path_in_bundle(@relative)).to eq(@full)
+    it "#relative_path returns expected value" do
+      expect(@b.relative_path(@b.bundle_dir, full)).to eq(relative)
     end
 
-    it "#relative_path should return expected value" do
-      expect(@b.relative_path(@b.bundle_dir, @full)).to eq(@relative)
-    end
-
-    it "#relative_path should raise error if given bogus arguments" do
+    it "#relative_path raises error if given bogus arguments" do
       path = "foo/bar/fubb.txt"
       exp_msg = /^Bad args to relative_path/
       expect { @b.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
@@ -676,11 +675,11 @@ describe PreAssembly::Bundle do
       expect { @b.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
     end
 
-    it "#get_base_dir should return expected value" do
+    it "#get_base_dir returns expected value" do
       expect(@b.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
 
-    it "#get_base_dir should raise error if given bogus arguments" do
+    it "#get_base_dir raises error if given bogus arguments" do
       exp_msg  = /^Bad arg to get_base_dir/
       bad_args = ['foo.txt', '', 'x\y\foo.txt']
       bad_args.each do |arg|
@@ -688,12 +687,12 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "#dir_glob should return expected information" do
+    it "#dir_glob returns expected information" do
       exp = [1, 2, 3].map { |n| @b.path_in_bundle "image#{n}.tif" }
       expect(@b.dir_glob(@b.path_in_bundle "*.tif")).to eq(exp)
     end
 
-    it "#find_files_recursively should return expected information" do
+    it "#find_files_recursively returns expected information" do
       exp = {
         :proj_revs => [
           "checksums.txt",
@@ -724,17 +723,17 @@ describe PreAssembly::Bundle do
   describe "misc utilities" do
     before { bundle_setup :proj_revs }
 
-    it "source_id_suffix() should be empty if not making unique source IDs" do
+    it '#source_id_suffix is empty if not making unique source IDs' do
       @b.uniqify_source_ids = false
       expect(@b.source_id_suffix).to eq('')
     end
 
-    it "source_id_suffix() should look like an integer if making unique source IDs" do
+    it '#source_id_suffix looks like an integer if making unique source IDs' do
       @b.uniqify_source_ids = true
       expect(@b.source_id_suffix).to match(/^_\d+$/)
     end
 
-    it "symbolize_keys() should handle various data structures correctly" do
+    it '#symbolize_keys handles various data structures correctly' do
       tests = [
         [{}, {}],
         [[], []],
@@ -755,7 +754,7 @@ describe PreAssembly::Bundle do
       end
     end
 
-    it "values_to_symbols!() should convert string values to symbols" do
+    it '#values_to_symbols! should convert string values to symbols' do
       tests = [
         [{}, {}],
         [
