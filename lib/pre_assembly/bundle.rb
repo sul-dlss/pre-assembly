@@ -579,9 +579,7 @@ module PreAssembly
     # @param [PreAssembly::DigitalObject] dobj
     def confirm_checksums(dobj)
       # log "  - confirm_checksums()"
-      result = false
-      dobj.object_files.each { |f| result = (f.md5 == provider_checksums[File.basename(f.path)]) }
-      result
+      dobj.object_files.all? { |f| f.md5 == provider_checksums[File.basename(f.path)] }
     end
 
     # confirm that the all of the source IDs supplied within a manifest are locally unique

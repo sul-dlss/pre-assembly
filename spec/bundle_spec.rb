@@ -399,15 +399,20 @@ describe PreAssembly::Bundle do
   describe '#confirm_checksums' do
     let(:x_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'A23', path: 'a/b/x.tiff') }
     let(:y_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'B78', path: 'q/r/y.tiff') }
+    let(:dobj) { revs.digital_objects.first }
 
     before do
       revs.discover_objects
-      allow(revs.digital_objects.first).to receive(:object_files).and_return([x_tiff, y_tiff])
+      allow(dobj).to receive(:object_files).and_return([x_tiff, y_tiff])
     end
 
-    it 'returns false unless all checksums match' do
+    it 'returns false unless ALL checksums match' do
       allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'MISMATCH', 'y.tiff' => 'B78')
-      expect(revs.confirm_checksums(revs.digital_objects.first)).to be_falsey
+      expect(revs.confirm_checksums(dobj)).to be_falsey
+    end
+    it 'returns true when ALL checksums match' do
+      allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'A23', 'y.tiff' => 'B78')
+      expect(revs.confirm_checksums(dobj)).to be_truthy
     end
   end
 
