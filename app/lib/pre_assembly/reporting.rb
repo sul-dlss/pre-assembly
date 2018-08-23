@@ -82,7 +82,6 @@ module PreAssembly
       total_objects = @digital_objects.size
 
       o2p = objects_to_process
-      total_objects_to_process = o2p.size
 
       source_ids = Hash.new(0) if using_manifest # hash to keep track of local source_id uniqueness
       total_size_all_files = 0
@@ -94,7 +93,7 @@ module PreAssembly
         counter += 1
 
         bundle_id = File.basename(dobj.unadjusted_container)
-        message = "#{counter} of #{total_objects_to_process} : #{bundle_id} , " # obj container id
+        message = "#{counter} of #{o2p.size} : #{bundle_id} , " # obj container id
 
         if dobj.object_files.count == 0
           message += report_error_message("none") + " N/A ," # no items found and therefore existence gets an N/A
@@ -178,7 +177,7 @@ module PreAssembly
 
       puts "\nConfig filename, #{@config_filename}"
       puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time) / 60.0)} minutes"
-      puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
+      puts "\nTotal Objects that will be Processed, #{o2p.size}"
       puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
       puts "Total Discovered Objects, #{total_objects}"
       puts "Total Size of all discovered objects, " + "%.3f" % total_size_all_files.to_s + " MB"
