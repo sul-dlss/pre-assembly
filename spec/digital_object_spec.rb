@@ -210,7 +210,7 @@ describe PreAssembly::DigitalObject do
       allow(Assembly::Utils).to receive :set_workflow_step_to_error
     end
 
-    it "does nothing unless the digitial object was registered by pre-assembly" do
+    it "does nothing unless the digital object was registered by pre-assembly" do
       expect(dobj).not_to receive :delete_from_dor
       dobj.reg_by_pre_assembly = false
       dobj.unregister
