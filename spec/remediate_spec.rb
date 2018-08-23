@@ -16,6 +16,7 @@ describe PreAssembly::Remediation::Item do
     let(:progress_log_file) { log_dir + "/progress_log_file.yml" }
 
     before { Dir.mkdir(log_dir) unless Dir.exist?(log_dir) }
+
     after { File.delete(csv_filename) if File.exist?(csv_filename) }
 
     it "ensures a log file exists" do
