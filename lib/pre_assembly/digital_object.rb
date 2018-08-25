@@ -16,7 +16,6 @@ module PreAssembly
       :object_files,
       :project_style,
       :project_name,
-      :apply_tag,
       :apo_druid_id,
       :set_druid_id,
       :file_attr,

@@ -25,7 +25,6 @@ module PreAssembly
       :desc_md_template,
       :progress_log_file,
       :project_name,
-      :apply_tag,
       :file_attr,
       :compute_checksum,
       :init_assembly_wf,
@@ -175,7 +174,6 @@ module PreAssembly
         :staging_style,
         :validate_bundle_dir,
         :throttle_time,
-        :apply_tag
       ]
     end
 
@@ -369,7 +367,6 @@ module PreAssembly
           :bundle_dir           => bundle_dir,
           :staging_dir          => staging_dir,
           :project_name         => project_name,
-          :apply_tag            => apply_tag,
           :file_attr            => file_attr,
           :init_assembly_wf     => init_assembly_wf,
           :content_md_creation  => content_md_creation,

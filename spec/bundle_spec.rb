@@ -40,19 +40,6 @@ describe PreAssembly::Bundle do
     end
   end
 
-  describe '#apply_tag' do
-    it "sets apply_tag to nil if not set in the yaml file" do
-      expect(revs.apply_tag).to be_nil
-    end
-    it "sets the apply_tag parameter if set" do
-      expect(bundle_setup(:proj_revs_old_druid).apply_tag).to eq("revs:batch1")
-    end
-    it "sets the apply_tag to empty string or nil and be blank if set this way in config file" do
-      expect(bundle_setup(:proj_revs_no_cm).apply_tag).to be_blank
-      expect(rumsey.apply_tag).to be_blank
-    end
-  end
-
   describe '#load_skippables' do
     it "does nothing if @resume is false" do
       rumsey.resume = false

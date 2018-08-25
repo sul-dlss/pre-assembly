@@ -4,7 +4,6 @@ project_style:
   content_structure:  'simple_image'
   get_druid_from:     'container'
 
-apply_tag:            ~
 bundle_dir:           'spec/test_data/bundle_input_b'
 staging_dir:          'tmp'
 accession_items:       ~

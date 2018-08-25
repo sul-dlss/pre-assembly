@@ -4,7 +4,6 @@ project_style:
   content_structure:  'simple_image'
   get_druid_from:     'suri'
 
-apply_tag:            'revs:batch1'
 bundle_dir:           'spec/test_data/bundle_input_a'
 staging_dir:          'tmp'
 accession_items:       ~
