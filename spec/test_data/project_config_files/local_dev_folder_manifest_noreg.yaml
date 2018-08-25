@@ -4,7 +4,6 @@
 
 project_style:
   content_structure:  'simple_image'
-  should_register:    false
   get_druid_from:     'manifest'
 
 bundle_dir:           'spec/test_data/bundle_input_g'
@@ -31,7 +30,7 @@ publish_attr:
     publish:   ~
     shelve:    ~
     preserve:  ~
-  
+
 compute_checksum:     false
 init_assembly_wf:     false
 

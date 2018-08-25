@@ -2,24 +2,16 @@
 
 project_style:
   content_structure:  'simple_image'
-  should_register:    true
   get_druid_from:     'suri'
 
 bundle_dir:           'spec/test_data/bundle_input_a/'
 staging_dir:          'tmp'
 accession_items:       ~
-
 manifest:             'manifest.csv'
 checksums_file:       'checksums.txt'
 desc_md_template:     'mods_template.xml'
-
 progress_log_file:    'tmp/progress_revs.yaml'
 project_name:         'Revs'
-apo_druid_id:         'druid:qv648vd4392'
-set_druid_id:         
-  - 'druid:yt502zj0924'
-  - 'druid:nt028fd5773'
-
 validate_files:       true
 
 publish_attr:

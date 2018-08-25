@@ -65,8 +65,8 @@ describe PreAssembly::DigitalObject do
 
   def setup_dobj(druid, smpl_manifest)
     ps = {
-      :apo_druid_id  => 'qq333xx4444',
-      :set_druid_id  => 'mm111nn2222',
+      # :apo_druid_id  => 'qq333xx4444',
+      # :set_druid_id  => 'mm111nn2222',
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',

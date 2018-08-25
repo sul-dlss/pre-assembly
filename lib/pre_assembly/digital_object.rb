@@ -31,7 +31,6 @@ module PreAssembly
     ]
 
     attr_accessor :pid,
-                  :reg_by_pre_assembly,
                   :label,
                   :reaccession,
                   :content_md_file,
@@ -81,7 +80,7 @@ module PreAssembly
     # set this object's content_md_creation_style
     def content_md_creation_style
       # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
-      if project_style[:should_register] || !project_style[:content_tag_override] || (project_style[:content_tag_override] && content_type_tag.blank?)
+      if !project_style[:content_tag_override] || content_type_tag.blank?
         default_content_md_creation_style
       else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
         CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
@@ -117,8 +116,6 @@ module PreAssembly
       determine_druid
 
       prepare_for_reaccession if reaccession
-      register
-      add_dor_object_to_set
       stage_files
       generate_content_metadata unless content_md_creation[:style].to_s == 'none'
       generate_technical_metadata
@@ -198,74 +195,6 @@ module PreAssembly
     # Registration and other Dor interactions.
     ####
 
-    def register
-      return unless project_style[:should_register]
-      log "    - register(#{pid})"
-      self.dor_object = register_in_dor(registration_params)
-      self.reg_by_pre_assembly = true
-    end
-
-    def register_in_dor(params)
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('REGISTER_IN_DOR', method(:log), params)) do
-        result = begin
-          Dor::RegistrationService.register_object params
-        rescue Exception => e
-          source_id = "#{project_name}:#{source_id}"
-          log "      ** REGISTER FAILED ** with '#{e.message}' ... deleting object #{pid} and source id #{source_id} and trying attempt #{i} of #{Dor::Config.dor.num_attempts} in #{Dor::Config.dor.sleep_time} seconds"
-          delete_objects_from_workspace_by_source_id(source_id)
-          nil
-        end
-
-        raise PreAssembly::UnknownError unless result.class == Dor::Item
-        result
-      end
-    end
-
-    def delete_objects_from_workspace_by_source_id(source_id)
-      sourceid_pids = Dor::SearchService.query_by_id(source_id)
-      all_pids = sourceid_pids << pid
-      all_pids.each do |pid|
-        begin
-          Dor::SearchService.solr.delete_by_id(pid) # should be unnecessary, but handles an edge case where the object is not in Fedora, but is in Solr
-          Dor::Config.fedora.client["objects/#{pid}"].delete
-        rescue Exception => e
-          log "      ... could not delete object with #{pid} or source id #{source_id} : #{e.message} ..."
-        end
-      end
-      Dor::SearchService.solr.commit
-    end
-
-    def registration_params
-      tags = ["Project : #{project_name}"]
-      tags << apply_tag unless apply_tag.blank?
-      {
-        :object_type  => 'item',
-        :admin_policy => apo_druid_id,
-        :source_id    => { project_name => source_id },
-        :pid          => pid,
-        :label        => label.blank? ? Dor::Config.dor.default_label : label,
-        :tags         => tags,
-      }
-    end
-
-    def add_dor_object_to_set
-      # Add the object to a set (a sub-collection).
-      return unless set_druid_id && project_style[:should_register]
-      log "    - add_dor_object_to_set(#{set_druid_id})"
-
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('ADD_DOR_OBJECT_TO_SET', method(:log))) do
-        Array(set_druid_id).each do |druid|
-          dor_object.add_relationship *add_member_relationship_params(druid)
-          dor_object.add_relationship *add_collection_relationship_params(druid)
-        end
-        raise PreAssembly::UnknownError unless dor_object.save
-      end
-    end
-
-    def add_member_relationship_params(druid)
-      [:is_member_of, "info:fedora/#{druid}"]
-    end
-
     def add_collection_relationship_params(druid)
       [:is_member_of_collection, "info:fedora/#{druid}"]
     end
@@ -275,16 +204,6 @@ module PreAssembly
     def prepare_for_reaccession
       log "  - prepare_for_reaccession(#{druid})"
       Assembly::Utils.cleanup_object(druid.druid, [:stacks, :stage, :symlinks])
-    end
-
-    # Used during testing and development work to unregister objects created in -dev.
-    # Do not run unless the object was registered by pre-assembly.
-    def unregister
-      return unless reg_by_pre_assembly
-      log "  - unregister(#{pid})"
-      Assembly::Utils.unregister(pid)
-      self.dor_object = nil
-      self.reg_by_pre_assembly = false
     end
 
     ####

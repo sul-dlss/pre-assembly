@@ -31,7 +31,7 @@ module PreAssembly
       confirming_checksums = @checksums_file && confirm_checksums
       checking_sourceids = check_sourceids && using_manifest
 
-      confirming_registration = (no_check_reg == false && @project_style[:should_register] == false)
+      confirming_registration = (no_check_reg == false)
       barcode_project = @project_style[:get_druid_from] == :container_barcode
 
       log ""
@@ -56,9 +56,7 @@ module PreAssembly
         puts "You are processing specific objects only" if @accession_items[:only]
         puts "You are processing all discovered except for specific objects" if @accession_items[:except]
       end
-      if @project_style[:should_register] # confirm the supplied APO
-        puts report_error_message("Specified APO #{@apo_druid_id} does not exist or the specified object does exist but is not an APO") if Assembly::Utils.is_apo?(@apo_druid_id) == false
-      end
+
       header = "\nObject Container , Number of Items , Files with no ext, Files with 0 Size, Total Size, Files Readable , "
       header += "Label , Source ID , " if using_manifest
       header += "Num Files in CM Manifest , All CM files found ," if using_smpl_manifest

@@ -128,8 +128,6 @@ describe "Pre-assembly integration" do
     check_n_of_objects
     check_for_expected_files
     check_descMetadata if proj == 'revs'
-    check_dor_objects
-    cleanup_dor_objects
   end
 
   ####
@@ -189,23 +187,6 @@ describe "Pre-assembly integration" do
         fs   = Dir[glob]
         fs.size.should == n
       end
-    end
-  end
-
-  def cleanup_dor_objects
-    return unless @b.project_style[:should_register]
-    @pids.each do |pid|
-      Assembly::Utils.unregister(pid)
-    end
-  end
-
-  def check_dor_objects
-    # Make sure we can get the object from Dor.
-    # Skip test for projects not registered by pre-assembly.
-    return unless @b.project_style[:should_register]
-    @pids.each do |pid|
-      item = Dor::Item.find pid
-      item.should be_kind_of Dor::Item
     end
   end
 end

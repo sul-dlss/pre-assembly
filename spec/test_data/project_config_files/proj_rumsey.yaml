@@ -2,7 +2,6 @@
 
 project_style:
   content_structure:  'simple_image'
-  should_register:    false
   get_druid_from:     'container'
 
 apply_tag:            ~

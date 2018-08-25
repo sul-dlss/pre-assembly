@@ -5,13 +5,13 @@ describe PreAssembly::DigitalObject do
   let(:pid) { "druid:#{dru}" }
   let(:ps) {
     {
-      :apo_druid_id  => 'druid:qq333xx4444',
-      :set_druid_id  => 'druid:mm111nn2222',
+      # :apo_druid_id  => 'druid:qq333xx4444',
+      # :set_druid_id  => 'druid:mm111nn2222',
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',
       :publish_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
-      :project_style => { :should_register => true },
+      :project_style => {},
       :content_md_creation => {},
       :bundle_dir => 'spec/test_data/bundle_input_g',
       :new_druid_tree_format => true,
@@ -104,123 +104,6 @@ describe PreAssembly::DigitalObject do
       expect(dobj.apo_matches_exactly_one?(apos)).to eq(true)   # One = just right.
       apos.push z
       expect(dobj.apo_matches_exactly_one?(apos)).to eq(false)  # Too many.
-    end
-  end
-
-  describe "register()" do
-    it "does nothing if should_register is false" do
-      dobj.project_style[:should_register] = false
-      expect(dobj).not_to receive :register_in_dor
-      dobj.register
-    end
-
-    it "can exercise method using stubbed exernal calls" do
-      dobj.project_style[:should_register] = true
-      allow(dobj).to receive(:register_in_dor).and_return(1234)
-      expect(dobj.dor_object).to eq(nil)
-      dobj.register
-      expect(dobj.dor_object).to eq(1234)
-    end
-
-    it "can exercise registration_params() and get expected data structure" do
-      dobj.druid = druid
-      dobj.label = "LabelQuux"
-      rps = dobj.registration_params
-      expect(rps).to             be_kind_of Hash
-      expect(rps[:source_id]).to be_kind_of Hash
-      expect(rps[:tags]).to      be_kind_of Array
-      expect(rps[:tags]).to eq(["Project : ProjectBar"])
-      expect(rps[:label]).to eq("LabelQuux")
-    end
-
-    it "adds a new tag to the registration params if set" do
-      ps[:apply_tag] = 'Foo : Bar'
-      dobj_with_tag = described_class.new ps
-      rps = dobj_with_tag.registration_params
-      expect(rps).to             be_kind_of Hash
-      expect(rps[:tags]).to      be_kind_of Array
-      expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
-
-      ps[:apply_tag] = 'Foo : Bar'
-      dobj_with_tag = described_class.new ps
-      rps = dobj_with_tag.registration_params
-      expect(rps).to             be_kind_of Hash
-      expect(rps[:tags]).to      be_kind_of Array
-      expect(rps[:tags]).to eq(["Project : ProjectBar", "Foo : Bar"])
-
-      ps[:apply_tag] = nil
-      dobj_with_tag = described_class.new ps
-      rps = dobj_with_tag.registration_params
-      expect(rps).to             be_kind_of Hash
-      expect(rps[:tags]).to      be_kind_of Array
-      expect(rps[:tags]).to eq(["Project : ProjectBar"])
-    end
-  end
-
-  describe '#add_dor_object_to_set' do
-    it "does nothing when @set_druid_id is false" do
-      fake = double('dor_object', :add_relationship => 11, :save => 22)
-      dobj.dor_object = fake
-      dobj.set_druid_id = nil
-      expect(dobj).not_to receive(:add_member_relationship_params)
-      expect(dobj).not_to receive(:add_collection_relationship_params)
-      expect(fake).not_to receive :add_relationship
-      dobj.add_dor_object_to_set
-    end
-
-    it "calls add_relationship when not null the correct number of times for a single set druid passed in" do
-      fake = double('dor_object', :add_relationship => 11, :save => 22)
-      dobj.dor_object = fake
-      expect(dobj).to receive(:add_member_relationship_params).with('druid:mm111nn2222').once
-      expect(dobj).to receive(:add_collection_relationship_params).with('druid:mm111nn2222').once
-      expect(fake).to receive(:add_relationship).twice
-      dobj.add_dor_object_to_set
-    end
-
-    it "calls add_relationship when not null the correct number of times for more than one set druids passed in" do
-      fake = double('dor_object', :add_relationship => 11, :save => 22)
-      dobj.dor_object = fake
-      dobj.set_druid_id = ['druid:oo000oo0001', 'druid:oo000oo0002']
-      expect(dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0001').once
-      expect(dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0001').once
-      expect(dobj).to receive(:add_member_relationship_params).with('druid:oo000oo0002').once
-      expect(dobj).to receive(:add_collection_relationship_params).with('druid:oo000oo0002').once
-      expect(fake).to receive(:add_relationship).exactly(4).times
-      dobj.add_dor_object_to_set
-    end
-
-    it "can exercise method using stubbed exernal calls" do
-      dobj.dor_object = double('dor_object', :add_relationship => nil, :save => true)
-      dobj.add_dor_object_to_set
-    end
-
-    it "add_relationship() returns expected data structure" do
-      dobj.druid = druid
-      exp1 = [:is_member_of, "info:fedora/druid:mm111nn2222"]
-      exp2 = [:is_member_of_collection, "info:fedora/druid:mm111nn2222"]
-      arps = expect(dobj.add_member_relationship_params('druid:mm111nn2222')).to eq(exp1)
-      arps = expect(dobj.add_collection_relationship_params('druid:mm111nn2222')).to eq(exp2)
-    end
-  end
-
-  describe '#unregister' do
-    before do
-      dobj.dor_object = 1234
-      allow(Assembly::Utils).to receive :delete_from_dor
-      allow(Assembly::Utils).to receive :set_workflow_step_to_error
-    end
-
-    it "does nothing unless the digital object was registered by pre-assembly" do
-      expect(dobj).not_to receive :delete_from_dor
-      dobj.reg_by_pre_assembly = false
-      dobj.unregister
-    end
-
-    it "can exercise unregister, with external calls stubbed" do
-      dobj.reg_by_pre_assembly = true
-      dobj.unregister
-      expect(dobj.dor_object).to eq(nil)
-      expect(dobj.reg_by_pre_assembly).to eq(false)
     end
   end
 
@@ -465,7 +348,6 @@ describe PreAssembly::DigitalObject do
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       dobj.project_style[:content_tag_override] = true        # this allows override of content structure
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
-      dobj.project_style[:should_register] = false
       dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
@@ -502,7 +384,6 @@ describe PreAssembly::DigitalObject do
       dobj.content_md_creation[:style] = 'default'
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
-      dobj.project_style[:should_register] = false
       dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
       add_object_files('tif')
       add_object_files('jp2')

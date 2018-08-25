@@ -26,8 +26,6 @@ module PreAssembly
       :progress_log_file,
       :project_name,
       :apply_tag,
-      :apo_druid_id,
-      :set_druid_id,
       :file_attr,
       :compute_checksum,
       :init_assembly_wf,
@@ -109,7 +107,6 @@ module PreAssembly
       self.validate_bundle_dir  ||= {}
       self.file_attr            ||= {}
       self.file_attr.delete_if { |_k, v| v.nil? }
-      self.set_druid_id = [set_druid_id] if set_druid_id && set_druid_id.is_a?(String) # convert set_druid_id to 1 element array if its single valued and exists
     end
 
     def setup_defaults
@@ -144,7 +141,7 @@ module PreAssembly
       {
         :project_style => {
           :content_structure => [:simple_image, :simple_book, :book_as_image, :book_with_pdf, :file, :smpl],
-          :get_druid_from => [:suri, :container, :container_barcode, :manifest, :druid_minter],
+          :get_druid_from => [:container, :manifest, :suri, :druid_minter],
         },
         :content_md_creation => {
           :style => [:default, :filename, :dpg, :smpl, :salt, :none],
@@ -221,21 +218,9 @@ module PreAssembly
       validation_errors <<  "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
       validation_errors <<  "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
-      if project_style[:should_register] # if should_register=true, check some stuff
-        validation_errors << "The APO DRUID must be set if should_register = true." if apo_druid_id.blank? # APO can't be blank
-        validation_errors << "get_druid_from: 'manifest' is only valid if should_register = false." if project_style[:get_druid_from] == :manifest # can't use manifest to get druid if not yet registered
-        validation_errors << "If should_register=true, then you must use a manifest." unless object_discovery[:use_manifest] # you have to use a manifest if you want to register objects
-        validation_errors << "If should_register=true, it does not make sense to have project_style:content_tag_override=true since objects are not registered yet." if project_style[:content_tag_override]
-      else # if should_register=false, check some stuff
-        if project_style[:get_druid_from] != :container_barcode
-          validation_errors << "The APO and SET DRUIDs should not be set if should_register = false." if (apo_druid_id || set_druid_id) # APO and SET should not be set
-        else
-          validation_errors << "The APO DRUID must be set if project_style:get_druid_from = container_barcode." if apo_druid_id.blank? # APO DRUID must be added for container_barcode projects
-          validation_errors << "The SET DRUID should not be set if project_style:get_druid_from = container_barcode." if set_druid_id # SET DRUID must not be set for container_barcode projects
-        end
-        validation_errors << "get_druid_from: 'suri' is only valid if should_register = true." if project_style[:get_druid_from] == :suri # can't use SURI to get druid
-        validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if project_style[:get_druid_from] == :manifest && object_discovery[:use_manifest] == false # can't use SURI to get druid
-      end
+      # validation_errors << "The APO and SET DRUIDs should not be set." if apo_druid_id # APO should not be set
+      # validation_errors << "get_druid_from: 'suri' is no longer valid" if project_style[:get_druid_from] == :suri # can't use SURI to get druid
+      validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if project_style[:get_druid_from] == :manifest && !object_discovery[:use_manifest] # can't use SURI to get druid
 
       if object_discovery[:use_manifest] # if we are using a manifest, check some stuff
         validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless object_discovery[:glob].nil? && object_discovery[:regex].nil? # glob and regex should be nil
@@ -248,7 +233,6 @@ module PreAssembly
             validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
           else
             validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'" unless manifest_rows.first.keys.include?(manifest_cols[:object_container].to_s)
-            validation_errors << "You must define a label and source_id column in the manifest if should_register=true" if (manifest_cols[:source_id].blank? || manifest_cols[:label].blank?) && project_style[:should_register] # if this is a project with should_register=true, we always need a source ID and a label column
             validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(manifest_cols[:source_id].to_s)
             validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(manifest_cols[:label].to_s)
             validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
@@ -386,8 +370,6 @@ module PreAssembly
           :staging_dir          => staging_dir,
           :project_name         => project_name,
           :apply_tag            => apply_tag,
-          :apo_druid_id         => apo_druid_id,
-          :set_druid_id         => set_druid_id,
           :file_attr            => file_attr,
           :init_assembly_wf     => init_assembly_wf,
           :content_md_creation  => content_md_creation,
