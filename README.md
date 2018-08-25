@@ -21,16 +21,12 @@ subdirectory.
 1.  Gather information about your project, including:
     *   The location of the materials.  You will need read access to this
         location from the servers you will be accessioning in (e.g. test and production).
-    *   Whether the objects are already registered or not.
+    *   Confirm all objects are already registered.
     *   The location of any descriptive metadata.
     *   Whether you will be flattening the folder structure of each object
         when accessioning (e.g. discarding any folder structure provided to you in each object).
     *   The DRUID of the project's APO.
     *   The DRUID of the set object you will be associating your objects with (if any).
-    *   If your objects are not yet registered and you have a manifest file in
-        CSV format, make sure you have columns for sourceid, filename, and
-        label.  See config/projects/manifest_template/TEMPLATE_manifest.csv
-        for an example manifest.  See the "manifest" section below for more information.
     *   If you are using a manifest file in CSV format and want to create
         descriptive metadata, create a MODs XML template.  See the
         "descriptive metadata" section below for more details.
@@ -164,8 +160,7 @@ subdirectory.
         against the checksum file if it exists -- useful it you are not accessioning immediately
     - `check_sourceids`: for manifest style projects, will confirm source IDs are globally
         unique in DOR (sources ids area already checked for local uniqueness in the manifest)
-    - `no_check_reg`: for projects where objects are to be registered, DONT'T check if
-        objects are registered and have APOs (assuming they are supposed to be registered already)
+    - `no_check_reg`: DON'T check if objects are registered and have APOs (assume they are registered already)
     - `show_staged`: will show all files that will be staged (warning: will produce a lot
         of output if you have lots of objects with lots of files!)
     - `show_smpl_cm`: will show content metadata that will be generated for each SMPL object
@@ -487,8 +482,7 @@ try loading the YAML again on the console to confirm.
 
         Assembly::Images.batch_add_exif_profile_description('/full_path_to_tifs','Adobe RGB 1998')    # add to multiple images
 
-8.  If you see incorrect content metadata being generated, note that if
-    should_register = false, the 'Process : Content Type' tag for each
+8.  If you see incorrect content metadata being generated, note that the 'Process : Content Type' tag for each
     existing object will be examined. If a known type is set in this tag, it
     will be used to create content metadata instead of the default set in
     [project_style](:content_structure). Check the tag for each object if the
@@ -568,20 +562,18 @@ formatted UTF-8 CSV file. You should open any CSV that has been exported from
 Excel in a text editor and re-save it in proper UTF-8 files (like TextMate on
 a Mac).
 
-There are a few columns required in the manifest depending on if
-should_register is true or false:
+There are a few columns in the manifest, with two required:
 
-- `container`: container name (either filename or folder name) -- always required
-- `sourceid`: source ID used when registering (required if should_register = true)
-- `label`: label used when registering (required if should_register = true)
-- `druid`: druid of object (required if should_register = false, used to identify
-which object the row refers to) - the druids should include the "druid:"
-prefix (e.g. "druid:oo000oo0001" instead of "oo000oo0001")
+- `container`: container name (either filename or folder name) -- **required**
+- `druid`: druid of object -- **required**
+- `sourceid`: source ID
+- `label`: label
 
+The druids should include the "druid:" prefix (e.g. "druid:oo000oo0001" instead of "oo000oo0001").
 
 The first line of the manifest is a header and specifies the column names.
 Column names should not have spaces and it is easiest if they are all lower
-case. These columns are used to register objects and indicate which file goes
+case. These columns are used to indicate which file goes
 with the object. If the container column specifies a filename, it should be
 relative to the manifest file itself. You can have additional columns in your
 manifest which can be used to create descriptive metadata for each object. See
@@ -675,8 +667,7 @@ For projects with a manifest (e.g. like Revs):
     write to a new progress log file.
 3.  Run pre-assembly.
 
-For projects that do not use a manifest and which have their objects already
-registered (e.g. like Rumsey):
+For projects that do not use a manifest (e.g. like Rumsey):
 
 1.  Create a new project config YAML file and set the parameter
     'accession_items' using either the 'only' or
@@ -707,8 +698,7 @@ For projects with a manifest (e.g. like Revs):
 4.  Re-run pre-assembly.
 
 
-For projects that do not use a manifest and which have their objects already
-registered (e.g. like Rumsey):
+For projects that do not use a manifest (e.g. like Rumsey):
 
 1.  Create a new project config YAML file and set the parameter
     'accession_items' and the 'only' parameter to an array of bundle names

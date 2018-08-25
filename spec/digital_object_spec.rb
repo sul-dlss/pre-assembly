@@ -36,9 +36,8 @@ describe PreAssembly::DigitalObject do
     end
   end
 
-  describe 'determining druid: #get_pid_from_container_barcode' do
+  describe 'determining druid:' do
     let(:druids) { %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222) }
-    let(:stubbed_return_vals) { druids.map { false } }
 
     before do
       apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999).map { |a| double('apo', :pid => a) }
@@ -52,20 +51,6 @@ describe PreAssembly::DigitalObject do
       dobj.project_style[:get_druid_from] = :druid_minter
       expect(dobj).not_to receive :container_basename
       expect(dobj.get_pid_from_druid_minter).to eq(exp.next)
-    end
-
-    it "returns nil whether there are no matches" do
-      allow(dobj).to receive(:apo_matches_exactly_one?).and_return *stubbed_return_vals
-      expect(dobj.get_pid_from_container_barcode).to eq(nil)
-    end
-
-    it "returns the druid of the object with the matching APO" do
-      druids.each_with_index do |_druid, i|
-        stubbed_return_vals[i] = true
-        allow(dobj).to receive(:apo_matches_exactly_one?).and_return *stubbed_return_vals
-        expect(dobj.get_pid_from_container_barcode).to eq(druids[i])
-        stubbed_return_vals[i] = false
-      end
     end
   end
 
@@ -93,17 +78,6 @@ describe PreAssembly::DigitalObject do
       d = 'xx111yy2222'
       dobj.container = "foo/bar/#{d}"
       expect(dobj.container_basename).to eq(d)
-    end
-
-    it '#apo_matches_exactly_one? should work' do
-      z = 'zz00zzz0000'
-      apos = %w(foo bar fubb)
-      dobj.apo_druid_id = z
-      expect(dobj.apo_matches_exactly_one?(apos)).to eq(false)  # Too few.
-      apos.push z
-      expect(dobj.apo_matches_exactly_one?(apos)).to eq(true)   # One = just right.
-      apos.push z
-      expect(dobj.apo_matches_exactly_one?(apos)).to eq(false)  # Too many.
     end
   end
 

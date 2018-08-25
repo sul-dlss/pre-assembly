@@ -32,7 +32,6 @@ module PreAssembly
       checking_sourceids = check_sourceids && using_manifest
 
       confirming_registration = (no_check_reg == false)
-      barcode_project = @project_style[:get_druid_from] == :container_barcode
 
       log ""
       log "discovery_report(#{run_log_msg})"
@@ -138,9 +137,6 @@ module PreAssembly
         source_ids[dobj.source_id] += 1 if using_manifest # keep track of source_id uniqueness
 
         if confirming_registration # objects should already be registered, let's confirm that
-          if barcode_project # look up druid by container and confirm we can find one
-            druid_from_container = dobj.get_pid_from_container_barcode || report_error_message("druid not found from barcode")
-          end
           dobj.determine_druid
           pid = dobj.pid
           druid = pid.include?('druid') ? pid : "druid:#{pid}"

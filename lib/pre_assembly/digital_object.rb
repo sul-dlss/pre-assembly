@@ -16,8 +16,6 @@ module PreAssembly
       :object_files,
       :project_style,
       :project_name,
-      :apo_druid_id,
-      :set_druid_id,
       :file_attr,
       :bundle_dir,
       :staging_dir,
@@ -154,14 +152,6 @@ module PreAssembly
       "druid:#{container_basename}"
     end
 
-    def get_pid_from_container_barcode
-      query_dor_by_barcode(container_basename).each do |id|
-        @pid = id
-        return id if apo_matches_exactly_one?(get_dor_item_apos.map(&:pid))
-      end
-      nil
-    end
-
     def query_dor_by_barcode(barcode)
       Dor::SearchService.query_by_id :barcode => barcode
     end
@@ -178,12 +168,6 @@ module PreAssembly
 
     def content_type_tag
       dor_object.nil? ? "" : dor_object.content_type_tag
-    end
-
-    def apo_matches_exactly_one?(apo_pids)
-      n = 0
-      apo_pids.each { |pid| n += 1 if pid == @apo_druid_id }
-      n == 1
     end
 
     def container_basename
