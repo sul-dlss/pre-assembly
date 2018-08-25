@@ -689,22 +689,20 @@ module PreAssembly
     end
 
     def objects_to_process
-      objects = digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
-      unless accession_items.nil? # check to see if we are specifying certain objects to be accessioned
-        unless accession_items[:only].nil? # handle the "only" case for accession items specified
-          objects.reject! do |dobj|
-            bundle_id = dobj.druid ? dobj.druid.druid : dobj.container_basename
-            !accession_items[:only].include?(bundle_id)
-          end
-        end
-        unless accession_items[:except].nil? # handle the "except" case for accession items specified
-          objects.reject! do |dobj|
-            bundle_id = dobj.druid ? dobj.druid.druid : dobj.container_basename
-            accession_items[:except].include?(bundle_id)
-          end
+      return @o2p if @o2p
+      @o2p = digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
+      return @o2p if accession_items.nil? # check to see if we are specifying certain objects to be accessioned
+      if accession_items[:only]
+        @o2p.reject! do |dobj|
+          !accession_items[:only].include?(dobj.druid ? dobj.druid.druid : dobj.container_basename)
         end
       end
-      objects
+      if accession_items[:except]
+        @o2p.reject! do |dobj|
+          accession_items[:except].include?(dobj.druid ? dobj.druid.druid : dobj.container_basename)
+        end
+      end
+      @o2p
     end
 
     def log_progress_info(dobj)
