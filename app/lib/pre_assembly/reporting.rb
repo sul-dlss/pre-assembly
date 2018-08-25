@@ -102,7 +102,7 @@ module PreAssembly
           message += (filenames_with_no_extension ? report_error_message("filenames have no extension") : " no , ")
           message += (file_with_zero_size ? report_error_message("a file has zero size") : " no , ")
           message += (total_size == 0 ? report_error_message("object is zero size") : " %.3f" % total_size.to_s + " MB , ") # total size of all files in MB
-          message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
+          message += dobj.object_files_exist? ? ' yes ,' : report_error_message('missing or non-readable files') # check if all files exist and are readable
         end
 
         # if we are using a manifest, let's add label and source ID from manifest to the report

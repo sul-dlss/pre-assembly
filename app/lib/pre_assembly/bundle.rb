@@ -374,11 +374,6 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
-    def object_files_exist?(dobj)
-      return false if dobj.object_files.size == 0
-      dobj.object_files.map(&:path).all? { |path| File.readable?(path) }
-    end
-
     # Cleanup of objects and associated files in specified environment using logfile as input
     def cleanup!(steps = [], dry_run = false)
       log "cleanup!()"

@@ -299,6 +299,12 @@ module PreAssembly
       object_files.reject { |ofile| ofile.exclude_from_content }.sort
     end
 
+    # Checks filesystem for expected files
+    def object_files_exist?
+      return false if object_files.size == 0
+      object_files.map(&:path).all? { |path| File.readable?(path) }
+    end
+
     ####
     # Descriptive metadata.
     ####
