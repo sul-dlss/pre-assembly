@@ -1,7 +1,9 @@
 source 'https://rubygems.org'
 
+gem 'bootstrap', '~> 4.1.3'
 gem 'config'
 gem 'honeybadger', '~> 3.1'
+gem 'jquery-rails'
 gem 'nokogiri'
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'rake'
