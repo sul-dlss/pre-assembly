@@ -2,7 +2,6 @@
 
 project_style:
   content_structure:  'simple_book'
-  should_register:    false
   get_druid_from:     'druid_minter'
 
 bundle_dir:           'spec/test_data/bundle_input_d'
@@ -40,7 +39,7 @@ stageable_discovery:
   use_container:      false
   glob:               '00'
   regex:              ~
-      
+
 manifest_cols:
   object_container:   ~
   source_id:          ~

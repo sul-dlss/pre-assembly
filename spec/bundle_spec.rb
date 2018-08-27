@@ -40,31 +40,6 @@ describe PreAssembly::Bundle do
     end
   end
 
-  describe '#apply_tag' do
-    it "sets apply_tag to nil if not set in the yaml file" do
-      expect(revs.apply_tag).to be_nil
-    end
-    it "sets the apply_tag parameter if set" do
-      expect(bundle_setup(:proj_revs_old_druid).apply_tag).to eq("revs:batch1")
-    end
-    it "sets the apply_tag to empty string or nil and be blank if set this way in config file" do
-      expect(bundle_setup(:proj_revs_no_cm).apply_tag).to be_blank
-      expect(rumsey.apply_tag).to be_blank
-    end
-  end
-
-  describe '#set_druid_id' do
-    it "sets the set_druid_id to an array" do
-      expect(revs.set_druid_id).to eq(['druid:yt502zj0924', 'druid:nt028fd5773'])
-    end
-    it "sets the set_druid_id to nil" do
-      expect(rumsey.set_druid_id).to be_nil
-    end
-    it "sets the set_druid_id to a single value arrayed if one value is passed in a string" do
-      expect(bundle_setup(:proj_revs_no_cm).set_druid_id).to eq(['druid:yt502zj0924'])
-    end
-  end
-
   describe '#load_skippables' do
     it "does nothing if @resume is false" do
       rumsey.resume = false
@@ -155,10 +130,8 @@ describe PreAssembly::Bundle do
     it "raises exception if use_container and get_druid_from are incompatible" do
       revs.stageable_discovery[:use_container] = true
       exp_msg = /^Configuration errors found:  If stageable_discovery:use_container=true, you cannot use get_druid_from='container'/
-      [:container, :container_barcode].each do |gdf|
-        revs.project_style[:get_druid_from] = gdf
-        expect { revs.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
-      end
+      revs.project_style[:get_druid_from] = :container
+      expect { revs.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
   end
 

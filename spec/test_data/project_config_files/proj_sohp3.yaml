@@ -1,6 +1,5 @@
 project_style:
   content_structure:  'smpl'
-  should_register:    false
   get_druid_from:     'container'
 
 bundle_dir:           'spec/test_data/bundle_input_e'
@@ -8,11 +7,11 @@ staging_dir:          'tmp'
 
 validate_files:       true
 
-accession_items:   
+accession_items:
  only:
    - 'aa111aa1111'
  reaccession: true
- 
+
 manifest:             ~
 checksums_file:       ~
 desc_md_template:     ~

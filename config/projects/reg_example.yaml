@@ -2,18 +2,17 @@
 
 project_style:
   content_structure: 'simple_book'
-  should_register: false
   get_druid_from: 'container'
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
 staging_dir: ~
-accession_items:   ~                       
+accession_items:   ~
 
 object_discovery:
  use_manifest: false
  glob:  '*'
  regex: '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
-   
+
 stageable_discovery:
   use_container: false
   glob:  '00/*'
@@ -28,9 +27,9 @@ manifest_cols:
   source_id:          ~
   label:              ~
 
-project_name:      'Gould'                   
+project_name:      'Gould'
 
-progress_log_file: '/dor/preassembly/gould_log.yaml'                                              
+progress_log_file: '/dor/preassembly/gould_log.yaml'
 apo_druid_id: ~
 set_druid_id: ~
 
@@ -38,7 +37,7 @@ content_exclusion: ~
 
 content_md_creation:
   style:       'default'
-  										
+
 publish_attr: ~
 
 resume:           false
@@ -49,4 +48,3 @@ validate_usage:     true
 show_progress:      true
 uniqify_source_ids: false
 cleanup:            false
-
