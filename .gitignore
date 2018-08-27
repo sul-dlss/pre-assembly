@@ -11,6 +11,7 @@ config/certs/*
 config/cli_environments/development.rb
 config/cli_environments/stage.rb
 config/cli_environments/local.rb
+db/*.sqlite3
 spec/test_data/logging/*
 doc/*
 log/*
