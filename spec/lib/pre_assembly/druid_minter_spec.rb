@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::DruidMinter do
   it "gets a sequence of druids from calls to next()" do
     exp = described_class.current

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::Remediation::Item do
   let(:pid) { 'druid:cs575bk5522' }
   let(:item) { described_class.new(pid) }
@@ -11,7 +9,7 @@ describe PreAssembly::Remediation::Item do
   end
 
   context 'logging' do
-    let(:log_dir) { File.dirname(__FILE__) + "/test_data/logging" }
+    let(:log_dir) { File.join(File.dirname(__FILE__), "../../test_data/logging") }
     let(:csv_filename) { log_dir + "/csv_log.csv" }
     let(:progress_log_file) { log_dir + "/progress_log_file.yml" }
 

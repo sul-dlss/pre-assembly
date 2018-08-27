@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }

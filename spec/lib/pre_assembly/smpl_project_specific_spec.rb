@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::DigitalObject do
   let(:bundle_dir) { File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e') }
 

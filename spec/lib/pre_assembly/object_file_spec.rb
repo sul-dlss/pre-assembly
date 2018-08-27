@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::ObjectFile do
   before do
     @f = described_class.new(
