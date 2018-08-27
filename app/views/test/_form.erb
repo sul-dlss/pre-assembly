@@ -1,0 +1,63 @@
+<h3>Complete the YAML form below</h3>
+<%= form_with scope: :test, local:  true do |form| %>
+  <div class="row">
+      <div class="col-5">
+      <%= form.label :project %>
+      <%= form.text_field :project, class: "form-control" %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-5">
+      <%= label_tag :project_style, "Project Style" %>
+      <%= select_tag :project_style, options_for_select([
+          ['Simple Image', 'simple_image'],
+          ['File', 'file'],
+          ['Simple Book', 'simple_book'],
+          ['Book with PDF','book_with_pdf'],
+          ['Book as Image','book_as_image'],
+          ['SMPL', 'smpl']
+        ]), class: "form-control" %>
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-5">
+      <%= label_tag :get_druid_from %>
+      <%= select_tag :get_druid_from,
+          options_for_select(['container', 'container_barcode', 'manifest']),
+          class: 'form-control' %>
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-7">
+      <%= label_tag :bundle_directory, "Bundle Directory" %>
+      <%= form.text_field :bundle_directory, class: "form-control" %>
+    </div>
+    <div class="col-5">
+      <%= label_tag :subfolder %>
+      <%= form.text_field :subfolder, class: "form-control" %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-5">
+      <%= form.label :staging_style %>
+      <%= select_tag :staging_style, options_for_select(["copy", "symlink"]), class: "form-control" %>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col-5">
+      <%= label_tag :content_metadata_creation %>
+      <%= select_tag :content_metadata_creation, options_for_select([
+          ["Default", "default"],
+          ["Filename", "filename"],
+          ["DPG", "dpg"],
+          ["SMPL", "smpl"],
+          ["None", "none"]
+          ]), class: "form-control" %>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-2 ml-5">
+      <%= submit_tag("Submit", class: "form-control", style: "background-color: #8c1515; color: white; width: 100px") %>
+    </div>
+  </div>
+<% end %>
