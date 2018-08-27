@@ -3,20 +3,8 @@ describe PreAssembly::Bundle do
   # TODO: break out tests about BundleContext into separate spec file
   let(:revs_context) { context_from_proj(:proj_revs) }
   let(:rumsey_context) { context_from_proj(:proj_rumsey)}
-  let(:revs) { bundle_setup(revs_context) }
-  let(:rumsey) { bundle_setup(rumsey_context) }
-
-  def context_from_proj(proj)
-    filename = "spec/test_data/project_config_files/#{proj}.yaml"
-    @ps = YAML.load(File.read(filename))
-    @ps['config_filename'] = filename
-    @ps['show_progress'] = false
-    PreAssembly::BundleContext.new(@ps)
-  end
-
-  def bundle_setup(bundle_context)
-    PreAssembly::Bundle.new(bundle_context)
-  end
+  let(:revs) { described_class.new(revs_context) }
+  let(:rumsey) { described_class.new(rumsey_context) }
 
   describe "initialize() and other setup" do
     # TODO: this one's really more about testing BundleContext now
@@ -65,7 +53,7 @@ describe PreAssembly::Bundle do
   describe '#validate_usage with bad manifest' do
     it "raises an exception since the sourceID column is misspelled" do
       exp_msg = /Manifest does not have a column called 'sourceid'/
-      expect { bundle_setup(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
+      expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
   end
 
@@ -169,7 +157,7 @@ describe PreAssembly::Bundle do
 
     it "finds the correct N objects, stageables, and files" do
       tests.each do |proj, n_dobj, n_stag, n_file|
-        b = bundle_setup(context_from_proj(proj))
+        b = described_class.new(context_from_proj(proj))
         b.discover_objects
         dobjs = b.digital_objects
         expect(dobjs.size).to eq(n_dobj)
@@ -498,7 +486,7 @@ describe PreAssembly::Bundle do
 
   describe '#objects_to_process' do
     it "has the correct list of objects to re-accession if specified with only option" do
-      b = bundle_setup(context_from_proj(:proj_sohp3))
+      b = described_class.new(context_from_proj(:proj_sohp3))
       b.discover_objects
       expect(b.digital_objects.size).to eq(2)
       o2p = b.objects_to_process
@@ -506,7 +494,7 @@ describe PreAssembly::Bundle do
     end
 
     it "has the correct list of objects to accession if specified with except option" do
-      b = bundle_setup(context_from_proj(:proj_sohp4))
+      b = described_class.new(context_from_proj(:proj_sohp4))
       b.discover_objects
       expect(b.digital_objects.size).to eq(2)
       o2p = b.objects_to_process
@@ -538,22 +526,20 @@ describe PreAssembly::Bundle do
 
     # TODO: this is more about BundleContext now
     it "sets the progress log file to match the input yaml file if no progress log is specified in YAML" do
-      # b = bundle_setup(context_from_proj(:proj_sohp3))
+      # b = described_class.new(context_from_proj(:proj_sohp3))
       # b.setup_paths
       expect(context_from_proj(:proj_sohp3).progress_log_file).to eq('spec/test_data/project_config_files/proj_sohp3_progress.yaml')
     end
 
-    # TODO: this is more about BundleContext now
-    it "sets the content_tag_override to the default value when not specified" do
+    it "sets content_tag_override to the default value when not specified" do
       expect(revs_context.project_style[:content_tag_override]).to be_falsey
-      expect(@ps['project_style'][:content_tag_override]).to be_nil
     end
 
     # TODO: this is more about BundleContext now
     it "sets the staging_dir to the default value if not specified in the YAML" do
       default_staging_directory = Assembly::ASSEMBLY_WORKSPACE
       if File.exist?(default_staging_directory) && File.directory?(default_staging_directory)
-        # b = bundle_setup(context_from_proj(:proj_sohp2))
+        # b = described_class.new(context_from_proj(:proj_sohp2))
         # b.setup_paths
         expect(context_from_proj(:proj_sohp2).staging_dir).to eq(default_staging_directory)
       else
@@ -648,7 +634,7 @@ describe PreAssembly::Bundle do
           "cp898cs9946/descMetadata.xml",
         ],
       }.each do |proj, files|
-        b = bundle_setup(context_from_proj(proj))
+        b = described_class.new(context_from_proj(proj))
         exp_files = files.map { |f| b.path_in_bundle f }
         expect(b.find_files_recursively(b.bundle_dir).sort).to eq(exp_files)
       end
