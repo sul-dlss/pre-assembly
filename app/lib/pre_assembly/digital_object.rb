@@ -134,6 +134,7 @@ module PreAssembly
     # Determining the druid.
     ####
 
+    # @return [DruidTools::Druid]
     def determine_druid
       k = project_style[:get_druid_from]
       log "    - determine_druid(#{k})"

@@ -1,43 +1,46 @@
-# May not be pretty, but you should see where this logic came from.
+# Previously a single untested 200-line method from ./lib/pre_assembly/reporting.rb
+# Takes a Bundle, enumerates report data via #each_row
 class DiscoveryReport
-  attr_accessor :bundle
-  attr_accessor :confirm_checksums, :check_sourceids, :no_check_reg, :show_other, :show_smpl_cm, :show_staged # user params
-  attr_accessor :start_time
+  attr_reader :bundle, :start_time
 
-  delegate :bundle_dir, :checksums_file, :content_md_creation, :manifest, :object_discovery, :project_style, to: :bundle
-  delegate :error_count, :report_error_message, to: :bundle
+  delegate :bundle_dir, :content_md_creation, :manifest, :object_discovery, :project_style, to: :bundle
+  delegate :checksums_file, :confirm_checksums, :error_count, :object_filenames_unique?, to: :bundle
 
   # @param [PreAssembly::Bundle] bundle
-  # @param [Hash<Symbol => Boolean>] params
-  def initialize(bundle, params = {})
+  def initialize(bundle)
     raise ArgumentError unless bundle.is_a?(PreAssembly::Bundle)
-    self.bundle = bundle
-    [:confirm_checksums, :check_sourceids, :no_check_reg, :show_other, :show_smpl_cm, :show_staged].each do |attrib|
-      self.public_send("#{attrib}=", params[attrib])
-    end
-  end
-
-  def run
+    @start_time = Time.now
+    @bundle = bundle
     bundle.discover_objects
     bundle.process_manifest
-    objects_to_process.each { |dobj| per_dobj(dobj) }
   end
 
-  def smpl_manifest
-    @smpl_manifest ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+  # @return [Enumerable<Hash<Symbol => Object>>]
+  # @yield [Hash<Symbol => Object>] data structure about a DigitalObject
+  def each_row
+    return enum_for(:each_row) unless block_given?
+    bundle.objects_to_process.each { |dobj| yield per_dobj(dobj) }
   end
 
+  # @return [PreAssembly::Smpl]
+  def smpl
+    @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+  end
+
+  # @param [PreAssembly::DigitalObject]
   # @return [Hash<Symbol => Object>]
   def per_dobj(dobj)
-    bundle_id = File.basename(dobj.unadjusted_container)
     errors = {}
-    counts = Hash.new(Hash.new(0))
-    counts[:total_size] = dobj.object_files.map(&:filesize).sum
+    counts = {
+      total_size: dobj.object_files.map(&:filesize).sum,
+      mimetypes: Hash.new(0)
+    }
     dobj.object_files.each { |obj| counts[:mimetypes][obj.mimetype] += 1 } # number of files by mimetype
-    filenames_with_no_extension = dobj.object_files.any? { |obj| File.extname(obj.path).empty? }
+    errors[:filename_no_extension] = true if dobj.object_files.any? { |obj| File.extname(obj.path).empty? }
     counts[:empty_files] = dobj.object_files.count { |obj| obj.filesize == 0 }
     if using_smpl_manifest? # if we are using a SMPL manifest, let's add how many files were found
-      cm_files = smpl_manifest.manifest[bundle_id].fetch(:files, [])
+      bundle_id = File.basename(dobj.unadjusted_container)
+      cm_files = smpl.manifest[bundle_id].fetch(:files, [])
       counts[:files_in_manifest] = cm_files.count
       relative_paths = dobj.object_files.map(&:relative_path)
       counts[:files_found] = (cm_files.map(&:filename) & relative_paths).count
@@ -48,28 +51,28 @@ class DiscoveryReport
     errors[:empty_files] = true if counts[:empty_files] > 0
     errors[:empty_object] = true if counts[:total_size] > 0
     errors[:missing_files] = true unless dobj.object_files_exist?
-    errors[:checksum_mismatch] = true unless !confirming_checksums? || confirm_checksums(dobj)
+    errors[:checksum_mismatch] = true unless !checksums_file || confirm_checksums(dobj)
     errors[:dupes] = true unless object_filenames_unique?(dobj)
     counts[:source_ids][dobj.source_id] += 1
-
-    if confirming_registration? # objects should already be registered, let's confirm that
-      dobj.determine_druid
-      druid = dobj.pid.include?('druid') ? dobj.pid : "druid:#{dobj.pid}"
-      begin
-        obj = Dor::Item.find(druid)
-      rescue ActiveFedora::ObjectNotFoundError
-        errors[:item_not_registered] = true
-      end
-      begin
-        obj.admin_policy_object || errors[:apo_empty] = true
-      rescue ActiveFedora::ObjectNotFoundError
-        errors[:apo_not_registered] = true
-      end
-    end
-
-    if checking_sourceids? # check global uniqueness
+    errors.merge!(registration_check(dobj.determine_druid))
+    if using_manifest? # check global uniqueness
       errors[:source_id_dup] = true if dobj.source_id.any? { |id| Dor::SearchService.query_by_id(id) }
     end
+    return { errors: errors, counts: counts }
+  end
+
+  # @param [String] druid
+  # @return [Hash<Symbol => Boolean>] errors
+  def registration_check(druid)
+    begin
+      obj = Dor::Item.find(druid)
+    rescue ActiveFedora::ObjectNotFoundError
+      return { item_not_registered: true }
+    end
+    return { apo_empty: true } unless obj.admin_policy_object
+    {}
+  rescue ActiveFedora::ObjectNotFoundError
+    return { apo_not_registered: true }
   end
 
   # @return [String] primitive version
@@ -77,13 +80,13 @@ class DiscoveryReport
     fields = ['Object Container', 'Number of Items', 'Files with no ext', 'Files with 0 Size', 'Total Size', 'Files Readable']
     fields.concat ['Label', 'Source ID'] if using_manifest?
     fields.concat ['Num Files in CM Manifest', 'All CM files found'] if using_smpl_manifest?
-    fields << 'Checksums' if confirming_checksums?
-    fields << 'Duplicate Filenames?'
-    fields.concat ['DRUID', 'Registered?', 'APO exists?']  if confirming_registration?
-    fields << 'SourceID unique in DOR?' if checking_sourceids?
+    fields << 'Checksums' if checksums_file
+    fields.concat ['Duplicate Filenames?', 'DRUID', 'Registered?', 'APO exists?']
+    fields << 'SourceID unique in DOR?' if using_manifest?
     fields.join(' , ')
   end
 
+  # For use by template
   def skipped_files
     files = ['Thumbs.db', '.DS_Store'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
     files << File.basename(content_md_creation[:smpl_manifest]) if using_smpl_manifest?
@@ -92,32 +95,12 @@ class DiscoveryReport
     files
   end
 
-  # Interrogative methods returning Boolean
-
-  def barcode_project?
-    project_style[:get_druid_from] == :container_barcode
-  end
-
-  def checking_sourceids?
-    check_sourceids && using_manifest
-  end
-
-  def confirming_checksums?
-    checksums_file && confirm_checksums
-  end
-
-  def confirming_registration?
-    !no_check_reg # && !project_style[:should_register]
-  end
-
-  def show_smpl_cm?
-    show_smpl_cm && using_smpl_manifest?
-  end
-
+  # @return [Boolean]
   def using_manifest?
     manifest && object_discovery[:use_manifest]
   end
 
+  # @return [Boolean]
   def using_smpl_manifest?
     content_md_creation[:style] == :smpl && File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
   end
