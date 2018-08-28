@@ -17,7 +17,6 @@ gem 'honeybadger', '~> 3.1'
 gem 'assembly-image'
 gem 'assembly-objectfile', '> 1.6.6'
 gem 'assembly-utils'
-gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
 gem 'dor-services', '< 6'
 gem 'druid-tools'

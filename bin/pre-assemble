@@ -29,7 +29,7 @@ params['config_filename'] = yaml_config
 
 # Run pre-assembly.
 begin
-  b = PreAssembly::Bundle.new params
+  b = PreAssembly::Bundle.new(PreAssembly::BundleContext.new(params))
   b.run_pre_assembly
 rescue PreAssembly::BundleUsageError => e
   abort e.message

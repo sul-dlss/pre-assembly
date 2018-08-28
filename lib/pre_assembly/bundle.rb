@@ -10,10 +10,7 @@ module PreAssembly
     # back to users of the bin/pre-assemble script.
   end
 
-  class Bundle
-    include PreAssembly::Logging
-    include PreAssembly::Reporting
-
+  class BundleContext
     # Paramaters passed via YAML config files.
     YAML_PARAMS = [
       :project_style,
@@ -42,31 +39,14 @@ module PreAssembly
       :config_filename,
       :validate_files,
       :new_druid_tree_format,
-      :validate_bundle_dir,
       :throttle_time,
       :staging_style
     ]
 
-    attr_writer :manifest_rows, :provider_checksums
-    attr_accessor :user_params,
-                  :digital_objects,
-                  :skippables,
-                  :smpl_manifest,
-                  :desc_md_template_xml
-
     YAML_PARAMS.each { |p| attr_accessor p }
 
-    ####
-    # Initialization.
-    ####
-
-    # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
-    def self.import_csv(filename)
-      file_contents = IO.read(filename).encode("utf-8", replace: nil)
-      csv = CSV.parse(file_contents, :headers => true)
-      csv.map { |row| row.to_hash.with_indifferent_access }
-      # return CsvMapper.import(filename) do read_attributes_from_file end
-    end
+    attr_accessor :user_params
+    attr_writer :manifest_rows
 
     # Unpack the user-supplied parameters, after converting
     # all hash keys and some hash values to symbols.
@@ -79,15 +59,49 @@ module PreAssembly
       self.user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
 
-      # Other setup work.
       setup_paths
       setup_other
       setup_defaults
       validate_usage
       show_developer_setting_warning
-      load_desc_md_template
-      load_skippables
     end
+
+    ####
+    # grab bag
+    ####
+
+    # TODO: BundleContext is not really a logical home for this util method
+    # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
+    def self.import_csv(filename)
+      file_contents = IO.read(filename).encode("utf-8", replace: nil)
+      csv = CSV.parse(file_contents, :headers => true)
+      csv.map { |row| row.to_hash.with_indifferent_access }
+    end
+
+    def cleanup?
+      return true if @cleanup
+      false
+    end
+
+    def compute_checksum?
+      return true if @compute_checksum
+      false
+    end
+
+    def path_in_bundle(rel_path)
+      File.join(bundle_dir, rel_path)
+    end
+
+    # On first call, loads the manifest data (does not reload on subsequent calls).
+    # If bundle is not using a manifest, just loads and returns emtpy array.
+    def manifest_rows
+      return @manifest_rows if @manifest_rows
+      self.manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
+    end
+
+    ####
+    # initialization helpers
+    ####
 
     def setup_paths
       self.manifest       &&= path_in_bundle(manifest)
@@ -100,10 +114,7 @@ module PreAssembly
     end
 
     def setup_other
-      self.digital_objects        = []
-      self.skippables             = {}
       self.content_exclusion &&= Regexp.new(content_exclusion)
-      self.validate_bundle_dir  ||= {}
       self.file_attr            ||= {}
       self.file_attr.delete_if { |_k, v| v.nil? }
     end
@@ -115,20 +126,6 @@ module PreAssembly
       self.staging_style ||= 'copy'
       project_style[:content_tag_override] = false if project_style[:content_tag_override].nil?
       content_md_creation[:smpl_manifest] ||= 'smpl_manifest.csv'
-    end
-
-    def load_desc_md_template
-      return nil unless desc_md_template && File.readable?(desc_md_template)
-      self.desc_md_template_xml = IO.read(desc_md_template)
-    end
-
-    def load_skippables
-      return unless resume
-      docs = YAML.load_stream(Assembly::Utils.read_file(progress_log_file))
-      docs = docs.documents if docs.respond_to? :documents
-      docs.each do |yd|
-        skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
-      end
     end
 
     ####
@@ -157,8 +154,7 @@ module PreAssembly
       [
         manifest,
         checksums_file,
-        desc_md_template,
-        validate_bundle_dir[:code],
+        desc_md_template
       ].compact
     end
 
@@ -172,8 +168,7 @@ module PreAssembly
         :validate_files,
         :new_druid_tree_format,
         :staging_style,
-        :validate_bundle_dir,
-        :throttle_time,
+        :throttle_time
       ]
     end
 
@@ -259,6 +254,82 @@ module PreAssembly
         raise BundleUsageError, validation_errors.join('  ') unless validation_errors.blank?
       end
     end
+  end
+
+  ###
+  ### TODO: will move above context class to its own file
+  ###
+
+  class Bundle
+    include PreAssembly::Logging
+    include PreAssembly::Reporting
+
+    attr_reader :bundle_context
+    attr_accessor :user_params,
+                  :provider_checksums,
+                  :digital_objects,
+                  :skippables,
+                  :smpl_manifest,
+                  :desc_md_template_xml
+
+    delegate :desc_md_template,
+             :resume,
+             :progress_log_file,
+             :show_progress,
+             :content_md_creation,
+             :stageable_discovery,
+             :bundle_dir,
+             :limit_n,
+             :project_style,
+             :project_name,
+             :object_discovery,
+             :staging_dir,
+             :apply_tag,
+             :apo_druid_id,
+             :set_druid_id,
+             :file_attr,
+             :init_assembly_wf,
+             :new_druid_tree_format,
+             :staging_style,
+             :manifest_cols,
+             :content_exclusion,
+             :checksums_file,
+             :throttle_time,
+             :validate_files,
+             :accession_items,
+             :cleanup?,
+             :compute_checksum?,
+             :uniqify_source_ids,
+             :manifest_rows,
+             :path_in_bundle,
+           to: :bundle_context
+
+    class << self
+      delegate :import_csv, to: PreAssembly::BundleContext
+    end
+
+    def initialize(bundle_context)
+      @bundle_context = bundle_context
+      self.digital_objects = []
+      self.skippables = {}
+
+      load_desc_md_template
+      load_skippables
+    end
+
+    def load_desc_md_template
+      return nil unless desc_md_template && File.readable?(desc_md_template)
+      self.desc_md_template_xml = IO.read(desc_md_template)
+    end
+
+    def load_skippables
+      return unless resume
+      docs = YAML.load_stream(Assembly::Utils.read_file(progress_log_file))
+      docs = docs.documents if docs.respond_to? :documents
+      docs.each do |yd|
+        skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
+      end
+    end
 
     ####
     # The main process.
@@ -269,8 +340,6 @@ module PreAssembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
       puts "#{Time.now}: Pre-assembly started for #{project_name}" if show_progress
-
-      return unless bundle_directory_is_valid?
 
       # load up the SMPL manifest if we are using that style
       if content_md_creation[:style] == :smpl
@@ -311,43 +380,14 @@ module PreAssembly
     end
 
     # Cleanup of objects and associated files in specified environment using logfile as input
-    def cleanup(steps = [], dry_run = false)
-      log "cleanup()"
+    def cleanup!(steps = [], dry_run = false)
+      log "cleanup!()"
       unless File.exist?(progress_log_file)
         puts "#{progress_log_file} not found!  Cannot proceed"
         return
       end
       druids = Assembly::Utils.get_druids_from_log(progress_log_file)
       Assembly::Utils.cleanup(:druids => druids, :steps => steps, :dry_run => dry_run)
-    end
-
-    ####
-    # Validate the bundle_dir directory structure, if the client supplied
-    # validating code.
-    ####
-
-    def bundle_directory_is_valid?(_io = STDOUT)
-      # Do nothing if no validation code was supplied.
-      return true unless validate_bundle_dir[:code]
-      # Run validations and return true/false accordingly.
-      dv = run_dir_validation_code()
-      dv.validate
-      return true if dv.warnings.size == 0
-      write_validation_warnings(dv)
-      false
-    end
-
-    # Require the DirValidator code, run it, and return the validator.
-    def run_dir_validation_code
-      require validate_bundle_dir[:code] # FIXME: Security hazard
-      PreAssembly.validate_bundle_directory(bundle_dir)
-    end
-
-    def write_validation_warnings(validator, io = STDOUT)
-      r  = validate_bundle_dir[:report]
-      fh = File.open(r, 'w')
-      validator.report(fh)
-      io.puts("Bundle directory failed validation: see #{r}")
     end
 
     ####
@@ -502,7 +542,7 @@ module PreAssembly
     end
 
     def compute_checksum(file)
-      @compute_checksum ? file.md5 : nil
+      compute_checksum? ? file.md5 : nil
     end
 
     ####
@@ -518,6 +558,8 @@ module PreAssembly
       exception = nil
       tally = Hash.new(0) # A tally to facilitate testing.
 
+      # TODO: clarify (peter might know?) - seems this is essentially a retry loop, where validation failure is fatal,
+      # but other things (like... fedora connection error?) allow for another attempt until max num_attempts.
       until i == Dor::Config.dor.num_attempts || success || failed_validation do
         i += 1
         begin
@@ -542,11 +584,15 @@ module PreAssembly
         end
       end
 
+      # TODO: goes w/ above question - wasn't able to set success to true, didn't fail validation, so... some
+      # other unexpected problem?
       if success == false && !failed_validation
         error_message = "validate_files failed after #{i} attempts \n"
         log error_message
         error_message += "exception: #{exception.message}\n"
         error_message += "backtrace: #{exception.backtrace}"
+        # TODO: would bet the intent was to pass in error_message, since it includes
+        # exception, and the modifications to it are thrown away as it is.
         Honeybadger.notify(exception)
         raise exception
       else
@@ -586,13 +632,6 @@ module PreAssembly
         # Also store a hash of all values from the manifest row, using column names as keys.
         dobj.manifest_row = r
       end
-    end
-
-    # On first call, loads the manifest data (does not reload on subsequent calls).
-    # If bundle is not using a manifest, just loads and returns emtpy array.
-    def manifest_rows
-      return @manifest_rows if @manifest_rows
-      self.manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
     end
 
     ####
@@ -694,7 +733,7 @@ module PreAssembly
     end
 
     def delete_digital_objects
-      return unless @cleanup # FIXME: getter conflicts with defined #cleanup method (that should be named "cleanup!")
+      return unless cleanup?
       # During development, delete objects that we register.
       log "delete_digital_objects()"
       digital_objects.each(&:unregister)
@@ -703,10 +742,6 @@ module PreAssembly
     ####
     # File and directory utilities.
     ####
-
-    def path_in_bundle(rel_path)
-      File.join(bundle_dir, rel_path)
-    end
 
     # Returns the portion of the path after the base. For example:
     #   base     BLAH/BLAH

@@ -16,8 +16,8 @@ steps = ARGV.shift.split(',').collect! { |x| x.to_sym }
 dry_run = ARGV.shift ? true : false
 
 begin
-  b = PreAssembly::Bundle.new params
-  b.cleanup(steps, dry_run)
+  b = PreAssembly::Bundle.new(PreAssembly::BundleContext.new(params))
+  b.cleanup!(steps, dry_run)
 rescue PreAssembly::BundleUsageError => e
   help e.message
 end
