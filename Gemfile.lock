@@ -509,7 +509,6 @@ DEPENDENCIES
   rest-client
   retries
   roo
-  rspec (~> 3.0)
   rspec-rails (~> 3.7)
   rubocop (~> 0.58)
   rubocop-rspec
