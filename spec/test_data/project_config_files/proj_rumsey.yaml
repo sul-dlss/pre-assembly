@@ -54,7 +54,3 @@ limit_n:              10
 uniqify_source_ids:   true
 cleanup:              true
 resume:               false
-
-validate_bundle_dir:
-  code:              'spec/test_data/project_config_files/local_dev_rumsey.rb'
-  report:            'log/progress_rumsey.csv'

@@ -39,7 +39,6 @@ module PreAssembly
       :config_filename,
       :validate_files,
       :new_druid_tree_format,
-      :validate_bundle_dir,
       :throttle_time,
       :staging_style
     ]
@@ -116,7 +115,6 @@ module PreAssembly
 
     def setup_other
       self.content_exclusion &&= Regexp.new(content_exclusion)
-      self.validate_bundle_dir  ||= {}
       self.file_attr            ||= {}
       self.file_attr.delete_if { |_k, v| v.nil? }
     end
@@ -156,8 +154,7 @@ module PreAssembly
       [
         manifest,
         checksums_file,
-        desc_md_template,
-        validate_bundle_dir[:code],
+        desc_md_template
       ].compact
     end
 
@@ -171,8 +168,7 @@ module PreAssembly
         :validate_files,
         :new_druid_tree_format,
         :staging_style,
-        :validate_bundle_dir,
-        :throttle_time,
+        :throttle_time
       ]
     end
 
@@ -257,37 +253,6 @@ module PreAssembly
         validation_errors = ['Configuration errors found:'] + validation_errors
         raise BundleUsageError, validation_errors.join('  ') unless validation_errors.blank?
       end
-    end
-
-    ####
-    # Validate the bundle_dir directory structure, if the client supplied
-    # validating code.
-    ####
-
-    def bundle_directory_is_valid?(_io = STDOUT)
-      # Do nothing if no validation code was supplied.
-      return true unless validate_bundle_dir[:code]
-      # Run validations and return true/false accordingly.
-      dv = run_dir_validation_code()
-      dv.validate
-      return true if dv.warnings.size == 0
-      write_validation_warnings(dv)
-      false
-    end
-
-    # TODO: can we just de-support this functionality and remove it entirely?
-    # re-implement in a safer way on new master branch once we need it again?
-    # Require the DirValidator code, run it, and return the validator.
-    def run_dir_validation_code
-      require validate_bundle_dir[:code] # FIXME: Security hazard
-      PreAssembly.validate_bundle_directory(bundle_dir)
-    end
-
-    def write_validation_warnings(validator, io = STDOUT)
-      r  = validate_bundle_dir[:report]
-      fh = File.open(r, 'w')
-      validator.report(fh)
-      io.puts("Bundle directory failed validation: see #{r}")
     end
   end
 

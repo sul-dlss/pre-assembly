@@ -159,30 +159,6 @@ describe PreAssembly::Bundle do
     end
   end
 
-  # TODO: if we keep this validate_bundle_dir stuff, it's about BundleContext now, not Bundle
-  describe "bundle directory validation using DirValidator" do
-    describe '#bundle_directory_is_valid?' do
-      it "returns true when no validation is requested by client" do
-        rumsey_context.validate_bundle_dir = {}
-        expect(rumsey_context.bundle_directory_is_valid?).to eq(true)
-      end
-
-      it "returns true if there are no validation errors, otherwise false" do
-        allow(rumsey_context).to receive(:validate_bundle_dir).and_return(code: 'some_validation_code.rb')
-        allow(rumsey_context).to receive(:write_validation_warnings)
-        tests = {
-          [] => true,
-          [1, 2] => false,
-        }
-        tests.each do |ws, exp|
-          v = double('mock_validator', :validate => nil, :warnings => ws)
-          allow(rumsey_context).to receive(:run_dir_validation_code).and_return(v)
-          expect(rumsey_context.bundle_directory_is_valid?).to eq(exp)
-        end
-      end
-    end
-  end
-
   describe 'object discovery: #discover_objects' do
     let(:tests) do
       [
