@@ -1,11 +1,11 @@
-describe PreAssembly::DigitalObject do
+describe PreAssembly::Smpl do
   let(:bundle_dir) { File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e') }
 
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
     let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
     let(:dobj2) { setup_dobj('bb222bb2222', smpl_manifest) }
     let(:smpl_manifest) do
-      PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => bundle_dir, :verbose => false)
+      described_class.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => bundle_dir, :verbose => false)
     end
 
     it "generates technicalMetadata for SMPL by combining all existing _techmd.xml files" do
@@ -29,7 +29,7 @@ describe PreAssembly::DigitalObject do
 
   describe 'SMPL content metadata generation with thumb declaration' do
     it "generates content metadata from a SMPL manifest with a thumb column set to yes" do
-      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir, :verbose => false)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata
@@ -39,7 +39,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "generates content metadata from a SMPL manifest with a thumb column set to true" do
-      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => bundle_dir, :verbose => false)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata
@@ -49,7 +49,7 @@ describe PreAssembly::DigitalObject do
     end
 
     it "generates content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
-      smpl_manifest = PreAssembly::Smpl.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => bundle_dir, :verbose => false)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata

@@ -76,11 +76,22 @@ module PreAssembly
 
     # set this object's content_md_creation_style
     def content_md_creation_style
+      # map the content type tags set inside an object to content metadata creation styles supported by the assembly-objectfile gem
+      # format is 'tag_value' => 'gem style name'
+      content_type_tag_mapping = {
+        'Image' => :simple_image,
+        'File' => :file,
+        'Book (flipbook, ltr)' => :simple_book,
+        'Book (image-only)' => :book_as_image,
+        'Manuscript (flipbook, ltr)' => :simple_book,
+        'Manuscript (image-only)' => :book_as_image,
+        'Map' => :map
+      }
       # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
       if !project_style[:content_tag_override] || content_type_tag.blank?
         default_content_md_creation_style
       else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
-        CONTENT_TYPE_TAG_MAPPING[content_type_tag] || default_content_md_creation_style
+        content_type_tag_mapping[content_type_tag] || default_content_md_creation_style
       end
     end
 
@@ -196,12 +207,14 @@ module PreAssembly
     # Create the druid tree within the staging directory,
     # and then copy-recursive all stageable items to that area.
     def stage_files
+      # these are the names of special datastream files that will be staged in the 'metadata' folder instead of the 'content' folder
+      metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
       log "    - staging(druid_tree_dir = #{druid_tree_dir.inspect})"
       create_object_directories
       stageable_items.each do |si_path|
         log "      - staging(#{si_path}, #{content_dir})", :debug
         # determine destination of staged file by looking to see if it is a known datastream XML file or not
-        destination = METADATA_FILES.include?(File.basename(si_path).downcase) ? metadata_dir : content_dir
+        destination = metadata_files.include?(File.basename(si_path).downcase) ? metadata_dir : content_dir
         stager si_path, destination
       end
     end
