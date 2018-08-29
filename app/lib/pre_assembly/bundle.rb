@@ -45,7 +45,6 @@ module PreAssembly
       @bundle_context = bundle_context
       self.digital_objects = []
       self.skippables = {}
-
       load_skippables
     end
 
@@ -98,21 +97,9 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
-    # Cleanup of objects and associated files in specified environment using logfile as input
-    def cleanup!(steps = [], dry_run = false)
-      log "cleanup!()"
-      unless File.exist?(progress_log_file)
-        puts "#{progress_log_file} not found!  Cannot proceed"
-        return
-      end
-      druids = Assembly::Utils.get_druids_from_log(progress_log_file)
-      Assembly::Utils.cleanup(:druids => druids, :steps => steps, :dry_run => dry_run)
-    end
-
     ####
     # Discovery of object containers and stageable items.
-    ####
-
+    #
     # Discovers the digital object containers and the stageable items within them.
     # For each container, creates a new Digitalobject.
     def discover_objects
@@ -156,14 +143,14 @@ module PreAssembly
     # The latter drives the two-stage discovery process:
     #   - A glob pattern to obtain a list of dirs and/or files.
     #   - A regex to filter that list.
-    def discover_items_via_crawl(root, discovery_info)
-      glob  = discovery_info[:glob]
-      regex = Regexp.new(discovery_info[:regex]) if discovery_info[:regex]
+    def discover_items_via_crawl(root)
+      glob  = stageable_discovery[:glob]
+      regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]
       items = []
       dir_glob(File.join(root, glob)).each do |item|
-        rel_path = relative_path root, item
+        rel_path = relative_path(root, item)
         next unless regex.nil? || rel_path =~ regex
-        next if discovery_info[:files_only] && File.directory?(item)
+        next if stageable_discovery[:files_only] && File.directory?(item)
         items.push(item)
       end
       items.sort
@@ -177,7 +164,7 @@ module PreAssembly
 
     def stageable_items_for(container)
       return [container] if stageable_discovery[:use_container]
-      discover_items_via_crawl(container, stageable_discovery)
+      discover_items_via_crawl(container)
     end
 
     # Returns a list of the ObjectFiles for a digital object.
