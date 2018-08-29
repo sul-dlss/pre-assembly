@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gem 'actionmailer'
 gem 'actionpack', '~> 5.0', '>= 5.0.0.1'
 gem 'csv-mapper'
-gem 'equivalent-xml'
 gem 'nokogiri'
 gem 'rake'
 gem 'retries'
@@ -31,6 +30,7 @@ gem 'resque-pool'
 gem 'config'
 
 group :test do
+  gem 'equivalent-xml'
   gem 'solr_wrapper'
   gem 'jettywrapper'
   gem 'coveralls', require: false
