@@ -504,7 +504,6 @@ DEPENDENCIES
   resque (~> 1.27)
   resque-lock
   resque-pool
-  rest-client
   retries
   roo
   rspec-rails (~> 3.7)

@@ -6,7 +6,6 @@ gem 'csv-mapper'
 gem 'equivalent-xml'
 gem 'nokogiri'
 gem 'rake'
-gem 'rest-client'
 gem 'retries'
 gem 'roo' # for processing spreadsheets
 gem 'ruby-prof'
