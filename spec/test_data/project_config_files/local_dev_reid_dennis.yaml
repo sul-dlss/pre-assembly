@@ -24,9 +24,6 @@ publish_attr:
   shelve:             ~
   preserve:           ~
 
-compute_checksum:     true
-init_assembly_wf:     false
-
 content_md_creation:
   style:              'default'
 
@@ -46,11 +43,3 @@ manifest_cols:
   label:              'Title1'
 
 content_exclusion:    ~
-
-new_druid_tree_format: true
-validate_usage:       true
-show_progress:        true
-limit_n:              5
-uniqify_source_ids:   true
-cleanup:              true
-resume:               false

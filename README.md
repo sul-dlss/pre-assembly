@@ -177,14 +177,11 @@ subdirectory.
 # Normal run.  Will restart and crete a new log file, overwriting any existing log file for that project.
 bin/pre-assemble YAML_FILE
 
-# Run in resume mode, which will automatically pick up where left off based on the log file.  Passing the --resume flag overrides the actual value of resume from the YAML config.
-bin/pre-assemble YAML_FILE --resume
+# Run in limit mode (default of 200), which will automatically limit the number of items pre-assembled to 200 regardless of what is set in the YAML file.
+bin/pre-assemble YAML_FILE --limit
 
-# Run in limit mode (default of 200), which will automatically limit the number of items pre-assembled to 200 regardless of what is set in the YAML file.  Useful with resume.
-bin/pre-assemble YAML_FILE --limit --resume
-
-# Run in limit mode (set to 100), which will automatically limit the number of items pre-assembled regardless of what is set in the YAML file.  Useful with resume.
-bin/pre-assemble YAML_FILE --limit=100 --resume
+# Run in limit mode (set to 100), which will automatically limit the number of items pre-assembled regardless of what is set in the YAML file.
+bin/pre-assemble YAML_FILE --limit=100
 ```
 
     Again, you can add RAILS_ENV=XXXX to the beginning of the command
@@ -195,7 +192,6 @@ bin/pre-assemble YAML_FILE --limit=100 --resume
     *   Navigate to the production box, in the pre-assembly area.
     *   Set `RAILS_ENV=production`
     *   Run pre-assembly with nohup and in the background (`&`).
-    *   Optionally, include the `--resume` option to override the resume parameter and set to true.
     *   Optionally, include the `--limit` option to override the limit
         paramater.  You can specify the limit, or you can let it default to 200.
 
@@ -217,18 +213,14 @@ bin/pre-assemble YAML_FILE --limit=100 --resume
     3.  `tail -999f log/production.log  # Detailed logging info for the pre-assembly project itself.`
     4.  `tail -999f nohup.out           # Errors, etc from unix output (or "another_nohup_filename.out" in the example above)`
 
-
-    Be sure to keep your progress log file somewhere useful and be aware if
-    you restart pre-assembly without using the `--resume` switch, it will be
-    overwritten. You will need the progress log for cleanup and restarting.
+    You will need the progress log for cleanup and restarting.
 
 9.  Running in batch mode, automatically splitting a large run in groups of
-    smaller jobs, using limits and resume:
+    smaller jobs, using limits:
 
+      bin/batch_run YAML_CONFIG [LIMIT]
 
-    bin/batch_run YAML_CONFIG [LIMIT]
-
-This will run pre-assembly multiple times sequentially, using resume and
+This will run pre-assembly multiple times sequentially, using
 limits, allowing the process to end and restart each time. This is useful to
 prevent memory errors on the server when running large jobs.  It will
 automatically compute the number of items remaining to be run, split the job
@@ -498,11 +490,10 @@ pre-assembly to terminate immediately (if the failure is non-recoverable) or
 it will continue and log the errors. The progress log file you specified in
 your YAML configuration will contain information about which bundles failed.
 You can re-start pre-assembly and ask it to re-try the failed objects and
-continue with any other objects that it hadn't done yet. To do this, use the
---resume flag when you run pre-assembly:
+continue with any other objects that it hadn't done yet.
 
 ```bash
-RAILS_ENV=production bin/pre-assemble YAML_FILE --resume
+RAILS_ENV=production bin/pre-assemble YAML_FILE
 ```
 
 ## Post Accessioning Reports
@@ -647,15 +638,13 @@ If you would like to test your MODs template prior to actually accessioning,
 you can run a "mods report", passing in the YAML config file, which references
 your manifest and MODs template, and a writable output folder location.  The
 report will then generate a MODs file for each row in your manifest so you can
-examine the results.  You can limit the number of rows run by temporarily
-modifying the "limit_n" parameter in the YAML file. Note that the output
+examine the results.  Note that the output
 folder MUST exist and must be writable.  Be aware it will become filled with
 MODs files, one per object.  So if you have a large number of rows in your
 manifest, you will end up with many files in your output directory.
 
 ```bash
-RAILS_ENV=production bundle exec bin/mods_report YAML_CONFIG_FILE
-OUTPUT_DIRECTORY
+RAILS_ENV=production bundle exec bin/mods_report YAML_CONFIG_FILE OUTPUT_DIRECTORY
 ```
 
 ## Accession of Specific Objects
@@ -670,23 +659,17 @@ For projects with a manifest (e.g. like Revs):
 For projects that do not use a manifest (e.g. like Rumsey):
 
 1.  Create a new project config YAML file and set the parameter
-    'accession_items' using either the 'only' or
-
-'except' parameter as needed. You can include only specific objects (useful
-when you only want to run a few objects) or you can exclude specific objects
-(useful when you want to run most). Set the 'reaccession' parameter to false
-or nil. Also set a different progress log file so you can store the results of
-your second run separately. See the `TEMPLATE.yaml` for some examples.
-
+    `accession_items` using either the `only` or `except` parameter as needed.
+    You can include only specific objects (useful when you only want to run a few objects)
+    or you can exclude specific objects (useful when you want to run most).
+    Also set a different progress log file so you can store the results of
+    your second run separately. See the `TEMPLATE.yaml` for some examples.
 1.  Run pre-assembly.
 
 ## Re-Accession of Specific Objects
 
 Very similar to above, if you need to re-accession a batch of material (for
-example, after remediating some files in your bundle), you can do this in two
-ways, depending on your project setup.
-
-For projects with a manifest (e.g. like Revs):
+example, after remediating some files in your bundle), for projects with a manifest (e.g. like Revs):
 
 1.  Create a new manifest with only the objects you need re-accessioned.
 2.  Create a new project config YAML file referencing the new manifest and
@@ -694,23 +677,8 @@ For projects with a manifest (e.g. like Revs):
 3.  "Cleanup" your existing objects that you will be re-accessioning using the
     `Assembly::Utils.cleanup` method on a Ruby console as described below.
     Since you will be re-registering objects, you will get new DRUIDs, and you
-    should therefore be sure to completely delete your old objects.
+    should therefore be sure to **completely delete** your old objects.
 4.  Re-run pre-assembly.
-
-
-For projects that do not use a manifest (e.g. like Rumsey):
-
-1.  Create a new project config YAML file and set the parameter
-    'accession_items' and the 'only' parameter to an array of bundle names
-    (e.g. druid folder names) that you want to re-accession.  Set the
-    'reaccession' parameter to true.  Also set a different progress log file
-    so you can store the results of your second run separately.  See the
-    `TEMPLATE.yaml` for some examples.
-2.  Re-run pre-assembly.
-
-
-This process will perform an automatic cleanup on the items being
-re-accessioned (but will leave your objects registered).
 
 ## Cleanup
 

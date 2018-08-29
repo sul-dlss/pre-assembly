@@ -39,12 +39,3 @@ content_md_creation:
   style:       'default'
 
 publish_attr: ~
-
-resume:           false
-limit_n:          ~
-init_assembly_wf: true
-compute_checksum:   true
-validate_usage:     true
-show_progress:      true
-uniqify_source_ids: false
-cleanup:            false

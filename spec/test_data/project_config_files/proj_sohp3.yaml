@@ -10,7 +10,6 @@ validate_files:       true
 accession_items:
  only:
    - 'aa111aa1111'
- reaccession: true
 
 manifest:             ~
 checksums_file:       ~
@@ -25,9 +24,6 @@ publish_attr:
   publish:            ~
   shelve:             ~
   preserve:           ~
-
-compute_checksum:     false
-init_assembly_wf:     false
 
 content_md_creation:
   style:              'smpl'
@@ -49,10 +45,3 @@ manifest_cols:
   label:              ~
 
 content_exclusion:    ~
-
-validate_usage:       false
-show_progress:        true
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
-resume:               false

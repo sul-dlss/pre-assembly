@@ -23,23 +23,13 @@ module PreAssembly
       :progress_log_file,
       :project_name,
       :file_attr,
-      :compute_checksum,
-      :init_assembly_wf,
       :content_md_creation,
       :object_discovery,
       :stageable_discovery,
       :manifest_cols,
       :content_exclusion,
-      :validate_usage,
-      :show_progress,
-      :limit_n,
-      :uniqify_source_ids,
-      :cleanup,
-      :resume,
       :config_filename,
       :validate_files,
-      :new_druid_tree_format,
-      :throttle_time,
       :staging_style
     ]
 
@@ -58,12 +48,10 @@ module PreAssembly
       params[:file_attr] ||= params[:publish_attr]
       self.user_params = params
       YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
-
       setup_paths
       setup_other
       setup_defaults
       validate_usage
-      show_developer_setting_warning
     end
 
     ####
@@ -76,16 +64,6 @@ module PreAssembly
       file_contents = IO.read(filename).encode("utf-8", replace: nil)
       csv = CSV.parse(file_contents, :headers => true)
       csv.map { |row| row.to_hash.with_indifferent_access }
-    end
-
-    def cleanup?
-      return true if @cleanup
-      false
-    end
-
-    def compute_checksum?
-      return true if @compute_checksum
-      false
     end
 
     def path_in_bundle(rel_path)
@@ -104,6 +82,7 @@ module PreAssembly
     ####
 
     def setup_paths
+      bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
       self.manifest       &&= path_in_bundle(manifest)
       self.checksums_file &&= path_in_bundle(checksums_file)
       if !desc_md_template.nil? && !(Pathname.new desc_md_template).absolute? # check for a desc MD template being defined and not being absolute
@@ -121,8 +100,6 @@ module PreAssembly
 
     def setup_defaults
       self.validate_files = true if @validate_files.nil? # FIXME: conflict between attribute and non-getter method #validate_files
-      self.new_druid_tree_format = true if new_druid_tree_format.nil?
-      self.throttle_time ||= 0
       self.staging_style ||= 'copy'
       project_style[:content_tag_override] = false if project_style[:content_tag_override].nil?
       content_md_creation[:smpl_manifest] ||= 'smpl_manifest.csv'
@@ -166,27 +143,13 @@ module PreAssembly
       [
         :config_filename,
         :validate_files,
-        :new_druid_tree_format,
         :staging_style,
-        :throttle_time
       ]
-    end
-
-    # spit out some dire warning messages if you set certain parameters that are only applicable for developers
-    def show_developer_setting_warning
-      warning = []
-      warning << '* get_druid_from=druid_minter' if project_style[:get_druid_from] == :druid_minter
-      warning << '* init_assembly_wf=false' unless init_assembly_wf
-      warning << '* uniqify_source_ids=true' if uniqify_source_ids
-      warning << '* cleanup=true' if @cleanup
-      puts "\n***DEVELOPER MODE WARNING: You have set some parameters typically only set by developers****\n#{warning.join("\n")}" if show_progress && warning.size > 0
     end
 
     # Validate parameters supplied via user script.
     # Unit testing often bypasses such checks.
     def validate_usage
-      return unless @validate_usage # FIXME: attribute/method name conflict
-
       validation_errors = []
 
       required_user_params.each do |p|
@@ -205,9 +168,7 @@ module PreAssembly
       end
 
       validation_errors << "Bundle directory not specified." if bundle_dir.nil? || bundle_dir == ''
-      bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
       validation_errors <<  "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
-
       validation_errors <<  "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
       validation_errors <<  "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
@@ -273,13 +234,10 @@ module PreAssembly
                   :desc_md_template_xml
 
     delegate :desc_md_template,
-             :resume,
              :progress_log_file,
-             :show_progress,
              :content_md_creation,
              :stageable_discovery,
              :bundle_dir,
-             :limit_n,
              :project_style,
              :project_name,
              :object_discovery,
@@ -288,18 +246,12 @@ module PreAssembly
              :apo_druid_id,
              :set_druid_id,
              :file_attr,
-             :init_assembly_wf,
-             :new_druid_tree_format,
              :staging_style,
              :manifest_cols,
              :content_exclusion,
              :checksums_file,
-             :throttle_time,
              :validate_files,
              :accession_items,
-             :cleanup?,
-             :compute_checksum?,
-             :uniqify_source_ids,
              :manifest_rows,
              :path_in_bundle,
            to: :bundle_context
@@ -323,7 +275,6 @@ module PreAssembly
     end
 
     def load_skippables
-      return unless resume
       docs = YAML.load_stream(Assembly::Utils.read_file(progress_log_file))
       docs = docs.documents if docs.respond_to? :documents
       docs.each do |yd|
@@ -339,7 +290,7 @@ module PreAssembly
     def run_pre_assembly
       log ""
       log "run_pre_assembly(#{run_log_msg})"
-      puts "#{Time.now}: Pre-assembly started for #{project_name}" if show_progress
+      puts "#{Time.now}: Pre-assembly started for #{project_name}"
 
       # load up the SMPL manifest if we are using that style
       if content_md_creation[:style] == :smpl
@@ -349,7 +300,7 @@ module PreAssembly
       process_manifest
       process_digital_objects
       delete_digital_objects
-      puts "#{Time.now}: Pre-assembly completed for #{project_name}" if show_progress
+      puts "#{Time.now}: Pre-assembly completed for #{project_name}"
       processed_pids
     end
 
@@ -360,7 +311,6 @@ module PreAssembly
         :bundle_dir    => bundle_dir,
         :staging_dir   => staging_dir,
         :environment   => ENV['RAILS_ENV'],
-        :resume        => resume,
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
@@ -410,21 +360,12 @@ module PreAssembly
         :bundle_dir           => bundle_dir,
         :content_md_creation  => content_md_creation,
         :file_attr            => file_attr,
-        :init_assembly_wf     => init_assembly_wf,
-        :new_druid_tree_format => new_druid_tree_format,
         :project_name         => project_name,
         :project_style        => project_style,
         :smpl_manifest        => smpl_manifest,
         :staging_dir          => staging_dir,
         :staging_style        => staging_style
       }
-    end
-
-    # If user configured pre-assembly to process a limited N of objects,
-    # return the requested number of object containers.
-    def pruned_containers(containers)
-      j = limit_n ? limit_n - 1 : -1
-      containers[0..j]
     end
 
     # Every object must reside in a single container: either a file or a directory.
@@ -534,11 +475,7 @@ module PreAssembly
     # Takes a path to a file. Returns md5 checksum, which either (a) came
     # from a provider-supplied checksums file, or (b) is computed here.
     def retrieve_checksum(file)
-      provider_checksums[file.path] ||= compute_checksum(file)
-    end
-
-    def compute_checksum(file)
-      compute_checksum? ? file.md5 : nil
+      provider_checksums[file.path] ||= file.md5
     end
 
     ####
@@ -617,13 +554,11 @@ module PreAssembly
     def process_manifest
       return unless object_discovery[:use_manifest]
       log "process_manifest()"
-      mrows = manifest_rows # Convenience variable, and used for testing.
       digital_objects.each_with_index do |dobj, i|
-        r = mrows[i]
+        r = manifest_rows[i]
         # Get label and source_id from column names declared in YAML config.
-        label_value = (manifest_cols[:label] ? r[manifest_cols[:label]] : "")
-        dobj.label        = label_value
-        dobj.source_id    = (r[manifest_cols[:source_id]] + source_id_suffix) if manifest_cols[:source_id]
+        dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ""
+        dobj.source_id    = r[manifest_cols[:source_id]] if manifest_cols[:source_id]
         # Also store a hash of all values from the manifest row, using column names as keys.
         dobj.manifest_row = r
       end
@@ -633,44 +568,28 @@ module PreAssembly
     # Digital object processing.
     ####
     def process_digital_objects
-      # Get the non-skipped objects to process, limited to n if the user asked for that
-      o2p = pruned_containers(objects_to_process)
-
+      # Get the non-skipped objects to process
+      o2p = objects_to_process
       total_obj = o2p.size
-      num_objects_to_process = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log_and_show "#{total_obj} objects to pre-assemble"
-      log_and_show("**** limit of #{limit_n} was applied after completed objects removed from set") if limit_n
-      log_and_show "#{digital_objects.size} total objects found, #{num_objects_to_process} not yet complete, #{skippables.size} already completed objects skipped"
-
-      n = 0
+      log_and_show "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
       num_no_file_warnings = 0
-      avg_time_per_object = 0
       total_time_remaining = 0
-
       start_time = Time.now
 
-      # Initialize the progress_log_file, unless we are resuming
-      FileUtils.rm(progress_log_file, :force => true) unless resume
-
       # Start processing.
-      o2p.each do |dobj|
-        if throttle_time.to_i > 0
-          log_and_show "sleeping for #{throttle_time.to_i} seconds"
-          sleep throttle_time.to_i
-        end
-
-        log_and_show "#{total_obj - n} remaining in run | #{total_obj} running | #{num_objects_to_process - n} total incomplete | ~ remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
+      o2p.each_with_index do |dobj, n|
+        log_and_show "#{total_obj - n} remaining in run | #{total_obj} running | ~ remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files" if show_progress
+        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files"
         num_no_file_warnings += 1 if dobj.object_files.size == 0
 
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
           validate_files(dobj) if validate_files
-          dobj.reaccession = true if !accession_items.nil? && accession_items[:reaccession] # if we are reaccessioning items, then go ahead and clear each one out
           dobj.pre_assemble(desc_md_template_xml)
           # Indicate that we finished.
           dobj.pre_assem_finished = true
@@ -683,18 +602,16 @@ module PreAssembly
           #   - from that point, raise a PreAssembly::PreAssembleError
           #   - then catch such errors here, allowing the current
           #     digital object to fail but the remaining objects to be processed.
-          Honeybadger.notify(e)
+          Honeybadger.notify(e) # ??? Isn't this what Honeybadger would do anyway w/o the rescue?
           raise e
         ensure
           # Log the outcome no matter what.
           File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }
         end
 
-        total_time = Time.now - start_time
-        n += 1
-
-        avg_time_per_object = total_time / n
-        total_time_remaining = (avg_time_per_object * (num_objects_to_process - n)).floor
+        next_n = n + 1
+        avg_time_per_object = (Time.now - start_time) / next_n
+        total_time_remaining = (avg_time_per_object * (total_obj - next_n)).floor
       end
 
       log_and_show "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
@@ -728,7 +645,6 @@ module PreAssembly
     end
 
     def delete_digital_objects
-      return unless cleanup?
       # During development, delete objects that we register.
       log "delete_digital_objects()"
       digital_objects.each(&:unregister)
@@ -738,24 +654,23 @@ module PreAssembly
     # File and directory utilities.
     ####
 
-    # Returns the portion of the path after the base. For example:
-    #   base     BLAH/BLAH
-    #   path     BLAH/BLAH/foo/bar.txt
-    #   returns            foo/bar.txt
+    # @return [String] base
+    # @return [String] path
+    # @return [String] portion of the path after the base, without trailing slashes (if directory)
+    # @example Usage
+    #   b.relative_path('BLAH/BLAH', 'BLAH/BLAH/foo/bar.txt'
+    #   => 'foo/bar.txt'
+    #   b.relative_path('BLAH/BLAH', 'BLAH/BLAH/foo///'
+    #   => 'foo'
     def relative_path(base, path)
-      bs = base.size
-      return path[bs + 1..-1] if (
-        bs > 0 &&
-        path.size > bs &&
-        path.index(base) == 0
-      )
-      err_msg = "Bad args to relative_path(#{base.inspect}, #{path.inspect})"
-      raise ArgumentError, err_msg
+      Pathname.new(path).relative_path_from(Pathname.new(base)).cleanpath.to_s
     end
 
-    # Returns the portion of the path before basename. For example:
-    #   path     BLAH/BLAH/foo/bar.txt
-    #   returns  BLAH/BLAH/foo
+    # @return [String] path
+    # @return [String] directory portion of the path before basename
+    # @example Usage
+    #   b.get_base_dir('BLAH/BLAH/foo/bar.txt')
+    #   => 'BLAH/BLAH/foo'
     def get_base_dir(path)
       bd = File.dirname(path)
       return bd unless bd == '.'
@@ -788,12 +703,7 @@ module PreAssembly
 
     def log_and_show(message)
       log message
-      puts "#{Time.now}: #{message}" if show_progress
-    end
-
-    # Used during development to append a timestamp to source IDs.
-    def source_id_suffix
-      uniqify_source_ids ? Time.now.strftime('_%s') : ''
+      puts "#{Time.now}: #{message}"
     end
   end
 end

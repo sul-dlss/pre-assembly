@@ -23,9 +23,6 @@ publish_attr:
   shelve:             ~
   preserve:           ~
 
-compute_checksum:     false
-init_assembly_wf:     false
-
 content_md_creation:
   style:              'smpl'
   smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
@@ -47,11 +44,3 @@ manifest_cols:
   label:              ~
 
 content_exclusion:    ~
-
-new_druid_tree_format: true
-validate_usage:       false
-show_progress:        true
-limit_n:              10
-uniqify_source_ids:   true
-cleanup:              true
-resume:               false

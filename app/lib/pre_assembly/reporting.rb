@@ -51,7 +51,6 @@ module PreAssembly
       puts "Using SMPL manifest for contentMetadata: #{File.join(@bundle_dir, @content_md_creation[:smpl_manifest])}" if using_smpl_manifest
 
       if @accession_items
-        puts "NOTE: reaccessioning with object cleanup" if @accession_items[:reaccession]
         puts "You are processing specific objects only" if @accession_items[:only]
         puts "You are processing all discovered except for specific objects" if @accession_items[:except]
       end
