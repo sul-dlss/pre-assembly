@@ -4,7 +4,8 @@ class TemplateController < ApplicationController
   end
 
   def create
-    p params
+    logger.debug("TemplateController.create called")
+    PreassemblyJob.perform_later
   end
 
 end
