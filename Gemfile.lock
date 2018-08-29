@@ -197,11 +197,6 @@ GEM
       activesupport (>= 4.2.0)
     haml (4.0.7)
       tilt
-    harvestdor (0.3.1)
-      confstruct
-      faraday
-      net-http-persistent
-      nokogiri
     honeybadger (3.3.1)
     hooks (0.4.1)
       uber (~> 0.0.14)
@@ -489,7 +484,6 @@ DEPENDENCIES
   dor-services (< 6)
   druid-tools
   equivalent-xml
-  harvestdor
   honeybadger (~> 3.1)
   jettywrapper
   listen

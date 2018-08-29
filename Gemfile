@@ -16,7 +16,6 @@ gem 'assembly-utils'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
 gem 'dor-services', '< 6'
 gem 'druid-tools'
-gem 'harvestdor'
 gem 'modsulator'
 gem 'stanford-mods'
 gem 'rails', '~> 5.2', '>= 5.2.1'
