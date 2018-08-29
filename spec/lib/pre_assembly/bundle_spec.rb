@@ -93,9 +93,8 @@ RSpec.describe PreAssembly::Bundle do
       tests.each do |proj, n_dobj, n_stag, n_file|
         b = described_class.new(context_from_proj(proj))
         b.discover_objects
-        dobjs = b.digital_objects
-        expect(dobjs.size).to eq(n_dobj)
-        dobjs.each do |dobj|
+        expect(b.digital_objects.size).to eq(n_dobj)
+        b.digital_objects.each do |dobj|
           expect(dobj.stageable_items.size).to eq(n_stag)
           expect(dobj.object_files.size).to eq(n_file)
         end
@@ -110,16 +109,6 @@ RSpec.describe PreAssembly::Bundle do
       # A project that does not.
       rumsey.discover_objects
       expect(rumsey.digital_objects[0].container.size).to be > rumsey.bundle_dir.size
-    end
-  end
-
-  describe "object discovery: containers" do
-    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
-      items = [0, 11, 22, 33, 44, 55, 66, 77]
-      revs_context.limit_n = nil
-      expect(revs.pruned_containers(items)).to eq(items)
-      revs_context.limit_n = 3
-      expect(revs.pruned_containers(items)).to eq(items[0..2])
     end
   end
 
@@ -311,19 +300,8 @@ RSpec.describe PreAssembly::Bundle do
     describe '#retrieve_checksum' do
       it "computes checksum when checksum is not available" do
         revs.provider_checksums = {}
-        expect(revs).to receive(:md5)
+        expect(revs).to receive(:retrieve_checksum)
         revs.retrieve_checksum(file)
-      end
-    end
-
-    describe '#compute_checksum' do
-      it "returns nil if @compute_checksum is false" do
-        allow(revs).to receive(:compute_checksum?).and_return(false)
-        expect(revs.compute_checksum(file)).to be_nil
-      end
-
-      it "returns an md5 checksum" do
-        expect(revs.compute_checksum(file)).to be_a(String).and match(md5_regex)
       end
     end
   end
@@ -353,13 +331,8 @@ RSpec.describe PreAssembly::Bundle do
   describe '#manifest_rows' do
     it "loads the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
       expect(revs.manifest_rows.size).to eq 3
-      expect(revs).not_to receive(:object_discovery)
+      expect(described_class).not_to receive(:import_csv)
       revs.manifest_rows
-
-    end
-
-    it "returns empty array for bundles that do not use a manifest" do
-      expect(rumsey.manifest_rows).to eq([])
     end
   end
 
@@ -440,19 +413,9 @@ RSpec.describe PreAssembly::Bundle do
     it "#path_in_bundle returns expected value" do
       expect(revs.path_in_bundle(relative)).to eq('spec/test_data/bundle_input_a/abc/def.jpg')
     end
-
     it "#relative_path returns expected value" do
       expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)
     end
-
-    it "#relative_path raises error if given bogus arguments" do
-      path = "foo/bar/fubb.txt"
-      exp_msg = /^Bad args to relative_path/
-      expect { revs.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
-      expect { revs.relative_path(path, path) }.to raise_error(ArgumentError, exp_msg)
-      expect { revs.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
-    end
-
     it "#get_base_dir returns expected value" do
       expect(revs.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
