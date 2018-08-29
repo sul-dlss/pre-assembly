@@ -11,16 +11,16 @@ gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'sqlite3'
 gem 'turbolinks'
 
-gem 'resque', '~> 1.27'
+gem 'resque', '~> 1.27' # needs to match redis on VM
 gem 'resque-lock'
 gem 'resque-pool'
 gem 'config'
 
 # Stanford gems
 gem 'assembly-image'
-gem 'assembly-objectfile', '> 1.6.6' # use latest assembly-objectfile
+gem 'assembly-objectfile', '~> 1.7'
 gem 'assembly-utils'
-gem 'dor-services', '< 6'
+gem 'dor-services', '~> 5.29'
 gem 'modsulator'
 
 group :test do

@@ -455,7 +455,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image
-  assembly-objectfile (> 1.6.6)
+  assembly-objectfile (~> 1.7)
   assembly-utils
   byebug
   capistrano-bundler
@@ -463,7 +463,7 @@ DEPENDENCIES
   config
   coveralls
   dlss-capistrano (~> 3.1)
-  dor-services (< 6)
+  dor-services (~> 5.29)
   equivalent-xml
   honeybadger (~> 3.1)
   listen
