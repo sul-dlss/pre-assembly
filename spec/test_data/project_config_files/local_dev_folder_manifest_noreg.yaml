@@ -34,11 +34,6 @@ publish_attr:
 content_md_creation:
   style:              'joined'
 
-object_discovery:
-  use_manifest:       true
-  glob:               ~
-  regex:              ~
-
 stageable_discovery:
   use_container:      false
   glob:               '**/*'

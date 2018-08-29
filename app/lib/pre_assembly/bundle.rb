@@ -22,7 +22,6 @@ module PreAssembly
              :bundle_dir,
              :project_style,
              :project_name,
-             :object_discovery,
              :staging_dir,
              :apply_tag,
              :apo_druid_id,
@@ -118,7 +117,7 @@ module PreAssembly
     # For each container, creates a new Digitalobject.
     def discover_objects
       log "discover_objects()"
-      self.digital_objects = object_containers.map do |c|
+      self.digital_objects = discover_containers_via_manifest.map do |c|
         params = digital_object_base_params.merge(
           :container            => actual_container(c),
           :stageable_items      => stageable_items_for(c),
@@ -141,14 +140,6 @@ module PreAssembly
         :staging_dir          => staging_dir,
         :staging_style        => staging_style
       }
-    end
-
-    # Every object must reside in a single container: either a file or a directory.
-    # Those containers are either (a) specified in a manifest or (b) discovered
-    # through a pattern-based crawl of the bundle_dir.
-    def object_containers
-      return discover_containers_via_manifest if object_discovery[:use_manifest]
-      discover_items_via_crawl(bundle_dir, object_discovery)
     end
 
     # Discover object containers from a manifest.
@@ -327,7 +318,6 @@ module PreAssembly
     # For bundles using a manifest, adds the manifest info to the digital objects.
     # Assumes a parallelism between the @digital_objects and manifest_rows arrays.
     def process_manifest
-      return unless object_discovery[:use_manifest]
       log "process_manifest()"
       digital_objects.each_with_index do |dobj, i|
         r = manifest_rows[i]

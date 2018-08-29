@@ -23,7 +23,7 @@ RSpec.describe PreAssembly::Bundle do
       expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
     end
   end
-  
+
   describe '#load_skippables' do
     it "returns expected hash of skippable items" do
       allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
@@ -114,44 +114,27 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "object discovery: containers" do
-    it "object_containers() should dispatch the correct method" do
-      exp = {
-        :discover_containers_via_manifest => true,
-        :discover_items_via_crawl         => false,
-      }
-      exp.each do |meth, use_man|
-        revs.object_discovery[:use_manifest] = use_man
-        allow(revs).to receive(meth).and_return []
-        expect(revs).to receive(meth).once
-        revs.object_containers
-      end
+    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
+      items = [0, 11, 22, 33, 44, 55, 66, 77]
+      revs_context.limit_n = nil
+      expect(revs.pruned_containers(items)).to eq(items)
+      revs_context.limit_n = 3
+      expect(revs.pruned_containers(items)).to eq(items[0..2])
     end
   end
 
-  describe "object discovery: discovery via manifest and crawl" do
+  describe '#object_discovery: discovery via manifest and crawl' do
     it "discover_containers_via_manifest() should return expected information" do
       vals = %w(123.tif 456.tif 789.tif)
       revs.manifest_cols[:object_container] = :col_foo
-      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { :col_foo => v } })
+      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { col_foo: v } })
       expect(revs.discover_containers_via_manifest).to eq(vals.map { |v| revs.path_in_bundle v })
     end
 
-    it "discover_items_via_crawl() should return expected information" do
-      items = [
-        'abc.txt', 'def.txt', 'ghi.txt',
-        '123.tif', '456.tif', '456.TIF',
-      ]
-      items = items.map { |i| revs.path_in_bundle i }
+    it '#discover_items_via_crawl should return expected information' do
+      items = ['abc.txt', 'def.txt', 'ghi.txt','123.tif', '456.tif', '456.TIF'].map { |i| revs.path_in_bundle i }
       allow(revs).to receive(:dir_glob).and_return(items)
-      # No regex filtering.
-      revs_context.object_discovery = { :regex => '', :glob => '' }
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items.sort)
-      # No regex filtering: using nil as regex.
-      revs_context.object_discovery = { :regex => nil, :glob => '' }
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items.sort)
-      # Only tif files.
-      revs_context.object_discovery[:regex] = '(?i)\.tif$'
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items[3..-1].sort)
+      expect(revs.discover_items_via_crawl(revs.bundle_dir)).to eq(items.sort)
     end
   end
 
@@ -328,22 +311,27 @@ RSpec.describe PreAssembly::Bundle do
     describe '#retrieve_checksum' do
       it "computes checksum when checksum is not available" do
         revs.provider_checksums = {}
-        expect(file).to receive(:md5)
+        expect(revs).to receive(:md5)
         revs.retrieve_checksum(file)
+      end
+    end
+
+    describe '#compute_checksum' do
+      it "returns nil if @compute_checksum is false" do
+        allow(revs).to receive(:compute_checksum?).and_return(false)
+        expect(revs.compute_checksum(file)).to be_nil
+      end
+
+      it "returns an md5 checksum" do
+        expect(revs.compute_checksum(file)).to be_a(String).and match(md5_regex)
       end
     end
   end
 
   describe '#process_manifest' do
-    it "does nothing for bundles that do not use a manifest" do
-      rumsey.discover_objects
-      expect(rumsey).not_to receive :manifest_rows
-      rumsey.process_manifest
-    end
+    before { revs.discover_objects }
 
     it "augments the digital objects with additional information" do
-      # Discover the objects: we should find some.
-      revs.discover_objects
       expect(revs.digital_objects.size).to eq(3)
       # Before processing manifest: various attributes should be nil or default value.
       revs.digital_objects.each do |dobj|
@@ -457,6 +445,14 @@ RSpec.describe PreAssembly::Bundle do
       expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)
     end
 
+    it "#relative_path raises error if given bogus arguments" do
+      path = "foo/bar/fubb.txt"
+      exp_msg = /^Bad args to relative_path/
+      expect { revs.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
+      expect { revs.relative_path(path, path) }.to raise_error(ArgumentError, exp_msg)
+      expect { revs.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
+    end
+
     it "#get_base_dir returns expected value" do
       expect(revs.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
@@ -502,6 +498,16 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "misc utilities" do
+    it '#source_id_suffix is empty if not making unique source IDs' do
+      revs_context.uniqify_source_ids = false
+      expect(revs.source_id_suffix).to eq('')
+    end
+
+    it '#source_id_suffix looks like an integer if making unique source IDs' do
+      revs_context.uniqify_source_ids = true
+      expect(revs.source_id_suffix).to match(/^_\d+$/)
+    end
+
     it '#symbolize_keys handles various data structures correctly' do
       tests = [
         [{}, {}],

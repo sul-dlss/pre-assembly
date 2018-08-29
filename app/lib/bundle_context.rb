@@ -16,7 +16,6 @@ class BundleContext
     :project_name,
     :file_attr,
     :content_md_creation,
-    :object_discovery,
     :stageable_discovery,
     :manifest_cols,
     :content_exclusion,
@@ -50,6 +49,7 @@ class BundleContext
     return @validate_files unless @validate_files.nil?
     false
   end
+
   ####
   # grab bag
   ####
@@ -69,8 +69,7 @@ class BundleContext
   # On first call, loads the manifest data (does not reload on subsequent calls).
   # If bundle is not using a manifest, just loads and returns emtpy array.
   def manifest_rows
-    return @manifest_rows if @manifest_rows
-    self.manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
+    @manifest_rows ||= self.class.import_csv(manifest)
   end
 
   ####
@@ -92,7 +91,7 @@ class BundleContext
   end
 
   def setup_defaults
-    self.validate_files = true if @validate_files.nil?
+    self.validate_files = true if @validate_files.nil? # FIXME: conflict between attribute and non-getter method #validate_files
     self.staging_style ||= 'copy'
     project_style[:content_tag_override] = false if project_style[:content_tag_override].nil?
     content_md_creation[:smpl_manifest] ||= 'smpl_manifest.csv'
@@ -160,32 +159,24 @@ class BundleContext
     end
 
     validation_errors << "Bundle directory not specified." if bundle_dir.nil? || bundle_dir == ''
-    validation_errors <<  "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
-    validation_errors <<  "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
-    validation_errors <<  "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
+    validation_errors << "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
+    validation_errors << "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
+    validation_errors << "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
     # validation_errors << "The APO and SET DRUIDs should not be set." if apo_druid_id # APO should not be set
     # validation_errors << "get_druid_from: 'suri' is no longer valid" if project_style[:get_druid_from] == :suri # can't use SURI to get druid
-    validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if project_style[:get_druid_from] == :manifest && !object_discovery[:use_manifest] # can't use SURI to get druid
-
-    if object_discovery[:use_manifest] # if we are using a manifest, check some stuff
-      validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless object_discovery[:glob].nil? && object_discovery[:regex].nil? # glob and regex should be nil
-      if manifest.blank?
-        validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
-      else # let's see if the columns the user claims are there exist in the actual manifest
-        if manifest_rows.size == 0
-          validation_errors << "Manifest does not have any rows!"
-        elsif manifest_cols.blank? || manifest_cols[:object_container].blank?
-          validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
-        else
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'" unless manifest_rows.first.keys.include?(manifest_cols[:object_container].to_s)
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(manifest_cols[:source_id].to_s)
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(manifest_cols[:label].to_s)
-          validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
-        end
-      end
-    else # if we are not using a manifest, check some stuff
-      validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if object_discovery[:glob].blank? # glob must be set
+    if manifest.blank?
+      validation_errors << "A manifest file must be provided."
+    elsif manifest_rows.size == 0
+      validation_errors << "Manifest does not have any rows!"
+    elsif manifest_cols.blank? || manifest_cols[:object_container].blank?
+      validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
+    else
+      first_row_keys = manifest_rows.first.keys
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'"                            unless first_row_keys.include?(manifest_cols[:object_container].to_s)
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !first_row_keys.include?(manifest_cols[:source_id].to_s)
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank?         && !first_row_keys.include?(manifest_cols[:label].to_s)
+      validation_errors << "You must have a column labeled 'druid' in your manifest" unless first_row_keys.include?('druid')
     end
 
     if stageable_discovery[:use_container] # if we are staging the whole container, check some stuff

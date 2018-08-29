@@ -29,11 +29,6 @@ publish_attr:
 content_md_creation:
   style:              'smpl'
 
-object_discovery:
-  use_manifest:       false
-  glob:               '*'
-  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
-
 stageable_discovery:
   use_container:      false
   glob:               '**/*'
