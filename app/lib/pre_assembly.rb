@@ -1,0 +1,5 @@
+require 'fileutils'
+require 'erb'
+require 'assembly-image'
+require 'rest_client'
+require 'honeybadger'

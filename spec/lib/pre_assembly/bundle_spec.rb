@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   # TODO: break out tests about BundleContext into separate spec file
@@ -50,10 +48,9 @@ describe PreAssembly::Bundle do
   end
 
   describe '#load_skippables' do
-    it "does nothing if resume returns false" do
+    it "does nothing if @resume is false" do
       allow(rumsey).to receive(:resume).and_return(false)
-      expect(rumsey).not_to receive(:read_progress_log)
-      rumsey.load_skippables
+      expect(rumsey.load_skippables).to be_nil
     end
 
     it "returns expected hash of skippable items" do
@@ -306,7 +303,7 @@ describe PreAssembly::Bundle do
     end
 
     it "new_object_file() should return an ObjectFile with expected path values" do
-      allow(revs).to receive(:exclude_from_path).and_return(false)
+      allow(revs).to receive(:exclude_from_content).and_return(false)
       tests = [
         # Stageable is a file:
         # - immediately in bundle dir.
@@ -465,8 +462,10 @@ describe PreAssembly::Bundle do
 
   describe '#manifest_rows' do
     it "loads the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
-      expect(revs).not_to receive(:load_manifest_rows_from_csv)
-      3.times { revs.manifest_rows.size == 3 }
+      expect(revs.manifest_rows.size).to eq 3
+      expect(revs).not_to receive(:object_discovery)
+      revs.manifest_rows
+
     end
 
     it "returns empty array for bundles that do not use a manifest" do

@@ -30,9 +30,9 @@ gem 'turbolinks'
 gem 'resque', '~> 1.27'
 gem 'resque-lock'
 gem 'resque-pool'
+gem 'config'
 
 group :test do
-  gem 'rspec', '~> 3.0'
   gem 'yard'
   gem 'solr_wrapper'
   gem 'jettywrapper'

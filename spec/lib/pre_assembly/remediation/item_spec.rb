@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe PreAssembly::Remediation::Item do
   let(:pid) { 'druid:cs575bk5522' }
   let(:item) { described_class.new(pid) }
@@ -11,13 +9,19 @@ describe PreAssembly::Remediation::Item do
   end
 
   context 'logging' do
-    let(:log_dir) { File.dirname(__FILE__) + "/test_data/logging" }
+    let(:log_dir) { File.join(Rails.root, "spec/lib/test_data/logging") }
     let(:csv_filename) { log_dir + "/csv_log.csv" }
     let(:progress_log_file) { log_dir + "/progress_log_file.yml" }
 
-    before { Dir.mkdir(log_dir) unless Dir.exist?(log_dir) }
+    before do
+      FileUtils.mkdir_p(log_dir) unless Dir.exist?(log_dir)
+      FileUtils.touch progress_log_file
+    end
 
-    after { File.delete(csv_filename) if File.exist?(csv_filename) }
+    after do
+      File.delete(csv_filename) if File.exist?(csv_filename)
+      FileUtils.rm_f(progress_log_file) # cleanup
+    end
 
     it "ensures a log file exists" do
       File.delete(csv_filename) if File.exist?(csv_filename)
