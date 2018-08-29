@@ -9,7 +9,7 @@ gem 'rake'
 gem 'rdf'
 gem 'rest-client'
 gem 'retries'
-gem 'roo'
+gem 'roo' # for processing spreadsheets
 gem 'ruby-prof'
 gem 'honeybadger', '~> 3.1'
 
@@ -33,7 +33,6 @@ gem 'resque-pool'
 gem 'config'
 
 group :test do
-  gem 'yard'
   gem 'solr_wrapper'
   gem 'jettywrapper'
   gem 'coveralls', require: false
