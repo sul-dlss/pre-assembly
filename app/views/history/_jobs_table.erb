@@ -1,0 +1,31 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th colspan="2">
+        <div class="float-right">
+        <a href="#" onclick="alert('sort not implemented')">
+          <i class="fas fa-sort-amount-down"></i>
+          Sort
+        </a>
+        <a href="#"  onclick="alert('filter not implemented')">
+          <i class="fas fa-filter"></i>
+          Filter
+        </a>
+      </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% [['2018-09-01', '[Project.Title] Accessioning Report'],
+        ['2018-08-28', '[Project.Title] Evaluation Report'],
+        ['2018-08-28', '[Project.Title] Evaluation Report']].each do |row| %>
+        <tr>
+            <td><%= row.first %></td>
+            <td><%= row.second %></td>
+        </tr>
+    <%end %>
+    <tr>
+
+    </tr>
+  </tbody>
+</table>

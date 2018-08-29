@@ -1,9 +1,9 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe 'test/index.html.erb' do
+describe 'template/index' do
   it 'displays the form correctly' do
     # Should render the test page
     render
-    p rendered
+    expect(rendered).to match(/Project/)
   end
 end

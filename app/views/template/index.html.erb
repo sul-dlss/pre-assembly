@@ -1,10 +1,25 @@
-<div class="container">
+<div class="container mt-3">
   <div class="row">
     <section class="col-7">
       <%= render "template/yaml_form" %>
     </section>
     <section class="col-5">
-
+      <ul class="nav nav-pills nav-fill">
+        <li class="nav-item">
+          <a id="project-queue-tab"
+             data-toggle="tab"
+             class="nav-link active" href="#project-queue">
+             Queue of projects
+           </a>
+        </li>
+        <%= render "history/tab_list_item" %>
+      </ul>
+      <div class="tab-content" id="jobs-queue-history-content">
+        <div class="tab-pane fade" id="project-queue" role="tabpanel"
+           aria-labelledby="project-queue-tab">
+         </div>
+      </div>
+        <%= render "history/tab_pane" %>
     </section>
   </div>
 </div>
