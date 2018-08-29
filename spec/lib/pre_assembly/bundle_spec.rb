@@ -49,7 +49,7 @@ describe PreAssembly::Bundle do
 
   describe '#load_skippables' do
     it "does nothing if @resume is false" do
-      rumsey.resume = false
+      allow(rumsey).to receive(:resume).and_return(false)
       expect(rumsey.load_skippables).to be_nil
     end
 

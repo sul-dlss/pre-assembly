@@ -20,6 +20,7 @@ tags
 tmp
 /workflow_service.log*
 coverage
+spec/lib/test_data/logging/progress_log_file.yml
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
