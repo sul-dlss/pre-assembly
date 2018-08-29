@@ -28,11 +28,6 @@ publish_attr:
 content_md_creation:
   style:              'default'
 
-object_discovery:
-  use_manifest:       true
-  glob:               ~
-  regex:              ~
-
 stageable_discovery:
   use_container:      false
   glob:               '**/*'

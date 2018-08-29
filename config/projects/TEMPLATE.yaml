@@ -89,40 +89,6 @@ staging_style:    'copy'     # the staging style, can be "copy" or "symlink", de
                              #  if set to "copy" then all discovered files that need to be staged will be copied from the bundle directory to the staging directory
                              #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the bundle directory
 ####
-# Specify how pre-assembly should locate objects within the bundle_dir.
-# Here we are discovering the object containers. An object container
-# is either a single file or a single directory.
-####
-
-object_discovery:
-
-  # Option 1: use a manifest.
-  use_manifest: true    # If true, set glob and regex to nil.
-                false   # If false, set glob and regex paramaters to match your sub-directories
-
-  # Option 2: two-phase directory crawl.
-  #
-  #   - A glob pattern is used to find the object containers within the 'bundle_dir' set above.
-  #     This pattern is passed to Ruby's Dir.glob().
-  #     See http://www.ruby-doc.org/core-1.9.3/Dir.html#method-c-glob
-  #
-  #   - Optionally, the results of that glob pattern can be filtered,
-  #     retaining only the items matching the given regex (Ruby regular expression).
-  #     See http://www.ruby-doc.org/core-1.9.3/Regexp.html
-  #
-  # Both the glob and regex should be expressed in relative terms --
-  # in other words, they do not include the bundle_dir.
-  #
-  # Various examples are shown.
-  glob:  '*'                                    # Everything.
-         '*.tif'                                # Only .tif files.
-
-  regex: ~                                      # No filtering.
-         '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$' # Only druid directories.
-         '^\d+$'                                # Only barcode directories.
-
-
-####
 # Once object containers have been identified, specify which files within those
 # containers should be staged (i.e., copied to the staging_dir).
 ####
@@ -219,18 +185,13 @@ checksums_file:   'checksums.txt'      # A provider checksum file (in default md
 desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML template to use in conjunction with the manifest.  Path can be absolute or relative to the bundle path.
 
 ####
-# If object_discovery:use_manifest=true, you must indicate the column names of certain fields in the CSV file.
-#
-# For object_discovery:use_manifest=false, set these values to nil.
-####
-
+# You must indicate the column names of certain fields in the CSV file.
 # These should always be lowercase.  Note that if your project is using a manifest for object discovery and has objects already registered, you will
 # need a column called "druid" in addition to the columns below.  The "source_id" and "label" columns must exist in this case but can be blank (since objects are already registered).
 manifest_cols:
   object_container:   'filename'   # Always required, indicates the column name containing the filename (single file per object) or folder name (multiple files per object) relative to the bundle directory.
   source_id:          'sourceid'   # optional
   label:              'label'      # optional
-
 
 ####
 # Attributes related to content metadata generation.
