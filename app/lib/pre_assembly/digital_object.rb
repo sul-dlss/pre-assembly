@@ -134,6 +134,7 @@ module PreAssembly
     # Determining the druid.
     ####
 
+    # @return [DruidTools::Druid]
     def determine_druid
       k = project_style[:get_druid_from]
       log "    - determine_druid(#{k})"
@@ -297,6 +298,12 @@ module PreAssembly
     # Object files that should be included in content metadata.
     def content_object_files
       object_files.reject { |ofile| ofile.exclude_from_content }.sort
+    end
+
+    # Checks filesystem for expected files
+    def object_files_exist?
+      return false if object_files.size == 0
+      object_files.map(&:path).all? { |path| File.readable?(path) }
     end
 
     ####

@@ -374,11 +374,6 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
-    def object_files_exist?(dobj)
-      return false if dobj.object_files.size == 0
-      dobj.object_files.map(&:path).all? { |path| File.readable?(path) }
-    end
-
     # Cleanup of objects and associated files in specified environment using logfile as input
     def cleanup!(steps = [], dry_run = false)
       log "cleanup!()"
@@ -398,30 +393,31 @@ module PreAssembly
     # For each container, creates a new Digitalobject.
     def discover_objects
       log "discover_objects()"
-      object_containers.each do |c|
-        container    = actual_container(c)
-        stageables   = stageable_items_for(c)
-        object_files = discover_object_files(stageables)
-        params = {
-          :project_style        => project_style,
-          :bundle_dir           => bundle_dir,
-          :staging_dir          => staging_dir,
-          :project_name         => project_name,
-          :file_attr            => file_attr,
-          :init_assembly_wf     => init_assembly_wf,
-          :content_md_creation  => content_md_creation,
-          :container            => container,
-          :unadjusted_container => c,
-          :stageable_items      => stageables,
-          :object_files         => object_files,
-          :new_druid_tree_format => new_druid_tree_format,
-          :staging_style        => staging_style,
-          :smpl_manifest        => smpl_manifest
-        }
-        dobj = DigitalObject.new params
-        digital_objects.push dobj
+      self.digital_objects = object_containers.map do |c|
+        params = digital_object_base_params.merge(
+          :container            => actual_container(c),
+          :stageable_items      => stageable_items_for(c),
+          :unadjusted_container => c
+        )
+        params[:object_files] = discover_object_files(params[:stageable_items])
+        DigitalObject.new(params)
       end
       log "discover_objects(found #{digital_objects.count} objects)"
+    end
+
+    def digital_object_base_params
+      {
+        :bundle_dir           => bundle_dir,
+        :content_md_creation  => content_md_creation,
+        :file_attr            => file_attr,
+        :init_assembly_wf     => init_assembly_wf,
+        :new_druid_tree_format => new_druid_tree_format,
+        :project_name         => project_name,
+        :project_style        => project_style,
+        :smpl_manifest        => smpl_manifest,
+        :staging_dir          => staging_dir,
+        :staging_style        => staging_style
+      }
     end
 
     # If user configured pre-assembly to process a limited N of objects,
@@ -570,9 +566,8 @@ module PreAssembly
             elsif f.valid_image? && f.has_color_profile?
               tally[:valid] += 1
             else
-              msg = "File validation failed: #{f.path}"
               failed_validation = true
-              raise msg
+              raise "File validation failed: #{f.path}"
             end
           end
           success = true

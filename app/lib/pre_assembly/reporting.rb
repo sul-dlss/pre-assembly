@@ -75,26 +75,20 @@ module PreAssembly
       unique_objects = 0
       discover_objects
       process_manifest
-
-      objects_in_bundle_directory = @digital_objects.collect { |dobj| dobj.container_basename }
       all_object_containers = manifest_rows.collect { |r| r[@manifest_cols[:object_container]] }
-
       total_objects = @digital_objects.size
-
       o2p = objects_to_process
-      total_objects_to_process = o2p.size
 
-      source_ids = Hash.new(0) if using_manifest # hash to keep track of local source_id uniqueness
+      source_ids = Hash.new(0) # hash to keep track of local source_id uniqueness
       total_size_all_files = 0
       mimetypes = Hash.new(0) # hash to keep track of mimetypes
-
       counter = 0
 
       o2p.each do |dobj|
         counter += 1
 
         bundle_id = File.basename(dobj.unadjusted_container)
-        message = "#{counter} of #{total_objects_to_process} : #{bundle_id} , " # obj container id
+        message = "#{counter} of #{o2p.size} : #{bundle_id} , " # obj container id
 
         if dobj.object_files.count == 0
           message += report_error_message("none") + " N/A ," # no items found and therefore existence gets an N/A
@@ -103,18 +97,16 @@ module PreAssembly
           total_size = (dobj.object_files.inject(0) { |sum, obj| sum + obj.filesize }) / 1048576.0 # compute total size of all files in this object in MB
           total_size_all_files += total_size # keep running tally of sizes of all discovered files
           dobj.object_files.each { |obj| mimetypes[obj.mimetype] += 1 } # keep a running tally of number of files by mimetype
-          filenames_with_no_extension = dobj.object_files.collect { |obj| File.extname(obj.path).empty? }.include?(true)
+          filenames_with_no_extension = dobj.object_files.any? { |obj| File.extname(obj.path).empty? }
           file_with_zero_size = dobj.object_files.collect { |obj| obj.filesize == 0 }.include?(true)
           message += (filenames_with_no_extension ? report_error_message("filenames have no extension") : " no , ")
           message += (file_with_zero_size ? report_error_message("a file has zero size") : " no , ")
           message += (total_size == 0 ? report_error_message("object is zero size") : " %.3f" % total_size.to_s + " MB , ") # total size of all files in MB
-          message += (object_files_exist?(dobj) ? " yes ," : report_error_message("missing or non-readable files")) # check if all files exist and are readable
+          message += dobj.object_files_exist? ? ' yes ,' : report_error_message('missing or non-readable files') # check if all files exist and are readable
         end
 
-        if using_manifest # if we are using a manifest, let's add label and source ID from manifest to the report
-          message += "\"#{dobj.label}\" , " # label
-          message += "\"#{dobj.source_id}\" ," # source ID
-        end
+        # if we are using a manifest, let's add label and source ID from manifest to the report
+        message += "\"#{dobj.label}\" , \"#{dobj.source_id}\" ," if using_manifest
 
         if using_smpl_manifest # if we are using a SMPL manifest, let's add how many files were found
           cm_files = smpl_manifest.manifest[bundle_id]
@@ -134,7 +126,7 @@ module PreAssembly
 
         message += (object_filenames_unique?(dobj) ? " no ," : report_error_message("dupes")) # check for dupe filenames, important in a nested object that will be flattened
 
-        source_ids[dobj.source_id] += 1 if using_manifest # keep track of source_id uniqueness
+        source_ids[dobj.source_id] += 1 # keep track of source_id uniqueness
 
         if confirming_registration # objects should already be registered, let's confirm that
           dobj.determine_druid
@@ -178,7 +170,7 @@ module PreAssembly
 
       puts "\nConfig filename, #{@config_filename}"
       puts "Completed at #{Time.now}, total time was #{'%.2f' % ((Time.now - start_time) / 60.0)} minutes"
-      puts "\nTotal Objects that will be Processed, #{total_objects_to_process}"
+      puts "\nTotal Objects that will be Processed, #{o2p.size}"
       puts "Total Files and Folders in bundle directory, #{entries_in_bundle_directory.count}"
       puts "Total Discovered Objects, #{total_objects}"
       puts "Total Size of all discovered objects, " + "%.3f" % total_size_all_files.to_s + " MB"
@@ -196,7 +188,7 @@ module PreAssembly
       elsif !using_manifest
         if show_other && (entries_in_bundle_directory.count != total_objects)
           puts "List of entries in bundle directory that will not be discovered: "
-          puts (entries_in_bundle_directory - objects_in_bundle_directory).join("\n")
+          puts (entries_in_bundle_directory - @digital_objects.map(&:container_basename)).join("\n")
         end
       end
 
