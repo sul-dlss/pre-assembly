@@ -5,9 +5,7 @@ require 'modsulator'
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
-
-    # include any project specific files
-    Dir[File.dirname(__FILE__) + '/project/*.rb'].each { |file| include "PreAssembly::Project::#{File.basename(file).gsub('.rb', '').camelize}".constantize }
+    include PreAssembly::Project::Smpl
 
     INIT_PARAMS = [
       :container,
