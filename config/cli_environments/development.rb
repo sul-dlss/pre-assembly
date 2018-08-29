@@ -1,3 +1,5 @@
+require 'dor-services'
+
 Dor::Config.configure do
   dor do
     service_root 'https://example.com/dor/v1'
