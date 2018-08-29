@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 gem 'actionmailer'
 gem 'actionpack', '~> 5.0', '>= 5.0.0.1'
-gem 'csv-mapper'
 gem 'nokogiri'
 gem 'rake'
 gem 'retries'
