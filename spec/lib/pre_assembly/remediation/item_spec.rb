@@ -1,4 +1,4 @@
-describe PreAssembly::Remediation::Item do
+RSpec.describe PreAssembly::Remediation::Item do
   let(:pid) { 'druid:cs575bk5522' }
   let(:item) { described_class.new(pid) }
 

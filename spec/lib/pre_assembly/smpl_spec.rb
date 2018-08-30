@@ -1,4 +1,4 @@
-describe PreAssembly::Smpl do
+RSpec.describe PreAssembly::Smpl do
   let(:bundle_dir) { File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e') }
 
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do

@@ -1,4 +1,4 @@
-describe PreAssembly::ObjectFile do
+RSpec.describe PreAssembly::ObjectFile do
   before do
     @f = described_class.new(
       :path => 'spec/test_data/bundle_input_a/image1.tif'
