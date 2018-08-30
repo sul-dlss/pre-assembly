@@ -9,7 +9,6 @@ staging_dir: ~
 accession_items:   ~
 
 stageable_discovery:
-  use_container: false
   glob:  '00/*'
   regex: ~
 

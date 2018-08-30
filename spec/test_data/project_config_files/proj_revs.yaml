@@ -23,7 +23,6 @@ content_md_creation:
   style:              'default'
 
 stageable_discovery:
-  use_container:      true
   glob:               ~
   regex:              ~
 

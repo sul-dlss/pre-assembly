@@ -26,7 +26,6 @@ content_md_creation:
   style:              'smpl'
 
 stageable_discovery:
-  use_container:      false
   glob:               '**/*'
   regex:              ~
   files_only:         false

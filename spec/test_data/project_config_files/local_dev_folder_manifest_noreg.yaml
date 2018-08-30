@@ -35,7 +35,6 @@ content_md_creation:
   style:              'joined'
 
 stageable_discovery:
-  use_container:      false
   glob:               '**/*'
   regex:              '(?ix) \. (tif|jp2) $'
 

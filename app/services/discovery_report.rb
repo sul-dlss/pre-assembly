@@ -3,8 +3,8 @@
 class DiscoveryReport
   attr_reader :bundle, :start_time
 
-  delegate :bundle_dir, :content_md_creation, :manifest, :object_discovery, :project_style, to: :bundle
-  delegate :checksums_file, :confirm_checksums, :error_count, :object_filenames_unique?, to: :bundle
+  delegate :bundle_dir, :content_md_creation, :manifest, :project_style, to: :bundle
+  delegate :error_count, :object_filenames_unique?, to: :bundle
 
   # @param [PreAssembly::Bundle] bundle
   def initialize(bundle)
@@ -46,7 +46,6 @@ class DiscoveryReport
     errors[:empty_files] = true if counts[:empty_files] > 0
     errors[:empty_object] = true if counts[:total_size] > 0
     errors[:missing_files] = true unless dobj.object_files_exist?
-    errors[:checksum_mismatch] = true unless !checksums_file || confirm_checksums(dobj)
     errors[:dupes] = true unless object_filenames_unique?(dobj)
     counts[:source_ids][dobj.source_id] += 1
     errors.merge!(registration_check(dobj.determine_druid))
@@ -75,7 +74,6 @@ class DiscoveryReport
     fields = ['Object Container', 'Number of Items', 'Files with no ext', 'Files with 0 Size', 'Total Size', 'Files Readable']
     fields.concat ['Label', 'Source ID'] if using_manifest?
     fields.concat ['Num Files in CM Manifest', 'All CM files found'] if using_smpl_manifest?
-    fields << 'Checksums' if checksums_file
     fields.concat ['Duplicate Filenames?', 'DRUID', 'Registered?', 'APO exists?']
     fields << 'SourceID unique in DOR?' if using_manifest?
     fields.join(' , ')
@@ -86,13 +84,12 @@ class DiscoveryReport
     files = ['Thumbs.db', '.DS_Store'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
     files << File.basename(content_md_creation[:smpl_manifest]) if using_smpl_manifest?
     files << File.basename(manifest) if using_manifest?
-    files << File.basename(checksums_file) if checksums_file
     files
   end
 
   # @return [Boolean]
   def using_manifest?
-    manifest && object_discovery[:use_manifest]
+    manifest.present?
   end
 
   # @return [Boolean]
