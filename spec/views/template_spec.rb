@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'template/index' do
+RSpec.describe 'template/index' do
   it 'displays the form correctly' do
     # Should render the test page
     render
