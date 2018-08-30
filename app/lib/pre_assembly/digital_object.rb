@@ -18,16 +18,13 @@ module PreAssembly
       :bundle_dir,
       :staging_dir,
       :desc_md_template_xml,
-      :init_assembly_wf,
       :content_md_creation,
-      :new_druid_tree_format,
       :staging_style,
       :smpl_manifest
     ]
 
     attr_accessor :pid,
                   :label,
-                  :reaccession,
                   :content_md_file,
                   :technical_md_file,
                   :desc_md_file,
@@ -99,16 +96,16 @@ module PreAssembly
 
     # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||= (new_druid_tree_format ? DruidTools::Druid.new(druid.id, staging_dir).path() : Assembly::Utils.get_staging_path(druid.id, staging_dir))
+      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, staging_dir).path()
     end
 
     def content_dir
-      @content_dir ||= (new_druid_tree_format ? File.join(druid_tree_dir, 'content') : druid_tree_dir)
+      @content_dir ||= File.join(druid_tree_dir, 'content')
     end
 
     # the metadata subfolder
     def metadata_dir
-      @metadata_dir ||= (new_druid_tree_format ? File.join(druid_tree_dir, 'metadata') : druid_tree_dir)
+      @metadata_dir ||= File.join(druid_tree_dir, 'metadata')
     end
 
     ####
@@ -120,8 +117,6 @@ module PreAssembly
 
       log "  - pre_assemble(#{source_id}) started"
       determine_druid
-
-      prepare_for_reaccession if reaccession
       stage_files
       generate_content_metadata unless content_md_creation[:style].to_s == 'none'
       generate_technical_metadata
@@ -190,13 +185,6 @@ module PreAssembly
 
     def add_collection_relationship_params(druid)
       [:is_member_of_collection, "info:fedora/#{druid}"]
-    end
-
-    # Used during a re-accession, will remove symlinks in /dor/workspace, files from the stacks and content in /dor/assembly, workflows
-    # but will not unregister the object
-    def prepare_for_reaccession
-      log "  - prepare_for_reaccession(#{druid})"
-      Assembly::Utils.cleanup_object(druid.druid, [:stacks, :stage, :symlinks])
     end
 
     ####
@@ -354,14 +342,11 @@ module PreAssembly
     # Initialize the assembly workflow.
     ####
 
+    # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
-      # Call web service to add assemblyWF to the object in DOR.
-      return unless init_assembly_wf
       log "    - initialize_assembly_workflow()"
-      url = assembly_workflow_url
-
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        result = RestClient.post url, {}
+        result = RestClient.post(assembly_workflow_url, {})
         raise PreAssembly::UnknownError unless result && [200, 201, 202, 204].include?(result.code)
         result
       end

@@ -12,7 +12,6 @@ RSpec.describe PreAssembly::DigitalObject do
       :project_style => {},
       :content_md_creation => {},
       :bundle_dir => 'spec/test_data/bundle_input_g',
-      :new_druid_tree_format => true,
       :staging_style => 'copy'
     }
   }
@@ -206,21 +205,12 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "check the druid tree directories and content and metadata locations using both the new style and the old style" do
-    it "has the correct druid tree folders using the new style" do
+  describe 'druid tree' do
+    it 'has the correct folders (using the contemporary style)' do
       dobj.druid = druid
-      dobj.new_druid_tree_format = true
       expect(dobj.druid_tree_dir).to eq('gn/330/dv/6119/gn330dv6119')
       expect(dobj.metadata_dir).to eq('gn/330/dv/6119/gn330dv6119/metadata')
       expect(dobj.content_dir).to eq('gn/330/dv/6119/gn330dv6119/content')
-    end
-
-    it "has the correct druid tree folders using the old style" do
-      dobj.druid = druid
-      dobj.new_druid_tree_format = false
-      expect(dobj.druid_tree_dir).to eq('gn/330/dv/6119')
-      expect(dobj.metadata_dir).to eq('gn/330/dv/6119')
-      expect(dobj.content_dir).to eq('gn/330/dv/6119')
     end
   end
 
@@ -581,19 +571,13 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "initiate assembly workflow" do
-    it '#initialize_assembly_workflow should do nothing if init_assembly_wf is false' do
-      dobj.init_assembly_wf = false
-      expect(dobj).not_to receive :assembly_workflow_url
-      dobj.initialize_assembly_workflow
-    end
-
-    it '#assembly_workflow_url should return expected value' do
+  describe '#assembly_workflow_url' do
+    it 'returns expected value' do
       dobj.pid = pid
       expect(dobj.assembly_workflow_url).to match(/^http.+assemblyWF$/).and include(pid)
     end
 
-    it '#assembly_workflow_url should add the druid: prefix to the pid if it is missing, like it might be in the manifest' do
+    it 'adds the druid: prefix to the pid if it is missing' do
       dobj.pid = pid.gsub('druid:', '')
       expect(dobj.assembly_workflow_url).to match(/^http.+assemblyWF$/).and include(pid)
     end

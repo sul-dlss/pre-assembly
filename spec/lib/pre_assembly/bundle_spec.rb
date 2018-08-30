@@ -36,13 +36,7 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#load_skippables' do
-    it "does nothing if @resume is false" do
-      allow(rumsey).to receive(:resume).and_return(false)
-      expect(rumsey.load_skippables).to be_nil
-    end
-
     it "returns expected hash of skippable items" do
-      allow(rumsey).to receive(:resume).and_return(true)
       allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
       expect(rumsey.skippables).to eq({})
       rumsey.load_skippables
@@ -92,12 +86,6 @@ RSpec.describe PreAssembly::Bundle do
       expect(revs_context.required_files.size).to eq(1)
       revs_context.desc_md_template = nil
       expect(revs_context.required_files.size).to eq(0)
-    end
-
-    it "does nothing if @validate_usage is false" do
-      revs_context.validate_usage = false
-      expect(revs_context).not_to receive(:required_user_params)
-      revs_context.validate_usage
     end
 
     it "does not raise an exception if requirements are satisfied" do
@@ -156,6 +144,7 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "finds the correct N objects, stageables, and files" do
+      allow_any_instance_of(PreAssembly::BundleContext).to receive(:validate_usage) # req'd for :sohp_files_and_folders
       tests.each do |proj, n_dobj, n_stag, n_file|
         b = described_class.new(context_from_proj(proj))
         b.discover_objects
@@ -180,14 +169,6 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "object discovery: containers" do
-    it "@pruned_containers should limit N of discovered objects if @limit_n is defined" do
-      items = [0, 11, 22, 33, 44, 55, 66, 77]
-      revs_context.limit_n = nil
-      expect(revs.pruned_containers(items)).to eq(items)
-      revs_context.limit_n = 3
-      expect(revs.pruned_containers(items)).to eq(items[0..2])
-    end
-
     it "object_containers() should dispatch the correct method" do
       exp = {
         :discover_containers_via_manifest => true,
@@ -395,7 +376,6 @@ RSpec.describe PreAssembly::Bundle do
       it "returns provider checksum when it is available" do
         fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
         revs.provider_checksums = { file_path => fake_md5 }
-        expect(revs).not_to receive(:compute_checksum)
         expect(revs.retrieve_checksum(file)).to eq(fake_md5)
       end
     end
@@ -403,19 +383,8 @@ RSpec.describe PreAssembly::Bundle do
     describe '#retrieve_checksum' do
       it "computes checksum when checksum is not available" do
         revs.provider_checksums = {}
-        expect(revs).to receive(:compute_checksum)
+        expect(file).to receive(:md5)
         revs.retrieve_checksum(file)
-      end
-    end
-
-    describe '#compute_checksum' do
-      it "returns nil if @compute_checksum is false" do
-        allow(revs).to receive(:compute_checksum?).and_return(false)
-        expect(revs.compute_checksum(file)).to be_nil
-      end
-
-      it "returns an md5 checksum" do
-        expect(revs.compute_checksum(file)).to be_a(String).and match(md5_regex)
       end
     end
   end
@@ -565,13 +534,7 @@ RSpec.describe PreAssembly::Bundle do
   describe "#delete_digital_objects" do
     before { revs.digital_objects = [] }
 
-    it "does nothing if cleanup == false" do
-      allow(revs).to receive(:cleanup?).and_return(false)
-      expect(revs.digital_objects).not_to receive :each
-      revs.delete_digital_objects
-    end
-
-    it "does something if cleanup == true" do
+    it 'iterates over digital_objects' do
       expect(revs.digital_objects).to receive :each
       revs.delete_digital_objects
     end
@@ -587,14 +550,6 @@ RSpec.describe PreAssembly::Bundle do
 
     it "#relative_path returns expected value" do
       expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)
-    end
-
-    it "#relative_path raises error if given bogus arguments" do
-      path = "foo/bar/fubb.txt"
-      exp_msg = /^Bad args to relative_path/
-      expect { revs.relative_path('',   path) }.to raise_error(ArgumentError, exp_msg)
-      expect { revs.relative_path(path, path) }.to raise_error(ArgumentError, exp_msg)
-      expect { revs.relative_path('xx', path) }.to raise_error(ArgumentError, exp_msg)
     end
 
     it "#get_base_dir returns expected value" do
@@ -642,16 +597,6 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "misc utilities" do
-    it '#source_id_suffix is empty if not making unique source IDs' do
-      revs_context.uniqify_source_ids = false
-      expect(revs.source_id_suffix).to eq('')
-    end
-
-    it '#source_id_suffix looks like an integer if making unique source IDs' do
-      revs_context.uniqify_source_ids = true
-      expect(revs.source_id_suffix).to match(/^_\d+$/)
-    end
-
     it '#symbolize_keys handles various data structures correctly' do
       tests = [
         [{}, {}],
