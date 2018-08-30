@@ -17,7 +17,6 @@ module PreAssembly
       :file_attr,
       :bundle_dir,
       :staging_dir,
-      :desc_md_template_xml,
       :content_md_creation,
       :staging_style,
       :smpl_manifest
@@ -27,15 +26,15 @@ module PreAssembly
                   :label,
                   :content_md_file,
                   :technical_md_file,
-                  :desc_md_file,
                   :content_md_xml,
                   :technical_md_xml,
-                  :desc_md_xml,
                   :pre_assem_finished,
-                  :content_structure
+                  :content_structure,
+                  :druid,
+                  :source_id,
+                  :manifest_row
 
     attr_writer :dor_object, :druid_tree_dir
-    attr_accessor :druid, :source_id, :manifest_row
 
     INIT_PARAMS.each { |p| attr_accessor p }
 
@@ -54,10 +53,8 @@ module PreAssembly
       self.label              = Dor::Config.dor.default_label
       self.content_md_file    = Assembly::CONTENT_MD_FILE
       self.technical_md_file  = Assembly::TECHNICAL_MD_FILE
-      self.desc_md_file       = Assembly::DESC_MD_FILE
       self.content_md_xml     = ''
       self.technical_md_xml   = ''
-      self.desc_md_xml        = ''
       self.content_structure  = (project_style ? project_style[:content_structure] : 'file')
     end
 
@@ -112,15 +109,12 @@ module PreAssembly
     # The main process.
     ####
 
-    def pre_assemble(desc_md_xml = nil)
-      self.desc_md_template_xml = desc_md_xml
-
+    def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
       determine_druid
       stage_files
       generate_content_metadata unless content_md_creation[:style].to_s == 'none'
       generate_technical_metadata
-      generate_desc_metadata
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
     end
@@ -297,40 +291,6 @@ module PreAssembly
     ####
     # Descriptive metadata.
     ####
-
-    def generate_desc_metadata
-      # Do nothing for bundles that don't suppy a template.
-      return unless desc_md_template_xml
-      create_desc_metadata_xml
-      write_desc_metadata
-    end
-
-    def create_desc_metadata_xml
-      log "    - create_desc_metadata_xml()"
-
-      # XML escape all of the entries in the manifest row so they won't break the XML
-      manifest_row.each { |k, v| manifest_row[k] = Nokogiri::XML::Text.new(v, Nokogiri::XML('')).to_s if v }
-
-      # ensure access with symbol or string keys
-      self.manifest_row = manifest_row.with_indifferent_access
-
-      # Run the XML template through ERB.
-      self.desc_md_xml = ERB.new(desc_md_template_xml, nil, '>').result(binding)
-
-      # The manifest_row is a hash, with column names as the key.
-      # In the template, as a conviennce we allow users to put specific column placeholders inside
-      # double brackets: "blah [[column_name]] blah".
-      # Here we replace those placeholders with the corresponding value from the manifest row.
-      manifest_row.each { |k, v| desc_md_xml.gsub! "[[#{k}]]", v.to_s.strip }
-      true
-    end
-
-    def write_desc_metadata
-      file_name = File.join(metadata_dir, desc_md_file)
-      log "    - write_desc_metadata_xml(#{file_name})"
-      create_object_directories
-      File.open(file_name, 'w') { |fh| fh.puts desc_md_xml }
-    end
 
     def create_object_directories
       FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)

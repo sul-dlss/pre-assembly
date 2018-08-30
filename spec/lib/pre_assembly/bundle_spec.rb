@@ -12,17 +12,6 @@ RSpec.describe PreAssembly::Bundle do
       expect(revs.bundle_dir).to eq('spec/test_data/bundle_input_a')
     end
 
-    it '#load_desc_md_template should return nil or String' do
-      # Return nil if no template.
-      revs_context.desc_md_template = nil
-      expect(revs.load_desc_md_template).to be_nil
-      # Otherwise, read the template and return its content.
-      revs_context.desc_md_template = revs_context.path_in_bundle('mods_template.xml')
-      template = revs.load_desc_md_template
-      expect(template).to be_a(String)
-      expect(template.size).to be > 0
-    end
-
     # TODO: this one's really more about BundleContext now
     it '#setup_other should prune @file_attr' do
       # All keys are present.
@@ -79,12 +68,10 @@ RSpec.describe PreAssembly::Bundle do
     before { revs_context.user_params = Hash[revs_context.required_user_params.map { |p| [p, ''] }] }
 
     it '#required_files should return expected N of items' do
-      expect(revs_context.required_files.size).to eq(3)
-      revs_context.manifest = nil
       expect(revs_context.required_files.size).to eq(2)
-      revs_context.checksums_file = nil
+      revs_context.manifest = nil
       expect(revs_context.required_files.size).to eq(1)
-      revs_context.desc_md_template = nil
+      revs_context.checksums_file = nil
       expect(revs_context.required_files.size).to eq(0)
     end
 

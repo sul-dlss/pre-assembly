@@ -19,7 +19,6 @@ module PreAssembly
       :accession_items,
       :manifest,
       :checksums_file,
-      :desc_md_template,
       :progress_log_file,
       :project_name,
       :file_attr,
@@ -85,9 +84,6 @@ module PreAssembly
       bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
       self.manifest       &&= path_in_bundle(manifest)
       self.checksums_file &&= path_in_bundle(checksums_file)
-      if !desc_md_template.nil? && !(Pathname.new desc_md_template).absolute? # check for a desc MD template being defined and not being absolute
-        self.desc_md_template = path_in_bundle(desc_md_template) # set it relative to the bundle
-      end
       self.staging_dir = Assembly::ASSEMBLY_WORKSPACE if staging_dir.nil? # if the user didn't supply a staging_dir, use the default
       self.progress_log_file = File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml') unless progress_log_file # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
     end
@@ -130,8 +126,7 @@ module PreAssembly
     def required_files
       [
         manifest,
-        checksums_file,
-        desc_md_template
+        checksums_file
       ].compact
     end
 
@@ -194,7 +189,6 @@ module PreAssembly
         end
       else # if we are not using a manifest, check some stuff
         validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if object_discovery[:glob].blank? # glob must be set
-        validation_errors << "Manifest and desc_md_template files should be set to nil if object_discovery:use_manifest=false." unless manifest.blank? && desc_md_template.blank?
       end
 
       if stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
@@ -230,11 +224,9 @@ module PreAssembly
                   :provider_checksums,
                   :digital_objects,
                   :skippables,
-                  :smpl_manifest,
-                  :desc_md_template_xml
+                  :smpl_manifest
 
-    delegate :desc_md_template,
-             :progress_log_file,
+    delegate :progress_log_file,
              :content_md_creation,
              :stageable_discovery,
              :bundle_dir,
@@ -265,13 +257,7 @@ module PreAssembly
       self.digital_objects = []
       self.skippables = {}
 
-      load_desc_md_template
       load_skippables
-    end
-
-    def load_desc_md_template
-      return nil unless desc_md_template && File.readable?(desc_md_template)
-      self.desc_md_template_xml = IO.read(desc_md_template)
     end
 
     def load_skippables
@@ -590,7 +576,7 @@ module PreAssembly
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
           validate_files(dobj) if validate_files
-          dobj.pre_assemble(desc_md_template_xml)
+          dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
           log_and_show "Completed #{dobj.druid.druid}"
