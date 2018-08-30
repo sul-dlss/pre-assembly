@@ -49,17 +49,11 @@ RSpec.describe PreAssembly::Bundle do
       expect(manifest).to be_an(Array)
       expect(manifest.size).to eq(3)
       headers = %w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
-      # rows should be accessible as keys by header, both as string and symbols
+      expect(manifest).to all(be_an(ActiveSupport::HashWithIndifferentAccess)) # accessible w/ string and symbols
       expect(manifest).to all(include(*headers))
-      expect(manifest).to all(include(*headers.map(&:to_sym)))
-      # test some specific values by key and string -- if the column is totally missing at the end, it might have a value of nil (like in the first row, missing the description column)
       expect(manifest[0][:description]).to be_nil
-      expect(manifest[0]['description']).to be_nil
       expect(manifest[1][:description]).to eq('')
-      expect(manifest[1]['description']).not_to be_nil
       expect(manifest[2][:description]).to eq('yo, this is a description')
-      expect(manifest[2]['description']).to eq('yo, this is a description')
-      expect(manifest[2]['Description']).to be_nil # AKA Hashes, how do they work?
     end
   end
 
@@ -102,11 +96,6 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "handles containers correctly" do
-      # A project that uses containers as stageables.
-      # In this case, the bundle_dir serves as the container.
-      revs.discover_objects
-      expect(revs.digital_objects[0].container).to eq(revs.bundle_dir)
-      # A project that does not.
       rumsey.discover_objects
       expect(rumsey.digital_objects[0].container.size).to be > rumsey.bundle_dir.size
     end
@@ -121,22 +110,9 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it '#discover_items_via_crawl should return expected information' do
-      items = ['abc.txt', 'def.txt', 'ghi.txt','123.tif', '456.tif', '456.TIF'].map { |i| revs.path_in_bundle i }
+      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| revs.path_in_bundle i }
       allow(revs).to receive(:dir_glob).and_return(items)
       expect(revs.discover_items_via_crawl(revs.bundle_dir)).to eq(items.sort)
-    end
-  end
-
-  describe 'object discovery: #stageable_items_for' do
-    it 'returns [container] if use_container is true' do
-      revs.stageable_discovery[:use_container] = true
-      expect(revs.stageable_items_for('foo.tif')).to eq(['foo.tif'])
-    end
-
-    it 'returns expected crawl results' do
-      container = rumsey.path_in_bundle('cb837cp4412')
-      exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
-      expect(rumsey.stageable_items_for(container)).to eq(exp)
     end
   end
 
@@ -171,16 +147,6 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "object discovery: other" do
-    describe '#actual_container' do
-      it 'returns expected paths switched by :use_container flag' do
-        path = "foo/bar/x.tif"
-        revs.stageable_discovery[:use_container] = false # Return the container unmodified.
-        expect(revs.actual_container(path)).to eq(path)
-        revs.stageable_discovery[:use_container] = true # Adjust the container value.
-        expect(revs.actual_container(path)).to eq('foo/bar')
-      end
-    end
-
     it "is able to exercise all_object_files()" do
       fake_files = [[1, 2], [3, 4], [5, 6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
@@ -232,77 +198,12 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe '#confirm_checksums' do
-    let(:x_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'A23', path: 'a/b/x.tiff') }
-    let(:y_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'B78', path: 'q/r/y.tiff') }
-    let(:dobj) { revs.digital_objects.first }
-
-    before do
-      revs.discover_objects
-      allow(dobj).to receive(:object_files).and_return([x_tiff, y_tiff])
-    end
-
-    it 'returns false unless ALL checksums match' do
-      allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'MISMATCH', 'y.tiff' => 'B78')
-      expect(revs.confirm_checksums(dobj)).to be_falsey
-    end
-    it 'returns true when ALL checksums match' do
-      allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'A23', 'y.tiff' => 'B78')
-      expect(revs.confirm_checksums(dobj)).to be_truthy
-    end
-  end
-
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
       rumsey.discover_objects
       rumsey.all_object_files.each { |f|    expect(f.checksum).to be_nil }
       rumsey.digital_objects.each  { |dobj| rumsey.load_checksums(dobj) }
       rumsey.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
-    end
-  end
-
-  describe '#provider_checksums' do
-    it "does nothing when no checksums file is present" do
-      expect(rumsey).not_to receive(:read_exp_checksums)
-      rumsey.provider_checksums
-    end
-
-    it "empty string yields no checksums" do
-      allow(revs).to receive(:read_exp_checksums).and_return('')
-      expect(revs.provider_checksums).to eq({})
-    end
-
-    it "checksums are parsed correctly" do
-      checksum_data = {
-        'foo1.tif' => '4e3cd24dd79f3ec91622d9f8e5ab5afa',
-        'foo2.tif' => '7e40beb08d646044529b9138a5f1c796',
-        'foo3.tif' => 'e5263af3ebb27d4ab44f70317cb249c1',
-        'foo4.tif' => '15263af3ebb27d4ab44f74316cb249a4',
-      }
-      checksum_string = checksum_data.map { |f, c| "MD5 (#{f}) = #{c}\n" }.join ''
-      allow(revs).to receive(:read_exp_checksums).and_return(checksum_string)
-      expect(revs.provider_checksums).to eq(checksum_data)
-    end
-  end
-
-  context "checksums: retrieving and computing" do
-    let(:file_path) { revs.path_in_bundle 'image1.tif' }
-    let(:file) { Assembly::ObjectFile.new(file_path) }
-
-    describe '#retrieve_checksum' do
-      it "returns provider checksum when it is available" do
-        fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
-        revs.provider_checksums = { file_path => fake_md5 }
-        expect(revs.retrieve_checksum(file)).to eq(fake_md5)
-      end
-    end
-
-    describe '#retrieve_checksum' do
-      it "computes checksum when checksum is not available" do
-        revs.provider_checksums = {}
-        expect(revs).to receive(:retrieve_checksum)
-        revs.retrieve_checksum(file)
-      end
     end
   end
 

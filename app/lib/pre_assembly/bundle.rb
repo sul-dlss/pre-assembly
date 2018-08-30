@@ -11,7 +11,6 @@ module PreAssembly
 
     attr_reader :bundle_context
     attr_accessor :user_params,
-                  :provider_checksums,
                   :digital_objects,
                   :skippables,
                   :smpl_manifest
@@ -30,7 +29,6 @@ module PreAssembly
              :staging_style,
              :manifest_cols,
              :content_exclusion,
-             :checksums_file,
              :validate_files?,
              :accession_items,
              :manifest_rows,
@@ -68,7 +66,7 @@ module PreAssembly
 
       # load up the SMPL manifest if we are using that style
       if content_md_creation[:style] == :smpl
-        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false)
+        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir)
       end
       discover_objects
       process_manifest
@@ -106,8 +104,8 @@ module PreAssembly
       log "discover_objects()"
       self.digital_objects = discover_containers_via_manifest.map do |c|
         params = digital_object_base_params.merge(
-          :container            => actual_container(c),
-          :stageable_items      => stageable_items_for(c),
+          :container            => c,
+          :stageable_items      => discover_items_via_crawl(c),
           :unadjusted_container => c
         )
         params[:object_files] = discover_object_files(params[:stageable_items])
@@ -144,27 +142,16 @@ module PreAssembly
     #   - A glob pattern to obtain a list of dirs and/or files.
     #   - A regex to filter that list.
     def discover_items_via_crawl(root)
-      glob  = stageable_discovery[:glob]
+      glob  = stageable_discovery[:glob] || '**/*'
       regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]
       items = []
       dir_glob(File.join(root, glob)).each do |item|
         rel_path = relative_path(root, item)
-        next unless regex.nil? || rel_path =~ regex
+        next if regex && rel_path !~ regex
         next if stageable_discovery[:files_only] && File.directory?(item)
         items.push(item)
       end
       items.sort
-    end
-
-    # When the discovered object's container functions as the stageable item,
-    # we adjust the value that will serve as the DigitalObject container.
-    def actual_container(container)
-      stageable_discovery[:use_container] ? get_base_dir(container) : container
-    end
-
-    def stageable_items_for(container)
-      return [container] if stageable_discovery[:use_container]
-      discover_items_via_crawl(container)
     end
 
     # Returns a list of the ObjectFiles for a digital object.
@@ -199,36 +186,11 @@ module PreAssembly
       file_path =~ content_exclusion ? true : false
     end
 
-    ####
-    # Checksums.
-    ####
-
-    # Read the provider-supplied checksums_file, using its content to populate a hash of expected checksums.
-    # This method works with default output from md5sum.
-    def provider_checksums
-      return @provider_checksums if @provider_checksums
-      return @provider_checksums = {} unless checksums_file
-      log "provider_checksums()"
-      regex = %r{^MD5 \((.+)\) = (\w{32})$}
-      @provider_checksums = read_exp_checksums.scan(regex).map { |filename, md5| [filename, md5.strip] }.to_h
-    end
-
-    # Read checksums file. Wrapped in a method for unit testing.  Normalize CR/LF to be sure regex works
-    def read_exp_checksums
-      IO.read(checksums_file).gsub(/\r\n?/, "\n")
-    end
-
     # Takes a DigitalObject. For each of its ObjectFiles,
     # sets the checksum attribute.
     def load_checksums(dobj)
       log "  - load_checksums()"
-      dobj.object_files.each { |file| file.checksum = retrieve_checksum(file) }
-    end
-
-    # Takes a path to a file. Returns md5 checksum, which either (a) came
-    # from a provider-supplied checksums file, or (b) is computed here.
-    def retrieve_checksum(file)
-      provider_checksums[file.path] ||= file.md5
+      dobj.object_files.each { |file| file.checksum = file.md5 }
     end
 
     ####
@@ -283,13 +245,6 @@ module PreAssembly
       else
         return tally
       end
-    end
-
-    # for on object, confirm that the checksums provided match freshly computed checksums
-    # @param [PreAssembly::DigitalObject] dobj
-    def confirm_checksums(dobj)
-      # log "  - confirm_checksums()"
-      dobj.object_files.all? { |f| f.md5 == provider_checksums[File.basename(f.path)] }
     end
 
     # confirm that the all of the source IDs supplied within a manifest are locally unique

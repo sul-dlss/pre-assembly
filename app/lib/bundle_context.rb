@@ -11,7 +11,6 @@ class BundleContext
     :staging_dir,
     :accession_items,
     :manifest,
-    :checksums_file,
     :progress_log_file,
     :project_name,
     :file_attr,
@@ -66,8 +65,7 @@ class BundleContext
     File.join(bundle_dir, rel_path)
   end
 
-  # On first call, loads the manifest data (does not reload on subsequent calls).
-  # If bundle is not using a manifest, just loads and returns emtpy array.
+  # On first call, loads the manifest data, caches results
   def manifest_rows
     @manifest_rows ||= self.class.import_csv(manifest)
   end
@@ -79,7 +77,6 @@ class BundleContext
   def setup_paths
     bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
     self.manifest       &&= path_in_bundle(manifest)
-    self.checksums_file &&= path_in_bundle(checksums_file)
     self.staging_dir = Assembly::ASSEMBLY_WORKSPACE if staging_dir.nil? # if the user didn't supply a staging_dir, use the default
     self.progress_log_file = File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml') unless progress_log_file # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
   end
@@ -120,10 +117,7 @@ class BundleContext
 
   # If a file parameter from the YAML is non-nil, the file must exist.
   def required_files
-    [
-      manifest,
-      checksums_file
-    ].compact
+    [manifest]
   end
 
   def required_user_params
@@ -177,12 +171,6 @@ class BundleContext
       validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !first_row_keys.include?(manifest_cols[:source_id].to_s)
       validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank?         && !first_row_keys.include?(manifest_cols[:label].to_s)
       validation_errors << "You must have a column labeled 'druid' in your manifest" unless first_row_keys.include?('druid')
-    end
-
-    if stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
-      validation_errors << "If stageable_discovery:use_container=true, you cannot use get_druid_from='container'." if project_style[:get_druid_from].to_s =~ /^container/ # if you are staging the entire container, it doesn't make sense to use the container to get the druid
-    else # if we are not staging the whole container, check some stuff
-      validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if stageable_discovery[:glob].blank? # glob must be set
     end
 
     # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values

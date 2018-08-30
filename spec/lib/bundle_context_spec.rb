@@ -35,26 +35,19 @@ RSpec.describe BundleContext do
     it "raises exception if a user parameter is missing" do
       revs_context.user_params.delete :bundle_dir
       exp_msg = /^Configuration errors found:  Missing parameter: /
-      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
+      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
 
     it "raises exception if required directory not found" do
       revs_context.bundle_dir = '__foo_bundle_dir###'
       exp_msg = /^Configuration errors found:  Required directory not found/
-      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
+      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
 
     it "raises exception if required file not found" do
       revs_context.manifest = '__foo_manifest###'
       exp_msg = /^Configuration errors found:  Required file not found/
-      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
-    end
-
-    it "raises exception if use_container and get_druid_from are incompatible" do
-      revs_context.stageable_discovery[:use_container] = true
-      exp_msg = /^Configuration errors found:  If stageable_discovery:use_container=true, you cannot use get_druid_from='container'/
-      revs_context.project_style[:get_druid_from] = :container
-      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
+      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
   end
 

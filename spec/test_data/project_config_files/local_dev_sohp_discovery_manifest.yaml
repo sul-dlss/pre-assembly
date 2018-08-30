@@ -28,7 +28,6 @@ content_md_creation:
   smpl_manifest:      'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
 
 stageable_discovery:
-  use_container:      false
   glob:               '**/*'
   regex:              '^((?!_techmd.xml|.md5).)*$'
   files_only:         true
