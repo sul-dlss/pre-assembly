@@ -1,4 +1,4 @@
-describe PreAssembly::Bundle do
+RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   # TODO: break out tests about BundleContext into separate spec file
   let(:revs_context) { context_from_proj(:proj_revs) }

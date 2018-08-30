@@ -1,4 +1,4 @@
-describe PreAssembly::DigitalObject do
+RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
   let(:ps) {

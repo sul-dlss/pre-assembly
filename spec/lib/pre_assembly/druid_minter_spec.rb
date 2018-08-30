@@ -1,4 +1,4 @@
-describe PreAssembly::DruidMinter do
+RSpec.describe PreAssembly::DruidMinter do
   it "gets a sequence of druids from calls to next()" do
     exp = described_class.current
     3.times { expect(described_class.next).to eq(exp.next!) }
