@@ -42,7 +42,6 @@ set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
 
 set :honeybadger_env, fetch(:stage)
 
-
 Rake::Task["honeybadger:deploy"].clear
 namespace :honeybadger do
   desc 'Notify Honeybadger of the deployment.'
