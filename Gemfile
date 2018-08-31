@@ -1,7 +1,9 @@
 source 'https://rubygems.org'
 
+gem 'bootstrap', '~> 4.1.3'
 gem 'config'
 gem 'honeybadger', '~> 3.1'
+gem 'jquery-rails'
 gem 'nokogiri'
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'rake'
@@ -12,7 +14,8 @@ gem 'retries'
 gem 'roo' # for processing spreadsheets
 gem 'ruby-prof'
 gem 'sqlite3'
-gem 'turbolinks'
+gem 'turbolinks' # improves speed of following links in web application
+gem 'uglifier' # compressor for JavaScript assets
 
 # Stanford gems
 gem 'assembly-image'
@@ -40,8 +43,9 @@ group :development do
 end
 
 group :development, :test do
-  gem 'byebug'
+  gem 'pry-byebug'
   gem 'rspec-rails', '~> 3.7'
+  gem 'rails-controller-testing'
   gem 'rubocop', '~> 0.58.2'
   gem 'rubocop-rspec'
 end

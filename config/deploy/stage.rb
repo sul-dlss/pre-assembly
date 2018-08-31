@@ -2,4 +2,3 @@ server 'sul-preassembly-stage.stanford.edu', user: 'preassembly', roles: %w{web 
 
 Capistrano::OneTimeKey.generate_one_time_key!
 set :rails_env, 'production'
-set :linked_files, []
