@@ -2,7 +2,6 @@
 
 project_style:
   content_structure: 'simple_book'
-  get_druid_from: 'container'
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
 staging_dir: ~

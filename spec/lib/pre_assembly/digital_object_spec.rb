@@ -33,29 +33,11 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe 'determining druid:' do
-    let(:druids) { %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222) }
-
-    before do
-      apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999).map { |a| double('apo', :pid => a) }
-      allow(dobj).to receive(:container_basename).and_return('36105115575834')
-      allow(dobj).to receive(:query_dor_by_barcode).and_return(druids)
-      allow(dobj).to receive(:get_dor_item_apos).and_return(apos)
-    end
-
-    it "returns DruidMinter.next if get_druid_from=druid_minter" do
-      exp = PreAssembly::DruidMinter.current
-      dobj.project_style[:get_druid_from] = :druid_minter
-      expect(dobj).not_to receive :container_basename
-      expect(dobj.get_pid_from_druid_minter).to eq(exp.next)
-    end
-  end
-
   describe "determining the druid: other" do
-    it "determine_druid() should set correct values for pid and druid" do
+    it '#determine_druid should set correct values for pid and druid' do
       # Setup.
       dru = 'aa111bb2222'
-      dobj.project_style[:get_druid_from] = :container
+      # dobj.project_style[:get_druid_from] = :container
       dobj.container = "foo/bar/#{dru}"
       # Before and after assertions.
       expect(dobj.pid).to   eq('')
@@ -63,12 +45,6 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.determine_druid
       expect(dobj.pid).to   eq("druid:#{dru}")
       expect(dobj.druid).to be_kind_of DruidTools::Druid
-    end
-
-    it '#get_pid_from_container extracts druid from basename of object container' do
-      d = 'xx111yy2222'
-      dobj.container = "foo/bar/#{d}"
-      expect(dobj.get_pid_from_container).to eq("druid:#{d}")
     end
 
     it '#container_basename should work' do

@@ -4,7 +4,6 @@
 
 project_style:
   content_structure:  'simple_image'
-  get_druid_from:     'manifest'
 
 bundle_dir:           'spec/test_data/bundle_input_g'
 staging_dir:          'tmp'

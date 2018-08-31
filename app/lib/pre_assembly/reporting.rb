@@ -72,8 +72,6 @@ module PreAssembly
       smpl_manifest = PreAssembly::Smpl.new(:csv_filename => @content_md_creation[:smpl_manifest], :bundle_dir => @bundle_dir, :verbose => false) if using_smpl_manifest
 
       unique_objects = 0
-      discover_objects
-      process_manifest
       all_object_containers = manifest_rows.collect { |r| r[@manifest_cols[:object_container]] }
       total_objects = @digital_objects.size
       o2p = objects_to_process

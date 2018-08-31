@@ -54,21 +54,6 @@ project_style:
   content_tag_override:   false      # DEFAULT if not supplied -- content_structure as defined above is always used even if the object is registered with a content type tag
                           true       # if set to true; then content_structure type is deteremined from registered object content type tag using mappings defined in pre-assembly if possible;
                                      # if no content tag is available or an unknown mapping occurs, the default content_structure defined in the YAML is used
-
-  # Pre-assembly must obtain a druid for every object.
-  get_druid_from: 'container'          # Object is contained in a druid subdirectory
-                                       # For example: "aa111bb2222".
-
-                  'manifest'           # Object's druid is in a column in the manifest called "druid".  Only used for use_manifest=true
-                                       # when you want to use a manifest for descriptive metadata, and when the folder container is not named by druid
-
-                  'druid_minter'       # Mints a mock druid rather than using Suri.  Really only for development purposes.
-
-               #  'suri'               # OBSOLETE: removed with 'should_register' option
-
-               #  'container_barcode'  # OBSOLETE: Object is contained in a barcode subdirectory.  Druid will be fetched from a service.
-                                       # For example: "36105115575834".
-
 ####
 # Paths to the pre-assembly input and output.
 ####
@@ -96,9 +81,6 @@ staging_style:    'copy'     # the staging style, can be "copy" or "symlink", de
 stageable_discovery:
 
   # Option 1: If you set 'use_container' to true, this will simply stage the entire object directory that was matched with the glob above.
-  # This is not a valid option if your object is contained in a folder named by druid or barcode - preassembly will give an error message if you set
-  # 'use_container' to true and the 'get_druid_from' parameter to 'container' or 'container_barcode'.
-
   use_container: true    # If true , set glob and regex to nil below.
                  false   # If false, use glob and regex below.
 
