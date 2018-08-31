@@ -12,7 +12,8 @@ gem 'retries'
 gem 'roo' # for processing spreadsheets
 gem 'ruby-prof'
 gem 'sqlite3'
-gem 'turbolinks'
+gem 'turbolinks' # improves speed of following links in web application
+gem 'uglifier' # compressor for JavaScript assets
 
 # Stanford gems
 gem 'assembly-image'
