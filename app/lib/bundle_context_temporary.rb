@@ -104,7 +104,6 @@ class BundleContextTemporary
     {
       :project_style => {
         :content_structure => [:simple_image, :simple_book, :book_as_image, :book_with_pdf, :file, :smpl],
-        :get_druid_from => [:container, :manifest, :suri, :druid_minter],
       },
       :content_md_creation => {
         :style => [:default, :filename, :dpg, :smpl, :salt, :none],
@@ -159,7 +158,6 @@ class BundleContextTemporary
     validation_errors << "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
     # validation_errors << "The APO and SET DRUIDs should not be set." if apo_druid_id # APO should not be set
-    # validation_errors << "get_druid_from: 'suri' is no longer valid" if project_style[:get_druid_from] == :suri # can't use SURI to get druid
     if manifest.blank?
       validation_errors << "A manifest file must be provided."
     elsif manifest_rows.size == 0
@@ -171,14 +169,12 @@ class BundleContextTemporary
       validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'"                            unless first_row_keys.include?(manifest_cols[:object_container].to_s)
       validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !first_row_keys.include?(manifest_cols[:source_id].to_s)
       validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank?         && !first_row_keys.include?(manifest_cols[:label].to_s)
-      validation_errors << "You must have a column labeled 'druid' in your manifest" unless first_row_keys.include?('druid')
+      validation_errors << "Manifest does not have a column called 'druid'" unless first_row_keys.include?('druid')
     end
 
     # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values
     validation_errors << "The project_style:content_structure value of '#{project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? project_style[:content_structure]
-    validation_errors << "The project_style:get_druid_from value of '#{project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? project_style[:get_druid_from]
     validation_errors << "The content_md_creation:style value of '#{content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? content_md_creation[:style]
-
     validation_errors << "The SMPL manifest #{content_md_creation[:smpl_manifest]} was not found in #{bundle_dir}." if content_md_creation[:style] == :smpl && !File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
 
     unless validation_errors.blank?

@@ -71,7 +71,7 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe 'object discovery: #discover_objects' do
+  describe '#digital_objects' do
     let(:tests) do
       [
         [:proj_revs,   3, 1, 1],
@@ -86,7 +86,6 @@ RSpec.describe PreAssembly::Bundle do
       allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # req'd for :sohp_files_and_folders
       tests.each do |proj, n_dobj, n_stag, n_file|
         b = described_class.new(context_from_proj(proj))
-        b.discover_objects
         expect(b.digital_objects.size).to eq(n_dobj)
         b.digital_objects.each do |dobj|
           expect(dobj.stageable_items.size).to eq(n_stag)
@@ -96,7 +95,6 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "handles containers correctly" do
-      rumsey.discover_objects
       expect(rumsey.digital_objects[0].container.size).to be > rumsey.bundle_dir.size
     end
   end
@@ -200,26 +198,15 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
-      rumsey.discover_objects
       rumsey.all_object_files.each { |f|    expect(f.checksum).to be_nil }
       rumsey.digital_objects.each  { |dobj| rumsey.load_checksums(dobj) }
       rumsey.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
     end
   end
 
-  describe '#process_manifest' do
-    before { revs.discover_objects }
-
+  describe '#digital_objects' do
     it "augments the digital objects with additional information" do
       expect(revs.digital_objects.size).to eq(3)
-      # Before processing manifest: various attributes should be nil or default value.
-      revs.digital_objects.each do |dobj|
-        expect(dobj.label).to        eq(Dor::Config.dor.default_label)
-        expect(dobj.source_id).to    be_nil
-        expect(dobj.manifest_row).to be_nil
-      end
-      # And now those attributes should have content.
-      revs.process_manifest
       revs.digital_objects.each do |dobj|
         expect(dobj.label).to be_a(String)
         expect(dobj.label).not_to eq(Dor::Config.dor.default_label)
@@ -238,8 +225,6 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#validate_files' do
-    before { rumsey.discover_objects }
-
     it "returns expected tally if all images are valid" do
       skip "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem"
       rumsey.digital_objects.each do |dobj|
@@ -263,7 +248,6 @@ RSpec.describe PreAssembly::Bundle do
   describe '#objects_to_process' do
     it "has the correct list of objects to re-accession if specified with only option" do
       b = described_class.new(context_from_proj(:proj_sohp3))
-      b.discover_objects
       expect(b.digital_objects.size).to eq(2)
       o2p = b.objects_to_process
       expect(o2p.size).to eq(1)
@@ -271,20 +255,17 @@ RSpec.describe PreAssembly::Bundle do
 
     it "has the correct list of objects to accession if specified with except option" do
       b = described_class.new(context_from_proj(:proj_sohp4))
-      b.discover_objects
       expect(b.digital_objects.size).to eq(2)
       o2p = b.objects_to_process
       expect(o2p.size).to eq(0)
     end
 
     it "returns all objects if there are no skippables" do
-      revs.discover_objects
       revs.skippables = {}
       expect(revs.objects_to_process).to eq(revs.digital_objects)
     end
 
     it "returns a filtered list of digital objects" do
-      revs.discover_objects
       revs.skippables = {}
       revs.skippables[revs.digital_objects[-1].unadjusted_container] = true
       o2p = revs.objects_to_process
@@ -295,7 +276,6 @@ RSpec.describe PreAssembly::Bundle do
 
   describe "#log_progress_info" do
     it "returns expected info about a digital object" do
-      revs.discover_objects
       dobj = revs.digital_objects[0]
       exp = {
         :unadjusted_container => dobj.unadjusted_container,

@@ -3,7 +3,6 @@
 
 project_style:
   content_structure:  'simple_image'
-  get_druid_from:     'druid_minter'
 
 bundle_dir:           'spec/test_data/bundle_input_f'
 staging_dir:          'tmp'

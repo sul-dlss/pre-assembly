@@ -10,8 +10,8 @@ module PreAssembly
     include PreAssembly::Reporting
 
     attr_reader :bundle_context
+    attr_writer :digital_objects
     attr_accessor :user_params,
-                  :digital_objects,
                   :skippables,
                   :smpl_manifest
 
@@ -41,7 +41,6 @@ module PreAssembly
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
-      self.digital_objects = []
       self.skippables = {}
       load_skippables
     end
@@ -68,8 +67,6 @@ module PreAssembly
       if content_md_creation[:style] == :smpl
         self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir)
       end
-      discover_objects
-      process_manifest
       process_digital_objects
       puts "#{Time.now}: Pre-assembly completed for #{project_name}"
       processed_pids
@@ -100,18 +97,24 @@ module PreAssembly
     #
     # Discovers the digital object containers and the stageable items within them.
     # For each container, creates a new Digitalobject.
-    def discover_objects
-      log "discover_objects()"
-      self.digital_objects = discover_containers_via_manifest.map do |c|
+    # @return [Array<DigitalObject>]
+    def digital_objects
+      @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         params = digital_object_base_params.merge(
           :container            => c,
           :stageable_items      => discover_items_via_crawl(c),
           :unadjusted_container => c
         )
         params[:object_files] = discover_object_files(params[:stageable_items])
-        DigitalObject.new(params)
+        DigitalObject.new(params).tap do |dobj|
+          r = manifest_rows[i]
+          # Get label and source_id from column names declared in YAML config.
+          dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ""
+          dobj.source_id    = r[manifest_cols[:source_id]] if manifest_cols[:source_id]
+          # Also store a hash of all values from the manifest row, using column names as keys.
+          dobj.manifest_row = r
+        end
       end
-      log "discover_objects(found #{digital_objects.count} objects)"
     end
 
     def digital_object_base_params
@@ -142,7 +145,7 @@ module PreAssembly
     #   - A glob pattern to obtain a list of dirs and/or files.
     #   - A regex to filter that list.
     def discover_items_via_crawl(root)
-      glob  = stageable_discovery[:glob] || '**/*'
+      glob  = stageable_discovery[:glob] || '**/*' # default value
       regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]
       items = []
       dir_glob(File.join(root, glob)).each do |item|
@@ -251,24 +254,6 @@ module PreAssembly
     def manifest_sourceids_unique?
       all_source_ids = manifest_rows.collect { |r| r[manifest_cols[:source_id]] }
       all_source_ids.size == all_source_ids.uniq.size
-    end
-
-    ####
-    # Manifest.
-    ####
-
-    # For bundles using a manifest, adds the manifest info to the digital objects.
-    # Assumes a parallelism between the @digital_objects and manifest_rows arrays.
-    def process_manifest
-      log "process_manifest()"
-      digital_objects.each_with_index do |dobj, i|
-        r = manifest_rows[i]
-        # Get label and source_id from column names declared in YAML config.
-        dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ""
-        dobj.source_id    = r[manifest_cols[:source_id]] if manifest_cols[:source_id]
-        # Also store a hash of all values from the manifest row, using column names as keys.
-        dobj.manifest_row = r
-      end
     end
 
     ####

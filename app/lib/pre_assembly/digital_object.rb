@@ -126,31 +126,9 @@ module PreAssembly
 
     # @return [DruidTools::Druid]
     def determine_druid
-      k = project_style[:get_druid_from]
-      log "    - determine_druid(#{k})"
-      self.pid = method("get_pid_from_#{k}").call
+      raise 'manifest_row is required' unless manifest_row
+      self.pid = manifest_row[:druid]
       self.druid = DruidTools::Druid.new(pid)
-    end
-
-    def get_pid_from_manifest
-      manifest_row[:druid]
-    end
-
-    # TODO: remove this method:  given that we expect our druids to already be there, we should never call this method
-    def get_pid_from_suri
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('GET_PID_FROM_SURI', method(:log))) do
-        result = Dor::SuriService.mint_id
-        raise PreAssembly::UnknownError unless result.class == String
-        result
-      end
-    end
-
-    def get_pid_from_druid_minter
-      DruidMinter.next
-    end
-
-    def get_pid_from_container
-      "druid:#{container_basename}"
     end
 
     def query_dor_by_barcode(barcode)

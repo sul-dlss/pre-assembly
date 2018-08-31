@@ -9,9 +9,7 @@ RSpec.describe DiscoveryReport do
       expect { described_class.new }.to raise_error(ArgumentError)
       expect { described_class.new({}) }.to raise_error(ArgumentError)
     end
-    it 'accepts PreAssembly::Bundle, performs setup' do
-      expect(bundle).to receive(:discover_objects)
-      expect(bundle).to receive(:process_manifest)
+    it 'accepts PreAssembly::Bundle' do
       expect { described_class.new(bundle) }.not_to raise_error
     end
   end

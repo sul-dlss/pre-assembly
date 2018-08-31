@@ -1,6 +1,5 @@
 project_style:
   content_structure:  'smpl'
-  get_druid_from:     'container'
 
 bundle_dir:           'spec/test_data/bundle_input_e'
 staging_dir:          ~

@@ -11,8 +11,6 @@ class DiscoveryReport
     raise ArgumentError unless bundle.is_a?(PreAssembly::Bundle)
     @start_time = Time.now
     @bundle = bundle
-    bundle.discover_objects
-    bundle.process_manifest
   end
 
   # @return [Enumerable<Hash<Symbol => Object>>]
