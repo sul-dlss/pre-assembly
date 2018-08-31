@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TemplateController, type: :controller do
+RSpec.describe BundleContextController, type: :controller do
 
   context 'GET index' do
     it "renders the index template" do
