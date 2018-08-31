@@ -29,7 +29,7 @@ set :deploy_to, '/opt/app/preassembly/pre-assembly'
 before 'deploy:restart', 'shared_configs:update'
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/honeybadger.yml}
+set :linked_files, %w{config/honeybadger.yml config/master.key}
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
@@ -41,7 +41,6 @@ set :linked_dirs, %w{log config/certs config/cli_environments tmp vendor/bundle}
 # set :keep_releases, 5
 
 set :honeybadger_env, fetch(:stage)
-
 
 Rake::Task["honeybadger:deploy"].clear
 namespace :honeybadger do
