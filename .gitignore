@@ -1,5 +1,5 @@
 .byebug_history
-config/honeybadger.yml
+.pry_history
 memory_report.txt
 *.log
 *.gem
@@ -7,7 +7,10 @@ memory_report.txt
 .DS_Store
 .bundle
 .yardoc
+.rails_rc
+
 config/certs/*
+config/honeybadger.yml
 config/cli_environments/stage.rb
 config/cli_environments/local.rb
 db/*.sqlite3
