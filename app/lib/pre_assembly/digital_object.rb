@@ -136,6 +136,7 @@ module PreAssembly
       manifest_row[:druid]
     end
 
+    # TODO: remove this method:  given that we expect our druids to already be there, we should never call this method
     def get_pid_from_suri
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('GET_PID_FROM_SURI', method(:log))) do
         result = Dor::SuriService.mint_id
@@ -306,6 +307,7 @@ module PreAssembly
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
       log "    - initialize_assembly_workflow()"
+      # TODO: use dor-workflow-service gem for this (see #194)
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
         result = RestClient.post(assembly_workflow_url, {})
         raise PreAssembly::UnknownError unless result && [200, 201, 202, 204].include?(result.code)

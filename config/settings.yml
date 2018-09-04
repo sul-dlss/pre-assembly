@@ -1,1 +1,2 @@
-workflow_services_url: 'https://workflows.example.org/workflow/'
+# TODO: use dor-workflow-service gem (see #194)
+# workflow_services_url: 'https://workflows.example.org/workflow/'
