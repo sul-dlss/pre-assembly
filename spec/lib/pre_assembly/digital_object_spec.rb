@@ -1,20 +1,22 @@
 RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
-  let(:ps) {
+  let(:context_params) do
     {
-      # :apo_druid_id  => 'druid:qq333xx4444',
-      # :set_druid_id  => 'druid:mm111nn2222',
-      :source_id     => 'SourceIDFoo',
-      :project_name  => 'ProjectBar',
-      :label         => 'LabelQuux',
-      :publish_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
-      :project_style => {},
-      :content_md_creation => {},
-      :bundle_dir => 'spec/test_data/bundle_input_g',
-      :staging_style => 'copy'
+      :file_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
+      :source_id  => 'SourceIDFoo'
     }
-  }
+  end
+  let(:ps) do
+    context_params.merge(
+      :bundle_dir => 'spec/test_data/bundle_input_g',
+      :content_md_creation => { style: 'default' },
+      :progress_log_file => Tempfile.new('bundle_input_g').path,
+      :project_name  => 'ProjectBar',
+      :project_style => {},
+      :staging_style => 'copy'
+    )
+  end
   let(:dobj) { described_class.new(ps) }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
@@ -131,7 +133,6 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.content_md_creation[:style] = 'default'
       dobj.project_style[:content_structure] = 'simple_image'
       add_object_files('tif')
       add_object_files('jp2')
@@ -272,7 +273,6 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.content_md_creation[:style] = 'default'
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       dobj.project_style[:content_tag_override] = true        # this allows override of content structure
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
@@ -341,7 +341,6 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.content_md_creation[:style] = 'default'
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
       dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }

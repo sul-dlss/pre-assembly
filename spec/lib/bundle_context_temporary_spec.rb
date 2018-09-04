@@ -4,6 +4,11 @@ RSpec.describe BundleContextTemporary do
   before { allow_any_instance_of(described_class).to receive(:validate_usage) } # to be replaced w/ AR validation
 
   describe "initialize() and other setup" do
+    it 'requires params' do
+      expect { described_class.new     }.to raise_error(ArgumentError)
+      expect { described_class.new({}) }.to raise_error(ArgumentError)
+    end
+
     it "trims the trailing slash from the bundle directory" do
       expect(revs_context.bundle_dir).to eq('spec/test_data/bundle_input_a')
     end

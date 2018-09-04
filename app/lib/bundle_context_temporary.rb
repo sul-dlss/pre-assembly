@@ -7,21 +7,21 @@ end
 class BundleContextTemporary
   # Paramaters passed via YAML config files.
   YAML_PARAMS = [
-    :project_style,
-    :bundle_dir,
-    :staging_dir,
     :accession_items,
+    :bundle_dir,
+    :config_filename,
+    :content_exclusion,
+    :content_md_creation,
+    :file_attr,
+    :manifest_cols,
     :manifest,
     :progress_log_file,
     :project_name,
-    :file_attr,
-    :content_md_creation,
+    :project_style,
     :stageable_discovery,
-    :manifest_cols,
-    :content_exclusion,
-    :config_filename,
-    :validate_files,
-    :staging_style
+    :staging_dir,
+    :staging_style,
+    :validate_files
   ]
 
   YAML_PARAMS.each { |p| attr_accessor p }
@@ -31,11 +31,14 @@ class BundleContextTemporary
 
   # Unpack the user-supplied parameters, after converting
   # all hash keys and some hash values to symbols.
-  def initialize(params = {})
-    params = Assembly::Utils.symbolize_keys params
-    Assembly::Utils.values_to_symbols! params[:project_style]
-    cmc          = params[:content_md_creation]
-    cmc[:style]  = cmc[:style].to_sym
+  def initialize(params)
+    params.deep_symbolize_keys!
+    raise ArgumentError, ':bundle_dir is required' unless params[:bundle_dir] # TODO: replace w/ AR validation
+    [:content_md_creation, :project_style, :stageable_discovery].each { |k| params[k] ||= {} }
+    params[:project_style].transform_values! { |v| v.is_a?(String) ? v.to_sym : v }
+    params[:project_style][:content_structure] ||= :simple_image
+    params[:content_md_creation][:style] ||= :default
+    params[:content_md_creation][:style] = params[:content_md_creation][:style].to_sym
     params[:file_attr] ||= params[:publish_attr]
     self.user_params = params
     YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
