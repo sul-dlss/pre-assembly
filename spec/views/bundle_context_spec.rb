@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'template/index' do
+RSpec.describe 'bundle_context/index' do
   it 'displays the form correctly' do
     # Should render the test page
     render
