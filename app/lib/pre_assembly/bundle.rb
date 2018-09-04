@@ -53,6 +53,11 @@ module PreAssembly
       validate_usage
     end
 
+    def validate_files?
+      return @validate_files unless @validate_files.nil?
+      false
+    end
+
     ####
     # grab bag
     ####
@@ -242,7 +247,7 @@ module PreAssembly
              :manifest_cols,
              :content_exclusion,
              :checksums_file,
-             :validate_files,
+             :validate_files?,
              :accession_items,
              :manifest_rows,
              :path_in_bundle,
@@ -575,7 +580,7 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          validate_files(dobj) if @validate_files
+          validate_files(dobj) if validate_files?
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
