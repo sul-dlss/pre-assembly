@@ -3,6 +3,7 @@
 require 'modsulator'
 
 module PreAssembly
+
   class DigitalObject
     include PreAssembly::Logging
     include PreAssembly::Project::Smpl
@@ -136,7 +137,7 @@ module PreAssembly
     end
 
     def get_pid_from_suri
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('GET_PID_FROM_SURI', method(:log))) do
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('GET_PID_FROM_SURI', method(:log))) do
         result = Dor::SuriService.mint_id
         raise PreAssembly::UnknownError unless result.class == String
         result
@@ -305,7 +306,7 @@ module PreAssembly
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
       log "    - initialize_assembly_workflow()"
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
+      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
         result = RestClient.post(assembly_workflow_url, {})
         raise PreAssembly::UnknownError unless result && [200, 201, 202, 204].include?(result.code)
         result
@@ -315,6 +316,12 @@ module PreAssembly
     def assembly_workflow_url
       self.druid = pid.include?('druid') ? pid : "druid:#{pid}"
       "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
+    end
+
+    def retry_handler(method_name, logger, params = {})
+      Proc.new do |exception, attempt_number, total_delay|
+        log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor.num_attempts}; delayed #{Dor::Config.dor.total_delay} seconds")
+      end
     end
   end
 end
