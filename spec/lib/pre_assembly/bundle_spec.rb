@@ -518,15 +518,6 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe "#delete_digital_objects" do
-    before { revs.digital_objects = [] }
-
-    it 'iterates over digital_objects' do
-      expect(revs.digital_objects).to receive :each
-      revs.delete_digital_objects
-    end
-  end
-
   describe "file and directory utilities" do
     let(:relative) { 'abc/def.jpg' }
     let(:full) { revs.path_in_bundle(relative) }
