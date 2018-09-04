@@ -134,14 +134,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe "default content metadata" do
-    before do
-      dobj.druid = druid
-      dobj.content_md_creation[:style] = 'default'
-      dobj.project_style[:content_structure] = 'simple_image'
-      add_object_files('tif')
-      add_object_files('jp2')
-      dobj.create_content_metadata
-      @exp_xml = noko_doc <<-END.gsub(/^ {8}/, '')
+    let(:exp_xml) do
+      noko_doc <<-END
         <?xml version="1.0"?>
         <contentMetadata type="image" objectId="gn330dv6119">
           <resource type="image" id="gn330dv6119_1" sequence="1">
@@ -172,6 +166,15 @@ RSpec.describe PreAssembly::DigitalObject do
       END
     end
 
+    before do
+      dobj.druid = druid
+      dobj.content_md_creation[:style] = 'default'
+      dobj.project_style[:content_structure] = 'simple_image'
+      add_object_files('tif')
+      add_object_files('jp2')
+      dobj.create_content_metadata
+    end
+
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
       files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
@@ -191,7 +194,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it "generates the expected xml text" do
-      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to @exp_xml
+      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
     end
 
     it "is able to write the content_metadata XML to a file" do
@@ -200,7 +203,7 @@ RSpec.describe PreAssembly::DigitalObject do
         file_name = File.join(tmp_area, "metadata", dobj.content_md_file)
         expect(File.exist?(file_name)).to eq(false)
         dobj.write_content_metadata
-        expect(noko_doc(File.read file_name)).to be_equivalent_to @exp_xml
+        expect(noko_doc(File.read file_name)).to be_equivalent_to exp_xml
       end
     end
   end
@@ -232,7 +235,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe "bundled by filename, simple book content metadata without file attributes" do
     let(:exp_xml) do
-      noko_doc <<-END.gsub(/^ {8}/, '')
+      noko_doc <<-END
       <contentMetadata type="book" objectId="gn330dv6119">
         <resource type="page" sequence="1" id="gn330dv6119_1">
           <label>Page 1</label>
@@ -273,7 +276,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
     let(:exp_xml) do
-      noko_doc <<-END.gsub(/^ {8}/, '')
+      noko_doc <<-END
         <?xml version="1.0"?>
         <contentMetadata type="file" objectId="gn330dv6119">
           <resource type="file" id="gn330dv6119_1" sequence="1">
@@ -341,16 +344,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
-    before do
-      dobj.druid = druid
-      dobj.content_md_creation[:style] = 'default'
-      dobj.project_style[:content_structure] = 'simple_image' # this is the default
-      allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
-      dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
-      add_object_files('tif')
-      add_object_files('jp2')
-      dobj.create_content_metadata
-      @exp_xml = noko_doc <<-END.gsub(/^ {8}/, '')
+    let(:exp_xml) do
+      noko_doc <<-END
         <?xml version="1.0"?>
         <contentMetadata type="image" objectId="gn330dv6119">
           <resource type="image" sequence="1" id="gn330dv6119_1">
@@ -381,6 +376,17 @@ RSpec.describe PreAssembly::DigitalObject do
       END
     end
 
+    before do
+      dobj.druid = druid
+      dobj.content_md_creation[:style] = 'default'
+      dobj.project_style[:content_structure] = 'simple_image' # this is the default
+      allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
+      dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
+      add_object_files('tif')
+      add_object_files('jp2')
+      dobj.create_content_metadata
+    end
+
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
       files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
@@ -402,13 +408,13 @@ RSpec.describe PreAssembly::DigitalObject do
     it "generates the expected xml text when overriding is explicitly not allowed" do
       dobj.project_style[:content_tag_override] = false # this prevents override of content structure
       expect(dobj.content_md_creation_style).to eq(:simple_image)
-      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to @exp_xml
+      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
     end
 
     it "generates the expected xml text when overriding is not specified" do
       dobj.project_style[:content_tag_override] = nil # this prevents override of content structure
       expect(dobj.content_md_creation_style).to eq(:simple_image)
-      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to @exp_xml
+      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
     end
   end
 
