@@ -575,7 +575,7 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          validate_files(dobj) if validate_files
+          validate_files(dobj) if @validate_files
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
