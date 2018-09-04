@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2018_09_04_183131) do
     t.string "sunet_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sunet_id"], name: "index_users_on_sunet_id"
+    t.index ["sunet_id"], name: "index_users_on_sunet_id", unique: true
   end
 
 end
