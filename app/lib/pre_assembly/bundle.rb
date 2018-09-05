@@ -290,7 +290,6 @@ module PreAssembly
       discover_objects
       process_manifest
       process_digital_objects
-      delete_digital_objects
       puts "#{Time.now}: Pre-assembly completed for #{project_name}"
       processed_pids
     end
@@ -584,7 +583,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          log_and_show "Completed #{dobj.druid.druid}"
+          log_and_show "Completed #{dobj.druid}"
         rescue Exception => e
           # For now, just re-raise any exceptions.
           #
@@ -633,12 +632,6 @@ module PreAssembly
         :pre_assem_finished   => dobj.pre_assem_finished,
         :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
-    end
-
-    def delete_digital_objects
-      # During development, delete objects that we register.
-      log "delete_digital_objects()"
-      digital_objects.each(&:unregister)
     end
 
     ####

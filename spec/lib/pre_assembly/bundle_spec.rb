@@ -24,6 +24,25 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
+  describe '#run_pre_assembly' do
+    let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
+    before do
+      allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
+    end
+    it 'runs cleanly using smoke_test.yaml for options' do
+      # TODO: as we switch to using models (#172, #175, etc) this test should also switch
+      bc = context_from_proj('smoke_test')
+      # need to delete progress log to ensure this test doesn't skip objects already run
+      File.delete(bc.user_params[:progress_log_file]) if File.exist?(bc.user_params[:progress_log_file])
+      pids = []
+      expect {
+        b = PreAssembly::Bundle.new bc
+        pids = b.run_pre_assembly
+      }.not_to raise_error
+      expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
+    end
+  end
+
   describe '#load_skippables' do
     it "returns expected hash of skippable items" do
       allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
@@ -515,15 +534,6 @@ RSpec.describe PreAssembly::Bundle do
         :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
       expect(revs.log_progress_info(dobj)).to eq(exp)
-    end
-  end
-
-  describe "#delete_digital_objects" do
-    before { revs.digital_objects = [] }
-
-    it 'iterates over digital_objects' do
-      expect(revs.digital_objects).to receive :each
-      revs.delete_digital_objects
     end
   end
 
