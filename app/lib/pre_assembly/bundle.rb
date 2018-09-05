@@ -583,7 +583,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          log_and_show "Completed #{dobj.druid.druid}"
+          log_and_show "Completed #{dobj.druid}"
         rescue Exception => e
           # For now, just re-raise any exceptions.
           #
