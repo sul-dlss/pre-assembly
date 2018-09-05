@@ -18,8 +18,6 @@ desc_md_template:     'mods_template.xml'
 
 progress_log_file:    'log/progress_folder_smoke_test.yaml'
 project_name:         'SmokeTest'
-apo_druid_id:         ~
-set_druid_id:         ~
 
 publish_attr:
   'image/jp2':
