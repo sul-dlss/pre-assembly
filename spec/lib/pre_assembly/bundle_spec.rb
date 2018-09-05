@@ -1,28 +1,9 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
-  # TODO: break out tests about BundleContext into separate spec file
   let(:revs_context) { context_from_proj(:proj_revs) }
   let(:rumsey_context) { context_from_proj(:proj_rumsey)}
   let(:revs) { described_class.new(revs_context) }
   let(:rumsey) { described_class.new(rumsey_context) }
-
-  describe "initialize() and other setup" do
-    # TODO: this one's really more about testing BundleContext now
-    it "trims the trailing slash from the bundle directory" do
-      expect(revs.bundle_dir).to eq('spec/test_data/bundle_input_a')
-    end
-
-    # TODO: this one's really more about BundleContext now
-    it '#setup_other should prune @file_attr' do
-      # All keys are present.
-      expect(revs_context.file_attr.keys.map(&:to_s).sort).to eq(%w(preserve publish shelve))
-      # Keys with nil values should be removed.
-      revs_context.file_attr[:preserve] = nil
-      revs_context.file_attr[:publish]  = nil
-      revs_context.setup_other
-      expect(revs_context.file_attr.keys).to eq([:shelve])
-    end
-  end
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -42,7 +23,7 @@ RSpec.describe PreAssembly::Bundle do
       expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
     end
   end
-
+  
   describe '#load_skippables' do
     it "returns expected hash of skippable items" do
       allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
@@ -55,7 +36,7 @@ RSpec.describe PreAssembly::Bundle do
   describe '#validate_usage with bad manifest' do
     it "raises an exception since the sourceID column is misspelled" do
       exp_msg = /Manifest does not have a column called 'sourceid'/
-      expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
+      expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(BundleUsageError, exp_msg)
     end
   end
 
@@ -79,48 +60,6 @@ RSpec.describe PreAssembly::Bundle do
       expect(manifest[2][:description]).to eq('yo, this is a description')
       expect(manifest[2]['description']).to eq('yo, this is a description')
       expect(manifest[2]['Description']).to be_nil # AKA Hashes, how do they work?
-    end
-  end
-
-  # TODO: prob all of these are now about BundleContext, and not Bundle
-  describe '#validate_usage' do
-    before { revs_context.user_params = Hash[revs_context.required_user_params.map { |p| [p, ''] }] }
-
-    it '#required_files should return expected N of items' do
-      expect(revs_context.required_files.size).to eq(2)
-      revs_context.manifest = nil
-      expect(revs_context.required_files.size).to eq(1)
-      revs_context.checksums_file = nil
-      expect(revs_context.required_files.size).to eq(0)
-    end
-
-    it "does not raise an exception if requirements are satisfied" do
-      expect { revs_context.validate_usage }.not_to raise_error
-    end
-
-    it "raises exception if a user parameter is missing" do
-      revs_context.user_params.delete :bundle_dir
-      exp_msg = /^Configuration errors found:  Missing parameter: /
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
-    end
-
-    it "raises exception if required directory not found" do
-      revs_context.bundle_dir = '__foo_bundle_dir###'
-      exp_msg = /^Configuration errors found:  Required directory not found/
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
-    end
-
-    it "raises exception if required file not found" do
-      revs_context.manifest = '__foo_manifest###'
-      exp_msg = /^Configuration errors found:  Required file not found/
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
-    end
-
-    it "raises exception if use_container and get_druid_from are incompatible" do
-      revs_context.stageable_discovery[:use_container] = true
-      exp_msg = /^Configuration errors found:  If stageable_discovery:use_container=true, you cannot use get_druid_from='container'/
-      revs_context.project_style[:get_druid_from] = :container
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
     end
   end
 
@@ -150,7 +89,7 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "finds the correct N objects, stageables, and files" do
-      allow_any_instance_of(PreAssembly::BundleContext).to receive(:validate_usage) # req'd for :sohp_files_and_folders
+      allow_any_instance_of(BundleContext).to receive(:validate_usage) # req'd for :sohp_files_and_folders
       tests.each do |proj, n_dobj, n_stag, n_file|
         b = described_class.new(context_from_proj(proj))
         b.discover_objects
@@ -489,37 +428,6 @@ RSpec.describe PreAssembly::Bundle do
       o2p = revs.objects_to_process
       expect(o2p.size).to eq(revs.digital_objects.size - 1)
       expect(o2p).to eq(revs.digital_objects[0..-2])
-    end
-  end
-
-  describe '#setup_paths and defaults' do
-    # TODO: this is more about BundleContext now
-    it "sets the staging_dir to the value specified in YAML" do
-      # revs.setup_paths
-      expect(revs_context.staging_dir).to eq('tmp')
-    end
-
-    # TODO: this is more about BundleContext now
-    it "sets the progress log file to match the input yaml file if no progress log is specified in YAML" do
-      # b = described_class.new(context_from_proj(:proj_sohp3))
-      # b.setup_paths
-      expect(context_from_proj(:proj_sohp3).progress_log_file).to eq('spec/test_data/project_config_files/proj_sohp3_progress.yaml')
-    end
-
-    it "sets content_tag_override to the default value when not specified" do
-      expect(revs_context.project_style[:content_tag_override]).to be_falsey
-    end
-
-    # TODO: this is more about BundleContext now
-    it "sets the staging_dir to the default value if not specified in the YAML" do
-      default_staging_directory = Assembly::ASSEMBLY_WORKSPACE
-      if File.exist?(default_staging_directory) && File.directory?(default_staging_directory)
-        # b = described_class.new(context_from_proj(:proj_sohp2))
-        # b.setup_paths
-        expect(context_from_proj(:proj_sohp2).staging_dir).to eq(default_staging_directory)
-      else
-        expect { context_from_proj(:proj_sohp2) }.to raise_error PreAssembly::BundleUsageError
-      end
     end
   end
 
