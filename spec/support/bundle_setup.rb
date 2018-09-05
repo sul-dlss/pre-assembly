@@ -8,6 +8,5 @@ def context_from_proj(proj)
   filename = "spec/test_data/project_config_files/#{proj}.yaml"
   ps = YAML.load(File.read(filename))
   ps['config_filename'] = filename
-  ps['show_progress'] = false
   PreAssembly::BundleContext.new(ps)
 end
