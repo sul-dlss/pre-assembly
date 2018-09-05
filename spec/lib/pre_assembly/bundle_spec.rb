@@ -30,12 +30,10 @@ RSpec.describe PreAssembly::Bundle do
       allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
     end
     it 'runs cleanly using smoke_test.yaml for options' do
-      yaml_file = 'spec/test_data/project_config_files/smoke_test.yaml'
-      params = YAML.load_file(yaml_file)
-      File.delete(params['progress_log_file']) if File.exist?(params['progress_log_file'])
+      bc = context_from_proj('smoke_test')
+      File.delete(bc.user_params[:progress_log_file]) if File.exist?(bc.user_params[:progress_log_file])
       pids = []
       expect {
-        bc = PreAssembly::BundleContext.new params
         b = PreAssembly::Bundle.new bc
         pids = b.run_pre_assembly
       }.not_to raise_error
