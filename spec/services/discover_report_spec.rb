@@ -21,9 +21,9 @@ RSpec.describe DiscoveryReport do
       expect(report.each_row).to be_an(Enumerable)
     end
     it 'yields per objects_to_process' do
-      expect(report).to receive(:per_dobj).with(1).and_return(fake: 1)
-      expect(report).to receive(:per_dobj).with(2).and_return(fake: 2)
-      expect(report).to receive(:per_dobj).with(3).and_return(fake: 3)
+      expect(report).to receive(:process_dobj).with(1).and_return(fake: 1)
+      expect(report).to receive(:process_dobj).with(2).and_return(fake: 2)
+      expect(report).to receive(:process_dobj).with(3).and_return(fake: 3)
       expect(bundle).to receive(:objects_to_process).and_return([1, 2, 3])
       report.each_row { |_r| } # no-op
     end
