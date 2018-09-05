@@ -4,6 +4,11 @@ sudo: false
 notifications:
   email: false
 
+addons:
+  apt:
+    packages:
+      - libimage-exiftool-perl
+
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
