@@ -3,7 +3,8 @@ class BundleUsageError < StandardError
   # back to users of the bin/pre-assemble script.
 end
 
-class BundleContext
+# This is a temporary BundleConext class that will be replaced with the BundleContext ActiveRecord Model.
+class BundleContextTemporary
   # Paramaters passed via YAML config files.
   YAML_PARAMS = [
     :project_style,

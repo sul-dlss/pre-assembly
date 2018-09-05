@@ -8,5 +8,5 @@ def context_from_proj(proj)
   filename = "spec/test_data/project_config_files/#{proj}.yaml"
   ps = YAML.load(File.read(filename))
   ps['config_filename'] = filename
-  BundleContext.new(ps)
+  BundleContextTemporary.new(ps)
 end

@@ -89,7 +89,7 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "finds the correct N objects, stageables, and files" do
-      allow_any_instance_of(BundleContext).to receive(:validate_usage) # req'd for :sohp_files_and_folders
+      allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # req'd for :sohp_files_and_folders
       tests.each do |proj, n_dobj, n_stag, n_file|
         b = described_class.new(context_from_proj(proj))
         b.discover_objects

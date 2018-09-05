@@ -39,7 +39,7 @@ module PreAssembly
            to: :bundle_context
 
     class << self
-      delegate :import_csv, to: BundleContext
+      delegate :import_csv, to: BundleContextTemporary
     end
 
     def initialize(bundle_context)
