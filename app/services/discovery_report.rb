@@ -19,17 +19,12 @@ class DiscoveryReport
   # @yield [Hash<Symbol => Object>] data structure about a DigitalObject
   def each_row
     return enum_for(:each_row) unless block_given?
-    bundle.objects_to_process.each { |dobj| yield per_dobj(dobj) }
-  end
-
-  # @return [PreAssembly::Smpl]
-  def smpl
-    @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+    bundle.objects_to_process.each { |dobj| yield process_dobj(dobj) }
   end
 
   # @param [PreAssembly::DigitalObject]
   # @return [Hash<Symbol => Object>]
-  def per_dobj(dobj)
+  def process_dobj(dobj)
     errors = {}
     counts = {
       total_size: dobj.object_files.map(&:filesize).sum,
@@ -104,4 +99,10 @@ class DiscoveryReport
   def using_smpl_manifest?
     content_md_creation[:style] == :smpl && File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
   end
+
+  # @return [PreAssembly::Smpl]
+  def smpl
+    @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+  end
+
 end
