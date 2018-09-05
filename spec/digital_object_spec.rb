@@ -617,14 +617,20 @@ describe PreAssembly::DigitalObject do
       expect(ofiles.map { |f| f.relative_path }).to eq(files[m .. -1].sort)
     end
 
-    it "should generate the expected xml text when overriding is explicitly not allowed or not specified" do
-     [false, nil].each do |content_tag_override|
-       @dobj.project_style[:content_tag_override] = content_tag_override # nil or false prevents override of content structure
-       expect(@dobj.content_type_tag).to eq('File') # object is listed as type file
-       expect(@dobj.project_style[:content_structure]).to eq('simple_image') # YAML is configured for image
-       expect(@dobj.content_md_creation_style).to eq(:simple_image) # so we override md creation style to the value set in the YAML file
-       expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml # should be image content metadata
-      end
+    it "should generate the expected xml text when overriding is explicitly not allowed" do
+      @dobj.project_style[:content_tag_override] = false # false prevents override of content structure
+      expect(@dobj.content_type_tag).to eq('File') # object is listed as type file
+      expect(@dobj.project_style[:content_structure]).to eq('simple_image') # YAML is configured for image
+      expect(@dobj.content_md_creation_style).to eq(:simple_image) # so we override md creation style to the value set in the YAML file
+      expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml # should be image content metadata
+    end
+
+    it "should generate the expected xml text when overriding is not specified" do
+      @dobj.project_style[:content_tag_override] = nil # nil prevents override of content structure
+      expect(@dobj.content_type_tag).to eq('File') # object is listed as type file
+      expect(@dobj.project_style[:content_structure]).to eq('simple_image') # YAML is configured for image
+      expect(@dobj.content_md_creation_style).to eq(:simple_image) # so we override md creation style to the value set in the YAML file
+      expect(noko_doc(@dobj.content_md_xml)).to be_equivalent_to @exp_xml # should be image content metadata
     end
 
   end
