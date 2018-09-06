@@ -1,7 +1,4 @@
 RSpec.describe PreAssembly::Bundle do
-  let(:fake_manifest) do
-    [{ druid: '123', sourceid: 'xyz', label: 'obj_1', filename: 'foo.jpg' }.with_indifferent_access]
-  end
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:revs_context) { context_from_proj(:proj_revs) }
   let(:rumsey_context) do
@@ -12,6 +9,10 @@ RSpec.describe PreAssembly::Bundle do
   end
   let(:revs) { described_class.new(revs_context) }
   let(:rumsey) { described_class.new(rumsey_context) }
+
+  before do
+    allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # replace w/ AR validation
+  end
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -38,14 +39,6 @@ RSpec.describe PreAssembly::Bundle do
       expect(rumsey.skippables).to eq({})
       rumsey.load_skippables
       expect(rumsey.skippables).to eq({ "aa" => true, "bb" => true })
-    end
-  end
-
-  describe '#validate_usage with bad manifest' do
-    it "raises an exception since the sourceID column is misspelled" do
-      allow_any_instance_of(PreAssembly::BundleContext).to receive(:validate_usage).and_call_original
-      exp_msg = /Manifest does not have a column called 'sourceid'/
-      expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(BundleUsageError, exp_msg)
     end
   end
 

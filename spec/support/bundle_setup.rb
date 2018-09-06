@@ -4,9 +4,11 @@ def bundle_setup(proj)
   PreAssembly::Bundle.new(context_from_proj(proj))
 end
 
-def context_from_proj(proj)
+def hash_from_proj(proj)
   filename = "spec/test_data/project_config_files/#{proj}.yaml"
-  ps = YAML.load(File.read(filename))
-  ps['config_filename'] = filename
-  BundleContextTemporary.new(ps)
+  YAML.load(File.read(filename)).merge('config_filename' => filename)
+end
+
+def context_from_proj(proj)
+  BundleContextTemporary.new(hash_from_proj(proj))
 end

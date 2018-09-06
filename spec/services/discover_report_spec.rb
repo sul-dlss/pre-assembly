@@ -5,8 +5,7 @@ RSpec.describe DiscoveryReport do
   subject(:report) { described_class.new(bundle) }
 
   before do
-    PreAssembly::Bundle # remove after split to own file and BC is autoloadable
-    allow_any_instance_of(PreAssembly::BundleContext).to receive(:validate_usage) # to be replaced w/ AR validation
+    allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # to be replaced w/ AR validation
   end
 
   describe '#initialize' do

@@ -60,8 +60,8 @@ class BundleContextTemporary
   # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   # @raise if file missing/unreadable
   def self.import_csv(filename)
-    raise PreAssembly::BundleUsageError, "CSV filename required" unless filename.present?
-    raise PreAssembly::BundleUsageError, "Required file not found: #{filename}." unless File.readable?(filename)
+    raise BundleUsageError, "CSV filename required" unless filename.present?
+    raise BundleUsageError, "Required file not found: #{filename}." unless File.readable?(filename)
     file_contents = IO.read(filename).encode("utf-8", replace: nil)
     csv = CSV.parse(file_contents, :headers => true)
     csv.map { |row| row.to_hash.with_indifferent_access }
