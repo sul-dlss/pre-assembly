@@ -46,7 +46,7 @@ class DiscoveryReport
     errors[:missing_files] = true unless dobj.object_files_exist?
     errors[:dupes] = true unless object_filenames_unique?(dobj)
     counts[:source_ids][dobj.source_id] += 1
-    errors.merge!(registration_check(dobj.determine_druid))
+    errors.merge!(registration_check(dobj.druid))
     if using_manifest? # check global uniqueness
       errors[:source_id_dup] = true if dobj.source_id.any? { |id| Dor::SearchService.query_by_id(id) }
     end

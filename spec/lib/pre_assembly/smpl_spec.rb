@@ -75,8 +75,7 @@ RSpec.describe PreAssembly::Smpl do
       :content_md_creation => { :style => :smpl }
     }
     dobj = PreAssembly::DigitalObject.new(ps)
-    dobj.pid = "druid:#{druid}"
-    dobj.druid = DruidTools::Druid.new(dobj.pid)
+    allow(dobj).to receive(:pid).and_return("druid:#{druid}")
     dobj.container = druid
     dobj.content_md_creation[:style] = 'smpl'
     dobj

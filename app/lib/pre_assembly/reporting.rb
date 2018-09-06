@@ -126,7 +126,6 @@ module PreAssembly
         source_ids[dobj.source_id] += 1 # keep track of source_id uniqueness
 
         if confirming_registration # objects should already be registered, let's confirm that
-          dobj.determine_druid
           pid = dobj.pid
           druid = pid.include?('druid') ? pid : "druid:#{pid}"
           message += "#{druid} , "

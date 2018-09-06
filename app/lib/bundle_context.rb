@@ -54,8 +54,13 @@ class BundleContext
   ####
 
   # TODO: BundleContext is not really a logical home for this util method
-  # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
+  # load CSV allowing UTF-8 to pass through, deleting blank columns
+  # @param [String] filename
+  # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
+  # @raise if file missing/unreadable
   def self.import_csv(filename)
+    raise PreAssembly::BundleUsageError, "CSV filename required" unless filename.present?
+    raise PreAssembly::BundleUsageError, "Required file not found: #{filename}." unless File.readable?(filename)
     file_contents = IO.read(filename).encode("utf-8", replace: nil)
     csv = CSV.parse(file_contents, :headers => true)
     csv.map { |row| row.to_hash.with_indifferent_access }
@@ -66,6 +71,7 @@ class BundleContext
   end
 
   # On first call, loads the manifest data, caches results
+  # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   def manifest_rows
     @manifest_rows ||= self.class.import_csv(manifest)
   end
@@ -76,9 +82,9 @@ class BundleContext
 
   def setup_paths
     bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
-    self.manifest       &&= path_in_bundle(manifest)
-    self.staging_dir = Assembly::ASSEMBLY_WORKSPACE if staging_dir.nil? # if the user didn't supply a staging_dir, use the default
-    self.progress_log_file = File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml') unless progress_log_file # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
+    self.manifest &&= path_in_bundle(manifest)
+    self.staging_dir ||= Assembly::ASSEMBLY_WORKSPACE
+    self.progress_log_file ||= File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml')
   end
 
   def setup_other
@@ -114,11 +120,6 @@ class BundleContext
     [bundle_dir, staging_dir]
   end
 
-  # If a file parameter from the YAML is non-nil, the file must exist.
-  def required_files
-    [manifest]
-  end
-
   def required_user_params
     YAML_PARAMS - non_required_user_params
   end
@@ -144,11 +145,6 @@ class BundleContext
     required_dirs.each do |d|
       next if File.directory? d
       validation_errors << "Required directory not found: #{d}."
-    end
-
-    required_files.each do |f|
-      next if File.readable? f
-      validation_errors << "Required file not found: #{f}."
     end
 
     validation_errors << "Bundle directory not specified." if bundle_dir.nil? || bundle_dir == ''
