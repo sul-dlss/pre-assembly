@@ -20,6 +20,7 @@ module PreAssembly
              :apply_tag,
              :bundle_dir,
              :checksums_file,
+             :config_filename,
              :content_exclusion,
              :content_md_creation,
              :file_attr,
