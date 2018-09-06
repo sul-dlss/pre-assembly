@@ -37,13 +37,13 @@ RSpec.describe BundleContextTemporary do
     it "raises exception if a user parameter is missing" do
       revs_context.user_params.delete :bundle_dir
       exp_msg = /^Configuration errors found:  Missing parameter: /
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
+      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
     end
 
     it "raises exception if required directory not found" do
       revs_context.bundle_dir = '__foo_bundle_dir###'
       exp_msg = /^Configuration errors found:  Required directory not found/
-      expect { revs_context.validate_usage }.to raise_error(PreAssembly::BundleUsageError, exp_msg)
+      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, exp_msg)
     end
 
     it "raises exception if required file not found" do

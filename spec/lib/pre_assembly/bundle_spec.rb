@@ -1,7 +1,4 @@
 RSpec.describe PreAssembly::Bundle do
-  let(:fake_manifest) do
-    [{ druid: '123', sourceid: 'xyz', label: 'obj_1', filename: 'foo.jpg' }.with_indifferent_access]
-  end
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:revs_context) { context_from_proj(:proj_revs) }
   let(:rumsey_context) do
