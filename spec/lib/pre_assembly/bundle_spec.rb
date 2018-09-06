@@ -1,7 +1,15 @@
 RSpec.describe PreAssembly::Bundle do
+  let(:fake_manifest) do
+    [{ druid: '123', sourceid: 'xyz', label: 'obj_1', filename: 'foo.jpg' }.with_indifferent_access]
+  end
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:revs_context) { context_from_proj(:proj_revs) }
-  let(:rumsey_context) { context_from_proj(:proj_rumsey)}
+  let(:rumsey_context) do
+    context_from_proj(:proj_rumsey).tap do |c|
+      c.manifest_cols[:object_container] = 'folder'
+      allow(c).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+    end
+  end
   let(:revs) { described_class.new(revs_context) }
   let(:rumsey) { described_class.new(rumsey_context) }
 
@@ -35,6 +43,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#validate_usage with bad manifest' do
     it "raises an exception since the sourceID column is misspelled" do
+      allow_any_instance_of(PreAssembly::BundleContext).to receive(:validate_usage).and_call_original
       exp_msg = /Manifest does not have a column called 'sourceid'/
       expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(BundleUsageError, exp_msg)
     end
@@ -58,7 +67,7 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#run_log_msg' do
-    it '#returns a string' do
+    it 'returns a string' do
       expect(revs.run_log_msg).to be_a(String)
     end
   end
@@ -72,30 +81,13 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#digital_objects' do
-    let(:tests) do
-      [
-        [:proj_revs,   3, 1, 1],
-        [:proj_rumsey, 3, 2, 2],
-        [:folder_manifest, 3, 2, 2],
-        [:sohp_files_only, 2, 9, 9],
-        [:sohp_files_and_folders, 2, 25, 40]
-      ]
-    end
-
-    it "finds the correct N objects, stageables, and files" do
-      allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # req'd for :sohp_files_and_folders
-      tests.each do |proj, n_dobj, n_stag, n_file|
-        b = described_class.new(context_from_proj(proj))
-        expect(b.digital_objects.size).to eq(n_dobj)
-        b.digital_objects.each do |dobj|
-          expect(dobj.stageable_items.size).to eq(n_stag)
-          expect(dobj.object_files.size).to eq(n_file)
-        end
-      end
+    it "finds the correct number of objects" do
+      b = bundle_setup(:folder_manifest)
+      expect(b.digital_objects.size).to eq(3)
     end
 
     it "handles containers correctly" do
-      expect(rumsey.digital_objects[0].container.size).to be > rumsey.bundle_dir.size
+      expect(rumsey.digital_objects.first.container.size).to be > rumsey.bundle_dir.size
     end
   end
 
@@ -248,16 +240,18 @@ RSpec.describe PreAssembly::Bundle do
   describe '#objects_to_process' do
     it "has the correct list of objects to re-accession if specified with only option" do
       b = described_class.new(context_from_proj(:proj_sohp3))
-      expect(b.digital_objects.size).to eq(2)
-      o2p = b.objects_to_process
-      expect(o2p.size).to eq(1)
+      b.bundle_context.manifest_cols[:object_container] = 'folder'
+      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      expect(b.digital_objects.size).to eq(3)
+      expect(b.objects_to_process.size).to eq(1)
     end
 
     it "has the correct list of objects to accession if specified with except option" do
-      b = described_class.new(context_from_proj(:proj_sohp4))
-      expect(b.digital_objects.size).to eq(2)
-      o2p = b.objects_to_process
-      expect(o2p.size).to eq(0)
+      b = described_class.new(context_from_proj(:proj_sohp4)) # has 2 except listings
+      b.bundle_context.manifest_cols[:object_container] = 'folder'
+      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      expect(b.digital_objects.size).to eq(3)
+      expect(b.objects_to_process.size).to eq(1)
     end
 
     it "returns all objects if there are no skippables" do

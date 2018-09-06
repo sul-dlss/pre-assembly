@@ -135,7 +135,10 @@ module PreAssembly
     # manifest columns. The column name to use is configured by the
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
+      raise BundleUsageError, ':manifest_cols must be specified' unless manifest_cols
       col_name = manifest_cols[:object_container]
+      raise BundleUsageError, "object_container must be specified in manifest_cols: #{manifest_cols}" unless col_name
+      manifest_rows.each_with_index { |r, i| raise "Missing #{col_name} in row #{i}: #{r}" unless r[col_name] }
       manifest_rows.map { |r| path_in_bundle r[col_name] }
     end
 
@@ -315,14 +318,12 @@ module PreAssembly
       @o2p = digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
       return @o2p if accession_items.nil? # check to see if we are specifying certain objects to be accessioned
       if accession_items[:only]
-        @o2p.reject! do |dobj|
-          !accession_items[:only].include?(dobj.druid ? dobj.druid.druid : dobj.container_basename)
-        end
+        whitelist = accession_items[:only].map { |x| DruidTools::Druid.new(x).druid } # normalize
+        @o2p.select! { |dobj| whitelist.include?(dobj.druid.druid) }
       end
       if accession_items[:except]
-        @o2p.reject! do |dobj|
-          accession_items[:except].include?(dobj.druid ? dobj.druid.druid : dobj.container_basename)
-        end
+        blacklist = accession_items[:except].map { |x| DruidTools::Druid.new(x).druid } # normalize
+        @o2p.reject! { |dobj| blacklist.include?(dobj.druid.druid) }
       end
       @o2p
     end
