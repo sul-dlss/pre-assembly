@@ -6,11 +6,6 @@ require 'assembly-utils'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-
-def noko_doc(x)
-  Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
-end
-
 module PreAssembly
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
