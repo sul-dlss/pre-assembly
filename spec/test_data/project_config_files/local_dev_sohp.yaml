@@ -1,6 +1,5 @@
 project_style:
   content_structure:  'smpl'
-  get_druid_from:     'container'
 
 bundle_dir:           'spec/test_data/bundle_input_e'
 staging_dir:          'tmp'
@@ -27,13 +26,7 @@ content_md_creation:
   style:              'smpl'
   smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
 
-object_discovery:
-  use_manifest:       false
-  glob:               '*'
-  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
-
 stageable_discovery:
-  use_container:      false
   glob:               '**/*'
   regex:              '^((?!_techmd.xml|.md5).)*$'
   files_only:         true

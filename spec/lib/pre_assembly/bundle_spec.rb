@@ -1,9 +1,18 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:revs_context) { context_from_proj(:proj_revs) }
-  let(:rumsey_context) { context_from_proj(:proj_rumsey)}
+  let(:rumsey_context) do
+    context_from_proj(:proj_rumsey).tap do |c|
+      c.manifest_cols[:object_container] = 'folder'
+      allow(c).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+    end
+  end
   let(:revs) { described_class.new(revs_context) }
   let(:rumsey) { described_class.new(rumsey_context) }
+
+  before do
+    allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # replace w/ AR validation
+  end
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -23,20 +32,13 @@ RSpec.describe PreAssembly::Bundle do
       expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
     end
   end
-  
+
   describe '#load_skippables' do
     it "returns expected hash of skippable items" do
       allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
       expect(rumsey.skippables).to eq({})
       rumsey.load_skippables
       expect(rumsey.skippables).to eq({ "aa" => true, "bb" => true })
-    end
-  end
-
-  describe '#validate_usage with bad manifest' do
-    it "raises an exception since the sourceID column is misspelled" do
-      exp_msg = /Manifest does not have a column called 'sourceid'/
-      expect { described_class.new(context_from_proj(:proj_revs_bad_manifest)) }.to raise_error(BundleUsageError, exp_msg)
     end
   end
 
@@ -49,22 +51,16 @@ RSpec.describe PreAssembly::Bundle do
       expect(manifest).to be_an(Array)
       expect(manifest.size).to eq(3)
       headers = %w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
-      # rows should be accessible as keys by header, both as string and symbols
+      expect(manifest).to all(be_an(ActiveSupport::HashWithIndifferentAccess)) # accessible w/ string and symbols
       expect(manifest).to all(include(*headers))
-      expect(manifest).to all(include(*headers.map(&:to_sym)))
-      # test some specific values by key and string -- if the column is totally missing at the end, it might have a value of nil (like in the first row, missing the description column)
       expect(manifest[0][:description]).to be_nil
-      expect(manifest[0]['description']).to be_nil
       expect(manifest[1][:description]).to eq('')
-      expect(manifest[1]['description']).not_to be_nil
       expect(manifest[2][:description]).to eq('yo, this is a description')
-      expect(manifest[2]['description']).to eq('yo, this is a description')
-      expect(manifest[2]['Description']).to be_nil # AKA Hashes, how do they work?
     end
   end
 
   describe '#run_log_msg' do
-    it '#returns a string' do
+    it 'returns a string' do
       expect(revs.run_log_msg).to be_a(String)
     end
   end
@@ -77,94 +73,29 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe 'object discovery: #discover_objects' do
-    let(:tests) do
-      [
-        [:proj_revs,   3, 1, 1],
-        [:proj_rumsey, 3, 2, 2],
-        [:folder_manifest, 3, 2, 2],
-        [:sohp_files_only, 2, 9, 9],
-        [:sohp_files_and_folders, 2, 25, 40]
-      ]
-    end
-
-    it "finds the correct N objects, stageables, and files" do
-      allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # req'd for :sohp_files_and_folders
-      tests.each do |proj, n_dobj, n_stag, n_file|
-        b = described_class.new(context_from_proj(proj))
-        b.discover_objects
-        dobjs = b.digital_objects
-        expect(dobjs.size).to eq(n_dobj)
-        dobjs.each do |dobj|
-          expect(dobj.stageable_items.size).to eq(n_stag)
-          expect(dobj.object_files.size).to eq(n_file)
-        end
-      end
+  describe '#digital_objects' do
+    it "finds the correct number of objects" do
+      b = bundle_setup(:folder_manifest)
+      expect(b.digital_objects.size).to eq(3)
     end
 
     it "handles containers correctly" do
-      # A project that uses containers as stageables.
-      # In this case, the bundle_dir serves as the container.
-      revs.discover_objects
-      expect(revs.digital_objects[0].container).to eq(revs.bundle_dir)
-      # A project that does not.
-      rumsey.discover_objects
-      expect(rumsey.digital_objects[0].container.size).to be > rumsey.bundle_dir.size
+      expect(rumsey.digital_objects.first.container.size).to be > rumsey.bundle_dir.size
     end
   end
 
-  describe "object discovery: containers" do
-    it "object_containers() should dispatch the correct method" do
-      exp = {
-        :discover_containers_via_manifest => true,
-        :discover_items_via_crawl         => false,
-      }
-      exp.each do |meth, use_man|
-        revs.object_discovery[:use_manifest] = use_man
-        allow(revs).to receive(meth).and_return []
-        expect(revs).to receive(meth).once
-        revs.object_containers
-      end
-    end
-  end
-
-  describe "object discovery: discovery via manifest and crawl" do
+  describe '#object_discovery: discovery via manifest and crawl' do
     it "discover_containers_via_manifest() should return expected information" do
       vals = %w(123.tif 456.tif 789.tif)
       revs.manifest_cols[:object_container] = :col_foo
-      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { :col_foo => v } })
+      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { col_foo: v } })
       expect(revs.discover_containers_via_manifest).to eq(vals.map { |v| revs.path_in_bundle v })
     end
 
-    it "discover_items_via_crawl() should return expected information" do
-      items = [
-        'abc.txt', 'def.txt', 'ghi.txt',
-        '123.tif', '456.tif', '456.TIF',
-      ]
-      items = items.map { |i| revs.path_in_bundle i }
+    it '#discover_items_via_crawl should return expected information' do
+      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| revs.path_in_bundle i }
       allow(revs).to receive(:dir_glob).and_return(items)
-      # No regex filtering.
-      revs_context.object_discovery = { :regex => '', :glob => '' }
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items.sort)
-      # No regex filtering: using nil as regex.
-      revs_context.object_discovery = { :regex => nil, :glob => '' }
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items.sort)
-      # Only tif files.
-      revs_context.object_discovery[:regex] = '(?i)\.tif$'
-      expect(revs.discover_items_via_crawl(revs.bundle_dir, revs.object_discovery)).to eq(items[3..-1].sort)
-    end
-  end
-
-  describe 'object discovery: #stageable_items_for' do
-    it 'returns [container] if use_container is true' do
-      revs.stageable_discovery[:use_container] = true
-      expect(revs.stageable_items_for('foo.tif')).to eq(['foo.tif'])
-    end
-
-    it 'returns expected crawl results' do
-      container = rumsey.path_in_bundle('cb837cp4412')
-      exp = ['2874009.tif', 'descMetadata.xml'].map { |e| "#{container}/#{e}" }
-      expect(rumsey.stageable_items_for(container)).to eq(exp)
+      expect(revs.discover_items_via_crawl(revs.bundle_dir)).to eq(items.sort)
     end
   end
 
@@ -199,16 +130,6 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe "object discovery: other" do
-    describe '#actual_container' do
-      it 'returns expected paths switched by :use_container flag' do
-        path = "foo/bar/x.tif"
-        revs.stageable_discovery[:use_container] = false # Return the container unmodified.
-        expect(revs.actual_container(path)).to eq(path)
-        revs.stageable_discovery[:use_container] = true # Adjust the container value.
-        expect(revs.actual_container(path)).to eq('foo/bar')
-      end
-    end
-
     it "is able to exercise all_object_files()" do
       fake_files = [[1, 2], [3, 4], [5, 6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
@@ -260,99 +181,17 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe '#confirm_checksums' do
-    let(:x_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'A23', path: 'a/b/x.tiff') }
-    let(:y_tiff) { instance_double(PreAssembly::ObjectFile, md5: 'B78', path: 'q/r/y.tiff') }
-    let(:dobj) { revs.digital_objects.first }
-
-    before do
-      revs.discover_objects
-      allow(dobj).to receive(:object_files).and_return([x_tiff, y_tiff])
-    end
-
-    it 'returns false unless ALL checksums match' do
-      allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'MISMATCH', 'y.tiff' => 'B78')
-      expect(revs.confirm_checksums(dobj)).to be_falsey
-    end
-    it 'returns true when ALL checksums match' do
-      allow(revs).to receive(:provider_checksums).and_return('x.tiff' => 'A23', 'y.tiff' => 'B78')
-      expect(revs.confirm_checksums(dobj)).to be_truthy
-    end
-  end
-
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
-      rumsey.discover_objects
       rumsey.all_object_files.each { |f|    expect(f.checksum).to be_nil }
       rumsey.digital_objects.each  { |dobj| rumsey.load_checksums(dobj) }
       rumsey.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
     end
   end
 
-  describe '#provider_checksums' do
-    it "does nothing when no checksums file is present" do
-      expect(rumsey).not_to receive(:read_exp_checksums)
-      rumsey.provider_checksums
-    end
-
-    it "empty string yields no checksums" do
-      allow(revs).to receive(:read_exp_checksums).and_return('')
-      expect(revs.provider_checksums).to eq({})
-    end
-
-    it "checksums are parsed correctly" do
-      checksum_data = {
-        'foo1.tif' => '4e3cd24dd79f3ec91622d9f8e5ab5afa',
-        'foo2.tif' => '7e40beb08d646044529b9138a5f1c796',
-        'foo3.tif' => 'e5263af3ebb27d4ab44f70317cb249c1',
-        'foo4.tif' => '15263af3ebb27d4ab44f74316cb249a4',
-      }
-      checksum_string = checksum_data.map { |f, c| "MD5 (#{f}) = #{c}\n" }.join ''
-      allow(revs).to receive(:read_exp_checksums).and_return(checksum_string)
-      expect(revs.provider_checksums).to eq(checksum_data)
-    end
-  end
-
-  context "checksums: retrieving and computing" do
-    let(:file_path) { revs.path_in_bundle 'image1.tif' }
-    let(:file) { Assembly::ObjectFile.new(file_path) }
-
-    describe '#retrieve_checksum' do
-      it "returns provider checksum when it is available" do
-        fake_md5 = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1'
-        revs.provider_checksums = { file_path => fake_md5 }
-        expect(revs.retrieve_checksum(file)).to eq(fake_md5)
-      end
-    end
-
-    describe '#retrieve_checksum' do
-      it "computes checksum when checksum is not available" do
-        revs.provider_checksums = {}
-        expect(file).to receive(:md5)
-        revs.retrieve_checksum(file)
-      end
-    end
-  end
-
-  describe '#process_manifest' do
-    it "does nothing for bundles that do not use a manifest" do
-      rumsey.discover_objects
-      expect(rumsey).not_to receive :manifest_rows
-      rumsey.process_manifest
-    end
-
+  describe '#digital_objects' do
     it "augments the digital objects with additional information" do
-      # Discover the objects: we should find some.
-      revs.discover_objects
       expect(revs.digital_objects.size).to eq(3)
-      # Before processing manifest: various attributes should be nil or default value.
-      revs.digital_objects.each do |dobj|
-        expect(dobj.label).to        eq(Dor::Config.dor.default_label)
-        expect(dobj.source_id).to    be_nil
-        expect(dobj.manifest_row).to be_nil
-      end
-      # And now those attributes should have content.
-      revs.process_manifest
       revs.digital_objects.each do |dobj|
         expect(dobj.label).to be_a(String)
         expect(dobj.label).not_to eq(Dor::Config.dor.default_label)
@@ -365,19 +204,12 @@ RSpec.describe PreAssembly::Bundle do
   describe '#manifest_rows' do
     it "loads the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
       expect(revs.manifest_rows.size).to eq 3
-      expect(revs).not_to receive(:object_discovery)
+      expect(described_class).not_to receive(:import_csv)
       revs.manifest_rows
-
-    end
-
-    it "returns empty array for bundles that do not use a manifest" do
-      expect(rumsey.manifest_rows).to eq([])
     end
   end
 
   describe '#validate_files' do
-    before { rumsey.discover_objects }
-
     it "returns expected tally if all images are valid" do
       skip "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem"
       rumsey.digital_objects.each do |dobj|
@@ -401,28 +233,26 @@ RSpec.describe PreAssembly::Bundle do
   describe '#objects_to_process' do
     it "has the correct list of objects to re-accession if specified with only option" do
       b = described_class.new(context_from_proj(:proj_sohp3))
-      b.discover_objects
-      expect(b.digital_objects.size).to eq(2)
-      o2p = b.objects_to_process
-      expect(o2p.size).to eq(1)
+      b.bundle_context.manifest_cols[:object_container] = 'folder'
+      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      expect(b.digital_objects.size).to eq(3)
+      expect(b.objects_to_process.size).to eq(1)
     end
 
     it "has the correct list of objects to accession if specified with except option" do
-      b = described_class.new(context_from_proj(:proj_sohp4))
-      b.discover_objects
-      expect(b.digital_objects.size).to eq(2)
-      o2p = b.objects_to_process
-      expect(o2p.size).to eq(0)
+      b = described_class.new(context_from_proj(:proj_sohp4)) # has 2 except listings
+      b.bundle_context.manifest_cols[:object_container] = 'folder'
+      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      expect(b.digital_objects.size).to eq(3)
+      expect(b.objects_to_process.size).to eq(1)
     end
 
     it "returns all objects if there are no skippables" do
-      revs.discover_objects
       revs.skippables = {}
       expect(revs.objects_to_process).to eq(revs.digital_objects)
     end
 
     it "returns a filtered list of digital objects" do
-      revs.discover_objects
       revs.skippables = {}
       revs.skippables[revs.digital_objects[-1].unadjusted_container] = true
       o2p = revs.objects_to_process
@@ -433,7 +263,6 @@ RSpec.describe PreAssembly::Bundle do
 
   describe "#log_progress_info" do
     it "returns expected info about a digital object" do
-      revs.discover_objects
       dobj = revs.digital_objects[0]
       exp = {
         :unadjusted_container => dobj.unadjusted_container,
@@ -452,11 +281,9 @@ RSpec.describe PreAssembly::Bundle do
     it "#path_in_bundle returns expected value" do
       expect(revs.path_in_bundle(relative)).to eq('spec/test_data/bundle_input_a/abc/def.jpg')
     end
-
     it "#relative_path returns expected value" do
       expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)
     end
-
     it "#get_base_dir returns expected value" do
       expect(revs.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
@@ -497,42 +324,6 @@ RSpec.describe PreAssembly::Bundle do
         b = described_class.new(context_from_proj(proj))
         exp_files = files.map { |f| b.path_in_bundle f }
         expect(b.find_files_recursively(b.bundle_dir).sort).to eq(exp_files)
-      end
-    end
-  end
-
-  describe "misc utilities" do
-    it '#symbolize_keys handles various data structures correctly' do
-      tests = [
-        [{}, {}],
-        [[], []],
-        [[1, 2], [1, 2]],
-        [123, 123],
-        [
-          { :foo => 123, 'bar' => 456 },
-          { :foo => 123, :bar  => 456 }
-        ],
-        [
-          { :foo => [1, 2, 3], 'bar' => { 'x' => 99, 'y' => { 'AA' => 22, 'BB' => 33 } } },
-          { :foo => [1, 2, 3], :bar  => { :x  => 99, :y  => { :AA  => 22, :BB  => 33 } } },
-        ],
-
-      ]
-      tests.each do |input, exp|
-        expect(Assembly::Utils.symbolize_keys(input)).to eq(exp)
-      end
-    end
-
-    it '#values_to_symbols! should convert string values to symbols' do
-      tests = [
-        [{}, {}],
-        [
-          { :a => 123, :b => 'b', :c => 'ccc' },
-          { :a => 123, :b => :b, :c => :ccc },
-        ],
-      ]
-      tests.each do |input, exp|
-        expect(Assembly::Utils.values_to_symbols!(input)).to eq(exp)
       end
     end
   end

@@ -23,15 +23,13 @@ module PreAssembly
       :smpl_manifest
     ]
 
-    attr_accessor :pid,
-                  :label,
+    attr_accessor :label,
                   :content_md_file,
                   :technical_md_file,
                   :content_md_xml,
                   :technical_md_xml,
                   :pre_assem_finished,
                   :content_structure,
-                  :druid,
                   :source_id,
                   :manifest_row
 
@@ -50,7 +48,6 @@ module PreAssembly
     end
 
     def setup
-      self.pid = ''
       self.label              = Dor::Config.dor.default_label
       self.content_md_file    = Assembly::CONTENT_MD_FILE
       self.technical_md_file  = Assembly::TECHNICAL_MD_FILE
@@ -112,7 +109,6 @@ module PreAssembly
 
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
-      determine_druid
       stage_files
       generate_content_metadata unless content_md_creation[:style].to_s == 'none'
       generate_technical_metadata
@@ -125,32 +121,15 @@ module PreAssembly
     ####
 
     # @return [DruidTools::Druid]
-    def determine_druid
-      k = project_style[:get_druid_from]
-      log "    - determine_druid(#{k})"
-      self.pid = method("get_pid_from_#{k}").call
-      self.druid = DruidTools::Druid.new(pid)
+    def druid
+      @druid ||= DruidTools::Druid.new(pid)
     end
 
-    def get_pid_from_manifest
-      manifest_row[:druid]
-    end
-
-    # TODO: remove this method:  given that we expect our druids to already be there, we should never call this method
-    def get_pid_from_suri
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('GET_PID_FROM_SURI', method(:log))) do
-        result = Dor::SuriService.mint_id
-        raise PreAssembly::UnknownError unless result.class == String
-        result
+    def pid
+      @pid ||= begin
+        raise 'manifest_row is required' unless manifest_row
+        manifest_row[:druid]
       end
-    end
-
-    def get_pid_from_druid_minter
-      DruidMinter.next
-    end
-
-    def get_pid_from_container
-      "druid:#{container_basename}"
     end
 
     def query_dor_by_barcode(barcode)
@@ -316,8 +295,7 @@ module PreAssembly
     end
 
     def assembly_workflow_url
-      self.druid = pid.include?('druid') ? pid : "druid:#{pid}"
-      "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
+      "#{Dor::Config.dor_services.url}/objects/#{druid.druid}/apo_workflows/assemblyWF"
     end
 
     def retry_handler(method_name, logger, params = {})
