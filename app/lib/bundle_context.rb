@@ -31,7 +31,7 @@ class BundleContext
   # Unpack the user-supplied parameters, after converting
   # all hash keys and some hash values to symbols.
   def initialize(params = {})
-    params = Assembly::Utils.symbolize_keys params
+    params.deep_symbolize_keys!
     raise ArgumentError, ':bundle_dir is required' unless params[:bundle_dir] # TODO: replace w/ AR validation
     [:content_md_creation, :object_discovery, :project_style, :stageable_discovery].each { |k| params[k] ||= {} }
     params[:project_style].transform_values! { |v| v.is_a?(String) ? v.to_sym : v }
@@ -86,7 +86,7 @@ class BundleContext
   def setup_paths
     bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
     self.manifest &&= path_in_bundle(manifest)
-    self.staging_dir ||= Assembly::ASSEMBLY_WORKSPACE
+    self.staging_dir ||= '/dor/assembly'
     self.progress_log_file ||= File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml')
   end
 
