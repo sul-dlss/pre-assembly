@@ -1,11 +1,11 @@
 require_relative 'boot'
 require 'rails/all'
-require 'assembly-utils'
+
+CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-
 
 def noko_doc(x)
   Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
@@ -24,3 +24,6 @@ module PreAssembly
   end
   UnknownError = Class.new(StandardError)
 end
+
+# Old Environment.
+require_relative "cli_environments/#{Rails.env}.rb"
