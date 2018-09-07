@@ -43,9 +43,7 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#import_csv' do
-    let(:manifest) do
-      described_class.import_csv("#{PRE_ASSEMBLY_ROOT}/spec/test_data/bundle_input_a/manifest.csv")
-    end
+    let(:manifest) { described_class.import_csv(Rails.root.join('spec/test_data/bundle_input_a/manifest.csv')) }
 
     it "loads a CSV as a hash with indifferent access" do
       expect(manifest).to be_an(Array)
