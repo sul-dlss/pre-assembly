@@ -12,3 +12,7 @@ end
 def context_from_proj(proj)
   BundleContextTemporary.new(hash_from_proj(proj))
 end
+
+def noko_doc(x)
+  Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
+end

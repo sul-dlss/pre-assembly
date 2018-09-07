@@ -285,12 +285,12 @@ module PreAssembly
 
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
-      log "    - initialize_assembly_workflow()"
       # TODO: use dor-workflow-service gem for this (see #194)
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        result = RestClient.post(assembly_workflow_url, {})
-        raise PreAssembly::UnknownError unless result && [200, 201, 202, 204].include?(result.code)
-        result
+        RestClient.post(assembly_workflow_url, {}).tap do |result|
+          next if result && (200..204).include?(result.code)
+          raise RuntimeError, "POST #{assembly_workflow_url} returned #{result.code}"
+        end
       end
     end
 
