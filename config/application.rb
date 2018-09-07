@@ -19,3 +19,6 @@ module PreAssembly
     # the framework and any gems in your application.
   end
 end
+
+# Old Environment.
+require_relative "cli_environments/#{Rails.env}.rb"
