@@ -77,7 +77,7 @@ RSpec.describe BundleContextTemporary do
 
   describe '#staging_dir' do
     it 'takes default value' do
-      expect(context_from_proj(:proj_sohp2).staging_dir).to eq(Assembly::ASSEMBLY_WORKSPACE)
+      expect(context_from_proj(:proj_sohp2).staging_dir).to eq('/dor/assembly')
     end
   end
 end

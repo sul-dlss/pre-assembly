@@ -143,10 +143,6 @@ module PreAssembly
           end # end if object exists
         end # end confirming registration
 
-        if checking_sourceids # let's check for global source ID uniqueness
-          message += (Assembly::Utils.get_druids_by_sourceid(dobj.source_id).size == 0 ? " yes , " : report_error_message("**DUPLICATE**"))
-        end
-
         puts message
 
         if show_staged # let's show all files that will be staged
