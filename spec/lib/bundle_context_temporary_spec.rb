@@ -1,4 +1,4 @@
-RSpec.describe BundleContext do
+RSpec.describe BundleContextTemporary do
   let(:revs_context) { context_from_proj(:proj_revs) }
 
   describe "initialize() and other setup" do

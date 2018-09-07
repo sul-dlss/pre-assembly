@@ -10,6 +10,7 @@ RSpec.describe User, type: :model do
 
     it { is_expected.to validate_uniqueness_of(:sunet_id) }
     it { is_expected.to validate_presence_of(:sunet_id) }
+    it { is_expected.to have_many(:bundle_contexts) }
     
     describe 'enforces unique constraint on sunet_id' do
       let(:required_attributes) do
