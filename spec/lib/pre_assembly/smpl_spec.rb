@@ -1,5 +1,5 @@
 RSpec.describe PreAssembly::Smpl do
-  let(:bundle_dir) { File.join(PRE_ASSEMBLY_ROOT, 'spec/test_data/bundle_input_e') }
+  let(:bundle_dir) { Rails.root.join('spec/test_data/bundle_input_e') }
 
   describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
     let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
@@ -75,8 +75,7 @@ RSpec.describe PreAssembly::Smpl do
       :content_md_creation => { :style => :smpl }
     }
     dobj = PreAssembly::DigitalObject.new(ps)
-    dobj.pid = "druid:#{druid}"
-    dobj.druid = DruidTools::Druid.new(dobj.pid)
+    allow(dobj).to receive(:pid).and_return("druid:#{druid}")
     dobj.container = druid
     dobj.content_md_creation[:style] = 'smpl'
     dobj

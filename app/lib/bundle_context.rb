@@ -11,12 +11,10 @@ class BundleContext
     :staging_dir,
     :accession_items,
     :manifest,
-    :checksums_file,
     :progress_log_file,
     :project_name,
     :file_attr,
     :content_md_creation,
-    :object_discovery,
     :stageable_discovery,
     :manifest_cols,
     :content_exclusion,
@@ -33,10 +31,13 @@ class BundleContext
   # Unpack the user-supplied parameters, after converting
   # all hash keys and some hash values to symbols.
   def initialize(params = {})
-    params = Assembly::Utils.symbolize_keys params
-    Assembly::Utils.values_to_symbols! params[:project_style]
-    cmc          = params[:content_md_creation]
-    cmc[:style]  = cmc[:style].to_sym
+    params.deep_symbolize_keys!
+    raise ArgumentError, ':bundle_dir is required' unless params[:bundle_dir] # TODO: replace w/ AR validation
+    [:content_md_creation, :object_discovery, :project_style, :stageable_discovery].each { |k| params[k] ||= {} }
+    params[:project_style].transform_values! { |v| v.is_a?(String) ? v.to_sym : v }
+    params[:project_style][:content_structure] ||= :simple_image
+    params[:content_md_creation][:style] ||= :default
+    params[:content_md_creation][:style] = params[:content_md_creation][:style].to_sym
     params[:file_attr] ||= params[:publish_attr]
     self.user_params = params
     YAML_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
@@ -50,13 +51,19 @@ class BundleContext
     return @validate_files unless @validate_files.nil?
     false
   end
+
   ####
   # grab bag
   ####
 
   # TODO: BundleContext is not really a logical home for this util method
-  # load CSV into an array of hashes, allowing UTF-8 to pass through, deleting blank columns
+  # load CSV allowing UTF-8 to pass through, deleting blank columns
+  # @param [String] filename
+  # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
+  # @raise if file missing/unreadable
   def self.import_csv(filename)
+    raise BundleUsageError, "CSV filename required" unless filename.present?
+    raise BundleUsageError, "Required file not found: #{filename}." unless File.readable?(filename)
     file_contents = IO.read(filename).encode("utf-8", replace: nil)
     csv = CSV.parse(file_contents, :headers => true)
     csv.map { |row| row.to_hash.with_indifferent_access }
@@ -66,11 +73,10 @@ class BundleContext
     File.join(bundle_dir, rel_path)
   end
 
-  # On first call, loads the manifest data (does not reload on subsequent calls).
-  # If bundle is not using a manifest, just loads and returns emtpy array.
+  # On first call, loads the manifest data, caches results
+  # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   def manifest_rows
-    return @manifest_rows if @manifest_rows
-    self.manifest_rows = object_discovery[:use_manifest] ? self.class.import_csv(manifest) : []
+    @manifest_rows ||= self.class.import_csv(manifest)
   end
 
   ####
@@ -79,10 +85,9 @@ class BundleContext
 
   def setup_paths
     bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
-    self.manifest       &&= path_in_bundle(manifest)
-    self.checksums_file &&= path_in_bundle(checksums_file)
-    self.staging_dir = Assembly::ASSEMBLY_WORKSPACE if staging_dir.nil? # if the user didn't supply a staging_dir, use the default
-    self.progress_log_file = File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml') unless progress_log_file # if the user didn't supply a progress log file, use the yaml config file as a base, and add '_progress'
+    self.manifest &&= path_in_bundle(manifest)
+    self.staging_dir ||= '/dor/assembly'
+    self.progress_log_file ||= File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml')
   end
 
   def setup_other
@@ -92,7 +97,7 @@ class BundleContext
   end
 
   def setup_defaults
-    self.validate_files = true if @validate_files.nil?
+    self.validate_files = true if @validate_files.nil? # FIXME: conflict between attribute and non-getter method #validate_files
     self.staging_style ||= 'copy'
     project_style[:content_tag_override] = false if project_style[:content_tag_override].nil?
     content_md_creation[:smpl_manifest] ||= 'smpl_manifest.csv'
@@ -107,7 +112,6 @@ class BundleContext
     {
       :project_style => {
         :content_structure => [:simple_image, :simple_book, :book_as_image, :book_with_pdf, :file, :smpl],
-        :get_druid_from => [:container, :manifest, :suri, :druid_minter],
       },
       :content_md_creation => {
         :style => [:default, :filename, :dpg, :smpl, :salt, :none],
@@ -117,14 +121,6 @@ class BundleContext
 
   def required_dirs
     [bundle_dir, staging_dir]
-  end
-
-  # If a file parameter from the YAML is non-nil, the file must exist.
-  def required_files
-    [
-      manifest,
-      checksums_file
-    ].compact
   end
 
   def required_user_params
@@ -154,51 +150,29 @@ class BundleContext
       validation_errors << "Required directory not found: #{d}."
     end
 
-    required_files.each do |f|
-      next if File.readable? f
-      validation_errors << "Required file not found: #{f}."
-    end
-
     validation_errors << "Bundle directory not specified." if bundle_dir.nil? || bundle_dir == ''
-    validation_errors <<  "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
-    validation_errors <<  "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
-    validation_errors <<  "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
+    validation_errors << "Bundle directory #{bundle_dir} not found." unless File.directory?(bundle_dir)
+    validation_errors << "Staging directory '#{staging_dir}' not writable." unless File.writable?(staging_dir)
+    validation_errors << "Progress log file '#{progress_log_file}' or directory not writable." unless File.writable?(File.dirname(progress_log_file))
 
     # validation_errors << "The APO and SET DRUIDs should not be set." if apo_druid_id # APO should not be set
-    # validation_errors << "get_druid_from: 'suri' is no longer valid" if project_style[:get_druid_from] == :suri # can't use SURI to get druid
-    validation_errors << "get_druid_from: 'manifest' is only valid if use_manifest = true." if project_style[:get_druid_from] == :manifest && !object_discovery[:use_manifest] # can't use SURI to get druid
-
-    if object_discovery[:use_manifest] # if we are using a manifest, check some stuff
-      validation_errors << "The glob and regex for object_discovery should not be set if object_discovery:use_manifest=true." unless object_discovery[:glob].nil? && object_discovery[:regex].nil? # glob and regex should be nil
-      if manifest.blank?
-        validation_errors << "A manifest file must be provided if object_discovery:use_manifest=true." # you need a manifest file!
-      else # let's see if the columns the user claims are there exist in the actual manifest
-        if manifest_rows.size == 0
-          validation_errors << "Manifest does not have any rows!"
-        elsif manifest_cols.blank? || manifest_cols[:object_container].blank?
-          validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
-        else
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'" unless manifest_rows.first.keys.include?(manifest_cols[:object_container].to_s)
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !manifest_rows.first.keys.include?(manifest_cols[:source_id].to_s)
-          validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank? && !manifest_rows.first.keys.include?(manifest_cols[:label].to_s)
-          validation_errors << "You must have a column labeled 'druid' in your manifest if you want to use project_style:get_druid_from=manifest" if project_style[:get_druid_from] == :manifest && !manifest_rows.first.keys.include?('druid')
-        end
-      end
-    else # if we are not using a manifest, check some stuff
-      validation_errors << "The glob for object_discovery must be set if object_discovery:use_manifest=false." if object_discovery[:glob].blank? # glob must be set
-    end
-
-    if stageable_discovery[:use_container] # if we are staging the whole container, check some stuff
-      validation_errors << "If stageable_discovery:use_container=true, you cannot use get_druid_from='container'." if project_style[:get_druid_from].to_s =~ /^container/ # if you are staging the entire container, it doesn't make sense to use the container to get the druid
-    else # if we are not staging the whole container, check some stuff
-      validation_errors << "If stageable_discovery:use_container=false, you must set a glob to discover files in each container." if stageable_discovery[:glob].blank? # glob must be set
+    if manifest.blank?
+      validation_errors << "A manifest file must be provided."
+    elsif manifest_rows.size == 0
+      validation_errors << "Manifest does not have any rows!"
+    elsif manifest_cols.blank? || manifest_cols[:object_container].blank?
+      validation_errors << "You must specify the name of your column which represents your object container in a parameter called 'object_container' under 'manifest_cols'"
+    else
+      first_row_keys = manifest_rows.first.keys
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:object_container]}'"                            unless first_row_keys.include?(manifest_cols[:object_container].to_s)
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:source_id]}'" if !manifest_cols[:source_id].blank? && !first_row_keys.include?(manifest_cols[:source_id].to_s)
+      validation_errors << "Manifest does not have a column called '#{manifest_cols[:label]}'" if !manifest_cols[:label].blank?         && !first_row_keys.include?(manifest_cols[:label].to_s)
+      validation_errors << "Manifest does not have a column called 'druid'" unless first_row_keys.include?('druid')
     end
 
     # check parameters that are part of a controlled vocabulary to be sure they don't have bogus values
     validation_errors << "The project_style:content_structure value of '#{project_style[:content_structure]}' is not valid." unless allowed_values[:project_style][:content_structure].include? project_style[:content_structure]
-    validation_errors << "The project_style:get_druid_from value of '#{project_style[:get_druid_from]}' is not valid." unless allowed_values[:project_style][:get_druid_from].include? project_style[:get_druid_from]
     validation_errors << "The content_md_creation:style value of '#{content_md_creation[:style]}' is not valid." unless allowed_values[:content_md_creation][:style].include? content_md_creation[:style]
-
     validation_errors << "The SMPL manifest #{content_md_creation[:smpl_manifest]} was not found in #{bundle_dir}." if content_md_creation[:style] == :smpl && !File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
 
     unless validation_errors.blank?

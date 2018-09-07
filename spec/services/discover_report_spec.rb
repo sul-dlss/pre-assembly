@@ -1,17 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe DiscoveryReport do
-  let(:bundle) { bundle_setup(:proj_revs)}
+  let(:bundle) { bundle_setup(:proj_revs) }
   subject(:report) { described_class.new(bundle) }
+
+  before do
+    allow_any_instance_of(BundleContext).to receive(:validate_usage) # to be replaced w/ AR validation
+  end
 
   describe '#initialize' do
     it 'raises if PreAssembly::Bundle not received' do
       expect { described_class.new }.to raise_error(ArgumentError)
       expect { described_class.new({}) }.to raise_error(ArgumentError)
     end
-    it 'accepts PreAssembly::Bundle, performs setup' do
-      expect(bundle).to receive(:discover_objects)
-      expect(bundle).to receive(:process_manifest)
+    it 'accepts PreAssembly::Bundle' do
       expect { described_class.new(bundle) }.not_to raise_error
     end
   end

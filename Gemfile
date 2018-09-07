@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'bootstrap', '~> 4.1.3'
 gem 'config'
+gem 'erubis' # implicit dependency for (old) rdf-rdfa, no longer default in Rails 5.1+
 gem 'honeybadger', '~> 3.1'
 gem 'jquery-rails'
 gem 'nokogiri'
@@ -20,7 +21,6 @@ gem 'uglifier' # compressor for JavaScript assets
 # Stanford gems
 gem 'assembly-image'
 gem 'assembly-objectfile', '~> 1.7'
-gem 'assembly-utils'
 gem 'dor-services', '~> 5.29'
 gem 'modsulator'
 

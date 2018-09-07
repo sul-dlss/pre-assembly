@@ -2,19 +2,12 @@
 
 project_style:
   content_structure: 'simple_book'
-  get_druid_from: 'container'
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
 staging_dir: ~
 accession_items:   ~
 
-object_discovery:
- use_manifest: false
- glob:  '*'
- regex: '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
-
 stageable_discovery:
-  use_container: false
   glob:  '00/*'
   regex: ~
 

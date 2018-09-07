@@ -1,20 +1,22 @@
 RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
-  let(:ps) {
+  let(:context_params) do
     {
-      # :apo_druid_id  => 'druid:qq333xx4444',
-      # :set_druid_id  => 'druid:mm111nn2222',
-      :source_id     => 'SourceIDFoo',
-      :project_name  => 'ProjectBar',
-      :label         => 'LabelQuux',
-      :publish_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
-      :project_style => {},
-      :content_md_creation => {},
-      :bundle_dir => 'spec/test_data/bundle_input_g',
-      :staging_style => 'copy'
+      :file_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
+      :source_id  => 'SourceIDFoo'
     }
-  }
+  end
+  let(:ps) do
+    context_params.merge(
+      :bundle_dir => 'spec/test_data/bundle_input_g',
+      :content_md_creation => { style: 'default' },
+      :progress_log_file => Tempfile.new('bundle_input_g').path,
+      :project_name  => 'ProjectBar',
+      :project_style => {},
+      :staging_style => 'copy'
+    )
+  end
   let(:dobj) { described_class.new(ps) }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
@@ -33,45 +35,8 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe 'determining druid:' do
-    let(:druids) { %w(druid:aa00aaa0000 druid:cc11bbb1111 druid:dd22eee2222) }
-
-    before do
-      apos = %w(druid:aa00aaa9999 druid:bb00bbb9999 druid:cc00ccc9999).map { |a| double('apo', :pid => a) }
-      allow(dobj).to receive(:container_basename).and_return('36105115575834')
-      allow(dobj).to receive(:query_dor_by_barcode).and_return(druids)
-      allow(dobj).to receive(:get_dor_item_apos).and_return(apos)
-    end
-
-    it "returns DruidMinter.next if get_druid_from=druid_minter" do
-      exp = PreAssembly::DruidMinter.current
-      dobj.project_style[:get_druid_from] = :druid_minter
-      expect(dobj).not_to receive :container_basename
-      expect(dobj.get_pid_from_druid_minter).to eq(exp.next)
-    end
-  end
-
-  describe "determining the druid: other" do
-    it "determine_druid() should set correct values for pid and druid" do
-      # Setup.
-      dru = 'aa111bb2222'
-      dobj.project_style[:get_druid_from] = :container
-      dobj.container = "foo/bar/#{dru}"
-      # Before and after assertions.
-      expect(dobj.pid).to   eq('')
-      expect(dobj.druid).to eq(nil)
-      dobj.determine_druid
-      expect(dobj.pid).to   eq("druid:#{dru}")
-      expect(dobj.druid).to be_kind_of DruidTools::Druid
-    end
-
-    it '#get_pid_from_container extracts druid from basename of object container' do
-      d = 'xx111yy2222'
-      dobj.container = "foo/bar/#{d}"
-      expect(dobj.get_pid_from_container).to eq("druid:#{d}")
-    end
-
-    it '#container_basename should work' do
+  describe '#container_basename' do
+    it 'returns expected value' do
       d = 'xx111yy2222'
       dobj.container = "foo/bar/#{d}"
       expect(dobj.container_basename).to eq(d)
@@ -80,7 +45,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe "file staging" do
     it "is able to copy stageable items successfully" do
-      dobj.druid = druid
+      allow(dobj).to receive(:druid).and_return(druid)
 
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         # Add some stageable items to the digital object, and create those files.
@@ -106,7 +71,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it "is able to symlink stageable items successfully" do
-      dobj.druid = druid
+      allow(dobj).to receive(:druid).and_return(druid)
 
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         # Add some stageable items to the digital object, and create those files.
@@ -167,8 +132,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     before do
-      dobj.druid = druid
-      dobj.content_md_creation[:style] = 'default'
+      allow(dobj).to receive(:druid).and_return(druid)
       dobj.project_style[:content_structure] = 'simple_image'
       add_object_files('tif')
       add_object_files('jp2')
@@ -210,7 +174,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe 'druid tree' do
     it 'has the correct folders (using the contemporary style)' do
-      dobj.druid = druid
+      allow(dobj).to receive(:druid).and_return(druid)
       expect(dobj.druid_tree_dir).to eq('gn/330/dv/6119/gn330dv6119')
       expect(dobj.metadata_dir).to eq('gn/330/dv/6119/gn330dv6119/metadata')
       expect(dobj.content_dir).to eq('gn/330/dv/6119/gn330dv6119/content')
@@ -219,7 +183,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe "no content metadata generated" do
     before do
-      dobj.druid = druid
+      allow(dobj).to receive(:druid).and_return(druid)
       dobj.content_md_creation[:style] = 'none'
       dobj.project_style[:content_structure] = 'simple_book'
       dobj.file_attr = nil
@@ -260,7 +224,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     before do
-      dobj.druid = druid
+      allow(dobj).to receive(:druid).and_return(druid)
       dobj.content_md_creation[:style] = 'filename'
       dobj.project_style[:content_structure] = 'simple_book'
       dobj.file_attr = nil
@@ -308,8 +272,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     before do
-      dobj.druid = druid
-      dobj.content_md_creation[:style] = 'default'
+      allow(dobj).to receive(:druid).and_return(druid)
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       dobj.project_style[:content_tag_override] = true        # this allows override of content structure
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
@@ -377,8 +340,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     before do
-      dobj.druid = druid
-      dobj.content_md_creation[:style] = 'default'
+      allow(dobj).to receive(:druid).and_return(druid)
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
       dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
@@ -420,12 +382,12 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe '#assembly_workflow_url' do
     it 'returns expected value' do
-      dobj.pid = pid
+      allow(dobj).to receive(:pid).and_return(pid)
       expect(dobj.assembly_workflow_url).to match(/^http.+assemblyWF$/).and include(pid)
     end
 
     it 'adds the druid: prefix to the pid if it is missing' do
-      dobj.pid = pid.gsub('druid:', '')
+      allow(dobj).to receive(:pid).and_return(pid.gsub('druid:', ''))
       expect(dobj.assembly_workflow_url).to match(/^http.+assemblyWF$/).and include(pid)
     end
   end
