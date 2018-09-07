@@ -205,6 +205,7 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.7.1)
+    erubis (2.7.0)
     execjs (2.7.0)
     faraday (0.15.2)
       multipart-post (>= 1.2, < 3)
@@ -506,6 +507,7 @@ DEPENDENCIES
   dlss-capistrano (~> 3.1)
   dor-services (~> 5.29)
   equivalent-xml
+  erubis
   honeybadger (~> 3.1)
   jquery-rails
   listen
