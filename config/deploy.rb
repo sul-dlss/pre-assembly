@@ -26,8 +26,8 @@ set :deploy_to, '/opt/app/preassembly/pre-assembly'
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, 'config/master.key'
-# TODO: 'config/honeybadger.yml', database.yml ...
+append :linked_files, 'config/master.key', 'config/honeybadger.yml'
+# TODO: database.yml ...
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'config/certs', 'config/cli_environments', 'tmp', 'vendor/bundle'
