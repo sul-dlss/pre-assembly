@@ -6,10 +6,6 @@ Layout/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
-# Configuration parameters: AllowURI, URISchemes.
-Metrics/LineLength:
-  Max: 200
-
 RSpec/ContextWording:
   Enabled: false # too dogmatic
 
@@ -19,9 +15,6 @@ RSpec/ExampleLength:
 # we like 'expect(x).to receive' better than 'have_received'
 RSpec/MessageSpies:
   Enabled: false
-
-RSpec/MultipleExpectations:
-  Max: 5
 
 RSpec/NestedGroups:
   Max: 4 # default: 3
