@@ -87,7 +87,7 @@ class BundleContextTemporary
   def setup_paths
     bundle_dir.chomp!('/') # get rid of any trailing slash on the bundle directory
     self.manifest &&= path_in_bundle(manifest)
-    self.staging_dir ||= Assembly::ASSEMBLY_WORKSPACE
+    self.staging_dir ||= '/dor/assembly'
     self.progress_log_file ||= File.join(File.dirname(config_filename), File.basename(config_filename, '.yaml') + '_progress.yaml')
   end
 

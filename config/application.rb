@@ -1,6 +1,8 @@
 require_relative 'boot'
 require 'rails/all'
-require 'assembly-utils'
+require_relative 'erubis_monkeypatch.rb'
+
+CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -17,3 +19,6 @@ module PreAssembly
     # the framework and any gems in your application.
   end
 end
+
+# Old Environment.
+require_relative "cli_environments/#{Rails.env}.rb"

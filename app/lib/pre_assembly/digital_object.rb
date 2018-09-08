@@ -49,8 +49,8 @@ module PreAssembly
 
     def setup
       self.label              = Dor::Config.dor.default_label
-      self.content_md_file    = Assembly::CONTENT_MD_FILE
-      self.technical_md_file  = Assembly::TECHNICAL_MD_FILE
+      self.content_md_file    = 'contentMetadata.xml'
+      self.technical_md_file  = 'technicalMetadata.xml'
       self.content_md_xml     = ''
       self.technical_md_xml   = ''
       self.content_structure  = (project_style ? project_style[:content_structure] : 'file')
