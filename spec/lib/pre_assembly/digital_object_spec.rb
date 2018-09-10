@@ -9,9 +9,9 @@ RSpec.describe PreAssembly::DigitalObject do
   end
   let(:ps) do
     context_params.merge(
-      :bundle_dir => 'spec/test_data/bundle_input_g',
+      :bundle_dir => 'spec/test_data/images_jp2_tif',
       :content_md_creation => { style: 'default' },
-      :progress_log_file => Tempfile.new('bundle_input_g').path,
+      :progress_log_file => Tempfile.new('images_jp2_tif').path,
       :project_name  => 'ProjectBar',
       :project_style => {},
       :staging_style => 'copy'

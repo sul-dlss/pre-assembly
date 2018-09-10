@@ -1,9 +1,9 @@
 RSpec.describe BundleContext, type: :model do
   subject(:bc) do
     BundleContext.new(
-      project_name: "SmokeTest",
+      project_name: "Images jp2 tif",
       content_structure: 1,
-      bundle_dir: "spec/test_data/bundle_input_g/",
+      bundle_dir: "spec/test_data/images_jp2_tif/",
       staging_style_symlink: false,
       content_metadata_creation: 1,
       user: user
@@ -66,7 +66,7 @@ RSpec.describe BundleContext, type: :model do
 
     context "bundle_dir path does not exist" do
       it "object does not pass validation" do
-        expect { bc.bundle_dir = 'does/not/exist' }.to change { bc.valid? }.to(false) 
+        expect { bc.bundle_dir = 'does/not/exist' }.to change { bc.valid? }.to(false)
       end
     end
 
@@ -85,7 +85,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe "#normalize_bundle_dir" do
     it "removes the trailing forward slash" do
-      expect(bc.normalize_bundle_dir).to eq "spec/test_data/bundle_input_g"
+      expect(bc.normalize_bundle_dir).to eq "spec/test_data/images_jp2_tif"
     end
   end
 
@@ -109,7 +109,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe "#path_in_bundle" do
     it "creates a relative path" do
-      expect(bc.path_in_bundle("manifest.csv")).to eq "spec/test_data/bundle_input_g/manifest.csv"
+      expect(bc.path_in_bundle("manifest.csv")).to eq "spec/test_data/images_jp2_tif/manifest.csv"
     end
   end
 
@@ -119,12 +119,12 @@ RSpec.describe BundleContext, type: :model do
 
   describe "manifest_rows" do
     it "loads the manifest CSV" do
-      expect(CsvImporter).to receive(:parse_to_hash).with("spec/test_data/bundle_input_g/manifest.csv")
+      expect(CsvImporter).to receive(:parse_to_hash).with("spec/test_data/images_jp2_tif/manifest.csv")
       bc.manifest_rows
     end
 
     it "memoizes the manifest rows" do
-      expect(CsvImporter).to receive(:parse_to_hash).once.with("spec/test_data/bundle_input_g/manifest.csv").and_call_original
+      expect(CsvImporter).to receive(:parse_to_hash).once.with("spec/test_data/images_jp2_tif/manifest.csv").and_call_original
       2.times { bc.manifest_rows }
     end
 
