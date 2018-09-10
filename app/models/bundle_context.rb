@@ -1,5 +1,6 @@
 class BundleContext < ApplicationRecord
   belongs_to :user
+  has_many :job_runs
 
   validates :project_name, presence: true, null: false
   validates :content_structure, presence: true, null: false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_05_214414) do
+ActiveRecord::Schema.define(version: 2018_09_10_225753) do
 
   create_table "bundle_contexts", force: :cascade do |t|
     t.string "project_name", null: false
@@ -22,6 +22,15 @@ ActiveRecord::Schema.define(version: 2018_09_05_214414) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_bundle_contexts_on_user_id"
+  end
+
+  create_table "job_runs", force: :cascade do |t|
+    t.string "output_location"
+    t.integer "job_type"
+    t.integer "bundle_context_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bundle_context_id"], name: "index_job_runs_on_bundle_context_id"
   end
 
   create_table "users", force: :cascade do |t|
