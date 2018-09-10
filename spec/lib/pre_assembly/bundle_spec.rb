@@ -19,7 +19,7 @@ RSpec.describe PreAssembly::Bundle do
     before do
       allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
     end
-    it 'runs cleanly using smoke_test.yaml for options' do
+    it 'runs images_jp2_tif cleanly using smoke_test.yaml for options' do
       # TODO: as we switch to using models (#172, #175, etc) this test should also switch
       bc = context_from_proj('smoke_test')
       # need to delete progress log to ensure this test doesn't skip objects already run

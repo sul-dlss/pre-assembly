@@ -6,7 +6,7 @@ project_style:
   content_structure:  'simple_image'
   get_druid_from:     'manifest'
 
-bundle_dir:           'spec/test_data/bundle_input_g'
+bundle_dir:           'spec/test_data/images_jp2_tif'
 staging_dir:          'tmp'
 accession_items:       ~
 
@@ -16,8 +16,8 @@ manifest:             'manifest.csv'
 checksums_file:        ~
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'log/progress_folder_smoke_test.yaml'
-project_name:         'SmokeTest'
+progress_log_file:    'log/progress_log_smoke_test.yaml'
+project_name:         'SmokeTest Images jp2 tif'
 
 publish_attr:
   'image/jp2':

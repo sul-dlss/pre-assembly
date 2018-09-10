@@ -7,9 +7,9 @@ staging_dir:          'tmp'
 validate_files:       true
 
 accession_items:
- except:
-   - 'aa111aa1111'
-   - 'bb222bb2222'
+  except:
+    - 'aa111aa1111'
+    - 'bb222bb2222'
 
 manifest:             ~
 checksums_file:       ~
