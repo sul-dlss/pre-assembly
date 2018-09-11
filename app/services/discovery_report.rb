@@ -72,7 +72,7 @@ class DiscoveryReport
 
   # @return [Boolean]
   def using_smpl_manifest?
-    content_md_creation[:style] == :smpl && File.exist?(File.join(bundle_dir, content_md_creation[:smpl_manifest]))
+    content_md_creation == :smpl && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
   end
 
   # @return [PreAssembly::Smpl]

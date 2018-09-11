@@ -1,18 +1,15 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
-  let(:revs_context) { context_from_proj(:proj_revs) }
+  let(:revs_context) { context_from_proj_ar_model(:proj_revs)}
   let(:rumsey_context) do
-    context_from_proj(:proj_rumsey).tap do |c|
+    context_from_proj_ar_model(:proj_rumsey).tap do |c|
       c.manifest_cols[:object_container] = 'folder'
-      allow(c).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      allow(c).to receive(:path_in_bundle).with(any_args).and_call_original
+      allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
     end
   end
   let(:revs) { described_class.new(revs_context) }
   let(:rumsey) { described_class.new(rumsey_context) }
-
-  before do
-    allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # replace w/ AR validation
-  end
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -20,13 +17,18 @@ RSpec.describe PreAssembly::Bundle do
       allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
     end
     it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
-      # TODO: as we switch to using models (#172, #175, etc) this test should also switch
-      bc = context_from_proj('images_jp2_tif')
+      bc = context_from_proj_ar_model('images_jp2_tif')
       # need to delete progress log to ensure this test doesn't skip objects already run
-      File.delete(bc.user_params[:progress_log_file]) if File.exist?(bc.user_params[:progress_log_file])
+      File.delete(bc.progress_log_file) if File.exist?(bc.progress_log_file)
+
+      b = PreAssembly::Bundle.new bc
+      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       pids = []
+      dobj = b.digital_objects
+      dobj.each do |obj|
+        allow(obj).to receive(:dor_object).and_return(nil)
+      end
       expect {
-        b = PreAssembly::Bundle.new bc
         pids = b.run_pre_assembly
       }.not_to raise_error
       expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
@@ -58,11 +60,14 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#digital_objects' do
     it "finds the correct number of objects" do
-      b = bundle_setup(:folder_manifest)
+      b = bundle_setup_ar_model(:folder_manifest)
+      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
+
       expect(b.digital_objects.size).to eq(3)
     end
 
     it "handles containers correctly" do
+      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       expect(rumsey.digital_objects.first.container.size).to be > rumsey.bundle_dir.size
     end
   end
@@ -71,7 +76,7 @@ RSpec.describe PreAssembly::Bundle do
     it "discover_containers_via_manifest() should return expected information" do
       vals = %w(123.tif 456.tif 789.tif)
       revs.manifest_cols[:object_container] = :col_foo
-      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { col_foo: v } })
+      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
       expect(revs.discover_containers_via_manifest).to eq(vals.map { |v| revs.path_in_bundle v })
     end
 
@@ -159,6 +164,7 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "exclude_from_content() should behave correctly" do
+      skip "web app does not need to support exclude_from_content"
       expect(rumsey.exclude_from_content(rumsey.path_in_bundle('image1.tif'))).to be_falsey
       expect(rumsey.exclude_from_content(rumsey.path_in_bundle('descMetadata.xml'))).to be_truthy
     end
@@ -166,6 +172,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
+      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       rumsey.all_object_files.each { |f|    expect(f.checksum).to be_nil }
       rumsey.digital_objects.each  { |dobj| rumsey.load_checksums(dobj) }
       rumsey.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
@@ -174,6 +181,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#digital_objects' do
     it "augments the digital objects with additional information" do
+      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
       expect(revs.digital_objects.size).to eq(3)
       revs.digital_objects.each do |dobj|
         expect(dobj.label).to be_a(String)
@@ -193,6 +201,7 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "raises exception if one of the object files is an invalid image" do
+      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       # Create a double that will simulate an invalid image.
       img_params = { :image? => true, :valid_image? => false, :path => 'bad/image.tif' }
       bad_image  = double 'bad_image', img_params
@@ -206,28 +215,14 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#objects_to_process' do
-    it "has the correct list of objects to re-accession if specified with only option" do
-      b = described_class.new(context_from_proj(:proj_sohp3))
-      b.bundle_context.manifest_cols[:object_container] = 'folder'
-      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
-      expect(b.digital_objects.size).to eq(3)
-      expect(b.objects_to_process.size).to eq(1)
-    end
-
-    it "has the correct list of objects to accession if specified with except option" do
-      b = described_class.new(context_from_proj(:proj_sohp4)) # has 2 except listings
-      b.bundle_context.manifest_cols[:object_container] = 'folder'
-      allow(b.bundle_context).to receive(:manifest).and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
-      expect(b.digital_objects.size).to eq(3)
-      expect(b.objects_to_process.size).to eq(1)
-    end
-
     it "returns all objects if there are no skippables" do
+      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
       revs.skippables = {}
       expect(revs.objects_to_process).to eq(revs.digital_objects)
     end
 
     it "returns a filtered list of digital objects" do
+      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
       revs.skippables = {}
       revs.skippables[revs.digital_objects[-1].unadjusted_container] = true
       o2p = revs.objects_to_process
@@ -238,6 +233,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe "#log_progress_info" do
     it "returns expected info about a digital object" do
+      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
       dobj = revs.digital_objects[0]
       exp = {
         :unadjusted_container => dobj.unadjusted_container,
@@ -296,7 +292,7 @@ RSpec.describe PreAssembly::Bundle do
           "cp898cs9946/descMetadata.xml",
         ],
       }.each do |proj, files|
-        b = described_class.new(context_from_proj(proj))
+        b = described_class.new(context_from_proj_ar_model(proj))
         exp_files = files.map { |f| b.path_in_bundle f }
         expect(b.find_files_recursively(b.bundle_dir).sort).to eq(exp_files)
       end

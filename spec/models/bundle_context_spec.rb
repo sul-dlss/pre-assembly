@@ -21,19 +21,19 @@ RSpec.describe BundleContext, type: :model do
     context "defines enum with expected values" do
       it "content_structure enum" do
         is_expected.to define_enum_for(:content_structure).with(
-          "simple_image_structure" => 0,
-          "simple_book_structure" => 1,
-          "book_as_iamge_structure" => 2,
-          "file_structure" => 3,
-          "smpl_structure" => 4
+          "simple_image" => 0,
+          "simple_book" => 1,
+          "book_as_image" => 2,
+          "file" => 3,
+          "smpl" => 4
         )
       end
 
       it "content_metadata_creation enum" do
         is_expected.to define_enum_for(:content_metadata_creation).with(
-          "default_style" => 0,
-          "filename_style" => 1,
-          "smpl_style" => 2
+          "default" => 0,
+          "filename" => 1,
+          "smpl_cm_style" => 2
         )
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe BundleContext, type: :model do
       end
 
       it "will accept a symbol, but will always return a string" do
-        expect(described_class.new(content_structure: :smpl_structure).content_structure).to eq 'smpl_structure'
+        expect(described_class.new(content_structure: :smpl).content_structure).to eq 'smpl'
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe BundleContext, type: :model do
       end
 
       it "will accept a symbol, but will always return a string" do
-        expect(described_class.new(content_metadata_creation: :smpl_style).content_metadata_creation).to eq 'smpl_style'
+        expect(described_class.new(content_metadata_creation: :smpl_cm_style).content_metadata_creation).to eq 'smpl_cm_style'
       end
     end
 
@@ -79,7 +79,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe "#staging_dir" do
     it 'is hardcoded to the correct path' do
-      expect(described_class.new.staging_dir).to eq '/dor/assembly'
+      expect(described_class.new.staging_dir).to eq '/tmp/assembly'
     end
   end
 
