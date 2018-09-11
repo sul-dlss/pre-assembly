@@ -10,7 +10,7 @@ RSpec.describe BundleContextTemporary do
     end
 
     it "trims the trailing slash from the bundle directory" do
-      expect(revs_context.bundle_dir).to eq('spec/test_data/bundle_input_a')
+      expect(revs_context.bundle_dir).to eq('spec/test_data/flat_dir_images')
     end
 
     it '#setup_other should prune @file_attr' do

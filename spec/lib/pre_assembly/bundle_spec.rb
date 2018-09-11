@@ -254,7 +254,7 @@ RSpec.describe PreAssembly::Bundle do
     let(:full) { revs.path_in_bundle(relative) }
 
     it "#path_in_bundle returns expected value" do
-      expect(revs.path_in_bundle(relative)).to eq('spec/test_data/bundle_input_a/abc/def.jpg')
+      expect(revs.path_in_bundle(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
     end
     it "#relative_path returns expected value" do
       expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)

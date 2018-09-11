@@ -1,7 +1,7 @@
 RSpec.describe PreAssembly::ObjectFile do
   before do
     @f = described_class.new(
-      :path => 'spec/test_data/bundle_input_a/image1.tif'
+      :path => 'spec/test_data/flat_dir_images/image1.tif'
     )
   end
 

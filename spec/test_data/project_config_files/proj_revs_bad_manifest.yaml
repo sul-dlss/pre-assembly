@@ -3,7 +3,7 @@
 project_style:
   content_structure:  'simple_image'
 
-bundle_dir:           'spec/test_data/bundle_input_a/'
+bundle_dir:           'spec/test_data/flat_dir_images/'
 staging_dir:          'tmp'
 accession_items:       ~
 

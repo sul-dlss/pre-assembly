@@ -1,7 +1,7 @@
 RSpec.describe CsvImporter do
   describe '#parse_to_hash' do
     let(:manifest) do
-      described_class.parse_to_hash("#{Rails.root}/spec/test_data/bundle_input_a/manifest.csv")
+      described_class.parse_to_hash("#{Rails.root}/spec/test_data/flat_dir_images/manifest.csv")
     end
 
     it "loads a CSV as a hash with indifferent access" do
