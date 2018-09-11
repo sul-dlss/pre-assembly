@@ -1,3 +1,0 @@
-MD5 (image1.tif) = 71bc826126b1c824a17dae555f77fe9b
-MD5 (image2.tif) = 3d5812d6b2506ec96a6bdef5795a888b
-MD5 (image3.tif) = 42616f9e6c1b7e7b7a71b4fa0c5ef794
