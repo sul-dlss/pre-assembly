@@ -3,40 +3,36 @@
 # Object discovery also occurs via the manifest.
 
 project_style:
-  content_structure:  'simple_image'
-  get_druid_from:     'manifest'
+  content_structure:  'smpl'
 
 bundle_dir:           'spec/test_data/smpl_multimedia'
 staging_dir:          'tmp'
-accession_items:       ~
+accession_items:      ~
 
-validate_files:       true
+validate_files:       false
 
 manifest:             'manifest.csv'
-checksums_file:        ~
+checksums_file:       ~
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'log/progress_log_smoke_test_disc_report.yaml'
-project_name:         'SmokeTest SMPL Multimedia Discovery Report'
+progress_log_file:    'log/progress_log_smpl_multimedia.yaml'
+project_name:         'SMPL Multimedia'
 
 publish_attr:
-  'image/jp2':
-    publish:            'yes'
-    shelve:             'yes'
-    preserve:           'no'
-  'default':
-    publish:   ~
-    shelve:    ~
-    preserve:  ~
+  publish:            'no'
+  shelve:             'no'
+  preserve:           'yes'
+
+#init_assembly_wf:     true
 
 content_md_creation:
   style:              'smpl'
   smpl_manifest:      'smpl_manifest_with_thumb.csv'
 
 object_discovery:
-  use_manifest:       true
-  glob:               ~
-  regex:              ~
+  use_manifest:       false
+  glob:               '*'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
 
 stageable_discovery:
   use_container:      false
