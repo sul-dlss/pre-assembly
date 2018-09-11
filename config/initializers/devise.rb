@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+require 'devise_remote_user'
+
+DeviseRemoteUser.configure do |config|
+  config.env_key = lambda do |env|
+    if env['REMOTE_USER']
+      env['REMOTE_USER']
+    elsif Rails.env.development? && ENV['REMOTE_USER']
+      ENV['REMOTE_USER']
+    end
+  end
+  config.auto_create = true
+  config.auto_update = false
+  # config.logout_url = "http://my.host/path.to.remote.logout"
+  # config.attribute_map = { email: 'mail' }
+end
+
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 # NOTE: pre-assembly (like other DLSS apps) does not use any of the 10 modular functionalities
