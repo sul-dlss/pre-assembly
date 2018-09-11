@@ -41,12 +41,9 @@ module PreAssembly
       skipped_files = ['Thumbs.db', '.DS_Store'] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
       skipped_files << File.basename(content_md_creation[:smpl_manifest]) if using_smpl_manifest
       skipped_files << File.basename(bundle_context.manifest)
-      skipped_files << File.basename(checksums_file) if checksums_file # TODO: there should never be a checksums file
 
       smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir, :verbose => false) if using_smpl_manifest
 
-      discover_objects
-      process_manifest
       total_objects = digital_objects.size
 
       total_size_all_files = 0
