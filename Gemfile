@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'bootstrap', '~> 4.1.3'
 gem 'config'
+gem 'devise'
+gem 'devise-remote-user'
 gem 'erubis' # implicit dependency for (old) rdf-rdfa, no longer default in Rails 5.1+
 gem 'honeybadger', '~> 3.1'
 gem 'jquery-rails'
