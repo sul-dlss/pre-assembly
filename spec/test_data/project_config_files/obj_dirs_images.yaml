@@ -1,0 +1,36 @@
+# An example of a project which has multiple files per object organized into folders.
+
+project_style:
+  content_structure:  'simple_image'
+
+bundle_dir:           'spec/test_data/obj_dirs_images'
+staging_dir:          'tmp'
+accession_items:      ~
+
+manifest:             'manifest.csv'
+checksums_file:       ~
+desc_md_template:     'mods_template.xml'
+
+progress_log_file:    'log/progress_obj_dirs_images.yaml'
+project_name:         'Object Directories with Images'
+
+validate_files:       false
+
+publish_attr:
+  publish:            ~
+  shelve:             ~
+  preserve:           ~
+
+content_md_creation:
+  style:              'none'
+
+stageable_discovery:
+  glob:               ~
+  regex:              ~
+
+manifest_cols:
+  object_container:   'folder'
+  source_id:          'sourceid'
+  label:              'label'
+
+content_exclusion:    ~
