@@ -117,31 +117,14 @@ RSpec.describe BundleContext, type: :model do
     skip("Need to figure out where to set this path via planning meeting 9/10/18")
   end
 
-  describe '#import_csv' do
-    let(:manifest) do
-      described_class.import_csv("#{Rails.root}/spec/test_data/bundle_input_a/manifest.csv")
-    end
-
-    it "loads a CSV as a hash with indifferent access" do
-      expect(manifest).to be_an(Array)
-      expect(manifest.size).to eq(3)
-      headers = %w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
-      expect(manifest).to all(be_an(ActiveSupport::HashWithIndifferentAccess)) # accessible w/ string and symbols
-      expect(manifest).to all(include(*headers))
-      expect(manifest[0][:description]).to be_nil
-      expect(manifest[1][:description]).to eq('')
-      expect(manifest[2][:description]).to eq('yo, this is a description')
-    end
-  end
-
   describe "manifest_rows" do
     it "loads the manifest CSV" do
-      expect(described_class).to receive(:import_csv).with("spec/test_data/bundle_input_g/manifest.csv")
+      expect(CsvImporter).to receive(:parse_to_hash).with("spec/test_data/bundle_input_g/manifest.csv")
       bc.manifest_rows
     end
 
     it "memoizes the manifest rows" do
-      expect(described_class).to receive(:import_csv).once.with("spec/test_data/bundle_input_g/manifest.csv").and_call_original
+      expect(CsvImporter).to receive(:parse_to_hash).once.with("spec/test_data/bundle_input_g/manifest.csv").and_call_original
       2.times { bc.manifest_rows }
     end
 

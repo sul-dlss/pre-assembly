@@ -46,7 +46,7 @@ module PreAssembly
 
     def load_manifest
       # load file into @rows and then build up @manifest
-      @rows = PreAssembly::Bundle.import_csv(@csv_filename)
+      @rows = CsvImporter.parse_to_hash(@csv_filename)
 
       @manifest = {}
 

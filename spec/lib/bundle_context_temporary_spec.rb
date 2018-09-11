@@ -54,7 +54,7 @@ RSpec.describe BundleContextTemporary do
     it "raises exception if required file not found" do
       revs_context.manifest = '__foo_manifest###'
       expect(File).to receive(:readable?).with(revs_context.manifest).and_return(false)
-      expect { revs_context.validate_usage }.to raise_error(BundleUsageError, /Required file not found/)
+      expect { revs_context.validate_usage }.to raise_error(ArgumentError, /Required file not found/)
     end
 
     it "raises an exception since the sourceID column is misspelled" do
