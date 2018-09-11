@@ -42,21 +42,6 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe '#import_csv' do
-    let(:manifest) { described_class.import_csv(Rails.root.join('spec/test_data/bundle_input_a/manifest.csv')) }
-
-    it "loads a CSV as a hash with indifferent access" do
-      expect(manifest).to be_an(Array)
-      expect(manifest.size).to eq(3)
-      headers = %w{format sourceid filename label year inst_notes prod_notes has_more_metadata description}
-      expect(manifest).to all(be_an(ActiveSupport::HashWithIndifferentAccess)) # accessible w/ string and symbols
-      expect(manifest).to all(include(*headers))
-      expect(manifest[0][:description]).to be_nil
-      expect(manifest[1][:description]).to eq('')
-      expect(manifest[2][:description]).to eq('yo, this is a description')
-    end
-  end
-
   describe '#run_log_msg' do
     it 'returns a string' do
       expect(revs.run_log_msg).to be_a(String)
@@ -196,14 +181,6 @@ RSpec.describe PreAssembly::Bundle do
         expect(dobj.source_id).to be_a(String)
         expect(dobj.manifest_row).to be_a(Hash)
       end
-    end
-  end
-
-  describe '#manifest_rows' do
-    it "loads the manifest CSV only once, during the validation phase, and return all three rows even if you access the manifest multiple times" do
-      expect(revs.manifest_rows.size).to eq 3
-      expect(described_class).not_to receive(:import_csv)
-      revs.manifest_rows
     end
   end
 

@@ -57,19 +57,6 @@ class BundleContextTemporary
   # grab bag
   ####
 
-  # TODO: BundleContext is not really a logical home for this util method
-  # load CSV allowing UTF-8 to pass through, deleting blank columns
-  # @param [String] filename
-  # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
-  # @raise if file missing/unreadable
-  def self.import_csv(filename)
-    raise BundleUsageError, "CSV filename required" unless filename.present?
-    raise BundleUsageError, "Required file not found: #{filename}." unless File.readable?(filename)
-    file_contents = IO.read(filename).encode("utf-8", replace: nil)
-    csv = CSV.parse(file_contents, :headers => true)
-    csv.map { |row| row.to_hash.with_indifferent_access }
-  end
-
   def path_in_bundle(rel_path)
     File.join(bundle_dir, rel_path)
   end
@@ -77,7 +64,7 @@ class BundleContextTemporary
   # On first call, loads the manifest data, caches results
   # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   def manifest_rows
-    @manifest_rows ||= self.class.import_csv(manifest)
+    @manifest_rows ||= CsvImporter.parse_to_hash(manifest)
   end
 
   ####

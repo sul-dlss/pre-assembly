@@ -1,6 +1,5 @@
 # encoding: UTF-8
 
-require 'csv'
 require 'ostruct'
 require 'pathname'
 
@@ -35,10 +34,6 @@ module PreAssembly
              :staging_style,
              :validate_files?,
            to: :bundle_context
-
-    class << self
-      delegate :import_csv, to: BundleContextTemporary
-    end
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
