@@ -1,0 +1,2 @@
+# writable directory where job run artifacts will live
+job_output_parent_dir:  'log/dev_jobs'
