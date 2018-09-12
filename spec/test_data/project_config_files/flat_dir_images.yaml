@@ -1,24 +1,20 @@
-# A project which uses a manifest for object discovery, one file per object, and where the objects need to be registered.
+# A project which uses a manifest for object discovery, one file per object
 
 project_style:
   content_structure:  'simple_image'
 
-bundle_dir:           'spec/test_data/flat_dir_images/'
+bundle_dir:           'spec/test_data/flat_dir_images'
 staging_dir:          'tmp'
 accession_items:       ~
 
-manifest:             'manifest_badsourceid_column.csv'
+manifest:             'manifest.csv'
 checksums_file:       'checksums.txt'
 desc_md_template:     'mods_template.xml'
 
-progress_log_file:    'tmp/progress_revs.yaml'
-project_name:         'Revs'
-apo_druid_id:         'druid:qv648vd4392'
-set_druid_id:
-  - 'druid:yt502zj0924'
-  - 'druid:nt028fd5773'
+progress_log_file:    'log/progress_flat_dir_images.yaml'
+project_name:         'Flat Dir Images'
 
-validate_files:       true
+validate_files:       false
 
 publish_attr:
   publish:            'no'
@@ -26,7 +22,7 @@ publish_attr:
   preserve:           'yes'
 
 content_md_creation:
-  style:              'default'
+  style:              'none'
 
 stageable_discovery:
   glob:               ~
