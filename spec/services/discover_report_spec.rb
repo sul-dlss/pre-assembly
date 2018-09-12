@@ -30,4 +30,20 @@ RSpec.describe DiscoveryReport do
       report.each_row { |_r| } # no-op
     end
   end
+
+  describe '#process_dobj' do
+    let(:dobj) { report.bundle.objects_to_process.first }
+
+    before do
+      allow(dobj).to receive(:pid).and_return('kk203bw3276')
+      allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
+    end
+
+    it 'converts a DigtialObject to structured data (Hash)' do
+      expect(report.process_dobj(dobj)).to match a_hash_including(
+        counts: a_hash_including(total_size: 0),
+        errors: a_hash_including(missing_files: true)
+      )
+    end
+  end
 end
