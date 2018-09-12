@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 module PreAssembly
-  module Reporting
+  module ReportingOld
     def discovery_report(params = {})
       # Runs a confirmation for each digital object and confirms:
       # a) there are no duplicate filenames contained within the object. This is useful if you will be flattening the folder structure during pre-assembly.
