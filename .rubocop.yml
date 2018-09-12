@@ -1,6 +1,23 @@
 inherit_from: .rubocop_todo.yml
 require: rubocop-rspec
 
+AllCops:
+  DisplayCopNames: true
+  Include:
+    - './Rakefile'
+    - './config.ru'
+    - '**/*.rb'
+    - '**/*.rake'
+  Exclude:
+    - 'bin/**/*'
+    - 'config/environments/*.rb'
+    - 'config/erubis_monkeypatch.rb' # code essentially copied from rails
+    - 'db/**/*'
+    - 'vendor/**/*'
+
+Layout/EmptyLineAfterGuardClause: # overkill
+  Enabled: false
+
 # rspec expect{...} is conventional
 Layout/SpaceBeforeBlockBraces:
   Exclude:
@@ -25,3 +42,9 @@ RSpec/MultipleExpectations:
 
 RSpec/NestedGroups:
   Max: 4 # default: 3
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/NumericPredicate: # "> 0" is not less readable than ".positive?"
+  Enabled: false
