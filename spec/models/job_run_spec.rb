@@ -16,7 +16,7 @@ RSpec.describe JobRun, type: :model do
     end
 
     let(:discovery_report_run) do
-      JobRun.new(output_location: "Report available at /path/to/report",
+      JobRun.new(output_location: "/path/to/report",
                  bundle_context: bc,
                  job_type: "discovery_report")
     end
