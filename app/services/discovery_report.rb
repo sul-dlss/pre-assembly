@@ -57,10 +57,14 @@ class DiscoveryReport
     rescue ActiveFedora::ObjectNotFoundError
       return { item_not_registered: true }
     end
-    return { apo_empty: true } unless obj.admin_policy_object
-    {}
-  rescue ActiveFedora::ObjectNotFoundError
-    return { apo_not_registered: true }
+    begin
+      return { apo_empty: true } unless obj.admin_policy_object
+      {}
+    rescue ActiveFedora::ObjectNotFoundError
+      return { apo_not_registered: true }
+    end
+  rescue RuntimeError # HTTP timeout, network error, whatever
+    return :dor_connection_error
   end
 
   # For use by template
