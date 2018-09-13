@@ -21,17 +21,17 @@ module PreAssembly
              :config_filename,
              :content_exclusion,
              :content_md_creation,
+             :content_structure,
              :file_attr,
              :manifest_cols,
              :manifest_rows,
              :path_in_bundle,
              :progress_log_file,
              :project_name,
-             :project_style,
              :set_druid_id,
              :stageable_discovery,
              :staging_dir,
-             :staging_style,
+             :staging_style_symlink,
              :validate_files?,
            to: :bundle_context
 
@@ -61,8 +61,8 @@ module PreAssembly
       puts "#{Time.now}: Pre-assembly started for #{project_name}"
 
       # load up the SMPL manifest if we are using that style
-      if content_md_creation[:style] == :smpl
-        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => content_md_creation[:smpl_manifest], :bundle_dir => bundle_dir)
+      if bundle_context.smpl_cm_style?
+        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir)
       end
       process_digital_objects
       puts "#{Time.now}: Pre-assembly completed for #{project_name}"
@@ -71,7 +71,7 @@ module PreAssembly
 
     def run_log_msg
       log_params = {
-        :project_style => project_style,
+        :content_structure => content_structure,
         :project_name  => project_name,
         :bundle_dir    => bundle_dir,
         :staging_dir   => staging_dir,
@@ -120,10 +120,10 @@ module PreAssembly
         :content_md_creation  => content_md_creation,
         :file_attr            => file_attr,
         :project_name         => project_name,
-        :project_style        => project_style,
+        :project_style        => content_structure,
         :smpl_manifest        => smpl_manifest,
         :staging_dir          => staging_dir,
-        :staging_style        => staging_style
+        :staging_style        => staging_style_symlink
       }
     end
 
@@ -133,7 +133,7 @@ module PreAssembly
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
       raise BundleUsageError, ':manifest_cols must be specified' unless manifest_cols
-      col_name = manifest_cols[:object_container]
+      col_name = manifest_cols[:object_container].to_sym
       raise BundleUsageError, "object_container must be specified in manifest_cols: #{manifest_cols}" unless col_name
       manifest_rows.each_with_index { |r, i| raise "Missing #{col_name} in row #{i}: #{r}" unless r[col_name] }
       manifest_rows.map { |r| path_in_bundle r[col_name] }

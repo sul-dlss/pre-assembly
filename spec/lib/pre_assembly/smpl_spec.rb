@@ -72,12 +72,12 @@ RSpec.describe PreAssembly::Smpl do
       :project_style => {},
       :bundle_dir    => bundle_dir,
       :smpl_manifest => smpl_manifest,
-      :content_md_creation => { :style => :smpl }
+      :content_md_creation => :smpl_cm_style
     }
     dobj = PreAssembly::DigitalObject.new(ps)
     allow(dobj).to receive(:pid).and_return("druid:#{druid}")
     dobj.container = druid
-    dobj.content_md_creation[:style] = 'smpl'
+    dobj.content_md_creation = 'smpl_cm_style'
     dobj
   end
 

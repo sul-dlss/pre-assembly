@@ -6,7 +6,6 @@ module PreAssembly
 
   class DigitalObject
     include PreAssembly::Logging
-    include PreAssembly::Project::Smpl
 
     INIT_PARAMS = [
       :container,
@@ -53,14 +52,14 @@ module PreAssembly
       self.technical_md_file  = 'technicalMetadata.xml'
       self.content_md_xml     = ''
       self.technical_md_xml   = ''
-      self.content_structure  = (project_style ? project_style[:content_structure] : 'file')
+      self.content_structure  = (project_style ? project_style : 'file')
     end
 
     def stager(source, destination)
-      if staging_style.nil? || staging_style == 'copy'
-        FileUtils.cp_r source, destination
-      else
+      if staging_style
         FileUtils.ln_s source, destination, :force => true
+      else
+        FileUtils.cp_r source, destination
       end
     end
 
@@ -77,16 +76,11 @@ module PreAssembly
         'Manuscript (image-only)' => :book_as_image,
         'Map' => :map
       }
-      # if this object needs to be registered or has no content type tag for a registered object, use the default set in the YAML file
-      if !project_style[:content_tag_override] || content_type_tag.blank?
-        default_content_md_creation_style
-      else # if the object is already registered and there is a content type tag and we allow overrides, use it if we know what it means (else use the default)
-        content_type_tag_mapping[content_type_tag] || default_content_md_creation_style
-      end
+      content_type_tag_mapping[content_type_tag] || default_content_md_creation_style
     end
 
     def default_content_md_creation_style
-      project_style[:content_structure].to_sym
+      project_style.to_sym
     end
 
     # compute the base druid tree folder for this object
@@ -110,7 +104,7 @@ module PreAssembly
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
       stage_files
-      generate_content_metadata unless content_md_creation[:style].to_s == 'none'
+      generate_content_metadata
       generate_technical_metadata
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
@@ -189,7 +183,7 @@ module PreAssembly
 
     # create technical metadata for smpl projects only
     def create_technical_metadata
-      return unless @content_md_creation[:style].to_s == 'smpl'
+      return unless content_md_creation == 'smpl_cm_style'
 
       tm = Nokogiri::XML::Document.new
       tm_node = Nokogiri::XML::Node.new("technicalMetadata", tm)
@@ -225,15 +219,13 @@ module PreAssembly
     end
 
     # Invoke the contentMetadata creation method used by the project
-    # The name of the method invoked must be "create_content_metadata_xml_#{content_md_creation--style}", as defined in the YAML configuration
-    # Custom methods are defined in the project_specific.rb file
     # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
     def create_content_metadata
-      if !['default', 'filename', 'dpg', 'none'].include? @content_md_creation[:style].to_s
-        self.content_md_xml = method("create_content_metadata_xml_#{@content_md_creation[:style]}").call
-      elsif content_md_creation[:style].to_s != 'none' # and assuming we don't want any contentMetadata, then use the Assembly gem to generate CM
+      if content_md_creation == "smpl_cm_style"
+        self.content_md_xml = smpl_manifest.generate_cm(druid.id)
+      else
         # otherwise use the content metadata generation gem
-        params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => content_md_creation[:style].to_sym, :style => content_md_creation_style }
+        params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => content_md_creation.to_sym, :style => content_md_creation_style }
 
         params.merge!(:add_file_attributes => true, :file_attributes => file_attr.stringify_keys) unless file_attr.nil?
 
@@ -243,9 +235,7 @@ module PreAssembly
 
     # write content metadata out to a file
     def write_content_metadata
-      return if content_md_creation[:style].to_s == 'none'
       file_name = File.join(metadata_dir, content_md_file)
-      log "    - write_content_metadata_xml(#{file_name})"
       create_object_directories
 
       File.open(file_name, 'w') { |fh| fh.puts content_md_xml }

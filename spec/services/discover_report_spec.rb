@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe DiscoveryReport do
-  let(:bundle) { bundle_setup(:proj_revs) }
+  let(:bundle) { bundle_setup_ar_model(:proj_revs) }
   subject(:report) { described_class.new(bundle) }
 
   before do
-    allow_any_instance_of(BundleContextTemporary).to receive(:validate_usage) # to be replaced w/ AR validation
+    bundle.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
   end
 
   describe '#initialize' do

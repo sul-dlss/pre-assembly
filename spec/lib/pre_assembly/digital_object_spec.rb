@@ -10,7 +10,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:ps) do
     context_params.merge(
       :bundle_dir => 'spec/test_data/images_jp2_tif',
-      :content_md_creation => { style: 'default' },
+      :content_md_creation => 'default',
       :progress_log_file => Tempfile.new('images_jp2_tif').path,
       :project_name  => 'ProjectBar',
       :project_style => {},
@@ -133,7 +133,8 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.project_style[:content_structure] = 'simple_image'
+      allow(dobj).to receive(:content_type_tag).and_return("")
+      dobj.project_style = 'simple_image'
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -181,22 +182,6 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "no content metadata generated" do
-    before do
-      allow(dobj).to receive(:druid).and_return(druid)
-      dobj.content_md_creation[:style] = 'none'
-      dobj.project_style[:content_structure] = 'simple_book'
-      dobj.file_attr = nil
-      add_object_files('tif')
-      add_object_files('jp2')
-      dobj.create_content_metadata
-    end
-
-    it "does not generate any xml text" do
-      expect(dobj.content_md_xml).to eq("")
-    end
-  end
-
   describe "bundled by filename, simple book content metadata without file attributes" do
     let(:exp_xml) do
       noko_doc <<-END
@@ -225,8 +210,9 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.content_md_creation[:style] = 'filename'
-      dobj.project_style[:content_structure] = 'simple_book'
+      allow(dobj).to receive(:content_type_tag).and_return("")
+      dobj.content_md_creation = 'filename'
+      dobj.project_style = 'simple_book'
       dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
@@ -365,18 +351,6 @@ RSpec.describe PreAssembly::DigitalObject do
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
       expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
-    end
-
-    it "generates the expected xml text when overriding is explicitly not allowed" do
-      dobj.project_style[:content_tag_override] = false # this prevents override of content structure
-      expect(dobj.content_md_creation_style).to eq(:simple_image)
-      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
-    end
-
-    it "generates the expected xml text when overriding is not specified" do
-      dobj.project_style[:content_tag_override] = nil # this prevents override of content structure
-      expect(dobj.content_md_creation_style).to eq(:simple_image)
-      expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
     end
   end
 
