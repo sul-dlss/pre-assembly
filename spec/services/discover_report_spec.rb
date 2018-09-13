@@ -19,15 +19,24 @@ RSpec.describe DiscoveryReport do
   end
 
   describe '#each_row' do
+    let(:dobj_hash1) { { druid: '1', counts: { total_size: 1, mimetypes: { a: 1, b: 2 } }, errors: {} } }
+    let(:dobj_hash2) { { druid: '2', counts: { total_size: 2, mimetypes: { b: 3, q: 4 } }, errors: {} } }
+    let(:dobj_hash3) { { druid: '3', counts: { total_size: 3, mimetypes: { q: 9 } }, errors: { foo: true } } }
+
     it 'returns an Enumerable of Hashes' do
       expect(report.each_row).to be_an(Enumerable)
     end
-    it 'yields per objects_to_process' do
-      expect(report).to receive(:process_dobj).with(1).and_return(fake: 1)
-      expect(report).to receive(:process_dobj).with(2).and_return(fake: 2)
-      expect(report).to receive(:process_dobj).with(3).and_return(fake: 3)
+    it 'yields per objects_to_process, building an aggregate summary' do
+      expect(report).to receive(:process_dobj).with(1).and_return(dobj_hash1)
+      expect(report).to receive(:process_dobj).with(2).and_return(dobj_hash2)
+      expect(report).to receive(:process_dobj).with(3).and_return(dobj_hash3)
       expect(bundle).to receive(:objects_to_process).and_return([1, 2, 3])
       report.each_row { |_r| } # no-op
+      expect(report.summary).to match a_hash_including(
+        total_size: 6,
+        objects_with_error: 1,
+        mimetypes: { a: 1, b: 5, q: 13 }
+      )
     end
   end
 
