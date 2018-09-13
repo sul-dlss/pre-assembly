@@ -1,7 +1,7 @@
 # Previously a single untested 200-line method from ./lib/pre_assembly/reporting.rb
 # Takes a Bundle, enumerates report data via #each_row
 class DiscoveryReport
-  attr_reader :bundle, :start_time
+  attr_reader :bundle, :start_time, :summary
 
   delegate :bundle_dir, :content_md_creation, :manifest, :project_style, to: :bundle
   delegate :error_count, :object_filenames_unique?, to: :bundle
@@ -11,6 +11,7 @@ class DiscoveryReport
     raise ArgumentError unless bundle.is_a?(PreAssembly::Bundle)
     @start_time = Time.now
     @bundle = bundle
+    @summary = { start_time: start_time.to_s }
   end
 
   # @return [Enumerable<Hash<Symbol => Object>>]
@@ -46,7 +47,7 @@ class DiscoveryReport
     errors[:missing_files] = true unless dobj.object_files_exist?
     errors[:dupes] = true unless object_filenames_unique?(dobj)
     errors.merge!(registration_check(dobj.druid))
-    return { errors: errors, counts: counts }
+    { errors: errors, counts: counts }
   end
 
   # @param [String] druid
