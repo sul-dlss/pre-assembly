@@ -1,11 +1,6 @@
-# @param [#to_s] proj basename of YAML fixture file
 # @return [PreAssembly::Bundle]
 def bundle_setup(proj)
-  PreAssembly::Bundle.new(context_from_proj(proj))
-end
-
-def bundle_setup_ar_model(proj)
-  PreAssembly::Bundle.new(context_from_proj_ar_model(proj))
+  PreAssembly::Bundle.new(bundle_context_from_hash(proj))
 end
 
 def hash_from_proj(proj)
@@ -13,16 +8,11 @@ def hash_from_proj(proj)
   YAML.load(File.read(filename)).merge('config_filename' => filename)
 end
 
-def context_from_proj(proj)
-  BundleContextTemporary.new(hash_from_proj(proj))
-end
-
 def noko_doc(x)
   Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
 end
 
-
-def context_from_proj_ar_model(proj)
+def bundle_context_from_hash(proj)
   user = User.create(sunet_id: "Jdoe")
 
   cmc = hash_from_proj(proj)["content_md_creation"]["style"]

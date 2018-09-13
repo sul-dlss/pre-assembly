@@ -1,8 +1,8 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
-  let(:revs_context) { context_from_proj_ar_model(:proj_revs)}
+  let(:revs_context) { bundle_context_from_hash(:proj_revs)}
   let(:rumsey_context) do
-    context_from_proj_ar_model(:proj_rumsey).tap do |c|
+    bundle_context_from_hash(:proj_rumsey).tap do |c|
       c.manifest_cols[:object_container] = 'folder'
       allow(c).to receive(:path_in_bundle).with(any_args).and_call_original
       allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
@@ -17,7 +17,7 @@ RSpec.describe PreAssembly::Bundle do
       allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
     end
     it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
-      bc = context_from_proj_ar_model('images_jp2_tif')
+      bc = bundle_context_from_hash('images_jp2_tif')
       # need to delete progress log to ensure this test doesn't skip objects already run
       File.delete(bc.progress_log_file) if File.exist?(bc.progress_log_file)
 
@@ -60,7 +60,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#digital_objects' do
     it "finds the correct number of objects" do
-      b = bundle_setup_ar_model(:folder_manifest)
+      b = bundle_setup(:folder_manifest)
       b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
 
       expect(b.digital_objects.size).to eq(3)
@@ -292,7 +292,7 @@ RSpec.describe PreAssembly::Bundle do
           "cp898cs9946/descMetadata.xml",
         ],
       }.each do |proj, files|
-        b = described_class.new(context_from_proj_ar_model(proj))
+        b = described_class.new(bundle_context_from_hash(proj))
         exp_files = files.map { |f| b.path_in_bundle f }
         expect(b.find_files_recursively(b.bundle_dir).sort).to eq(exp_files)
       end
