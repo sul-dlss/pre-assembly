@@ -42,7 +42,8 @@ RSpec.describe DiscoveryReport do
     it 'converts a DigtialObject to structured data (Hash)' do
       expect(report.process_dobj(dobj)).to match a_hash_including(
         counts: a_hash_including(total_size: 0),
-        errors: a_hash_including(missing_files: true)
+        errors: a_hash_including(missing_files: true),
+        druid: 'druid:kk203bw3276'
       )
     end
   end
