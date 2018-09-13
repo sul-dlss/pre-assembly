@@ -9,7 +9,7 @@ RSpec.describe JobRun, type: :model do
     let(:bc) do
       BundleContext.new(project_name: "SmokeTest",
                         content_structure: 1,
-                        bundle_dir: "spec/test_data/bundle_input_g",
+                        bundle_dir: "spec/test_data/images_jp2_tif",
                         staging_style_symlink: false,
                         content_metadata_creation: 1,
                         user: user)

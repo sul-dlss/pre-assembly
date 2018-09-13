@@ -5,7 +5,7 @@ RSpec.describe PreAssembly::Bundle do
     bundle_context_from_hash(:proj_rumsey).tap do |c|
       c.manifest_cols[:object_container] = 'folder'
       allow(c).to receive(:path_in_bundle).with(any_args).and_call_original
-      allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/bundle_input_e/manifest_of_3.csv')
+      allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/smpl_multimedia/manifest_of_3.csv')
     end
   end
   let(:revs) { described_class.new(revs_context) }

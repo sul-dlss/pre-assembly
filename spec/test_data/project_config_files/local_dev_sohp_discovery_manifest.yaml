@@ -1,7 +1,7 @@
 project_style:
   content_structure:  'smpl'
 
-bundle_dir:           'spec/test_data/bundle_input_e'
+bundle_dir:           'spec/test_data/smpl_multimedia'
 staging_dir:          'tmp'
 accession_items:   ~
 staging_style:        'copy'

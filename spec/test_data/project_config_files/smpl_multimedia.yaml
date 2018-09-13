@@ -1,0 +1,48 @@
+# An example of a project which has already registered objects, but for which
+# you want to provide a manifest to provide descriptive metadata and a MODS template.
+# Object discovery also occurs via the manifest.
+
+project_style:
+  content_structure:  'smpl'
+
+bundle_dir:           'spec/test_data/smpl_multimedia'
+staging_dir:          'tmp'
+accession_items:      ~
+
+validate_files:       false
+
+manifest:             'manifest.csv'
+checksums_file:       ~
+desc_md_template:     'mods_template.xml'
+
+progress_log_file:    'log/progress_log_smpl_multimedia.yaml'
+project_name:         'SMPL Multimedia'
+
+publish_attr:
+  publish:            'no'
+  shelve:             'no'
+  preserve:           'yes'
+
+#init_assembly_wf:     true
+
+content_md_creation:
+  style:              'smpl'
+  smpl_manifest:      'smpl_manifest_with_thumb.csv'
+
+object_discovery:
+  use_manifest:       false
+  glob:               '*'
+  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
+
+stageable_discovery:
+  use_container:      false
+  glob:               '**/*/*'
+  regex:              '^((?!.md5).)*$'
+
+manifest_cols:
+  druid:              'druid'
+  object_container:   'folder'
+  source_id:          'sourceid'
+  label:              'label'
+
+content_exclusion:    ~
