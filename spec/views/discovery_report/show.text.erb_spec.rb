@@ -1,5 +1,5 @@
 RSpec.describe 'discovery_report/show.text.erb' do
-  let(:bundle) { bundle_setup_ar_model(:proj_revs) }
+  let(:bundle) { bundle_setup(:proj_revs) }
   subject(:report) { DiscoveryReport.new(bundle) }
 
   before do

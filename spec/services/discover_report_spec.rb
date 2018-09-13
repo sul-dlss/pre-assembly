@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DiscoveryReport do
-  let(:bundle) { bundle_setup_ar_model(:proj_revs) }
+  let(:bundle) { bundle_setup(:proj_revs) }
   subject(:report) { described_class.new(bundle) }
 
   before do
