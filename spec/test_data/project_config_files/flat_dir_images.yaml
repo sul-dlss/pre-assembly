@@ -22,7 +22,7 @@ publish_attr:
   preserve:           'yes'
 
 content_md_creation:
-  style:              'none'
+  style:              'default'
 
 stageable_discovery:
   glob:               ~
