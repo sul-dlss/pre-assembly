@@ -8,6 +8,7 @@ gem 'erubis' # implicit dependency for (old) rdf-rdfa, no longer default in Rail
 gem 'honeybadger', '~> 3.1'
 gem 'jquery-rails'
 gem 'nokogiri'
+gem 'pg' # postgres database
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'rake'
 gem 'resque', '~> 1.27' # needs to match redis on VM
