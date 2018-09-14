@@ -17,65 +17,36 @@ RSpec.describe BundleContext, type: :model do
       expect(BundleContext.new).not_to be_valid
       expect(bc).to be_valid
     end
-
-    context "defines enum with expected values" do
-      it "content_structure enum" do
-        is_expected.to define_enum_for(:content_structure).with(
-          "simple_image" => 0,
-          "simple_book" => 1,
-          "book_as_image" => 2,
-          "file" => 3,
-          "smpl" => 4
-        )
-      end
-
-      it "content_metadata_creation enum" do
-        is_expected.to define_enum_for(:content_metadata_creation).with(
-          "default" => 0,
-          "filename" => 1,
-          "smpl_cm_style" => 2
-        )
-      end
-    end
-
-    describe "#content_structure=" do
-      it "validation rejects a value if it does not match the enum" do
-        expect { described_class.new(content_structure: 654) }
-          .to raise_error(ArgumentError, "'654' is not a valid content_structure")
-        expect { described_class.new(content_structure: 'book_as_pdf') }
-          .to raise_error(ArgumentError, "'book_as_pdf' is not a valid content_structure")
-      end
-
-      it "will accept a symbol, but will always return a string" do
-        expect(described_class.new(content_structure: :smpl).content_structure).to eq 'smpl'
-      end
-    end
-
-    describe "#content_metadata_creation=" do
-      it "validation rejects a value if it does not match the enum" do
-        expect { described_class.new(content_metadata_creation: 654) }
-          .to raise_error(ArgumentError, "'654' is not a valid content_metadata_creation")
-        expect { described_class.new(content_metadata_creation: 'dpg') }
-          .to raise_error(ArgumentError, "'dpg' is not a valid content_metadata_creation")
-      end
-
-      it "will accept a symbol, but will always return a string" do
-        expect(described_class.new(content_metadata_creation: :smpl_cm_style).content_metadata_creation).to eq 'smpl_cm_style'
-      end
-    end
-
-    context "bundle_dir path does not exist" do
-      it "object does not pass validation" do
-        expect { bc.bundle_dir = 'does/not/exist' }.to change { bc.valid? }.to(false)
-      end
-    end
-
-    it { is_expected.to validate_presence_of(:project_name) }
-    it { is_expected.to validate_presence_of(:content_structure) }
-    it { is_expected.to validate_presence_of(:bundle_dir) }
-    it { is_expected.to validate_presence_of(:content_metadata_creation) }
-    it { is_expected.to belong_to(:user) }
   end
+
+  it do
+    is_expected.to define_enum_for(:content_structure).with(
+      "simple_image" => 0,
+      "simple_book" => 1,
+      "book_as_image" => 2,
+      "file" => 3,
+      "smpl" => 4
+    )
+  end
+  it do
+    is_expected.to define_enum_for(:content_metadata_creation).with(
+      "default" => 0,
+      "filename" => 1,
+      "smpl_cm_style" => 2
+    )
+  end
+
+  context "bundle_dir path does not exist" do
+    it "object does not pass validation" do
+      expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
+    end
+  end
+
+  it { is_expected.to validate_presence_of(:project_name) }
+  it { is_expected.to validate_presence_of(:content_structure) }
+  it { is_expected.to validate_presence_of(:bundle_dir) }
+  it { is_expected.to validate_presence_of(:content_metadata_creation) }
+  it { is_expected.to belong_to(:user) }
 
   describe "#staging_dir" do
     it 'is hardcoded to the correct path' do
