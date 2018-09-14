@@ -1,15 +1,17 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:revs_context) { bundle_context_from_hash(:proj_revs)}
-  let(:rumsey_context) do
-    bundle_context_from_hash(:proj_rumsey).tap do |c|
+  let(:revs) { described_class.new(revs_context) }
+  let(:img_context) { bundle_context_from_hash(:images_jp2_tif)}
+  let(:images_jp2_tif) { described_class.new(img_context) }
+  let(:smpl_multimedia_context) do
+    bundle_context_from_hash(:smpl_multimedia).tap do |c|
       c.manifest_cols[:object_container] = 'folder'
       allow(c).to receive(:path_in_bundle).with(any_args).and_call_original
       allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/smpl_multimedia/manifest_of_3.csv')
     end
   end
-  let(:revs) { described_class.new(revs_context) }
-  let(:rumsey) { described_class.new(rumsey_context) }
+  let(:smpl_multimedia) { described_class.new(smpl_multimedia_context) }
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -37,10 +39,10 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_skippables' do
     it "returns expected hash of skippable items" do
-      allow(rumsey).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
-      expect(rumsey.skippables).to eq({})
-      rumsey.load_skippables
-      expect(rumsey.skippables).to eq({ "aa" => true, "bb" => true })
+      allow(smpl_multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
+      expect(smpl_multimedia.skippables).to eq({})
+      smpl_multimedia.load_skippables
+      expect(smpl_multimedia.skippables).to eq({ "aa" => true, "bb" => true })
     end
   end
 
@@ -67,8 +69,8 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "handles containers correctly" do
-      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      expect(rumsey.digital_objects.first.container.size).to be > rumsey.bundle_dir.size
+      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
+      expect(smpl_multimedia.digital_objects.first.container.size).to be > smpl_multimedia.bundle_dir.size
     end
   end
 
@@ -90,27 +92,31 @@ RSpec.describe PreAssembly::Bundle do
   describe 'object discovery: #discover_object_files' do
     let(:fs) do
       %w(
-        cb837cp4412/2874009.tif
-        cb837cp4412/descMetadata.xml
-        cm057cr1745/2874008.tif
-        cm057cr1745/descMetadata.xml
-        cp898cs9946/2874018.tif
-        cp898cs9946/descMetadata.xml
+        gn330dv6119/image1.jp2
+        gn330dv6119/image1.tif
+        gn330dv6119/image2.jp2
+        gn330dv6119/image2.tif
+        jy812bp9403/00/image1.tif
+        jy812bp9403/00/image2.tif
+        jy812bp9403/05/image1.jp2
+        tz250tk7584/00/image1.tif
+        tz250tk7584/00/image2.tif
       )
     end
-    let(:files) { fs.map { |f| rumsey.path_in_bundle f } }
-    let(:dirs) { %w(cb837cp4412 cm057cr1745 cp898cs9946).map { |d| rumsey.path_in_bundle d } }
+    let(:files) { fs.map { |f| images_jp2_tif.path_in_bundle f } }
+    let(:dirs) { %w(gn330dv6119 jy812bp9403 tz250tk7584).map { |d| images_jp2_tif.path_in_bundle d } }
 
     it "finds expected files with correct relative paths" do
       tests = [
         # Stageables.    Expected relative paths.                 Type of item as stageables.
         [files,         fs.map { |f| File.basename f }], # Files.
         [dirs,          fs], # Directories.
-        [rumsey.bundle_dir, fs.map { |f| File.join(File.basename(rumsey.bundle_dir), f) }], # Even higher directory.
+        # note: the following line fails because we now require manifest file to be in the directory
+        # [images_jp2_tif.bundle_dir, fs.map { |f| File.join(File.basename(images_jp2_tif.bundle_dir), f) }], # Even higher directory.
       ]
       tests.each do |stageables, exp_relative_paths|
         # Full paths of object files should never change, but the relative paths varies, depending on the stageables.
-        ofiles = rumsey.discover_object_files(stageables)
+        ofiles = images_jp2_tif.discover_object_files(stageables)
         expect(ofiles.map(&:path)).to eq(files)
         expect(ofiles.map(&:relative_path)).to eq(exp_relative_paths)
       end
@@ -165,17 +171,17 @@ RSpec.describe PreAssembly::Bundle do
 
     it "exclude_from_content() should behave correctly" do
       skip "web app does not need to support exclude_from_content"
-      expect(rumsey.exclude_from_content(rumsey.path_in_bundle('image1.tif'))).to be_falsey
-      expect(rumsey.exclude_from_content(rumsey.path_in_bundle('descMetadata.xml'))).to be_truthy
+      expect(smpl_multimedia.exclude_from_content(smpl_multimedia.path_in_bundle('image1.tif'))).to be_falsey
+      expect(smpl_multimedia.exclude_from_content(smpl_multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
     end
   end
 
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
-      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      rumsey.all_object_files.each { |f|    expect(f.checksum).to be_nil }
-      rumsey.digital_objects.each  { |dobj| rumsey.load_checksums(dobj) }
-      rumsey.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
+      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
+      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to be_nil }
+      smpl_multimedia.digital_objects.each  { |dobj| smpl_multimedia.load_checksums(dobj) }
+      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
     end
   end
 
@@ -195,21 +201,21 @@ RSpec.describe PreAssembly::Bundle do
   describe '#validate_files' do
     it "returns expected tally if all images are valid" do
       skip "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem"
-      rumsey.digital_objects.each do |dobj|
-        expect(rumsey.validate_files(dobj)).to eq({ :valid => 1, :skipped => 1 })
+      smpl_multimedia.digital_objects.each do |dobj|
+        expect(smpl_multimedia.validate_files(dobj)).to eq({ :valid => 1, :skipped => 1 })
       end
     end
 
     it "raises exception if one of the object files is an invalid image" do
-      rumsey.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
+      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       # Create a double that will simulate an invalid image.
       img_params = { :image? => true, :valid_image? => false, :path => 'bad/image.tif' }
       bad_image  = double 'bad_image', img_params
       # Check for exceptions.
       exp_msg    = /^File validation failed/
-      rumsey.digital_objects.each do |dobj|
+      smpl_multimedia.digital_objects.each do |dobj|
         dobj.object_files = [bad_image]
-        expect { rumsey.validate_files(dobj) }.to raise_error(exp_msg)
+        expect { smpl_multimedia.validate_files(dobj) }.to raise_error(exp_msg)
       end
     end
   end
@@ -274,7 +280,7 @@ RSpec.describe PreAssembly::Bundle do
 
     it "#find_files_recursively returns expected information" do
       {
-        :proj_revs => [
+        :flat_dir_images => [
           "checksums.txt",
           "image1.tif",
           "image2.tif",
@@ -283,13 +289,18 @@ RSpec.describe PreAssembly::Bundle do
           "manifest_badsourceid_column.csv",
           "mods_template.xml",
         ],
-        :proj_rumsey => [
-          "cb837cp4412/2874009.tif",
-          "cb837cp4412/descMetadata.xml",
-          "cm057cr1745/2874008.tif",
-          "cm057cr1745/descMetadata.xml",
-          "cp898cs9946/2874018.tif",
-          "cp898cs9946/descMetadata.xml",
+        :images_jp2_tif => [
+          "gn330dv6119/image1.jp2",
+          "gn330dv6119/image1.tif",
+          "gn330dv6119/image2.jp2",
+          "gn330dv6119/image2.tif",
+          "jy812bp9403/00/image1.tif",
+          "jy812bp9403/00/image2.tif",
+          "jy812bp9403/05/image1.jp2",
+          "manifest.csv",
+          "mods_template.xml",
+          "tz250tk7584/00/image1.tif",
+          "tz250tk7584/00/image2.tif"
         ],
       }.each do |proj, files|
         b = described_class.new(bundle_context_from_hash(proj))
