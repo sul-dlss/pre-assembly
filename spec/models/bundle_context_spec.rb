@@ -17,6 +17,12 @@ RSpec.describe BundleContext, type: :model do
       expect(BundleContext.new).not_to be_valid
       expect(bc).to be_valid
     end
+    it 'is not valid without a User' do
+      expect { bc.user = nil }.to change(bc, :valid?).to(false)
+    end
+    it 'is not valid unless bundle_dir exists on filesystem' do
+      expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
+    end
   end
 
   it do
@@ -36,17 +42,20 @@ RSpec.describe BundleContext, type: :model do
     )
   end
 
-  context "bundle_dir path does not exist" do
-    it "object does not pass validation" do
-      expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
-    end
-  end
-
   it { is_expected.to validate_presence_of(:project_name) }
   it { is_expected.to validate_presence_of(:content_structure) }
   it { is_expected.to validate_presence_of(:bundle_dir) }
   it { is_expected.to validate_presence_of(:content_metadata_creation) }
   it { is_expected.to belong_to(:user) }
+
+  describe '#bundle' do
+    it 'returns a PreAssembly::Bundle' do
+      expect(bc.bundle).to be_a(PreAssembly::Bundle)
+    end
+    it 'caches the Bundle' do
+      expect(bc.bundle).to be(bc.bundle) # same instance
+    end
+  end
 
   describe "#staging_dir" do
     it 'is hardcoded to the correct path' do
