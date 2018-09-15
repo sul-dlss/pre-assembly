@@ -132,9 +132,9 @@ module PreAssembly
     # manifest columns. The column name to use is configured by the
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
-      raise BundleUsageError, ':manifest_cols must be specified' unless manifest_cols
+      raise RuntimeError, ':manifest_cols must be specified' unless manifest_cols
       col_name = manifest_cols[:object_container].to_sym
-      raise BundleUsageError, "object_container must be specified in manifest_cols: #{manifest_cols}" unless col_name
+      raise RuntimeError, "object_container must be specified in manifest_cols: #{manifest_cols}" unless col_name
       manifest_rows.each_with_index { |r, i| raise "Missing #{col_name} in row #{i}: #{r}" unless r[col_name] }
       manifest_rows.map { |r| path_in_bundle r[col_name] }
     end
