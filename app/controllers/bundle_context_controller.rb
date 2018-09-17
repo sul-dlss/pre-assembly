@@ -6,7 +6,7 @@ class BundleContextController < ApplicationController
   def create
     @bundle_context = BundleContext.create(bundle_context_params)
     if @bundle_context.persisted?
-      # TODO: toggle job_type by extra param
+      # TODO: toggle job_type by extra param (#299)
       @job_run = JobRun.create(bundle_context: @bundle_context, job_type: 'discovery_report')
     else
       render :index
