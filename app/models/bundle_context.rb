@@ -2,11 +2,8 @@ class BundleContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs
 
-  validates :project_name, presence: true, null: false
-  validates :content_structure, presence: true, null: false
-  validates :bundle_dir, presence: true, null: false
+  validates :bundle_dir, :content_metadata_creation, :content_structure, :project_name, presence: true
   validates :staging_style_symlink, inclusion: { in: [true, false] }
-  validates :content_metadata_creation, presence: true, null: false
 
   validate :verify_bundle_directory
   validate :verify_content_metadata_creation
@@ -26,6 +23,11 @@ class BundleContext < ApplicationRecord
     "filename" => 1,
     "smpl_cm_style" => 2
   }
+
+  # return [PreAssembly::Bundle]
+  def bundle
+    @bundle ||= PreAssembly::Bundle.new(self)
+  end
 
   def content_md_creation
     content_metadata_creation
