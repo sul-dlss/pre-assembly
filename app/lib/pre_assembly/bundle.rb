@@ -30,7 +30,7 @@ module PreAssembly
              :project_name,
              :set_druid_id,
              :stageable_discovery,
-             :staging_dir,
+             :assembly_staging_dir,
              :staging_style_symlink,
              :validate_files?,
            to: :bundle_context
@@ -72,10 +72,10 @@ module PreAssembly
     def run_log_msg
       log_params = {
         :content_structure => content_structure,
-        :project_name  => project_name,
-        :bundle_dir    => bundle_dir,
-        :staging_dir   => staging_dir,
-        :environment   => ENV['RAILS_ENV'],
+        :project_name => project_name,
+        :bundle_dir => bundle_dir,
+        :assembly_staging_dir => Settings.assembly_staging_dir,
+        :environment => ENV['RAILS_ENV'],
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
@@ -122,7 +122,7 @@ module PreAssembly
         :project_name         => project_name,
         :project_style        => content_structure,
         :smpl_manifest        => smpl_manifest,
-        :staging_dir          => staging_dir,
+        :assembly_staging_dir => assembly_staging_dir,
         :staging_style        => staging_style_symlink
       }
     end

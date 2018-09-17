@@ -16,7 +16,7 @@ module PreAssembly
       :project_name,
       :file_attr,
       :bundle_dir,
-      :staging_dir,
+      :assembly_staging_dir,
       :content_md_creation,
       :staging_style,
       :smpl_manifest
@@ -85,7 +85,7 @@ module PreAssembly
 
     # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, staging_dir).path()
+      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, assembly_staging_dir).path()
     end
 
     def content_dir

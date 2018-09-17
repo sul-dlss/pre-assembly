@@ -35,8 +35,8 @@ class BundleContext < ApplicationRecord
     content_structure
   end
 
-  def staging_dir
-    '/tmp/assembly'
+  def assembly_staging_dir
+    Settings.assembly_staging_dir
   end
 
   def normalize_bundle_dir

@@ -7,7 +7,6 @@ project_style:
   get_druid_from:     'manifest'
 
 bundle_dir:           'spec/test_data/images_jp2_tif'
-staging_dir:          'tmp'
 accession_items:       ~
 
 validate_files:       true

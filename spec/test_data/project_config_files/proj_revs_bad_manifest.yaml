@@ -4,7 +4,6 @@ project_style:
   content_structure:  'simple_image'
 
 bundle_dir:           'spec/test_data/flat_dir_images/'
-staging_dir:          'tmp'
 accession_items:       ~
 
 manifest:             'manifest_badsourceid_column.csv'
