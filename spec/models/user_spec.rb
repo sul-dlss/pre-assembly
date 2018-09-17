@@ -11,7 +11,6 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_uniqueness_of(:sunet_id) }
     it { is_expected.to validate_presence_of(:sunet_id) }
     it { is_expected.to have_many(:bundle_contexts) }
-    
     describe 'enforces unique constraint on sunet_id' do
       let(:required_attributes) do
         { sunet_id: "tempdoe" }
@@ -26,6 +25,14 @@ RSpec.describe User, type: :model do
         dup_user = described_class.new(sunet_id: "tempdoe")
         expect { dup_user.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
       end
+    end
+  end
+
+  context "email address" do
+    subject(:user) { User.new(sunet_id: "jdoe") }
+
+    it "returns the user's email address based on sunet" do
+      expect(user.email).to eq('jdoe@stanford.edu')
     end
   end
 end
