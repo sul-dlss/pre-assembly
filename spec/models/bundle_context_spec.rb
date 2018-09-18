@@ -57,9 +57,9 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe "#staging_dir" do
-    it 'is hardcoded to the correct path' do
-      expect(described_class.new.staging_dir).to eq '/tmp/assembly'
+  describe "#assembly_staging_dir" do
+    it 'comes from Settings file' do
+      expect(described_class.new.assembly_staging_dir).to eq Settings.assembly_staging_dir
     end
   end
 

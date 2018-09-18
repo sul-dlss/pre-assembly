@@ -13,5 +13,8 @@ dor_services_sleep_time: 0 # how long, in seconds, between attempts
 # TODO: can we use dor-services-app instead? (see #226)
 fedora_url: 'https://example.com/fedora'
 
+# place where assemblyWF will look for object files
+assembly_staging_dir: tmp/assembly
+
 # writable directory where job run artifacts will live
 job_output_parent_dir:  'log/jobs'

@@ -49,15 +49,15 @@ RSpec.describe PreAssembly::DigitalObject do
 
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         # Add some stageable items to the digital object, and create those files.
-        files                 = [1, 2, 3].map { |n| "image#{n}.tif" }
-        dobj.bundle_dir      = tmp_area
-        dobj.staging_dir     = "#{tmp_area}/target"
+        files = [1, 2, 3].map { |n| "image#{n}.tif" }
+        dobj.bundle_dir = tmp_area
+        dobj.assembly_staging_dir = "#{tmp_area}/target"
         dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         dobj.stageable_items.each { |si| FileUtils.touch si }
         dobj.staging_style = 'copy'
 
         # Stage the files via copy.
-        FileUtils.mkdir dobj.staging_dir
+        FileUtils.mkdir dobj.assembly_staging_dir
         dobj.stage_files
 
         # Check outcome: both source and copy should exist.
@@ -76,14 +76,14 @@ RSpec.describe PreAssembly::DigitalObject do
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         # Add some stageable items to the digital object, and create those files.
         files = [1, 2, 3].map { |n| "image#{n}.tif" }
-        dobj.bundle_dir      = tmp_area
-        dobj.staging_dir     = "#{tmp_area}/target"
+        dobj.bundle_dir = tmp_area
+        dobj.assembly_staging_dir = "#{tmp_area}/target"
         dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
         dobj.stageable_items.each { |si| FileUtils.touch si }
         dobj.staging_style = 'symlink'
 
         # Stage the files via symlink.
-        FileUtils.mkdir dobj.staging_dir
+        FileUtils.mkdir dobj.assembly_staging_dir
         dobj.stage_files
 
         # Check outcome: both source and copy should exist.

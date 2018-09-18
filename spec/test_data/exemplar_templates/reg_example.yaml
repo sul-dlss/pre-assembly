@@ -4,7 +4,6 @@ project_style:
   content_structure: 'simple_book'
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
-staging_dir: ~
 accession_items:   ~
 
 stageable_discovery:
