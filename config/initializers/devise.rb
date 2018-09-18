@@ -13,7 +13,7 @@ DeviseRemoteUser.configure do |config|
   config.auto_create = true
   config.auto_update = false
   # config.logout_url = "http://my.host/path.to.remote.logout"
-  # config.attribute_map = { email: 'mail' }
+  # config.attribute_map = { webauth_groups: 'WEBAUTH_LDAPPRIVGROUP' }
 end
 
 # Use this hook to configure devise mailer, warden hooks and so forth.
@@ -58,7 +58,7 @@ Devise.setup do |config|
   # session. If you need permissions, you should implement that in a before filter.
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
-  # config.authentication_keys = [:email]
+  config.authentication_keys = [:sunet_id]
 
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the
@@ -266,7 +266,7 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
-  # config.navigational_formats = ['*/*', :html]
+  config.navigational_formats = []
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
