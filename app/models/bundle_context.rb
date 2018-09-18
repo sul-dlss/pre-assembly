@@ -52,29 +52,33 @@ class BundleContext < ApplicationRecord
     '/dor/preassembly' # FIXME: (#78)
   end
 
+  # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
   def stageable_discovery
     {}
   end
 
+  # TODO: delete everywhere in code as single commit (#262)
   def accession_items
     nil
   end
 
+  # TODO: Delete everywhere in code as single commit (#227)
   def content_exclusion
-    # FIXME: Delete everywhere in code (#227)
     nil
   end
 
+  # TODO: Delete everywhere in code as single commit (#228)
   def file_attr
-    nil # FIXME: can get rid of this (#228)
+    nil
   end
 
+  # TODO: delete everwhere in code as single commit (#230)
   def validate_files?
-    false # FIXME: delete everwhere in code (#230)
+    false
   end
 
+  # TODO: find where this is used as a conditional and delete code that won't be executed and this method (#231)
   def content_tag_override?
-    # TODO: find where this is used as a conditional and delete code that won't be executed (#231)
     true
   end
 
@@ -98,8 +102,8 @@ class BundleContext < ApplicationRecord
 
   def manifest_cols
     {
-      label: 'label',
-      source_id: 'sourceid',
+      label: 'label', # only used by SMPL manifests
+      source_id: 'sourceid', # only used by SMPL manifests
       object_container: 'object', # object referring to filename or foldername
       druid: 'druid'
     }
