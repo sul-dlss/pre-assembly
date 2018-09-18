@@ -1,9 +1,9 @@
-RSpec.describe 'discovery_report/show.text.erb' do
+RSpec.describe 'discovery_report/show.json.jbuilder' do
   let(:bundle) { bundle_setup(:proj_revs) }
   subject(:report) { DiscoveryReport.new(bundle) }
 
   before do
-    bundle.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
+    report.bundle.manifest_rows.each { |row| row.merge!('object' => row['filename']) }
     report.bundle.digital_objects.each { |dobj| allow(dobj).to receive(:pid).and_return('kk203bw3276') }
     allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
   end
@@ -11,7 +11,10 @@ RSpec.describe 'discovery_report/show.text.erb' do
   it 'renders the wrapper and a row per DigitalObject' do
     assign(:discovery_report, report)
     render
-    expect(rendered).to match(/Discovery Report/)
-    expect(rendered).to match(/^Example row output\nExample row output\nExample row output\n[^E]/) # 3 rows
+    json = JSON.parse(rendered)
+    expect(json).to match a_hash_including(
+      'rows' => Array,
+      'summary' => a_hash_including('start_time')
+    )
   end
 end
