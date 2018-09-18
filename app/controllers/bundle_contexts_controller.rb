@@ -1,6 +1,6 @@
 class BundleContextsController < ApplicationController
   def index
-    @bundle_context = BundleContext.new(job_runs: [JobRun.new])
+    @bundle_context = BundleContext.new(job_runs: [JobRun.new(job_type: "preassembly")], content_structure: "simple_image", content_metadata_creation: "default")
   end
 
   def create
