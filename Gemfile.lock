@@ -444,6 +444,9 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
+    simple_form (4.0.1)
+      actionpack (>= 5.0)
+      activemodel (>= 5.0)
     simplecov (0.16.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -545,6 +548,7 @@ DEPENDENCIES
   rubocop-rspec
   ruby-prof
   shoulda-matchers!
+  simple_form
   sqlite3
   turbolinks
   uglifier
