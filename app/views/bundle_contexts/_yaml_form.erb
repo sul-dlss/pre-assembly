@@ -1,73 +1,65 @@
 <h3>Complete the YAML form below</h3>
-<%= form_with url: "/bundle_context", local: true do |form| %>
- <%if @bundle_context.errors.any? %>
-  <h3 class="text-danger">ERRORS</h3>
- <% end %>
- <div class="row">
-   <div class="col-5">
-      <%= form.fields_for :job_runs do |jt| %>
-        <%= jt.label :job_type %>
-        <%= jt.select(:job_type, [["Pre Assembly Run", "preassembly"],["Discovery Report", "discovery_report"]]) %>
-     <% end %>
-     </div>
-  </div>
-  <div class="row">
-      <div class="col-5">
-      <%= form.label :project_name %>
-      <%if @bundle_context.errors.include?(:project_name) %>
-      <%= form.text_field :project_name, class: "form-control is-invalid" %>
-      <div class="invalid-feedback">
-          <%= @bundle_context.errors.full_messages_for(:project_name).first %>
-      </div>
-      <% else %>
-      <%= form.text_field :project_name, class: "form-control" %>
-      <% end %>
-      </div>
-  </div>
-  <div class="row">
-    <div class="col-5">
-      <%= label_tag :content_structure, "Content Structure" %>
-      <%= select_tag :content_structure, options_for_select([
-          ['Simple Image', 'simple_image'],
-          ['Simple Book', 'simple_book'],
-          ['Book as Image','book_as_image'],
-          ['File', 'file'],
-          ['SMPL', 'smpl']
-        ]), class: "form-control" %>
-      </div>
-  </div>
-  <div class="row">
-    <div class="col-5">
-      <%= label_tag :bundle_dir, "Bundle Directory" %>
-      <%if @bundle_context.errors.include?(:bundle_dir) %>
-      <%= form.text_field :bundle_dir, class: "form-control is-invalid" %>
-      <div class="invalid-feedback">
-          <%= @bundle_context.errors.full_messages_for(:bundle_dir).first %>
-      </div>
-      <% else %>
-      <%= form.text_field :bundle_dir, class: "form-control" %>
-      <% end %>
+
+<%= simple_form_for(@bundle_context) do |form| %>
+
+    <div class="row">
+        <div class="col-5">
+            <%= form.input :project_name %>
+        </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-5">
-      <%= form.label :staging_style, "Staging Style Symlink?" %>
-      <%= form.check_box :staging_style, class: "form-control" %>
+
+    <div class="row">
+        <div class="col-5">
+            <%= form.simple_fields_for :job_runs do |jt| %>
+                <%= jt.input :job_type, collection:
+                    [
+                        ["Pre Assembly Run", "preassembly"],
+                        ["Discovery Report", "discovery_report"]
+                    ]
+                %>
+            <% end %>
+        </div>
     </div>
-  </div>
-  <div class="row mt-2">
-    <div class="col-5">
-      <%= label_tag :content_metadata_creation %>
-      <%= select_tag :content_metadata_creation, options_for_select([
-          ["Default", "default"],
-          ["Filename", "filename"],
-          ["SMPL", "smpl_cm_style"]
-          ]), class: "form-control" %>
+
+    <div class="row">
+        <div class="col-5">
+
+            <%= form.input :content_structure, collection:
+            [
+                ['Simple Image', 'simple_image'],
+                ['Simple Book', 'simple_book'],
+                ['Book as Image','book_as_image'],
+                ['File', 'file'],
+                ['SMPL', 'smpl']
+            ]
+            %>
+        </div>
     </div>
-  </div>
-  <div class="row mt-3">
-    <div class="col-2 ml-5">
-      <%= submit_tag("Submit", class: "form-control btn-sul-dlss") %>
+
+    <div class="row">
+        <div class="col-5">
+            <%= form.input :bundle_dir %>
+        </div>
     </div>
-  </div>
+
+    <div class="row">
+        <div class="col-5">
+            <%= form.input :staging_style_symlink %>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-5">    
+            <%= form.input :content_metadata_creation, collection:
+                [
+                    ["Default", "default"],
+                    ["Filename", "filename"],
+                    ["SMPL", "smpl_cm_style"]
+                ]
+            %>
+        </div>
+    </div>
+
+    <%= form.button :submit, class: "btn-sul-dlss" %>
+
 <% end %>
