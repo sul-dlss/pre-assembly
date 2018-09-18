@@ -5,11 +5,10 @@
  <% end %>
  <div class="row">
    <div class="col-5">
-     <%= label_tag :job_selection, "Type of Job" %>
-     <%= select_tag :job_selection, options_for_select([
-       ["Discovery Report"],
-       ["Pre-Assembly Job"]
-       ]), class: "form-control" %>
+      <%= form.fields_for :job_runs do |jt| %>
+        <%= jt.label :job_type %>
+        <%= jt.select(:job_type, [["Pre Assembly Run", "preassembly"],["Discovery Report", "discovery_report"]]) %>
+     <% end %>
      </div>
   </div>
   <div class="row">

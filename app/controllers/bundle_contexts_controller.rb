@@ -1,6 +1,6 @@
 class BundleContextsController < ApplicationController
   def index
-    @bundle_context = BundleContext.new
+    @bundle_context = BundleContext.new(job_runs: [JobRun.new])
   end
 
   def create

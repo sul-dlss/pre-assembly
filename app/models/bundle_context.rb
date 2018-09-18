@@ -24,6 +24,9 @@ class BundleContext < ApplicationRecord
     "smpl_cm_style" => 2
   }
 
+  accepts_nested_attributes_for :job_runs
+
+
   # return [PreAssembly::Bundle]
   def bundle
     @bundle ||= PreAssembly::Bundle.new(self)
