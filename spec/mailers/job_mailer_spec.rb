@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe JobMailer, type: :mailer do
   let(:user) do
-    User.new(sunet_id: "Jdoe")
+    User.new(sunet_id: "Jdoe@stanford.edu")
   end
 
   let(:bc) do
@@ -31,7 +31,7 @@ RSpec.describe JobMailer, type: :mailer do
   end
 
   it 'renders the body' do
-    expect(job_notification.body.encoded).to include("Jdoe, your discovery_report job #1 completed")
+    expect(job_notification.body.encoded).to include("Your discovery_report job #1 completed")
   end
 
 end
