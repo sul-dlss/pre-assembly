@@ -22,7 +22,7 @@ RSpec.describe BundleContextsController, type: :controller do
 
   context 'users persisted in db' do
 
-    before { sign_in(User.create(sunet_id: 'foo')) }
+    before { sign_in(User.create(sunet_id: 'foo@stanford.edu')) }
 
     it "should have current_user" do
       expect(subject.current_user).to_not eq(nil)
