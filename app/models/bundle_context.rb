@@ -117,6 +117,7 @@ class BundleContext < ApplicationRecord
   end
 
   def verify_content_metadata_creation
-    errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") if smpl_cm_style? && !File.exist?(File.join(bundle_dir, smpl_manifest))
+    return unless smpl_cm_style?
+    errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") unless File.exist?(File.join(bundle_dir, smpl_manifest))
   end
 end
