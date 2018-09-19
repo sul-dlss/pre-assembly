@@ -1,6 +1,9 @@
+require 'fileutils'
+
 class BundleContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs
+  before_save :verify_output_dir
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, :project_name, presence: true
   validates :staging_style_symlink, inclusion: { in: [true, false] }
@@ -44,37 +47,41 @@ class BundleContext < ApplicationRecord
     Settings.assembly_staging_dir
   end
 
-  def normalize_bundle_dir
-    self[:bundle_dir].chomp("/") if bundle_dir
+  def output_dir
+    @output_dir ||= "#{normalize_dir(Settings.job_output_parent_dir)}/#{user.sunet_id}/#{bundle_dir}"
   end
 
   def progress_log_file
-    '/dor/preassembly' # FIXME: (#78)
+    @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
+  # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
   def stageable_discovery
     {}
   end
 
+  # TODO: delete everywhere in code as single commit (#262)
   def accession_items
     nil
   end
 
+  # TODO: Delete everywhere in code as single commit (#227)
   def content_exclusion
-    # FIXME: Delete everywhere in code (#227)
     nil
   end
 
+  # TODO: Delete everywhere in code as single commit (#228)
   def file_attr
-    nil # FIXME: can get rid of this (#228)
+    nil
   end
 
+  # TODO: delete everwhere in code as single commit (#230)
   def validate_files?
-    false # FIXME: delete everwhere in code (#230)
+    false
   end
 
+  # TODO: find where this is used as a conditional and delete code that won't be executed and this method (#231)
   def content_tag_override?
-    # TODO: find where this is used as a conditional and delete code that won't be executed (#231)
     true
   end
 
@@ -98,8 +105,8 @@ class BundleContext < ApplicationRecord
 
   def manifest_cols
     {
-      label: 'label',
-      source_id: 'sourceid',
+      label: 'label', # only used by SMPL manifests
+      source_id: 'sourceid', # only used by SMPL manifests
       object_container: 'object', # object referring to filename or foldername
       druid: 'druid'
     }
@@ -107,12 +114,39 @@ class BundleContext < ApplicationRecord
 
   private
 
+  def job_output_parent_dir
+    @job_output_parent_dir ||= Settings.job_output_parent_dir
+  end
+
+  def normalize_dir(dir)
+    dir.chomp('/') if dir
+  end
+
+  def normalize_bundle_dir
+    self[:bundle_dir] = normalize_dir(bundle_dir)
+  end
+
+  def verify_output_dir
+    if persisted?
+      # FIXME: or should we just try to create it?
+      raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
+    else
+      raise "Output directory (#{output_dir}) should not already exist" if Dir.exist?(output_dir)
+      begin
+        FileUtils.mkdir_p(output_dir)
+      rescue SystemCallError => e
+        raise "Unable to create output directory (#{@output_dir}): #{e.message}"
+      end
+    end
+  end
+
   def verify_bundle_directory
     return if errors.key?(:bundle_dir)
     errors.add(:bundle_dir, "Bundle directory: #{bundle_dir} not found.") unless File.directory?(bundle_dir)
   end
 
   def verify_content_metadata_creation
-    errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") if smpl_cm_style? && !File.exist?(File.join(bundle_dir, smpl_manifest))
+    return unless smpl_cm_style?
+    errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") unless File.exist?(File.join(bundle_dir, smpl_manifest))
   end
 end
