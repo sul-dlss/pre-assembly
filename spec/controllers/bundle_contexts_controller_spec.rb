@@ -38,7 +38,11 @@ RSpec.describe BundleContextsController, type: :controller do
 
     context "POST create" do
       context "Valid Parameters" do
-        before { post :create, params: params }
+        before do
+          dir = "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/spec/test_data/smpl_multimedia"
+          Dir.delete(dir) if Dir.exist?(dir)
+          post :create, params: params
+        end
 
         it 'passes newly created object' do
           expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted

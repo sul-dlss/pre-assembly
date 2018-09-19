@@ -1,6 +1,9 @@
+require 'fileutils'
+
 class BundleContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs
+  before_save :verify_output_dir
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, :project_name, presence: true
   validates :staging_style_symlink, inclusion: { in: [true, false] }
@@ -45,11 +48,15 @@ class BundleContext < ApplicationRecord
   end
 
   def normalize_bundle_dir
-    self[:bundle_dir].chomp("/") if bundle_dir
+    normalize_dir(bundle_dir)
+  end
+
+  def output_dir
+    @output_dir ||= "#{normalize_dir(Settings.job_output_parent_dir)}/#{user.sunet_id}/#{normalize_bundle_dir}"
   end
 
   def progress_log_file
-    '/dor/preassembly' # FIXME: (#78)
+    @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
   # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
@@ -110,6 +117,28 @@ class BundleContext < ApplicationRecord
   end
 
   private
+
+  def job_output_parent_dir
+    @job_output_parent_dir ||= Settings.job_output_parent_dir
+  end
+
+  def normalize_dir(dir)
+    dir.chomp('/') if dir
+  end
+
+  def verify_output_dir
+    if persisted?
+      # FIXME: or should we just try to create it?
+      raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
+    else
+      raise "Output directory (#{output_dir}) should not already exist" if Dir.exist?(output_dir)
+      begin
+        FileUtils.mkdir_p(output_dir)
+      rescue SystemCallError => e
+        raise "Unable to create output directory (#{@output_dir}): #{e.message}"
+      end
+    end
+  end
 
   def verify_bundle_directory
     return if errors.key?(:bundle_dir)
