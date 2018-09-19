@@ -13,7 +13,7 @@ def noko_doc(x)
 end
 
 def bundle_context_from_hash(proj)
-  user = User.create(sunet_id: "Jdoe")
+  user = User.create(sunet_id: "Jdoe@stanford.edu")
 
   cmc = hash_from_proj(proj)["content_md_creation"]["style"]
   cmc = cmc + "_cm_style" if cmc == "smpl"

@@ -1,5 +1,5 @@
 RSpec.describe JobRun, type: :model do
-  let(:user) { User.new(sunet_id: 'Jdoe') }
+  let(:user) { User.new(sunet_id: 'Jdoe@stanford.edu') }
   let(:bc) do
     BundleContext.new(project_name: 'SmokeTest',
                       content_structure: 1,

@@ -10,7 +10,7 @@ RSpec.describe BundleContext, type: :model do
     )
   end
 
-  let(:user) { User.new(sunet_id: "Jdoe") }
+  let(:user) { User.new(sunet_id: "Jdoe@stanford.edu") }
 
   context "validation" do
     it "is not valid unless it has all required attributes" do
