@@ -5,6 +5,9 @@ class BundleContextsController < ApplicationController
 
   def create
     @bundle_context = BundleContext.new(bundle_contexts_params)
+    
+    # TODO: present a nicer error in the app than default Rails error page (#310)
+    #   (there is a before_save callback to create the bc.output_dir)
     if @bundle_context.save
       render :create
     else
