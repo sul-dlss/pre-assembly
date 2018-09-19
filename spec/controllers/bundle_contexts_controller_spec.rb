@@ -38,9 +38,9 @@ RSpec.describe BundleContextsController, type: :controller do
 
     context "POST create" do
       context "Valid Parameters" do
+        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/spec/test_data/smpl_multimedia" }
         before do
-          dir = "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/spec/test_data/smpl_multimedia"
-          Dir.delete(dir) if Dir.exist?(dir)
+          Dir.delete(output_dir) if Dir.exist?(output_dir)
           post :create, params: params
         end
 
@@ -57,10 +57,12 @@ RSpec.describe BundleContextsController, type: :controller do
           expect(bc.bundle_dir).to eq "spec/test_data/smpl_multimedia"
         end
         it "persists the JobRun" do
+          Dir.delete(output_dir) if Dir.exist?(output_dir)
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
         end
 
         it "fails if job_type is nil" do
+          Dir.delete(output_dir) if Dir.exist?(output_dir)
           params[:bundle_context].merge!(job_runs_attributes: {"0" => { job_type: "" }})
           expect { post :create, params: params }.not_to change(JobRun, :count)
         end

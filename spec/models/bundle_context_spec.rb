@@ -48,6 +48,10 @@ RSpec.describe BundleContext, type: :model do
   it { is_expected.to validate_presence_of(:content_metadata_creation) }
   it { is_expected.to belong_to(:user) }
 
+  it 'bundle_dir has trailing slash removed' do
+    expect(bc.bundle_dir).to eq "spec/test_data/images_jp2_tif"
+  end
+
   describe '#bundle' do
     it 'returns a PreAssembly::Bundle' do
       expect(bc.bundle).to be_a(PreAssembly::Bundle)
@@ -60,12 +64,6 @@ RSpec.describe BundleContext, type: :model do
   describe "#assembly_staging_dir" do
     it 'comes from Settings file' do
       expect(described_class.new.assembly_staging_dir).to eq Settings.assembly_staging_dir
-    end
-  end
-
-  describe "#normalize_bundle_dir" do
-    it "removes the trailing forward slash" do
-      expect(bc.normalize_bundle_dir).to eq "spec/test_data/images_jp2_tif"
     end
   end
 

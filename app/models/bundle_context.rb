@@ -47,12 +47,8 @@ class BundleContext < ApplicationRecord
     Settings.assembly_staging_dir
   end
 
-  def normalize_bundle_dir
-    normalize_dir(bundle_dir)
-  end
-
   def output_dir
-    @output_dir ||= "#{normalize_dir(Settings.job_output_parent_dir)}/#{user.sunet_id}/#{normalize_bundle_dir}"
+    @output_dir ||= "#{normalize_dir(Settings.job_output_parent_dir)}/#{user.sunet_id}/#{bundle_dir}"
   end
 
   def progress_log_file
@@ -124,6 +120,10 @@ class BundleContext < ApplicationRecord
 
   def normalize_dir(dir)
     dir.chomp('/') if dir
+  end
+
+  def normalize_bundle_dir
+    self[:bundle_dir] = normalize_dir(bundle_dir)
   end
 
   def verify_output_dir
