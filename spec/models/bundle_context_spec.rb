@@ -96,7 +96,7 @@ RSpec.describe BundleContext, type: :model do
       # Settings.job_output_parent_dir for test from config/settings/test.yml as 'log/test_jobs'
       # bc.user.user_id above as 'Jdoe'
       # bc.bundle_dir above as 'spec/test_data/images_jp2_tif'
-      expect(bc.output_dir).to eq 'log/test_jobs/Jdoe/spec/test_data/images_jp2_tif'
+      expect(bc.output_dir).to eq 'log/test_jobs/Jdoe@stanford.edu/spec/test_data/images_jp2_tif'
     end
   end
 
