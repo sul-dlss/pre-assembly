@@ -1,16 +1,16 @@
 RSpec.describe BundleContext, type: :model do
-  subject(:bc) do
-    BundleContext.new(
-      project_name: "Images jp2 tif",
+  let(:user) { User.new(sunet_id: "Jdoe@stanford.edu") }
+  let (:attr_hash) {
+    {
+      project_name: "Images_jp2_tif",
       content_structure: 1,
       bundle_dir: "spec/test_data/images_jp2_tif/",
       staging_style_symlink: false,
       content_metadata_creation: 1,
       user: user
-    )
-  end
-
-  let(:user) { User.new(sunet_id: "Jdoe@stanford.edu") }
+    }
+  }
+  subject(:bc) { BundleContext.new(attr_hash) }
 
   context "validation" do
     it "is not valid unless it has all required attributes" do
@@ -22,6 +22,25 @@ RSpec.describe BundleContext, type: :model do
     end
     it 'is not valid unless bundle_dir exists on filesystem' do
       expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
+    end
+    it { is_expected.to validate_presence_of(:content_structure) }
+    it { is_expected.to validate_presence_of(:bundle_dir) }
+    it { is_expected.to validate_presence_of(:content_metadata_creation) }
+    describe 'project_name' do
+      it { is_expected.to validate_presence_of(:project_name) }
+      it 'is not valid with chars other than alphanum, hyphen and underscore' do
+        attr_hash[:project_name] = 's p a c e s'
+        expect(bc).not_to be_valid
+        attr_hash[:project_name] = "apostrophe's"
+        expect(bc).not_to be_valid
+        attr_hash[:project_name] = 'quotes"'
+        expect(bc).not_to be_valid
+      end
+      it 'is valid with alphanum, hyphen and underscore chars' do
+        valid_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-'
+        attr_hash[:project_name] = valid_chars
+        expect(bc).to be_valid
+      end
     end
   end
 
@@ -42,10 +61,6 @@ RSpec.describe BundleContext, type: :model do
     )
   end
 
-  it { is_expected.to validate_presence_of(:project_name) }
-  it { is_expected.to validate_presence_of(:content_structure) }
-  it { is_expected.to validate_presence_of(:bundle_dir) }
-  it { is_expected.to validate_presence_of(:content_metadata_creation) }
   it { is_expected.to belong_to(:user) }
 
   it 'bundle_dir has trailing slash removed' do
@@ -96,7 +111,7 @@ RSpec.describe BundleContext, type: :model do
       # Settings.job_output_parent_dir for test from config/settings/test.yml as 'log/test_jobs'
       # bc.user.user_id above as 'Jdoe'
       # bc.bundle_dir above as 'spec/test_data/images_jp2_tif'
-      expect(bc.output_dir).to eq 'log/test_jobs/Jdoe/spec/test_data/images_jp2_tif'
+      expect(bc.output_dir).to eq 'log/test_jobs/Jdoe@stanford.edu/spec/test_data/images_jp2_tif'
     end
   end
 

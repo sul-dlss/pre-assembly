@@ -5,7 +5,9 @@ class BundleContext < ApplicationRecord
   has_many :job_runs
   before_save :verify_output_dir
 
-  validates :bundle_dir, :content_metadata_creation, :content_structure, :project_name, presence: true
+  validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
+  validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
+    message: "only allows A-Z, a-z, 0-9, hyphen and underscore" }
   validates :staging_style_symlink, inclusion: { in: [true, false] }
 
   validate :verify_bundle_directory

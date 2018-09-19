@@ -3,7 +3,7 @@ RSpec.describe BundleContextsController, type: :controller do
     {
       bundle_context:
         {
-          project_name: 'Smoke Test',
+          project_name: 'SMPL-multimedia',
           content_structure: 'simple_image',
           content_metadata_creation: 'default',
           bundle_dir: 'spec/test_data/smpl_multimedia',
@@ -51,7 +51,7 @@ RSpec.describe BundleContextsController, type: :controller do
         end
         it 'has the correct attributes' do
           bc = assigns(:bundle_context)
-          expect(bc.project_name).to eq 'Smoke Test'
+          expect(bc.project_name).to eq 'SMPL-multimedia'
           expect(bc.content_structure).to eq "simple_image"
           expect(bc.content_metadata_creation).to eq "default"
           expect(bc.bundle_dir).to eq "spec/test_data/smpl_multimedia"
@@ -74,6 +74,12 @@ RSpec.describe BundleContextsController, type: :controller do
           expect { post :create, params: params }.not_to change(BundleContext, :count)
           expect { post :create, params: { bundle_context: {
             project_name: '',
+            content_structure: '',
+            content_metadata_creation: '',
+            bundle_dir: ''
+          }}}.not_to change(BundleContext, :count)
+          expect { post :create, params: { bundle_context: {
+            project_name: "SMPL's folly",
             content_structure: '',
             content_metadata_creation: '',
             bundle_dir: ''
