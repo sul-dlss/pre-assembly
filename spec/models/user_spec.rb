@@ -28,4 +28,16 @@ RSpec.describe User, type: :model do
       end
     end
   end
+  context "email address" do
+
+    it "returns the user's email address if the sunet_id is already an address" do
+      user = User.new(sunet_id: 'jdoe@stanford.edu')
+      expect(user.email).to eq('jdoe@stanford.edu')
+    end
+
+    it "returns the user's email address if the sunet_id is not an email address" do
+      user = User.new(sunet_id: 'jdoe')
+      expect(user.email).to eq('jdoe@stanford.edu')
+    end
+  end
 end

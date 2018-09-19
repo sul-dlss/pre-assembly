@@ -15,7 +15,6 @@ RSpec.describe JobRun, type: :model do
 
   it { is_expected.to belong_to(:bundle_context) }
 
-
   describe 'enqueue!' do
     it 'does nothing if unpersisted' do
       expect(DiscoveryReportJob).not_to receive(:perform_later)
