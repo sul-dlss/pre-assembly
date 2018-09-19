@@ -17,3 +17,7 @@
   background-color: #8c1515;
   color: white;
 }
+
+abbr[title], abbr[data-original-title] { // Removes underline in the asterisk which marks a required field
+  text-decoration: none;
+} 

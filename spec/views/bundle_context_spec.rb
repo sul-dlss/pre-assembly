@@ -1,4 +1,4 @@
-RSpec.describe 'bundle_context/index' do
+RSpec.describe 'bundle_contexts/index' do
   context "Displays the Bundle Context Form" do
     it 'displays the form correctly' do
       assign(:bundle_context, BundleContext.new)
