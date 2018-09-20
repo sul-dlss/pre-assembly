@@ -1,8 +1,7 @@
 RSpec.describe User, type: :model do
+  subject(:user) { build(:user, sunet_id: 'jdoe@stanford.edu') }
 
   context "validation" do
-    subject(:user) { User.new(sunet_id: "jdoe@stanford.edu") }
-
     it "is not valid unless it has all required attributes" do
       expect(User.new).not_to be_valid
       expect(user).to be_valid
@@ -13,31 +12,24 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_many(:bundle_contexts) }
 
     describe 'enforces unique constraint on sunet_id' do
-      let(:required_attributes) do
-        { sunet_id: "tempdoe@stanford.edu" }
-      end
-
-      before { described_class.create!(required_attributes) }
+      before { user.save! }
 
       it 'at model level' do
-        expect { described_class.create!(required_attributes) }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { described_class.create!(sunet_id: user.sunet_id) }.to raise_error(ActiveRecord::RecordInvalid)
       end
       it 'at db level' do
-        dup_user = described_class.new(sunet_id: "tempdoe@stanford.edu")
-        expect { dup_user.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+        expect { user.dup.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
       end
     end
   end
-  context "email address" do
 
+  context "email address" do
     it "returns the user's email address if the sunet_id is already an address" do
-      user = User.new(sunet_id: 'jdoe@stanford.edu')
       expect(user.email).to eq('jdoe@stanford.edu')
     end
 
-    it "returns the user's email address if the sunet_id is not an email address" do
-      user = User.new(sunet_id: 'jdoe')
-      expect(user.email).to eq('jdoe@stanford.edu')
+    it 'returns a stanford.edu email address if the sunet_id is not an email address' do
+      expect { user.sunet_id = 'jdoe' }.not_to change(user, :email).from('jdoe@stanford.edu')
     end
   end
 end

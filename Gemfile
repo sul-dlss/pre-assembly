@@ -32,9 +32,8 @@ gem 'modsulator'
 group :test do
   gem 'coveralls', require: false
   gem 'equivalent-xml'
+  gem 'factory_bot_rails'
   gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers.git', branch: 'rails-5'
-  # gem 'solr_wrapper' # for running integration structure locally
-  # gem 'jettywrapper' # for running integration structure locally
 end
 
 group :deployment do

@@ -7,7 +7,7 @@ RSpec.describe BundleContextsController, type: :controller do
           content_structure: 'simple_image',
           content_metadata_creation: 'default',
           bundle_dir: 'spec/test_data/smpl_multimedia',
-          job_runs_attributes: { "0" =>{ job_type: "preassembly" }}
+          job_runs_attributes: { "0" => { job_type: "preassembly" } }
         }
     }
   end
@@ -21,11 +21,10 @@ RSpec.describe BundleContextsController, type: :controller do
 
 
   context 'users persisted in db' do
-
-    before { sign_in(User.create(sunet_id: 'foo@stanford.edu')) }
+    before { sign_in(create :user) }
 
     it "should have current_user" do
-      expect(subject.current_user).to_not eq(nil)
+      expect(subject.current_user).not_to be_nil
     end
 
     context 'GET index' do

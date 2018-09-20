@@ -1,5 +1,4 @@
 RSpec.describe BundleContext, type: :model do
-  let(:user) { User.new(sunet_id: "Jdoe@stanford.edu") }
   let (:attr_hash) {
     {
       project_name: "Images_jp2_tif",
@@ -7,7 +6,7 @@ RSpec.describe BundleContext, type: :model do
       bundle_dir: "spec/test_data/images_jp2_tif/",
       staging_style_symlink: false,
       content_metadata_creation: 1,
-      user: user
+      user: build(:user, sunet_id: 'Jdoe@stanford.edu')
     }
   }
   subject(:bc) { BundleContext.new(attr_hash) }
