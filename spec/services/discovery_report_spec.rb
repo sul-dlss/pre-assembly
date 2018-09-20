@@ -1,12 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe DiscoveryReport do
-  let(:bundle) { bundle_setup(:proj_revs) }
+  let(:bundle) { bundle_setup(:flat_dir_images) }
   subject(:report) { described_class.new(bundle) }
-
-  before do
-    bundle.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
-  end
 
   describe '#initialize' do
     it 'raises if PreAssembly::Bundle not received' do
