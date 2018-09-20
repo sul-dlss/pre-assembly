@@ -59,7 +59,7 @@ class DiscoveryReport
     { druid: dobj.druid.druid, errors: errors.compact, counts: counts }
   end
 
-  # @param [String] druid
+  # @param [DruidTools]
   # @return [Hash<Symbol => Boolean>] errors
   def registration_check(druid)
     begin

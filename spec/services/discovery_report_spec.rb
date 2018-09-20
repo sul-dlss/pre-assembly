@@ -72,4 +72,37 @@ RSpec.describe DiscoveryReport do
       end
     end
   end
+
+  context "integration test" do
+    let(:bc_params) do
+      {
+        project_name: "SmokeTest",
+        content_structure: 0,
+        bundle_dir: 'spec/test_data/images_jp2_tif',
+        staging_style_symlink: false,
+        content_metadata_creation: 0,
+        user: build(:user, sunet_id: 'jdoe@stanford.edu')
+      }
+    end
+    let(:bundle_context) {BundleContext.new(bc_params) }
+    let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
+    let(:dobj) { report.bundle.objects_to_process.first }
+
+    before do
+      allow(dobj).to receive(:pid).and_return("kk203bw3276")
+      allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
+    end
+
+    it "matches the expected output " do
+      expect(report.process_dobj(dobj)).to eq ({
+        druid: "druid:kk203bw3276",
+        errors: {dupes: true},
+        counts: {total_size: 254802, mimetypes: {"image/tiff"=>4, "image/jp2"=>2},
+        filename_no_extension: 0}
+      })
+      expect(report.summary).to include({
+        :objects_with_error=>0, :mimetypes=>{}, :total_size=>0
+      })      
+    end
+  end
 end
