@@ -15,7 +15,7 @@ checksums_file:       ~
 desc_md_template:     'mods_template.xml'
 
 progress_log_file:    'log/progress_log_smpl_multimedia.yaml'
-project_name:         'SMPL Multimedia'
+project_name:         'SMPL_Multimedia'
 
 publish_attr:
   publish:            'no'

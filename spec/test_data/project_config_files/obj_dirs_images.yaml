@@ -11,7 +11,7 @@ checksums_file:       ~
 desc_md_template:     'mods_template.xml'
 
 progress_log_file:    'log/progress_obj_dirs_images.yaml'
-project_name:         'Object Directories with Images'
+project_name:         'Object_Directories_with_Images'
 
 validate_files:       false
 

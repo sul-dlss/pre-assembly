@@ -37,7 +37,7 @@ RSpec.describe BundleContextsController, type: :controller do
 
     context "POST create" do
       context "Valid Parameters" do
-        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/spec/test_data/smpl_multimedia" }
+        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/SMPL-multimedia" }
         before do
           Dir.delete(output_dir) if Dir.exist?(output_dir)
           post :create, params: params
