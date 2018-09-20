@@ -1,5 +1,4 @@
 RSpec.describe JobRunsController, type: :controller do
-  before { sign_in(create(:user)) }
 
   describe 'GET #show' do
     it 'returns http success' do
