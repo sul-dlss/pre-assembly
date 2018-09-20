@@ -11,7 +11,7 @@ checksums_file:       'checksums.txt'
 desc_md_template:     'mods_template.xml'
 
 progress_log_file:    'log/progress_flat_dir_images.yaml'
-project_name:         'Flat Dir Images'
+project_name:         'Flat_Dir_Images'
 
 validate_files:       false
 
