@@ -2,27 +2,12 @@
 # you want to provide a manifest to provide descriptive metadata and a MODS template.
 # Object discovery also occurs via the manifest.
 
+project_name:         'SMPL_Multimedia'
+
 project_style:
   content_structure:  'smpl'
 
 bundle_dir:           'spec/test_data/smpl_multimedia'
-accession_items:      ~
-
-validate_files:       false
-
-manifest:             'manifest.csv'
-checksums_file:       ~
-desc_md_template:     'mods_template.xml'
-
-progress_log_file:    'log/progress_log_smpl_multimedia.yaml'
-project_name:         'SMPL_Multimedia'
-
-publish_attr:
-  publish:            'no'
-  shelve:             'no'
-  preserve:           'yes'
-
-#init_assembly_wf:     true
 
 content_md_creation:
   style:              'smpl'
@@ -37,11 +22,3 @@ stageable_discovery:
   use_container:      false
   glob:               '**/*/*'
   regex:              '^((?!.md5).)*$'
-
-manifest_cols:
-  druid:              'druid'
-  object_container:   'folder'
-  source_id:          'sourceid'
-  label:              'label'
-
-content_exclusion:    ~

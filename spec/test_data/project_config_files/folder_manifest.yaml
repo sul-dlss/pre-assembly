@@ -1,38 +1,15 @@
-# An example of a project which does not have already registered objects, and for which there are multiple files per object organized into folders.
-# Object discovery also occurs via the manifest.
+# An example of a project for which there are multiple files per object organized into folders
+
+project_name:         'FolderManifest'
 
 project_style:
   content_structure:  'simple_image'
 
 bundle_dir:           'spec/test_data/obj_dirs_images'
-accession_items:       ~
-
-validate_files:       true
-
-manifest:             'manifest.csv'
-checksums_file:        ~
-desc_md_template:     'mods_template.xml'
-
-progress_log_file:    'log/progress_folder_manifest.yaml'
-project_name:         'FolderManifest'
-apo_druid_id:         'druid:qv648vd4392'
-set_druid_id:         ~
-
-publish_attr:
-  publish:            ~
-  shelve:             ~
-  preserve:           ~
 
 content_md_creation:
   style:              'default'
 
-stageable_discovery:
-  glob:               '**/*'
-  regex:              ~
-
-manifest_cols:
-  object_container:   'folder'
-  source_id:          'sourceid'
-  label:              'label'
-
-content_exclusion:    ~
+# stageable_discovery:
+#   glob:               '**/*'
+#   regex:              ~

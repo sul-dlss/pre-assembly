@@ -1,49 +1,16 @@
-# An example of a project which has already registered objects, but for which
-# you want to provide a manifest to provide descriptive metadata and a MODS template.
-# Object discovery also occurs via the manifest.
+# An example of a project for which there are multiple files per object organized into folders
+
+project_name:         'Images_jp2_tif'
 
 project_style:
   content_structure:  'simple_image'
-  get_druid_from:     'manifest'
 
 bundle_dir:           'spec/test_data/images_jp2_tif'
-accession_items:       ~
-
-validate_files:       true
-
-manifest:             'manifest.csv'
-checksums_file:        ~
-desc_md_template:     'mods_template.xml'
-
-progress_log_file:    'log/progress_log_images_jp2_tiff.yaml'
-project_name:         'Images_jp2_tif'
-
-publish_attr:
-  'image/jp2':
-    publish:            'yes'
-    shelve:             'yes'
-    preserve:           'no'
-  'default':
-    publish:   ~
-    shelve:    ~
-    preserve:  ~
 
 content_md_creation:
   style:              'default'
 
-object_discovery:
-  use_manifest:       true
-  glob:               ~
-  regex:              ~
-
-stageable_discovery:
-  use_container:      false
-  glob:               '**/*'
-  regex:              '(?ix) \. (tif|jp2) $'
-
-manifest_cols:
-  object_container:   'folder'
-  source_id:          'sourceid'
-  label:              'label'
-
-content_exclusion:    ~
+# stageable_discovery:
+#   use_container:      false
+#   glob:               '**/*'
+#   regex:              '(?ix) \. (tif|jp2) $'
