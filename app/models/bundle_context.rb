@@ -75,7 +75,7 @@ class BundleContext < ApplicationRecord
     nil
   end
 
-  # TODO: delete everwhere in code as single commit (#230)
+  # TODO: delete everywhere in code as single commit (#230)
   def validate_files?
     false
   end
@@ -103,6 +103,7 @@ class BundleContext < ApplicationRecord
     @manifest_rows ||= CsvImporter.parse_to_hash(path_in_bundle(manifest))
   end
 
+  # TODO: make this simpler / remove it (#329)
   def manifest_cols
     {
       label: 'label', # only used by SMPL manifests
