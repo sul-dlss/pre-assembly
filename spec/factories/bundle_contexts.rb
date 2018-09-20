@@ -6,5 +6,12 @@ FactoryBot.define do
     project_name { 'Test_Project' }
     staging_style_symlink { false }
     user
+
+    # some tests require BCs with clean output_dir
+    factory :bundle_context_with_deleted_output_dir do
+      after(:build) do |bc|
+        Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
+      end
+    end
   end
 end

@@ -1,13 +1,5 @@
 RSpec.describe JobRun, type: :model do
-  let(:bc) do
-    build(:bundle_context).tap do |bc|
-      Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
-      bc.save!
-    end
-  end
-  let(:job_run) do
-    described_class.new(output_location: '/path/to/report', bundle_context: bc, job_type: 'discovery_report')
-  end
+  let(:job_run) { build(:job_run) }
 
   it { is_expected.to belong_to(:bundle_context) }
 
@@ -62,7 +54,7 @@ RSpec.describe JobRun, type: :model do
   context 'validation' do
     it 'is not valid without all required fields' do
       expect(described_class.new).not_to be_valid
-      expect(described_class.new(bundle_context: bc)).not_to be_valid
+      expect(described_class.new(bundle_context: build(:bundle_context))).not_to be_valid
       expect(job_run).to be_valid
     end
   end
