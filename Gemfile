@@ -22,6 +22,7 @@ gem 'sqlite3'
 gem 'turbolinks' # improves speed of following links in web application
 gem 'uglifier' # compressor for JavaScript assets
 gem "simple_form" # rails form that handles errors internally and easily integrated w/ Bootstrap
+gem 'kaminari' # pagination
 
 # Stanford gems
 gem 'assembly-image'

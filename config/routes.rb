@@ -3,5 +3,5 @@ Rails.application.routes.draw do
   devise_for :users, skip: :all
   root to: "bundle_contexts#index"
   resources :bundle_contexts
-  resources :job_runs, only: [:show]
+  resources :job_runs, only: [:show, :index]
 end
