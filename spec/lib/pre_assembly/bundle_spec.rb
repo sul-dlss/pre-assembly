@@ -16,12 +16,7 @@ RSpec.describe PreAssembly::Bundle do
       bc.save
 
       b = PreAssembly::Bundle.new bc
-      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       pids = []
-      dobj = b.digital_objects
-      dobj.each do |obj|
-        allow(obj).to receive(:dor_object).and_return(nil)
-      end
       expect {
         pids = b.run_pre_assembly
       }.not_to raise_error
@@ -55,13 +50,10 @@ RSpec.describe PreAssembly::Bundle do
   describe '#digital_objects' do
     it "finds the correct number of objects" do
       b = bundle_setup(:folder_manifest)
-      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-
       expect(b.digital_objects.size).to eq(3)
     end
 
     it "handles containers correctly" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       expect(smpl_multimedia.digital_objects.first.container.size).to be > smpl_multimedia.bundle_dir.size
     end
   end
@@ -170,10 +162,9 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to be_nil }
-      smpl_multimedia.digital_objects.each  { |dobj| smpl_multimedia.load_checksums(dobj) }
-      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
+      smpl_multimedia.all_object_files.each { |f| expect(f.checksum).to be_nil }
+      smpl_multimedia.digital_objects.each { |dobj| smpl_multimedia.load_checksums(dobj) }
+      smpl_multimedia.all_object_files.each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end
 
@@ -198,12 +189,8 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "raises exception if one of the object files is an invalid image" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      # Create a double that will simulate an invalid image.
-      img_params = { :image? => true, :valid_image? => false, :path => 'bad/image.tif' }
-      bad_image  = double 'bad_image', img_params
-      # Check for exceptions.
-      exp_msg    = /^File validation failed/
+      bad_image  = instance_double('bad_image', image?: true, valid_image?: false, path: 'bad/image.tif')
+      exp_msg = /^File validation failed/
       smpl_multimedia.digital_objects.each do |dobj|
         dobj.object_files = [bad_image]
         expect { smpl_multimedia.validate_files(dobj) }.to raise_error(exp_msg)
