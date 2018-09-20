@@ -50,7 +50,7 @@ class BundleContext < ApplicationRecord
   end
 
   def output_dir
-    @output_dir ||= "#{normalize_dir(Settings.job_output_parent_dir)}/#{user.sunet_id}/#{bundle_dir}"
+    @output_dir ||= File.join(normalize_dir(Settings.job_output_parent_dir), user.email, bundle_dir)
   end
 
   def progress_log_file
