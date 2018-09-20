@@ -1,5 +1,4 @@
-<h2><%= job_run.job_type %> #<%= job_run.id %></h2>
-  <% for attribute in job_run.attributes.keys.sort %>
-    <p><%= attribute.humanize %> <%= job_run.attributes[attribute].to_s %></p>
-  <% end %>
+<h2><%= @job_run.job_type.humanize %> #<%= @job_run.id %></h2>
+<% for attribute in @job_run.attributes.keys.sort %>
+  <p><%= attribute.humanize %> <%= @job_run.attributes[attribute].to_s %></p>
 <% end %>
