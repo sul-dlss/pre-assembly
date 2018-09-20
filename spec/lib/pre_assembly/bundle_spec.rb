@@ -287,8 +287,7 @@ RSpec.describe PreAssembly::Bundle do
           "image2.tif",
           "image3.tif",
           "manifest.csv",
-          "manifest_badsourceid_column.csv",
-          "mods_template.xml",
+          "manifest_badsourceid_column.csv"
         ],
         :images_jp2_tif => [
           "gn330dv6119/image1.jp2",
@@ -299,7 +298,6 @@ RSpec.describe PreAssembly::Bundle do
           "jy812bp9403/00/image2.tif",
           "jy812bp9403/05/image1.jp2",
           "manifest.csv",
-          "mods_template.xml",
           "tz250tk7584/00/image1.tif",
           "tz250tk7584/00/image2.tif"
         ],
