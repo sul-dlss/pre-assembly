@@ -29,17 +29,15 @@ RSpec.describe BundleContext, type: :model do
     describe 'project_name' do
       it { is_expected.to validate_presence_of(:project_name) }
       it 'is not valid with chars other than alphanum, hyphen and underscore' do
-        attr_hash[:project_name] = 's p a c e s'
-        expect(bc).not_to be_valid
-        attr_hash[:project_name] = "apostrophe's"
-        expect(bc).not_to be_valid
-        attr_hash[:project_name] = 'quotes"'
-        expect(bc).not_to be_valid
+        expect { bc.project_name = 's p a c e s' }.to change(bc, :valid?).to(false)
+        bc.project_name = "apostrophe's"
+        expect(bc.valid?).to eq false
+        bc.project_name = 'quotes"'
+        expect(bc.valid?).to eq false
       end
       it 'is valid with alphanum, hyphen and underscore chars' do
         valid_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-'
-        attr_hash[:project_name] = valid_chars
-        expect(bc).to be_valid
+        expect { bc.project_name = valid_chars }.not_to change(bc, :valid?).from(true)
       end
     end
   end
