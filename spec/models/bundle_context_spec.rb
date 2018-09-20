@@ -1,15 +1,12 @@
 RSpec.describe BundleContext, type: :model do
   let (:attr_hash) {
     {
-      project_name: "Images_jp2_tif",
-      content_structure: 1,
-      bundle_dir: "spec/test_data/images_jp2_tif/",
-      staging_style_symlink: false,
-      content_metadata_creation: 1,
+      project_name: 'Images_jp2_tif',
+      bundle_dir: 'spec/test_data/images_jp2_tif',
       user: build(:user, sunet_id: 'Jdoe@stanford.edu')
     }
   }
-  subject(:bc) { BundleContext.new(attr_hash) }
+  subject(:bc) { build(:bundle_context, attr_hash) }
 
   context "validation" do
     it "is not valid unless it has all required attributes" do

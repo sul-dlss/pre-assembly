@@ -13,16 +13,15 @@ def noko_doc(x)
 end
 
 def bundle_context_from_hash(proj)
-  user = build(:user, sunet_id: 'Jdoe@stanford.edu')
-  cmc = hash_from_proj(proj)["content_md_creation"]["style"]
-  cmc = cmc + "_cm_style" if cmc == "smpl"
-
-  BundleContext.new(
-    project_name: hash_from_proj(proj)["project_name"],
-    content_structure: hash_from_proj(proj)["project_style"]["content_structure"],
-    bundle_dir: hash_from_proj(proj)["bundle_dir"],
-    staging_style_symlink: false,
-    content_metadata_creation: cmc ,
-    user: user
+  hash = hash_from_proj(proj)
+  cmc = hash["content_md_creation"]["style"]
+  cmc += '_cm_style' if cmc == "smpl"
+  build(
+    :bundle_context,
+    project_name: hash["project_name"],
+    content_structure: hash["project_style"]["content_structure"],
+    bundle_dir: hash["bundle_dir"],
+    content_metadata_creation: cmc,
+    user: build(:user, sunet_id: 'Jdoe@stanford.edu')
   )
 end

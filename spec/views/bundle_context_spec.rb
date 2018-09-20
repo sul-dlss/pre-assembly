@@ -10,32 +10,20 @@ RSpec.describe 'bundle_contexts/index' do
 
   context "Displays errors in Bundle Context Form"
   it 'displays error message when missing project name' do
-    assign(:bundle_context, BundleContext.create(
-                              project_name: nil,
-                              content_structure: "simple_image",
-                              content_metadata_creation: "default",
-                              bundle_dir: "spec/test_data/bundle_input_b"
-                            ))
+    bc = build(:bundle_context, project_name: nil).tap(&:valid?)
+    assign(:bundle_context, bc)
     render
     expect(render).to match(/Project name can&#39;t be blank/)
   end
   it 'displays error message when missing bundle_dir' do
-    assign(:bundle_context, BundleContext.create(
-                              project_name: "A great project",
-                              content_structure: "simple_image",
-                              content_metadata_creation: "default",
-                              bundle_dir: nil
-                            ))
+    bc = build(:bundle_context, bundle_dir: nil).tap(&:valid?)
+    assign(:bundle_context, bc)
     render
     expect(render).to match(/Bundle dir can&#39;t be blank/)
   end
   it 'displays error message for non-existent bundle directory' do
-    assign(:bundle_context, BundleContext.create(
-                              project_name: "Another great project",
-                              content_structure: "simple_image",
-                              content_metadata_creation: "default",
-                              bundle_dir: "bad path"
-                            ))
+    bc = build(:bundle_context, bundle_dir: 'bad path').tap(&:valid?)
+    assign(:bundle_context, bc)
     render
     expect(render).to match(/Bundle dir Bundle directory: bad path not found./)
   end

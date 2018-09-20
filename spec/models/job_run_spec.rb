@@ -1,13 +1,6 @@
 RSpec.describe JobRun, type: :model do
   let(:bc) do
-    BundleContext.new(
-      project_name: 'ImagesJp2Tif',
-      content_structure: 1,
-      bundle_dir: 'spec/test_data/images_jp2_tif',
-      staging_style_symlink: false,
-      content_metadata_creation: 1,
-      user: build(:user)
-    ).tap do |bc|
+    build(:bundle_context).tap do |bc|
       Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
       bc.save!
     end
