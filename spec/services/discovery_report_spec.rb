@@ -51,5 +51,25 @@ RSpec.describe DiscoveryReport do
         druid: 'druid:kk203bw3276'
       )
     end
+
+    context "folders are empty" do
+      it "adds empty_object error" do
+        expect(report.process_dobj(dobj)).to match a_hash_including(errors: a_hash_including(empty_object: true))
+      end
+    end
+
+    context "folders are not empty" do
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: "random/path", filesize: 324, mimetype: "")}
+
+      before do
+        allow(dobj).to receive(:object_files).and_return([obj_file, obj_file])
+        allow(report).to receive(:using_smpl_manifest?).and_return(false)
+        allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
+      end
+
+      it "does not add empty_object error" do
+        expect(report.process_dobj(dobj)).not_to include(a_hash_including(empty_object: true))
+      end
+    end
   end
 end

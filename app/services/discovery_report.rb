@@ -52,7 +52,7 @@ class DiscoveryReport
       errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
     end
 
-    errors[:empty_object] = true if counts[:total_size] > 0
+    errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless dobj.object_files_exist?
     errors[:dupes] = true unless object_filenames_unique?(dobj)
     errors.merge!(registration_check(dobj.druid))
@@ -63,7 +63,7 @@ class DiscoveryReport
   # @return [Hash<Symbol => Boolean>] errors
   def registration_check(druid)
     begin
-      obj = Dor::Item.find(druid)
+      obj = Dor::Item.find(druid.druid)
     rescue ActiveFedora::ObjectNotFoundError
       return { item_not_registered: true }
     end
