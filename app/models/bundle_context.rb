@@ -114,10 +114,6 @@ class BundleContext < ApplicationRecord
 
   private
 
-  def job_output_parent_dir
-    @job_output_parent_dir ||= Settings.job_output_parent_dir
-  end
-
   def normalize_dir(dir)
     dir.chomp('/') if dir
   end
@@ -132,11 +128,7 @@ class BundleContext < ApplicationRecord
       raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
     else
       raise "Output directory (#{output_dir}) should not already exist" if Dir.exist?(output_dir)
-      begin
-        FileUtils.mkdir_p(output_dir)
-      rescue SystemCallError => e
-        raise "Unable to create output directory (#{@output_dir}): #{e.message}"
-      end
+      FileUtils.mkdir_p(output_dir)
     end
   end
 
