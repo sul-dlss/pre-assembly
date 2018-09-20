@@ -1,13 +1,15 @@
 RSpec.describe JobRun, type: :model do
   let(:user) { User.new(sunet_id: 'Jdoe@stanford.edu') }
   let(:bc) do
-    BundleContext.new(id: 1,
-                      project_name: 'SmokeTest',
-                      content_structure: 1,
-                      bundle_dir: 'spec/test_data/bundle_input_g',
-                      staging_style_symlink: false,
-                      content_metadata_creation: 1,
-                      user: user)
+    bc = BundleContext.new(project_name: 'ImagesJp2Tif',
+                           content_structure: 1,
+                           bundle_dir: 'spec/test_data/images_jp2_tif',
+                           staging_style_symlink: false,
+                           content_metadata_creation: 1,
+                           user: user)
+    Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
+    bc.save
+    bc
   end
   let(:job_run) do
     described_class.new(output_location: '/path/to/report', bundle_context: bc, job_type: 'discovery_report')
