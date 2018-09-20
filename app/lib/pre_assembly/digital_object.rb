@@ -47,7 +47,7 @@ module PreAssembly
     end
 
     def setup
-      self.label              = Dor::Config.dor.default_label
+      self.label              = 'Unknown' # used for registration when no label is provided in the manifest
       self.content_md_file    = 'contentMetadata.xml'
       self.technical_md_file  = 'technicalMetadata.xml'
       self.content_md_xml     = ''
@@ -276,7 +276,7 @@ module PreAssembly
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
       # TODO: use dor-workflow-service gem for this (see #194)
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
+      with_retries(max_tries: Dor::Config.dor_services.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
         RestClient.post(assembly_workflow_url, {}).tap do |result|
           next if result && (200..204).include?(result.code)
           raise RuntimeError, "POST #{assembly_workflow_url} returned #{result.code}"
@@ -290,7 +290,7 @@ module PreAssembly
 
     def retry_handler(method_name, logger, params = {})
       Proc.new do |exception, attempt_number, total_delay|
-        log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor.num_attempts}; delayed #{Dor::Config.dor.total_delay} seconds")
+        log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor_services.num_attempts}; delayed #{total_delay} seconds")
       end
     end
   end
