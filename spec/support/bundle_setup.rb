@@ -16,7 +16,8 @@ def bundle_context_from_hash(proj)
   user = build(:user, sunet_id: 'Jdoe@stanford.edu')
   cmc = hash_from_proj(proj)["content_md_creation"]["style"]
   cmc = cmc + "_cm_style" if cmc == "smpl"
-  bc = BundleContext.new(
+
+  BundleContext.new(
     project_name: hash_from_proj(proj)["project_name"],
     content_structure: hash_from_proj(proj)["project_style"]["content_structure"],
     bundle_dir: hash_from_proj(proj)["bundle_dir"],
@@ -24,6 +25,4 @@ def bundle_context_from_hash(proj)
     content_metadata_creation: cmc ,
     user: user
   )
-  allow(bc).to receive(:progress_log_file).and_return(hash_from_proj(proj)["progress_log_file"])
-  bc
 end
