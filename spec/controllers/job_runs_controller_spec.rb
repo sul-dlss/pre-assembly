@@ -1,7 +1,5 @@
 RSpec.describe JobRunsController, type: :controller do
-  let(:user) { User.create!(sunet_id: 'foo') }
-
-  before { sign_in(user) }
+  before { sign_in(create(:user)) }
 
   describe 'GET #show' do
     it 'returns http success' do
