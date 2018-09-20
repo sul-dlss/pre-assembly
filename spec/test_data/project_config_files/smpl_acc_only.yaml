@@ -1,0 +1,18 @@
+project_name:         'smpl-accession-only'
+
+project_style:
+  content_structure:  'smpl'
+
+bundle_dir:           'spec/test_data/smpl_multimedia'
+
+accession_items:
+  only:
+    - 'aa111aa1111'
+
+content_md_creation:
+  style:              'smpl'
+
+stageable_discovery:
+  glob:               '**/*'
+  regex:              '^((?!_techmd.xml|.md5).)*$'
+  files_only:         true
