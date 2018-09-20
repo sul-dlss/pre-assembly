@@ -1,35 +1,15 @@
 # A project which uses a manifest for object discovery, one file per object
 
+project_name:         'Flat_Dir_Images'
+
 project_style:
   content_structure:  'simple_image'
 
 bundle_dir:           'spec/test_data/flat_dir_images'
-accession_items:       ~
-
-manifest:             'manifest.csv'
-checksums_file:       'checksums.txt'
-desc_md_template:     'mods_template.xml'
-
-progress_log_file:    'log/progress_flat_dir_images.yaml'
-project_name:         'Flat_Dir_Images'
-
-validate_files:       false
-
-publish_attr:
-  publish:            'no'
-  shelve:             'no'
-  preserve:           'yes'
 
 content_md_creation:
   style:              'default'
 
-stageable_discovery:
-  glob:               ~
-  regex:              ~
-
-manifest_cols:
-  object_container:   'filename'
-  source_id:          'sourceid'
-  label:              'label'
-
-content_exclusion:    ~
+# stageable_discovery:
+#   glob:               ~
+#   regex:              ~

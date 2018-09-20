@@ -1,17 +1,8 @@
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
-  let(:revs_context) { bundle_context_from_hash(:proj_revs)}
-  let(:revs) { described_class.new(revs_context) }
-  let(:img_context) { bundle_context_from_hash(:images_jp2_tif)}
-  let(:images_jp2_tif) { described_class.new(img_context) }
-  let(:smpl_multimedia_context) do
-    bundle_context_from_hash(:smpl_multimedia).tap do |c|
-      c.manifest_cols[:object_container] = 'folder'
-      allow(c).to receive(:path_in_bundle).with(any_args).and_call_original
-      allow(c).to receive(:path_in_bundle).with("manifest.csv").and_return('spec/test_data/smpl_multimedia/manifest_of_3.csv')
-    end
-  end
-  let(:smpl_multimedia) { described_class.new(smpl_multimedia_context) }
+  let(:flat_dir_images) { bundle_setup(:flat_dir_images) }
+  let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
+  let(:smpl_multimedia) { bundle_setup(:smpl_multimedia) }
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
@@ -25,12 +16,7 @@ RSpec.describe PreAssembly::Bundle do
       bc.save
 
       b = PreAssembly::Bundle.new bc
-      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       pids = []
-      dobj = b.digital_objects
-      dobj.each do |obj|
-        allow(obj).to receive(:dor_object).and_return(nil)
-      end
       expect {
         pids = b.run_pre_assembly
       }.not_to raise_error
@@ -49,28 +35,25 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#run_log_msg' do
     it 'returns a string' do
-      expect(revs.run_log_msg).to be_a(String)
+      expect(flat_dir_images.run_log_msg).to be_a(String)
     end
   end
 
   describe '#processed_pids' do
     it 'pulls pids from digital_objects' do
       exp_pids = [11, 22, 33]
-      revs.digital_objects = exp_pids.map { |p| double('dobj', :pid => p) }
-      expect(revs.processed_pids).to eq(exp_pids)
+      flat_dir_images.digital_objects = exp_pids.map { |p| double('dobj', :pid => p) }
+      expect(flat_dir_images.processed_pids).to eq(exp_pids)
     end
   end
 
   describe '#digital_objects' do
     it "finds the correct number of objects" do
       b = bundle_setup(:folder_manifest)
-      b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-
       expect(b.digital_objects.size).to eq(3)
     end
 
     it "handles containers correctly" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
       expect(smpl_multimedia.digital_objects.first.container.size).to be > smpl_multimedia.bundle_dir.size
     end
   end
@@ -78,15 +61,15 @@ RSpec.describe PreAssembly::Bundle do
   describe '#object_discovery: discovery via manifest and crawl' do
     it "discover_containers_via_manifest() should return expected information" do
       vals = %w(123.tif 456.tif 789.tif)
-      revs.manifest_cols[:object_container] = :col_foo
-      allow(revs).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
-      expect(revs.discover_containers_via_manifest).to eq(vals.map { |v| revs.path_in_bundle v })
+      flat_dir_images.manifest_cols[:object_container] = :col_foo
+      allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
+      expect(flat_dir_images.discover_containers_via_manifest).to eq(vals.map { |v| flat_dir_images.path_in_bundle v })
     end
 
     it '#discover_items_via_crawl should return expected information' do
-      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| revs.path_in_bundle i }
-      allow(revs).to receive(:dir_glob).and_return(items)
-      expect(revs.discover_items_via_crawl(revs.bundle_dir)).to eq(items.sort)
+      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| flat_dir_images.path_in_bundle i }
+      allow(flat_dir_images).to receive(:dir_glob).and_return(items)
+      expect(flat_dir_images.discover_items_via_crawl(flat_dir_images.bundle_dir)).to eq(items.sort)
     end
   end
 
@@ -128,12 +111,12 @@ RSpec.describe PreAssembly::Bundle do
     it "is able to exercise all_object_files()" do
       fake_files = [[1, 2], [3, 4], [5, 6]]
       fake_dobjs = fake_files.map { |fs| double('dobj', :object_files => fs) }
-      revs.digital_objects = fake_dobjs
-      expect(revs.all_object_files).to eq(fake_files.flatten)
+      flat_dir_images.digital_objects = fake_dobjs
+      expect(flat_dir_images.all_object_files).to eq(fake_files.flatten)
     end
 
     it "new_object_file() should return an ObjectFile with expected path values" do
-      allow(revs).to receive(:exclude_from_content).and_return(false)
+      allow(flat_dir_images).to receive(:exclude_from_content).and_return(false)
       tests = [
         # Stageable is a file:
         # - immediately in bundle dir.
@@ -163,7 +146,7 @@ RSpec.describe PreAssembly::Bundle do
           :exp_rel_path => 'b/c/d/x.tif' },
       ]
       tests.each do |t|
-        ofile = revs.new_object_file t[:stageable], t[:file_path]
+        ofile = flat_dir_images.new_object_file t[:stageable], t[:file_path]
         expect(ofile).to be_a(PreAssembly::ObjectFile)
         expect(ofile.path).to          eq(t[:file_path])
         expect(ofile.relative_path).to eq(t[:exp_rel_path])
@@ -179,18 +162,16 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_checksums' do
     it "loads checksums and attach them to the ObjectFiles" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to be_nil }
-      smpl_multimedia.digital_objects.each  { |dobj| smpl_multimedia.load_checksums(dobj) }
-      smpl_multimedia.all_object_files.each { |f|    expect(f.checksum).to match(md5_regex) }
+      smpl_multimedia.all_object_files.each { |f| expect(f.checksum).to be_nil }
+      smpl_multimedia.digital_objects.each { |dobj| smpl_multimedia.load_checksums(dobj) }
+      smpl_multimedia.all_object_files.each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end
 
   describe '#digital_objects' do
     it "augments the digital objects with additional information" do
-      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
-      expect(revs.digital_objects.size).to eq(3)
-      revs.digital_objects.each do |dobj|
+      expect(flat_dir_images.digital_objects.size).to eq(3)
+      flat_dir_images.digital_objects.each do |dobj|
         expect(dobj.label).to be_a(String)
         expect(dobj.label).not_to eq('Unknown') # hardcoded in class
         expect(dobj.source_id).to be_a(String)
@@ -208,12 +189,8 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it "raises exception if one of the object files is an invalid image" do
-      smpl_multimedia.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }
-      # Create a double that will simulate an invalid image.
-      img_params = { :image? => true, :valid_image? => false, :path => 'bad/image.tif' }
-      bad_image  = double 'bad_image', img_params
-      # Check for exceptions.
-      exp_msg    = /^File validation failed/
+      bad_image  = instance_double('bad_image', image?: true, valid_image?: false, path: 'bad/image.tif')
+      exp_msg = /^File validation failed/
       smpl_multimedia.digital_objects.each do |dobj|
         dobj.object_files = [bad_image]
         expect { smpl_multimedia.validate_files(dobj) }.to raise_error(exp_msg)
@@ -223,60 +200,57 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#objects_to_process' do
     it "returns all objects if there are no skippables" do
-      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
-      revs.skippables = {}
-      expect(revs.objects_to_process).to eq(revs.digital_objects)
+      flat_dir_images.skippables = {}
+      expect(flat_dir_images.objects_to_process).to eq(flat_dir_images.digital_objects)
     end
 
     it "returns a filtered list of digital objects" do
-      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
-      revs.skippables = {}
-      revs.skippables[revs.digital_objects[-1].unadjusted_container] = true
-      o2p = revs.objects_to_process
-      expect(o2p.size).to eq(revs.digital_objects.size - 1)
-      expect(o2p).to eq(revs.digital_objects[0..-2])
+      flat_dir_images.skippables = {}
+      flat_dir_images.skippables[flat_dir_images.digital_objects[-1].unadjusted_container] = true
+      o2p = flat_dir_images.objects_to_process
+      expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
+      expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
     end
   end
 
   describe "#log_progress_info" do
     it "returns expected info about a digital object" do
-      revs.manifest_rows.each {|row| row.merge!("object" => row["filename"]) }
-      dobj = revs.digital_objects[0]
+      dobj = flat_dir_images.digital_objects[0]
       exp = {
         :unadjusted_container => dobj.unadjusted_container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
         :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
-      expect(revs.log_progress_info(dobj)).to eq(exp)
+      expect(flat_dir_images.log_progress_info(dobj)).to eq(exp)
     end
   end
 
   describe "file and directory utilities" do
     let(:relative) { 'abc/def.jpg' }
-    let(:full) { revs.path_in_bundle(relative) }
+    let(:full) { flat_dir_images.path_in_bundle(relative) }
 
     it "#path_in_bundle returns expected value" do
-      expect(revs.path_in_bundle(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
+      expect(flat_dir_images.path_in_bundle(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
     end
     it "#relative_path returns expected value" do
-      expect(revs.relative_path(revs.bundle_dir, full)).to eq(relative)
+      expect(flat_dir_images.relative_path(flat_dir_images.bundle_dir, full)).to eq(relative)
     end
     it "#get_base_dir returns expected value" do
-      expect(revs.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
+      expect(flat_dir_images.get_base_dir('foo/bar/fubb.txt')).to eq('foo/bar')
     end
 
     it "#get_base_dir raises error if given bogus arguments" do
       exp_msg  = /^Bad arg to get_base_dir/
       bad_args = ['foo.txt', '', 'x\y\foo.txt']
       bad_args.each do |arg|
-        expect { revs.get_base_dir(arg) }.to raise_error(ArgumentError, exp_msg)
+        expect { flat_dir_images.get_base_dir(arg) }.to raise_error(ArgumentError, exp_msg)
       end
     end
 
     it "#dir_glob returns expected information" do
-      exp = [1, 2, 3].map { |n| revs.path_in_bundle "image#{n}.tif" }
-      expect(revs.dir_glob(revs.path_in_bundle "*.tif")).to eq(exp)
+      exp = [1, 2, 3].map { |n| flat_dir_images.path_in_bundle "image#{n}.tif" }
+      expect(flat_dir_images.dir_glob(flat_dir_images.path_in_bundle "*.tif")).to eq(exp)
     end
 
     it "#find_files_recursively returns expected information" do
@@ -287,8 +261,7 @@ RSpec.describe PreAssembly::Bundle do
           "image2.tif",
           "image3.tif",
           "manifest.csv",
-          "manifest_badsourceid_column.csv",
-          "mods_template.xml",
+          "manifest_badsourceid_column.csv"
         ],
         :images_jp2_tif => [
           "gn330dv6119/image1.jp2",
@@ -299,7 +272,6 @@ RSpec.describe PreAssembly::Bundle do
           "jy812bp9403/00/image2.tif",
           "jy812bp9403/05/image1.jp2",
           "manifest.csv",
-          "mods_template.xml",
           "tz250tk7584/00/image1.tif",
           "tz250tk7584/00/image2.tif"
         ],

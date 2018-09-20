@@ -133,10 +133,10 @@ module PreAssembly
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
       raise RuntimeError, ':manifest_cols must be specified' unless manifest_cols
-      col_name = manifest_cols[:object_container].to_sym
-      raise RuntimeError, "object_container must be specified in manifest_cols: #{manifest_cols}" unless col_name
-      manifest_rows.each_with_index { |r, i| raise "Missing #{col_name} in row #{i}: #{r}" unless r[col_name] }
-      manifest_rows.map { |r| path_in_bundle r[col_name] }
+      # TODO: note that manifest_cols is a constant in bundle_context
+      obj_sym = manifest_cols[:object_container].to_sym
+      manifest_rows.each_with_index { |r, i| raise "Missing #{obj_sym} in row #{i}: #{r}" unless r[obj_sym] }
+      manifest_rows.map { |r| path_in_bundle r[obj_sym] }
     end
 
     # A method to discover object containers or stageable items.

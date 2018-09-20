@@ -1,4 +1,4 @@
-druid,sourceid,folder,label,description
+druid,sourceid,object,label,description
 "druid:oo000oo0000","bar-1.0","obj1","Label 1","This is a description for label 1"
 "druid:oo111oo1111","bar-2.1","obj2","Label 2","This is a description for label 1"
 "druid:oo222oo2222","bar-2.2","obj3","Label 3","This is a description for label 1"

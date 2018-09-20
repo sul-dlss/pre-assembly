@@ -1,9 +1,8 @@
 RSpec.describe 'discovery_report/show.json.jbuilder' do
-  let(:bundle) { bundle_setup(:proj_revs) }
+  let(:bundle) { bundle_setup(:flat_dir_images) }
   subject(:report) { DiscoveryReport.new(bundle) }
 
   before do
-    report.bundle.manifest_rows.each { |row| row.merge!('object' => row['filename']) }
     report.bundle.digital_objects.each { |dobj| allow(dobj).to receive(:pid).and_return('kk203bw3276') }
     allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
   end
