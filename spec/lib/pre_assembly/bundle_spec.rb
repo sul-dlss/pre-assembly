@@ -21,7 +21,8 @@ RSpec.describe PreAssembly::Bundle do
     it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
       bc = bundle_context_from_hash('images_jp2_tif')
       # need to delete progress log to ensure this test doesn't skip objects already run
-      File.delete(bc.progress_log_file) if File.exist?(bc.progress_log_file)
+      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
+      bc.save
 
       b = PreAssembly::Bundle.new bc
       b.manifest_rows.each {|row| row.merge!("object" => row["folder"]) }

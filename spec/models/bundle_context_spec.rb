@@ -104,11 +104,8 @@ RSpec.describe BundleContext, type: :model do
   end
 
   describe 'output_dir' do
-    it 'returns "Settings.job_output_parent_dir/user_id/bundle_dir"' do
-      # Settings.job_output_parent_dir for test from config/settings/test.yml as 'log/test_jobs'
-      # bc.user.user_id above as 'Jdoe'
-      # bc.bundle_dir above as 'spec/test_data/images_jp2_tif'
-      expect(bc.output_dir).to eq 'log/test_jobs/Jdoe@stanford.edu/spec/test_data/images_jp2_tif'
+    it 'returns "Settings.job_output_parent_dir/user_id/project_name"' do
+      expect(bc.output_dir).to eq "#{Settings.job_output_parent_dir}/#{bc.user.sunet_id}/#{bc.project_name}"
     end
   end
 
@@ -158,7 +155,7 @@ RSpec.describe BundleContext, type: :model do
     context 'bundle_context is new' do
       it 'creates directory' do
         bc.bundle_dir = 'i_do_not_exist'
-        Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
+        FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
         expect(Dir.exist?(bc.output_dir)).to eq false
         bc.send(:verify_output_dir)
         expect(Dir.exist?(bc.output_dir)).to eq true
