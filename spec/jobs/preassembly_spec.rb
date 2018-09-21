@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe PreassemblyJob, type: :job do
   describe "#perform_later" do
 

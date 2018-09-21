@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe DiscoveryReport do
   let(:bundle) { bundle_setup(:flat_dir_images) }
   subject(:report) { described_class.new(bundle) }
@@ -93,7 +91,7 @@ RSpec.describe DiscoveryReport do
       allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
     end
 
-    it "matches the expected output " do
+    it 'matches the expected output' do
       expect(report.process_dobj(dobj)).to eq ({
         druid: "druid:kk203bw3276",
         errors: {dupes: true},
@@ -103,7 +101,6 @@ RSpec.describe DiscoveryReport do
       expect(report.summary).to include({
         :objects_with_error=>0, :mimetypes=>{}, :total_size=>0
       })
-      # TODO: Test for report output once we determine output log location. (#298)
     end
   end
 end
