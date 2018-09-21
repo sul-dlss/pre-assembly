@@ -1,15 +1,11 @@
 RSpec.describe BundleContext, type: :model do
-  let (:attr_hash) {
+  let(:attr_hash) {
     {
-      project_name: "Images_jp2_tif",
-      content_structure: 1,
-      bundle_dir: "spec/test_data/images_jp2_tif/",
-      staging_style_symlink: false,
-      content_metadata_creation: 1,
-      user: build(:user, sunet_id: 'Jdoe@stanford.edu')
+      project_name: 'Images_jp2_tif',
+      bundle_dir: 'spec/test_data/images_jp2_tif',
     }
   }
-  subject(:bc) { BundleContext.new(attr_hash) }
+  subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
 
   context "validation" do
     it "is not valid unless it has all required attributes" do
@@ -149,39 +145,30 @@ RSpec.describe BundleContext, type: :model do
   end
 
   describe '#verify_output_dir (private method)' do
-    before(:each) do
-      FileUtils.mkdir_p(bc.send(:job_output_parent_dir))
-    end
-    context 'bundle_context is new' do
+    before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
+    after { Dir.delete(bc.output_dir) if Dir.exists?(bc.output_dir) } # cleanup
+
+    context 'when bundle_context is new' do
+      before { allow(bc).to receive(:persisted?).and_return(false) }
+
       it 'creates directory' do
-        bc.bundle_dir = 'i_do_not_exist'
-        FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
-        expect(Dir.exist?(bc.output_dir)).to eq false
-        bc.send(:verify_output_dir)
-        expect(Dir.exist?(bc.output_dir)).to eq true
-        Dir.delete(bc.output_dir)
+        expect { bc.send(:verify_output_dir) }.to change { Dir.exist?(bc.output_dir) }.from(false).to(true)
       end
       it 'raises error if directory already exists' do
-        bc.bundle_dir = 'i_exist'
         FileUtils.mkdir_p(bc.output_dir) unless Dir.exist?(bc.output_dir)
-        expect(Dir.exist?(bc.output_dir)).to eq true
         exp_msg = "Output directory (#{bc.output_dir}) should not already exist"
         expect { bc.send(:verify_output_dir) }.to raise_error(RuntimeError, exp_msg)
-        Dir.delete(bc.output_dir)
       end
       it "raises error if directory can't be created" do
-        orig = Settings.job_output_parent_dir
-        Settings.job_output_parent_dir = '/boot'
-        regex_exp_msg = Regexp.new(Regexp.escape("Unable to create output directory (#{bc.output_dir}): Permission denied @ dir_s_mkdir - /boot"))
-        expect { bc.send(:verify_output_dir) }.to raise_error(RuntimeError, regex_exp_msg)
-        Settings.job_output_parent_dir = orig
+        allow(bc).to receive(:output_dir).and_return('/bootx/foo')
+        expect { bc.send(:verify_output_dir) }.to raise_error(SystemCallError, /Permission denied @ dir_s_mkdir - \/bootx/)
       end
     end
-    context 'bundle_context is not new' do
+
+    context 'when bundle_context is not new' do
+      before { allow(bc).to receive(:persisted?).and_return(true) } # fake save
+
       it "raises error if directory doesn't exist" do
-        Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
-        bc.save # creates output dir
-        Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
         exp_msg = "Output directory (#{bc.output_dir}) should already exist, but doesn't"
         expect { bc.send(:verify_output_dir) }.to raise_error(RuntimeError, exp_msg)
       end
