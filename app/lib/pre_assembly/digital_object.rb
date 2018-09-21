@@ -5,51 +5,42 @@ module PreAssembly
     include PreAssembly::Logging
 
     INIT_PARAMS = [
-      :container,
-      :unadjusted_container,
-      :stageable_items,
-      :object_files,
-      :project_style,
-      :project_name,
-      :file_attr,
-      :bundle_dir,
       :assembly_staging_dir,
+      :bundle_dir,
+      :container,
       :content_md_creation,
+      :object_files,
+      :project_name,
+      :project_style,
+      :smpl_manifest,
+      :stageable_items,
       :staging_style,
-      :smpl_manifest
+      :unadjusted_container
     ]
 
-    attr_accessor :label,
-                  :content_md_file,
-                  :technical_md_file,
+    attr_accessor :content_md_file,
                   :content_md_xml,
-                  :technical_md_xml,
-                  :pre_assem_finished,
                   :content_structure,
+                  :label,
+                  :manifest_row,
+                  :pre_assem_finished,
                   :source_id,
-                  :manifest_row
+                  :technical_md_file,
+                  :technical_md_xml
 
     attr_writer :dor_object, :druid_tree_dir
 
     INIT_PARAMS.each { |p| attr_accessor p }
 
-    ####
-    # Initialization.
-    ####
-
+    # @param [Hash] params
     def initialize(params = {})
       INIT_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
-      self.file_attr ||= params[:publish_attr]
-      setup
-    end
-
-    def setup
-      self.label              = 'Unknown' # used for registration when no label is provided in the manifest
-      self.content_md_file    = 'contentMetadata.xml'
-      self.technical_md_file  = 'technicalMetadata.xml'
-      self.content_md_xml     = ''
-      self.technical_md_xml   = ''
-      self.content_structure  = (project_style ? project_style : 'file')
+      self.label             = 'Unknown' # used for registration when no label is provided in the manifest
+      self.content_md_file   = 'contentMetadata.xml'
+      self.technical_md_file = 'technicalMetadata.xml'
+      self.content_md_xml    = ''
+      self.technical_md_xml  = ''
+      self.content_structure = (project_style ? project_style : 'file')
     end
 
     def stager(source, destination)
@@ -223,9 +214,6 @@ module PreAssembly
       else
         # otherwise use the content metadata generation gem
         params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => content_md_creation.to_sym, :style => content_md_creation_style }
-
-        params.merge!(:add_file_attributes => true, :file_attributes => file_attr.stringify_keys) unless file_attr.nil?
-
         self.content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
       end
     end
