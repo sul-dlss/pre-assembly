@@ -102,11 +102,6 @@ Lint/DuplicateMethods:
     - 'app/lib/pre_assembly/object_file.rb'
 
 # Offense count: 1
-Lint/EnsureReturn:
-  Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
-
-# Offense count: 1
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'app/lib/pre_assembly/reporting_old.rb'
@@ -115,7 +110,6 @@ Lint/ParenthesesAsGroupedExpression:
 Lint/RescueException:
   Exclude:
     - 'app/lib/pre_assembly/bundle.rb'
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'app/lib/pre_assembly/reporting.rb'
 
 # Offense count: 2
@@ -186,11 +180,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 73
 
-# Offense count: 1
-Naming/AccessorMethodName:
-  Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
-
 # Offense count: 7
 # Configuration parameters: Blacklist.
 # Blacklist: (?-mix:(^|\s)(EO[A-Z]{1}|END)(\s|$))
@@ -198,13 +187,6 @@ Naming/HeredocDelimiterNaming:
   Exclude:
     - 'spec/lib/pre_assembly/digital_object_spec.rb'
     - 'spec/lib/pre_assembly/smpl_spec.rb'
-
-# Offense count: 1
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: snake_case, camelCase
-Naming/MethodName:
-  Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
 
 # Offense count: 2
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
@@ -215,7 +197,6 @@ Naming/MethodName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'app/lib/pre_assembly/remediation/item.rb'
 
 # Offense count: 2
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
@@ -355,7 +336,6 @@ Security/YAMLLoad:
 # IgnoredMethods: lambda, proc, it
 Style/BlockDelimiters:
   Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'app/lib/pre_assembly/smpl.rb'
     - 'spec/jobs/discovery_report_job_spec.rb'
     - 'spec/jobs/preassembly_spec.rb'
@@ -367,7 +347,6 @@ Style/BlockDelimiters:
 # SupportedStyles: braces, no_braces, context_dependent
 Style/BracesAroundHashParameters:
   Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'config/deploy.rb'
     - 'spec/lib/pre_assembly/bundle_spec.rb'
 
@@ -452,7 +431,6 @@ Style/HashSyntax:
     - 'app/lib/pre_assembly/bundle.rb'
     - 'app/lib/pre_assembly/digital_object.rb'
     - 'app/lib/pre_assembly/logging.rb'
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'app/lib/pre_assembly/reporting.rb'
     - 'app/lib/pre_assembly/reporting_old.rb'
     - 'app/lib/pre_assembly/smpl.rb'
@@ -494,7 +472,6 @@ Style/MutableConstant:
     - 'app/lib/bundle_context_temporary.rb'
     - 'app/lib/pre_assembly/digital_object.rb'
     - 'app/lib/pre_assembly/logging.rb'
-    - 'app/lib/pre_assembly/remediation/item.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
@@ -560,12 +537,6 @@ Style/RedundantException:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Style/RedundantParentheses:
-  Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
 # Configuration parameters: AllowMultipleReturnValues.
 Style/RedundantReturn:
   Exclude:
@@ -577,7 +548,6 @@ Style/RedundantReturn:
 # SupportedStyles: implicit, explicit
 Style/RescueStandardError:
   Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'app/lib/pre_assembly/reporting_old.rb'
 
 # Offense count: 320
@@ -612,7 +582,6 @@ Style/SymbolProc:
 # SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
 Style/TernaryParentheses:
   Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'app/lib/pre_assembly/reporting.rb'
     - 'app/lib/pre_assembly/reporting_old.rb'
     - 'app/lib/pre_assembly/smpl.rb'
@@ -649,7 +618,6 @@ Style/TrivialAccessors:
 # Cop supports --auto-correct.
 Style/UnneededInterpolation:
   Exclude:
-    - 'app/lib/pre_assembly/remediation/item.rb'
     - 'spec/lib/pre_assembly/digital_object_spec.rb'
 
 # Offense count: 1
