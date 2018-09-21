@@ -47,7 +47,7 @@ class DiscoveryReport
       cm_files = smpl.manifest[bundle_id].fetch(:files, [])
       counts[:files_in_manifest] = cm_files.count
       relative_paths = dobj.object_files.map(&:relative_path)
-      counts[:files_found] = (cm_files.map(&:filename) & relative_paths).count
+      counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
       errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
       errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
     end
@@ -86,11 +86,11 @@ class DiscoveryReport
 
   # @return [Boolean]
   def using_smpl_manifest?
-    content_md_creation == :smpl && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
+    content_md_creation == "smpl_cm_style" && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
   end
 
   # @return [PreAssembly::Smpl]
   def smpl
-    @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+    @smpl ||= PreAssembly::Smpl.new(csv_filename: bundle.bundle_context.smpl_manifest, bundle_dir: bundle_dir)
   end
 end
