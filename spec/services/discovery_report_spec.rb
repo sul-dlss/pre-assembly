@@ -102,7 +102,8 @@ RSpec.describe DiscoveryReport do
       })
       expect(report.summary).to include({
         :objects_with_error=>0, :mimetypes=>{}, :total_size=>0
-      })      
+      })
+      # TODO: Test for report output once we determine output log location. (#298)
     end
   end
 end
