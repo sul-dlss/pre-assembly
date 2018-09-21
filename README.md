@@ -230,37 +230,6 @@ To make your life easier, it's easiest to put this in your bash profile so you d
 
 ### Prerequisites
 
-#### PostgreSQL
-
-##### Installing Postgres
-
-If you use homebrew you can install PostgreSQL with:
-```sh
-brew install postgresql
-```
-
-Make sure Postgres starts every time your computer starts up.
-```sh
-brew services start postgresql
-```
-
-Check to see if Postgres is installed with `postgres -V` and that it's accepting connections with `pg_isready`.
-
-##### Configuring Postgres
-
-Using the `psql` utility, run these two setup scripts from the command line, like so:
-```sh
-psql -f db/scripts/preassembly_setup.sql postgres
-psql -f db/scripts/preassembly_test_setup.sql postgres
-```
-
-These scripts do the following for you:
-* create the test and dev PostgreSQL users.
-* create the test and dev databases.
-* setup the needed ownership and permissions between the DBs and the users.
-
-For more info on postgres commands, see https://www.postgresql.org/docs/
-
 #### exiftool
 
 You need exiftool on your system in order to successfully run all of the tests.
