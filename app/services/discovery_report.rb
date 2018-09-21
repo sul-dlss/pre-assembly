@@ -86,11 +86,11 @@ class DiscoveryReport
 
   # @return [Boolean]
   def using_smpl_manifest?
-    content_md_creation == :smpl && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
+    content_md_creation == "smpl_cm_style" && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
   end
 
   # @return [PreAssembly::Smpl]
   def smpl
-    @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+    @smpl ||= PreAssembly::Smpl.new(csv_filename: bundle.bundle_context.smpl_manifest, bundle_dir: bundle_dir)
   end
 end
