@@ -604,22 +604,12 @@ RAILS_ENV=production bundle exec bin/mods_report YAML_CONFIG_FILE OUTPUT_DIRECTO
 
 ## Accession of Specific Objects
 
-For projects with a manifest (e.g. like Revs):
+Using a manifest:
 
 1.  Create a new manifest with only the objects you need accessioned.
 2.  Create a new project config YAML file referencing the new manifest and
     write to a new progress log file.
 3.  Run pre-assembly.
-
-For projects that do not use a manifest (e.g. like Rumsey):
-
-1.  Create a new project config YAML file and set the parameter
-    `accession_items` using either the `only` or `except` parameter as needed.
-    You can include only specific objects (useful when you only want to run a few objects)
-    or you can exclude specific objects (useful when you want to run most).
-    Also set a different progress log file so you can store the results of
-    your second run separately. See the `TEMPLATE.yaml` for some examples.
-1.  Run pre-assembly.
 
 ## Re-Accession of Specific Objects
 

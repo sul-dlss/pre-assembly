@@ -14,8 +14,7 @@ module PreAssembly
                   :skippables,
                   :smpl_manifest
 
-    delegate :accession_items,
-             :apo_druid_id,
+    delegate :apo_druid_id,
              :apply_tag,
              :bundle_dir,
              :config_filename,
@@ -32,7 +31,6 @@ module PreAssembly
              :stageable_discovery,
              :assembly_staging_dir,
              :staging_style_symlink,
-             :validate_files?,
            to: :bundle_context
 
     def initialize(bundle_context)
@@ -196,60 +194,6 @@ module PreAssembly
       dobj.object_files.each { |file| file.checksum = file.md5 }
     end
 
-    ####
-    # Object file validation.
-    ####
-
-    def validate_files(dobj)
-      log "  - validate_files()"
-
-      i = 0
-      success = false
-      failed_validation = false
-      exception = nil
-      tally = Hash.new(0) # A tally to facilitate testing.
-
-      # TODO: clarify (peter might know?) - seems this is essentially a retry loop, where validation failure is fatal,
-      # but other things (like... fedora connection error?) allow for another attempt until max num_attempts.
-      until i == Dor::Config.dor_services.num_attempts || success || failed_validation do
-        i += 1
-        begin
-          tally = Hash.new(0) # A tally to facilitate testing.
-          dobj.object_files.each do |f|
-            if !f.image?
-              tally[:skipped] += 1
-            elsif f.valid_image? && f.has_color_profile?
-              tally[:valid] += 1
-            else
-              failed_validation = true
-              raise "File validation failed: #{f.path}"
-            end
-          end
-          success = true
-        rescue Exception => e
-          raise e if failed_validation # just raise the exception as normal if we have a failed file validation
-          log "      ** VALIDATE_FILES FAILED **, and trying attempt #{i} of #{Dor::Config.dor_services.num_attempts} in #{Dor::Config.dor_services.sleep_time} seconds"
-          exception = e
-          sleep Dor::Config.dor_services.sleep_time
-        end
-      end
-
-      # TODO: goes w/ above question - wasn't able to set success to true, didn't fail validation, so... some
-      # other unexpected problem?
-      if success == false && !failed_validation
-        error_message = "validate_files failed after #{i} attempts \n"
-        log error_message
-        error_message += "exception: #{exception.message}\n"
-        error_message += "backtrace: #{exception.backtrace}"
-        # TODO: would bet the intent was to pass in error_message, since it includes
-        # exception, and the modifications to it are thrown away as it is.
-        Honeybadger.notify(exception)
-        raise exception
-      else
-        return tally
-      end
-    end
-
     # confirm that the all of the source IDs supplied within a manifest are locally unique
     def manifest_sourceids_unique?
       all_source_ids = manifest_rows.collect { |r| r[manifest_cols[:source_id]] }
@@ -281,7 +225,6 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          validate_files(dobj) if validate_files?
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
@@ -311,18 +254,7 @@ module PreAssembly
     end
 
     def objects_to_process
-      return @o2p if @o2p
-      @o2p = digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
-      return @o2p if accession_items.nil? # check to see if we are specifying certain objects to be accessioned
-      if accession_items[:only]
-        whitelist = accession_items[:only].map { |x| DruidTools::Druid.new(x).druid } # normalize
-        @o2p.select! { |dobj| whitelist.include?(dobj.druid.druid) }
-      end
-      if accession_items[:except]
-        blacklist = accession_items[:except].map { |x| DruidTools::Druid.new(x).druid } # normalize
-        @o2p.reject! { |dobj| blacklist.include?(dobj.druid.druid) }
-      end
-      @o2p
+      @o2p ||= digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
     end
 
     def log_progress_info(dobj)

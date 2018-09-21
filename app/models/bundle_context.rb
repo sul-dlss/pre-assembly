@@ -60,11 +60,6 @@ class BundleContext < ApplicationRecord
     {}
   end
 
-  # TODO: delete everywhere in code as single commit (#262)
-  def accession_items
-    nil
-  end
-
   # TODO: Delete everywhere in code as single commit (#227)
   def content_exclusion
     nil
@@ -73,16 +68,6 @@ class BundleContext < ApplicationRecord
   # TODO: Delete everywhere in code as single commit (#228)
   def file_attr
     nil
-  end
-
-  # TODO: delete everywhere in code as single commit (#230)
-  def validate_files?
-    false
-  end
-
-  # TODO: find where this is used as a conditional and delete code that won't be executed and this method (#231)
-  def content_tag_override?
-    true
   end
 
   def smpl_manifest

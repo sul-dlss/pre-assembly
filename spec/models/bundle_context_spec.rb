@@ -75,12 +75,6 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe "#content_tag_override?" do
-    it "is set to true" do
-      expect(described_class.new.content_tag_override?).to be true
-    end
-  end
-
   describe "#smpl_manifest" do
     it "returns the file name" do
       expect(described_class.new.smpl_manifest).to eq 'smpl_manifest.csv'
