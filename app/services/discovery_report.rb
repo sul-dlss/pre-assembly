@@ -47,7 +47,7 @@ class DiscoveryReport
       cm_files = smpl.manifest[bundle_id].fetch(:files, [])
       counts[:files_in_manifest] = cm_files.count
       relative_paths = dobj.object_files.map(&:relative_path)
-      counts[:files_found] = (cm_files.map(&:filename) & relative_paths).count
+      counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
       errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
       errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
     end
