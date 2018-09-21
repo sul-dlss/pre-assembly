@@ -75,11 +75,6 @@ class BundleContext < ApplicationRecord
     nil
   end
 
-  # TODO: delete everywhere in code as single commit (#230)
-  def validate_files?
-    false
-  end
-
   # TODO: find where this is used as a conditional and delete code that won't be executed and this method (#231)
   def content_tag_override?
     true

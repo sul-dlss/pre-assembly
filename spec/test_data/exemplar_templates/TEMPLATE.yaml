@@ -26,9 +26,6 @@ progress_log_file: ~                        # Optional - if left as nil a progre
                                             # PLEASE DO NOT PLACE THIS IN THE LOG FOLDER OF THE PRE-ASSEMBLY CODE FOLDER ON THE SERVER.  IT MAY BE DELETED IF YOU DO THIS.
                     '/dor/preassembly/progress_foo.yaml'  # this is an example of specifying an alternate location
 
-validate_files:    true      # if set to true, then image files will be confirmed as valid before proceeding ... validity ensures they are of the correct mimetype and have color profiles
-                   false     # if set to false, then no image validation is performed -- since color profiles are no longer required, this is less critical to check
-
 ####
 # General options relating to project type and the registration of objects.  For each option, you must select only one value
 # from the options shown.

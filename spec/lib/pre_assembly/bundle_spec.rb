@@ -180,24 +180,6 @@ RSpec.describe PreAssembly::Bundle do
     end
   end
 
-  describe '#validate_files' do
-    it "returns expected tally if all images are valid" do
-      skip "validate_files has depedencies on exiftool, making it sometimes incorrectly fail...it basically exercises methods already adequately tested in the assembly-objectfile gem"
-      smpl_multimedia.digital_objects.each do |dobj|
-        expect(smpl_multimedia.validate_files(dobj)).to eq({ :valid => 1, :skipped => 1 })
-      end
-    end
-
-    it "raises exception if one of the object files is an invalid image" do
-      bad_image  = instance_double('bad_image', image?: true, valid_image?: false, path: 'bad/image.tif')
-      exp_msg = /^File validation failed/
-      smpl_multimedia.digital_objects.each do |dobj|
-        dobj.object_files = [bad_image]
-        expect { smpl_multimedia.validate_files(dobj) }.to raise_error(exp_msg)
-      end
-    end
-  end
-
   describe '#objects_to_process' do
     it "returns all objects if there are no skippables" do
       flat_dir_images.skippables = {}
