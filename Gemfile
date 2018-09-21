@@ -9,6 +9,7 @@ gem 'honeybadger', '~> 3.1'
 gem 'jbuilder'
 gem 'jquery-rails'
 gem 'nokogiri'
+gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'rake'
