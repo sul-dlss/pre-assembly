@@ -122,30 +122,6 @@ stageable_discovery:
                         #  if set to false or left off, then anything that matches the glob (and not filtered by regex) will be staged
 
 ####
-# Restrict objects to be accessioned when using the discovery method
-####
-accession_items:   ~         # Only valid for projects that do *not* use a manifest.
-                            # Used if you need to accession or re-accession only specific objects.
-                            # You can supply a list of container names, and indicate if this list is exlcusionary
-                            # or inclusionary.  In other words, do you want to *only* accession the named items, or accession
-                            # everything *except* those listed? You can also specify if this is a re-accession, in which case the
-                            # items will be reset (but not unregistered from DOR) before accessioning again.
-                            # If you specify ~, all items will be accessioned and you can leave off the "only" and "except" parameters.
-                            # Note that you will probably also want to log this new run using a different progress log file.
-                            # In the "only" and "except" list, you should use names that exactly match the folder names in your bundle_dir,
-                            # one per line, indented under "only" or "except" and preceeded by a dash as shown in the examples below.
-                            # For a normal run, set "accession_items" to ~, which will process all items.
-                            # Do not specify both "only" and "except" unless you like flying experimental homebuilt aircraft.
-                            # Examples below:
-  only:
-    - 'aa111aa1111'
-    - 'bb222bb2222'              # this is an example of two objects that will be accessioned, put them one per line, prefixed by a space, a dash, and space, add quotes around each item
-  except:
-    - 'aa111aa1111'
-    - 'bb222bb2222'             # this is an example of two objects that will be ignored, put them one per line, prefixed by a space, a dash, and space, add quotes around each item
-                               # If set to true, the the files will be removed for /dor/assembly, /dor/workspace and the stacks before accessioning again.  Objects will *not* be re-registered.
-
-####
 # Additional materials accompaning the bundle.
 #
 # These file names below should be expressed in relative terms -- relative to bundle_dir.

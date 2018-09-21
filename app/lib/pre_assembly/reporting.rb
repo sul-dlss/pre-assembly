@@ -24,13 +24,7 @@ module PreAssembly
       puts "Object discovery via manifest, #{bundle_context.manifest}"
       puts "Checking APO and registration status"
       puts "Using SMPL manifest for contentMetadata: #{File.join(bundle_dir, content_md_creation[:smpl_manifest])}" if using_smpl_manifest
-
-      # TODO: are we going to support this option in the project yaml?
-      if accession_items
-        puts "You are processing specific objects only" if accession_items[:only]
-        puts "You are processing all discovered except for specific objects" if accession_items[:except]
-      end
-
+      
       header = "\nObject Container , Number of Items , Files with no ext, Files with 0 Size, Total Size, Files Readable , "
       header += "Label , Source ID , "
       header += "Num Files in CM Manifest , All CM files found ," if using_smpl_manifest

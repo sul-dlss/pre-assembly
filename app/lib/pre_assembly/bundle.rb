@@ -14,8 +14,7 @@ module PreAssembly
                   :skippables,
                   :smpl_manifest
 
-    delegate :accession_items,
-             :apo_druid_id,
+    delegate :apo_druid_id,
              :apply_tag,
              :bundle_dir,
              :config_filename,
@@ -255,18 +254,7 @@ module PreAssembly
     end
 
     def objects_to_process
-      return @o2p if @o2p
-      @o2p = digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
-      return @o2p if accession_items.nil? # check to see if we are specifying certain objects to be accessioned
-      if accession_items[:only]
-        whitelist = accession_items[:only].map { |x| DruidTools::Druid.new(x).druid } # normalize
-        @o2p.select! { |dobj| whitelist.include?(dobj.druid.druid) }
-      end
-      if accession_items[:except]
-        blacklist = accession_items[:except].map { |x| DruidTools::Druid.new(x).druid } # normalize
-        @o2p.reject! { |dobj| blacklist.include?(dobj.druid.druid) }
-      end
-      @o2p
+      @o2p ||= digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
     end
 
     def log_progress_info(dobj)

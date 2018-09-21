@@ -60,11 +60,6 @@ class BundleContext < ApplicationRecord
     {}
   end
 
-  # TODO: delete everywhere in code as single commit (#262)
-  def accession_items
-    nil
-  end
-
   # TODO: Delete everywhere in code as single commit (#227)
   def content_exclusion
     nil

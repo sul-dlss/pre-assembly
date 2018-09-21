@@ -4,7 +4,6 @@ project_style:
   content_structure: 'simple_book'
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
-accession_items:   ~
 
 stageable_discovery:
   glob:  '00/*'
@@ -14,16 +13,9 @@ manifest:   ~
 checksums_file:   ~
 desc_md_template: ~
 
-manifest_cols:
-  object_container:   ~
-  source_id:          ~
-  label:              ~
-
 project_name:      'Gould'
 
 progress_log_file: '/dor/preassembly/gould_log.yaml'
-apo_druid_id: ~
-set_druid_id: ~
 
 content_exclusion: ~
 
