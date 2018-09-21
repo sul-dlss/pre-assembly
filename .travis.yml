@@ -14,11 +14,6 @@ env:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 
 cache: bundler
-services:
-- postgresql
-
-before_script:
-- bundle exec rake travis_setup_postgres db:reset
 
 rvm:
   - 2.4.4

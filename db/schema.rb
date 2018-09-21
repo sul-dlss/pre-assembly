@@ -12,16 +12,13 @@
 
 ActiveRecord::Schema.define(version: 2018_09_14_014133) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "bundle_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
     t.string "bundle_dir", null: false
     t.boolean "staging_style_symlink", default: false, null: false
     t.integer "content_metadata_creation", null: false
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_bundle_contexts_on_user_id"
@@ -30,7 +27,7 @@ ActiveRecord::Schema.define(version: 2018_09_14_014133) do
   create_table "job_runs", force: :cascade do |t|
     t.string "output_location"
     t.integer "job_type", null: false
-    t.bigint "bundle_context_id", null: false
+    t.integer "bundle_context_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bundle_context_id"], name: "index_job_runs_on_bundle_context_id"
@@ -43,6 +40,4 @@ ActiveRecord::Schema.define(version: 2018_09_14_014133) do
     t.index ["sunet_id"], name: "index_users_on_sunet_id", unique: true
   end
 
-  add_foreign_key "bundle_contexts", "users"
-  add_foreign_key "job_runs", "bundle_contexts"
 end
