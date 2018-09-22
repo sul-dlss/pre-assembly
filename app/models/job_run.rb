@@ -21,4 +21,8 @@ class JobRun < ApplicationRecord
     JobMailer.with(job_run: self).completion_email.deliver_later
   end
 
+  # @return [DiscoveryReport]
+  def to_discovery_report
+    @to_discovery_report ||= DiscoveryReport.new(bundle_context.bundle)
+  end
 end

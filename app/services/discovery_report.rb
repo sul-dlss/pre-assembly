@@ -27,6 +27,11 @@ class DiscoveryReport
     end
   end
 
+  # @return [String] a different string each time
+  def output_path
+    Dir::Tmpname.create([self.class.name.underscore + '_', '.json'], bundle.bundle_context.output_dir) { |path| path }
+  end
+
   # @param [PreAssembly::DigitalObject]
   # @return [Hash<Symbol => Object>]
   def process_dobj(dobj)
@@ -92,5 +97,14 @@ class DiscoveryReport
   # @return [PreAssembly::Smpl]
   def smpl
     @smpl ||= PreAssembly::Smpl.new(csv_filename: content_md_creation[:smpl_manifest], bundle_dir: bundle_dir)
+  end
+
+  # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
+  # @return [Jbuilder] call obj.to_builder.target! for the JSON string
+  def to_builder
+    Jbuilder.new do |json|
+      json.rows { json.array!(each_row) }
+      json.summary summary
+    end
   end
 end
