@@ -1,12 +1,8 @@
 # encoding: UTF-8
 
-require 'ostruct'
-require 'pathname'
-
 module PreAssembly
   class Bundle
     include PreAssembly::Logging
-    include PreAssembly::Reporting
 
     attr_reader :bundle_context
     attr_writer :digital_objects
@@ -31,7 +27,7 @@ module PreAssembly
              :stageable_discovery,
              :assembly_staging_dir,
              :staging_style_symlink,
-           to: :bundle_context
+             to: :bundle_context
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
@@ -290,8 +286,7 @@ module PreAssembly
     def get_base_dir(path)
       bd = File.dirname(path)
       return bd unless bd == '.'
-      err_msg = "Bad arg to get_base_dir(#{path.inspect})"
-      raise ArgumentError, err_msg
+      raise ArgumentError, "Bad arg to get_base_dir(#{path.inspect})"
     end
 
     def dir_glob(pattern)
