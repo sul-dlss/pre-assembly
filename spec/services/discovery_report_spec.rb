@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe DiscoveryReport do
   let(:bundle) { bundle_setup(:flat_dir_images) }
   subject(:report) { described_class.new(bundle) }
@@ -33,6 +31,18 @@ RSpec.describe DiscoveryReport do
         objects_with_error: 1,
         mimetypes: { a: 1, b: 5, q: 13 }
       )
+    end
+  end
+
+  describe '#output_path' do
+    it 'starts with output_dir' do
+      expect(report.output_path).to start_with(report.bundle.bundle_context.output_dir)
+    end
+    it 'ends with discovery_report[...].json' do
+      expect(report.output_path).to match(/discovery_report_.*\.json$/)
+    end
+    it 'gives unique string each invocation' do
+      expect(report.output_path).not_to eq(report.output_path)
     end
   end
 
@@ -84,7 +94,7 @@ RSpec.describe DiscoveryReport do
         user: build(:user, sunet_id: 'jdoe@stanford.edu')
       }
     end
-    let(:bundle_context) {BundleContext.new(bc_params) }
+    let(:bundle_context) { BundleContext.new(bc_params) }
     let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
     let(:dobj) { report.bundle.objects_to_process.first }
 
@@ -93,17 +103,19 @@ RSpec.describe DiscoveryReport do
       allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
     end
 
-    it "matches the expected output " do
-      expect(report.process_dobj(dobj)).to eq ({
+    it 'process_dobj gives expected output for one dobj' do
+      expect(report.process_dobj(dobj)).to eq(
         druid: "druid:kk203bw3276",
-        errors: {dupes: true},
-        counts: {total_size: 254802, mimetypes: {"image/tiff"=>4, "image/jp2"=>2},
-        filename_no_extension: 0}
-      })
-      expect(report.summary).to include({
-        :objects_with_error=>0, :mimetypes=>{}, :total_size=>0
-      })
-      # TODO: Test for report output once we determine output log location. (#298)
+        errors: { dupes: true },
+        counts: {
+          total_size: 254802,
+          mimetypes: { 'image/tiff' => 4, 'image/jp2' => 2 },
+          filename_no_extension: 0
+        }
+      )
+      expect(report.summary).to include(
+        objects_with_error: 0, mimetypes: {}, total_size: 0
+      )
     end
   end
 end
