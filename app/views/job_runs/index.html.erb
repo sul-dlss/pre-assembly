@@ -1,0 +1,28 @@
+<h2>Job Run History</h2>
+
+<%= paginate @job_runs %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Type</th>
+      <th scope="col">Creator</th>
+      <th scope="col">Status</th>
+      <th scope="col">Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @job_runs.each do |job_run| %>
+    <tr>
+      <td><%=link_to "Job ##{job_run.id}",job_run%></td>
+      <td><%=job_run.job_type%></td>
+      <td><%=job_run.bundle_context.user.sunet_id%></td>
+      <td><%=job_run.output_location ? "complete" : "not complete"%></td>
+      <td><%=job_run.created_at.to_formatted_s(:long)%></td>
+    </tr>
+  </tbody>
+  <% end %>
+</table>
+
+<%= paginate @job_runs %>
