@@ -1,5 +1,3 @@
-require 'assembly-objectfile'
-
 class PreAssembly::ObjectFile < Assembly::ObjectFile
   attr_accessor(
     :relative_path,
