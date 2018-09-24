@@ -8,13 +8,13 @@ RSpec.describe PreAssembly::Bundle do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
     before do
       allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
+      allow(Dor::Item).to receive(:find).with(any_args)
     end
     it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
       bc = bundle_context_from_hash('images_jp2_tif')
       # need to delete progress log to ensure this test doesn't skip objects already run
       FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
       bc.save
-
       b = PreAssembly::Bundle.new bc
       pids = []
       expect {
