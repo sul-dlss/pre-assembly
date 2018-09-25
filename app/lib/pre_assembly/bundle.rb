@@ -1,12 +1,8 @@
 # encoding: UTF-8
 
-require 'ostruct'
-require 'pathname'
-
 module PreAssembly
   class Bundle
     include PreAssembly::Logging
-    include PreAssembly::Reporting
 
     attr_reader :bundle_context
     attr_writer :digital_objects
@@ -31,10 +27,13 @@ module PreAssembly
              :stageable_discovery,
              :assembly_staging_dir,
              :staging_style_symlink,
-           to: :bundle_context
+             to: :bundle_context
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
+      if bundle_context.smpl_cm_style?
+        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir)
+      end
       self.skippables = {}
       load_skippables
     end
@@ -54,16 +53,8 @@ module PreAssembly
 
     # Runs the pre-assembly process and returns an array of PIDs of the digital objects processed.
     def run_pre_assembly
-      log ""
-      log "run_pre_assembly(#{run_log_msg})"
-      puts "#{Time.now}: Pre-assembly started for #{project_name}"
-
-      # load up the SMPL manifest if we are using that style
-      if bundle_context.smpl_cm_style?
-        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir)
-      end
+      log "\nrun_pre_assembly(#{run_log_msg})"
       process_digital_objects
-      puts "#{Time.now}: Pre-assembly completed for #{project_name}"
       processed_pids
     end
 
@@ -208,18 +199,17 @@ module PreAssembly
       o2p = objects_to_process
       total_obj = o2p.size
       log "process_digital_objects(#{total_obj} objects)"
-      log_and_show "#{total_obj} objects to pre-assemble"
-      log_and_show "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
+      log "#{total_obj} objects to pre-assemble"
+      log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
       num_no_file_warnings = 0
       total_time_remaining = 0
       start_time = Time.now
 
       # Start processing.
       o2p.each_with_index do |dobj, n|
-        log_and_show "#{total_obj - n} remaining in run | #{total_obj} running | ~ remaining: #{PreAssembly::Logging.seconds_to_string(total_time_remaining)}"
+        log "#{total_obj - n} remaining in run | #{total_obj} running"
         log "  - Processing object: #{dobj.unadjusted_container}"
         log "  - N object files: #{dobj.object_files.size}"
-        puts "Working on '#{dobj.unadjusted_container}' containing #{dobj.object_files.size} files"
         num_no_file_warnings += 1 if dobj.object_files.size == 0
 
         begin
@@ -228,7 +218,7 @@ module PreAssembly
           dobj.pre_assemble
           # Indicate that we finished.
           dobj.pre_assem_finished = true
-          log_and_show "Completed #{dobj.druid}"
+          log "Completed #{dobj.druid}"
         rescue Exception => e
           # For now, just re-raise any exceptions.
           #
@@ -249,8 +239,8 @@ module PreAssembly
         total_time_remaining = (avg_time_per_object * (total_obj - next_n)).floor
       end
 
-      log_and_show "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
-      log_and_show "#{total_obj} objects pre-assembled"
+      log "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
+      log "#{total_obj} objects pre-assembled"
     end
 
     def objects_to_process
@@ -290,8 +280,7 @@ module PreAssembly
     def get_base_dir(path)
       bd = File.dirname(path)
       return bd unless bd == '.'
-      err_msg = "Bad arg to get_base_dir(#{path.inspect})"
-      raise ArgumentError, err_msg
+      raise ArgumentError, "Bad arg to get_base_dir(#{path.inspect})"
     end
 
     def dir_glob(pattern)
@@ -302,24 +291,6 @@ module PreAssembly
     def find_files_recursively(path)
       patterns = [path, File.join(path, '**', '*')]
       Dir.glob(patterns).reject { |f| File.directory? f }.sort
-    end
-
-    ####
-    # Misc utilities.
-    ####
-    def entries_in_bundle_directory
-      @entries_in_bundle_directory ||= Dir.entries(bundle_dir).reject { |f| f == '.' || f == '..' }
-    end
-
-    # used to add characters to the reported message and bump up an error count incremeneter
-    def report_error_message(message)
-      @error_count += 1
-      " ** ERROR: #{message.upcase} ** ,"
-    end
-
-    def log_and_show(message)
-      log message
-      puts "#{Time.now}: #{message}"
     end
   end
 end

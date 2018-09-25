@@ -1,9 +1,6 @@
 # encoding: UTF-8
 
-require 'modsulator'
-
 module PreAssembly
-
   class DigitalObject
     include PreAssembly::Logging
 
