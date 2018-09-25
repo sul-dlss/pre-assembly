@@ -14,7 +14,7 @@ RSpec.describe BundleContextsController, type: :controller do
 
   context 'users not persisted in db' do
     it 'blocks unauthenticated access' do
-      get :index
+      get :new
       expect(response).to have_http_status(401)
     end
   end
@@ -27,10 +27,10 @@ RSpec.describe BundleContextsController, type: :controller do
       expect(subject.current_user).not_to be_nil
     end
 
-    context 'GET index' do
-      it "renders the index template" do
-        get :index
-        expect(response).to render_template("index")
+    context 'GET new' do
+      it "renders the new template" do
+        get :new
+        expect(response).to render_template('new')
         expect(response).to have_http_status(200)
       end
     end
