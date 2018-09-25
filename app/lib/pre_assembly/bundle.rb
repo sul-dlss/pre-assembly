@@ -42,7 +42,7 @@ module PreAssembly
       docs = YAML.load_stream(IO.read(progress_log_file))
       docs = docs.documents if docs.respond_to? :documents
       docs.each do |yd|
-        skippables[yd[:unadjusted_container]] = true if yd[:pre_assem_finished]
+        skippables[yd[:container]] = true if yd[:pre_assem_finished]
       end
     end
 
@@ -85,13 +85,12 @@ module PreAssembly
     # @return [Array<DigitalObject>]
     def digital_objects
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
-        params = digital_object_base_params.merge(
-          :container            => c,
-          :stageable_items      => discover_items_via_crawl(c),
-          :unadjusted_container => c
-        )
+        params = {
+          :container       => c,
+          :stageable_items => discover_items_via_crawl(c)
+        }
         params[:object_files] = discover_object_files(params[:stageable_items])
-        DigitalObject.new(params).tap do |dobj|
+        DigitalObject.new(self, params).tap do |dobj|
           r = manifest_rows[i]
           # Get label and source_id from column names declared in YAML config.
           dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ""
@@ -100,18 +99,6 @@ module PreAssembly
           dobj.manifest_row = r
         end
       end
-    end
-
-    def digital_object_base_params
-      {
-        :bundle_dir           => bundle_dir,
-        :content_md_creation  => content_md_creation,
-        :project_name         => project_name,
-        :project_style        => content_structure,
-        :smpl_manifest        => smpl_manifest,
-        :assembly_staging_dir => assembly_staging_dir,
-        :staging_style        => staging_style_symlink
-      }
     end
 
     # Discover object containers from a manifest.
@@ -206,7 +193,7 @@ module PreAssembly
       # Start processing.
       o2p.each_with_index do |dobj, n|
         log "#{total_obj - n} remaining in run | #{total_obj} running"
-        log "  - Processing object: #{dobj.unadjusted_container}"
+        log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.size == 0
 
@@ -242,15 +229,15 @@ module PreAssembly
     end
 
     def objects_to_process
-      @o2p ||= digital_objects.reject { |dobj| skippables.has_key?(dobj.unadjusted_container) }
+      @o2p ||= digital_objects.reject { |dobj| skippables.has_key?(dobj.container) }
     end
 
     def log_progress_info(dobj)
       {
-        :unadjusted_container => dobj.unadjusted_container,
-        :pid                  => dobj.pid,
-        :pre_assem_finished   => dobj.pre_assem_finished,
-        :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')
+        :container          => dobj.container,
+        :pid                => dobj.pid,
+        :pre_assem_finished => dobj.pre_assem_finished,
+        :timestamp          => Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
     end
 

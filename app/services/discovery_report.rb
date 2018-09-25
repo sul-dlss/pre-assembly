@@ -48,7 +48,7 @@ class DiscoveryReport
     errors[:empty_files] = empty_files if empty_files > 0
 
     if using_smpl_manifest? # if we are using a SMPL manifest, let's add how many files were found
-      bundle_id = File.basename(dobj.unadjusted_container)
+      bundle_id = File.basename(dobj.container)
       cm_files = smpl.manifest[bundle_id].fetch(:files, [])
       counts[:files_in_manifest] = cm_files.count
       relative_paths = dobj.object_files.map(&:relative_path)
