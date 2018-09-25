@@ -21,8 +21,9 @@ RSpec.describe BundleContext, type: :model do
     it { is_expected.to validate_presence_of(:content_structure) }
     it { is_expected.to validate_presence_of(:bundle_dir) }
     it { is_expected.to validate_presence_of(:content_metadata_creation) }
+    it { is_expected.to validate_presence_of(:project_name) }
+
     describe 'project_name' do
-      it { is_expected.to validate_presence_of(:project_name) }
       it 'is not valid with chars other than alphanum, hyphen and underscore' do
         expect { bc.project_name = 's p a c e s' }.to change(bc, :valid?).to(false)
         bc.project_name = "apostrophe's"
@@ -55,6 +56,12 @@ RSpec.describe BundleContext, type: :model do
   end
 
   it { is_expected.to belong_to(:user) }
+
+  it 'enums default to their default values' do
+    bc = described_class.new
+    expect(bc.content_structure).to eq 'simple_image'
+    expect(bc.content_metadata_creation).to eq 'default'
+  end
 
   it 'bundle_dir has trailing slash removed' do
     expect(bc.bundle_dir).to eq "spec/test_data/images_jp2_tif"
