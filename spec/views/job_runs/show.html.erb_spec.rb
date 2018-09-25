@@ -5,6 +5,12 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
     assign(:job_run, job_run)
     render
     expect(rendered).to include("Discovery report \##{job_run.id}")
-    expect(rendered).to include("Output location /path/to/report")
+    expect(rendered).to include(job_run.output_location)
+  end
+
+  it 'displays user email from bundle context' do
+    assign(:job_run, job_run)
+    render
+    expect(rendered).to include(job_run.bundle_context.user.email)
   end
 end
