@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   root to: "bundle_contexts#new"
   resources :bundle_contexts, only: [:new, :create]
   resources :job_runs, only: [:show, :index]
+  get 'job_runs/:id/download', to: 'job_runs#download', as: 'download'
 end
