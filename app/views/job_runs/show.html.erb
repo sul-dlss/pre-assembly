@@ -4,33 +4,41 @@
   <h2><%= @job_run.job_type.humanize %> #<%= @job_run.id %></h2>
   <dl class="row">
   <% for attribute in @job_run.attributes.keys.sort %>
-  <% if attribute == 'bundle_context_id' %>
-    <dt class="col-sm-3">Bundle Context</dt>
-    <dd class="col-sm-9">
-      <table>
-        <tr>
-          <th>Project Name</th>
-          <td><%= @job_run.bundle_context.project_name %></td>
-        </tr>
-        <tr>
-          <th>User</th>
-          <td><%= @job_run.bundle_context.user.email %></td>
-        </tr>
-        <tr>
-          <th>Content Structure</th>
-          <td><%= @job_run.bundle_context.content_structure %></td>
-        </tr>
-
-        <tr>
-          <th>Staging Style Symlink?</th>
-          <td><%= @job_run.bundle_context.staging_style_symlink %></td>
-        </tr>
-      </table>
-    </dd>
-  <% else %>
-    <dt class="col-sm-3"><%= attribute.humanize %></dt>
-    <dd class="col-sm-9"><%= @job_run.attributes[attribute].to_s %></dd>
-  <% end %>
+    <% if attribute == 'bundle_context_id' %>
+      <dt class="col-sm-3">Bundle Context</dt>
+      <dd class="col-sm-9">
+        <table>
+          <tr>
+            <th>Project Name</th>
+            <td><%= @job_run.bundle_context.project_name %></td>
+          </tr>
+          <tr>
+            <th>User</th>
+            <td><%= @job_run.bundle_context.user.email %></td>
+          </tr>
+          <tr>
+            <th>Content Structure</th>
+            <td><%= @job_run.bundle_context.content_structure %></td>
+          </tr>
+          <tr>
+            <th>Staging Style Symlink?</th>
+            <td><%= @job_run.bundle_context.staging_style_symlink %></td>
+          </tr>
+        </table>
+      </dd>
+    <% elsif attribute == 'output_location' %>
+      <dt class="col-sm-3">Job Output Log</dt>
+      <dd class="col-sm-9">
+      <% if @job_run.output_location %>
+        <%= link_to 'Download', download_path(@job_run) %>
+      <% else %>
+        Job is not yet complete.  Please check back later.
+      <% end %>
+      </dd>
+    <% else %>
+      <dt class="col-sm-3"><%= attribute.humanize %></dt>
+      <dd class="col-sm-9"><%= @job_run.attributes[attribute].to_s %></dd>
+    <% end %>
   <% end %>
   </dl>
 </div>
