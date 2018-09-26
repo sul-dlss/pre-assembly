@@ -76,14 +76,16 @@ RSpec.describe BundleContextsController, type: :controller do
               content_structure: '',
               content_metadata_creation: '',
               bundle_dir: ''
-            } } end.not_to change(BundleContext, :count)
+            } }
+          end .not_to change(BundleContext, :count)
           expect do
             post :create, params: { bundle_context: {
               project_name: "SMPL's folly",
               content_structure: '',
               content_metadata_creation: '',
               bundle_dir: ''
-            } } end.not_to change(BundleContext, :count)
+            } }
+          end .not_to change(BundleContext, :count)
         end
       end
     end

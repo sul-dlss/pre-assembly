@@ -1,10 +1,10 @@
 set :application, 'pre-assembly'
 set :repo_url, 'ssh://git@github.com/sul-dlss/pre-assembly'
 
-set :ssh_options, 
-  keys: [Capistrano::OneTimeKey.temporary_ssh_private_key_path],
-  forward_agent: true,
-  auth_methods: %w[publickey password]
+set :ssh_options,
+    keys: [Capistrano::OneTimeKey.temporary_ssh_private_key_path],
+    forward_agent: true,
+    auth_methods: %w[publickey password]
 
 # Default branch is :master
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
