@@ -17,7 +17,6 @@ module PreAssembly
              :content_exclusion,
              :content_md_creation,
              :content_structure,
-             :file_attr,
              :manifest_cols,
              :manifest_rows,
              :path_in_bundle,
@@ -107,7 +106,6 @@ module PreAssembly
       {
         :bundle_dir           => bundle_dir,
         :content_md_creation  => content_md_creation,
-        :file_attr            => file_attr,
         :project_name         => project_name,
         :project_style        => content_structure,
         :smpl_manifest        => smpl_manifest,

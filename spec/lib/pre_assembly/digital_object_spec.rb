@@ -2,10 +2,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
   let(:context_params) do
-    {
-      :file_attr  => { 'default' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' } },
-      :source_id  => 'SourceIDFoo'
-    }
+    { :source_id  => 'SourceIDFoo' }
   end
   let(:ps) do
     context_params.merge(
@@ -101,29 +98,28 @@ RSpec.describe PreAssembly::DigitalObject do
   describe "default content metadata" do
     let(:exp_xml) do
       noko_doc <<-END
-        <?xml version="1.0"?>
         <contentMetadata type="image" objectId="gn330dv6119">
           <resource type="image" id="gn330dv6119_1" sequence="1">
             <label>Image 1</label>
-            <file publish="yes" shelve="yes" id="image1.jp2" preserve="yes">
+            <file id="image1.jp2">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_2" sequence="2">
             <label>Image 2</label>
-            <file publish="yes" shelve="yes" id="image1.tif" preserve="yes">
+            <file id="image1.tif">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_3" sequence="3">
             <label>Image 3</label>
-            <file publish="yes" shelve="yes" id="image2.jp2" preserve="yes">
+            <file id="image2.jp2">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
           <resource type="image" id="gn330dv6119_4" sequence="4">
             <label>Image 4</label>
-            <file publish="yes" shelve="yes" id="image2.tif" preserve="yes">
+            <file id="image2.tif">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
@@ -213,7 +209,6 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(dobj).to receive(:content_type_tag).and_return("")
       dobj.content_md_creation = 'filename'
       dobj.project_style = 'simple_book'
-      dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -227,7 +222,6 @@ RSpec.describe PreAssembly::DigitalObject do
   describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
     let(:exp_xml) do
       noko_doc <<-END
-        <?xml version="1.0"?>
         <contentMetadata type="file" objectId="gn330dv6119">
           <resource type="file" id="gn330dv6119_1" sequence="1">
             <label>File 1</label>
@@ -262,7 +256,6 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       dobj.project_style[:content_tag_override] = true        # this allows override of content structure
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
-      dobj.file_attr = nil
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -295,29 +288,28 @@ RSpec.describe PreAssembly::DigitalObject do
   describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
     let(:exp_xml) do
       noko_doc <<-END
-        <?xml version="1.0"?>
         <contentMetadata type="image" objectId="gn330dv6119">
           <resource type="image" sequence="1" id="gn330dv6119_1">
             <label>Image 1</label>
-            <file publish="yes" preserve="no" shelve="yes" id="image1.jp2">
+            <file id="image1.jp2">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" sequence="2" id="gn330dv6119_2">
             <label>Image 2</label>
-            <file publish="no" preserve="yes" shelve="no" id="image1.tif">
+            <file id="image1.tif">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
           <resource type="image" sequence="3" id="gn330dv6119_3">
             <label>Image 3</label>
-            <file publish="yes" preserve="no" shelve="yes" id="image2.jp2">
+            <file id="image2.jp2">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
           <resource type="image" sequence="4" id="gn330dv6119_4">
             <label>Image 4</label>
-            <file publish="no" preserve="yes" shelve="no" id="image2.tif">
+            <file id="image2.tif">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
@@ -329,7 +321,6 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(dobj).to receive(:druid).and_return(druid)
       dobj.project_style[:content_structure] = 'simple_image' # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
-      dobj.file_attr = { 'image/jp2' => { :publish => 'yes', :shelve => 'yes', :preserve => 'no' }, 'image/tiff' => { :publish => 'no', :shelve => 'no', :preserve => 'yes' } }
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -338,19 +329,18 @@ RSpec.describe PreAssembly::DigitalObject do
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
       files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
-      n = files.size
-      m = n / 2
       dobj.object_files = files.map do |f|
         PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
       end
       # All of them are included in content.
-      expect(dobj.content_object_files.size).to eq(n)
-      # Now exclude some. Make sure we got correct N of items.
+      expect(dobj.content_object_files.size).to eq(files.size)
+      m = files.size / 2
+      # Now exclude some. Make sure we got correct M of items.
       (0...m).each { |i| dobj.object_files[i].exclude_from_content = true }
       ofiles = dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
+      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
     end
   end
 

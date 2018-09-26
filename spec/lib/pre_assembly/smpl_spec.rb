@@ -63,12 +63,10 @@ RSpec.describe PreAssembly::Smpl do
 
   def setup_dobj(druid, smpl_manifest)
     ps = {
-      # :apo_druid_id  => 'qq333xx4444',
-      # :set_druid_id  => 'mm111nn2222',
       :source_id     => 'SourceIDFoo',
       :project_name  => 'ProjectBar',
       :label         => 'LabelQuux',
-      :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
+      # :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       :project_style => {},
       :bundle_dir    => bundle_dir,
       :smpl_manifest => smpl_manifest,
@@ -82,7 +80,7 @@ RSpec.describe PreAssembly::Smpl do
   end
 
   def exp_xml_object_aa111aa1111
-    <<-END.gsub(/^ {8}/, '')
+    <<-END
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1">
@@ -122,7 +120,7 @@ RSpec.describe PreAssembly::Smpl do
   end
 
   def exp_xml_object_aa111aa1111_with_thumb
-    <<-END.gsub(/^ {8}/, '')
+    <<-END
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1" thumb="yes">
@@ -162,7 +160,7 @@ RSpec.describe PreAssembly::Smpl do
   end
 
   def exp_xml_object_bb222bb2222
-    <<-END.gsub(/^ {8}/, '')
+    <<-END
             <?xml version="1.0"?>
             <contentMetadata objectId="bb222bb2222" type="media">
               <resource sequence="1" id="bb222bb2222_1" type="media">
