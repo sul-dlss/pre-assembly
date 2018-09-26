@@ -42,4 +42,8 @@ append :linked_dirs, 'log', 'config/certs', 'config/cli_environments', 'config/s
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
 
+# Resque pool
+before 'deploy:migrate', 'resque:pool:stop'
+after 'deploy:restart', 'resque:pool:start'
+
 set :honeybadger_env, fetch(:stage)
