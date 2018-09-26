@@ -204,16 +204,6 @@ module PreAssembly
           # Indicate that we finished.
           dobj.pre_assem_finished = true
           log "Completed #{dobj.druid}"
-        rescue Exception => e
-          # For now, just re-raise any exceptions.
-          #
-          # Later, we might decide to do the following:
-          #   - catch specific types of expected exceptions
-          #   - from that point, raise a PreAssembly::PreAssembleError
-          #   - then catch such errors here, allowing the current
-          #     digital object to fail but the remaining objects to be processed.
-          Honeybadger.notify(e) # ??? Isn't this what Honeybadger would do anyway w/o the rescue?
-          raise e
         ensure
           # Log the outcome no matter what.
           File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }

@@ -72,70 +72,63 @@ module PreAssembly
     end # load_manifest
 
     # actually generate content metadata for a specific druid in the manifest
+    # @return [String] XML
     def generate_cm(druid)
-      pid = druid.gsub!('druid:', '')
+      return '' unless @manifest[druid]
+      current_directory = Dir.pwd
+      files = @manifest[druid][:files]
+      current_seq = ''
+      resources = {}
 
-      if @manifest[druid]
-        current_directory = Dir.pwd
-        files     = @manifest[druid][:files]
-        source_id = @manifest[druid][:source_id]
-        current_seq = ''
-        resources = {}
-
-        # bundle the files into resources based on the sequence # defined in the manifest, a new sequence number triggers a new resource
-        files.each do |file|
-          seq = file[:sequence]
-          label = file[:label] || ""
-          resource_type = file[:resource_type] || @default_resource_type
-          if (!seq.nil? && seq != '' && seq != current_seq) # this is a new resource if we have a non-blank different sequence number
-            resources[seq.to_i] = { :label => label, :sequence => seq, :resource_type => resource_type, :files => [] }
-            current_seq = seq
-          end
-          resources[current_seq.to_i][:files] << file
-          resources[current_seq.to_i][:thumb] = file[:thumb] if file[:thumb] # any true/yes thumb attribute for any file in that resource triggers the whole resource as thumb=true
+      # bundle the files into resources based on the sequence # defined in the manifest, a new sequence number triggers a new resource
+      files.each do |file|
+        seq = file[:sequence]
+        label = file[:label] || ''
+        resource_type = file[:resource_type] || @default_resource_type
+        if (!seq.nil? && seq != '' && seq != current_seq) # this is a new resource if we have a non-blank different sequence number
+          resources[seq.to_i] = { :label => label, :sequence => seq, :resource_type => resource_type, :files => [] }
+          current_seq = seq
         end
-
-        # generate the base of the XML file for this new druid
-        # generate content metadata
-        builder = Nokogiri::XML::Builder.new { |xml|
-          xml.contentMetadata(:objectId => druid, :type => @cm_type) {
-            resources.keys.sort.each do |seq|
-              resource = resources[seq]
-              resource_attributes = { :sequence => seq.to_s, :id => "#{druid}_#{seq}", :type => resource[:resource_type] }
-              resource_attributes[:thumb] = 'yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
-              xml.resource(resource_attributes) {
-                xml.label resource[:label]
-
-                resource[:files].each do |file|
-                  filename = file[:filename] || ""
-                  role = file[:role]
-                  file_attributes = @file_attributes[role.downcase] || @file_attributes['default']
-
-                  publish  = file[:publish] || file_attributes[:publish] || "true"
-                  preserve = file[:preserve] || file_attributes[:preserve] || "true"
-                  shelve   = file[:shelve] || file_attributes[:shelve] || "true"
-
-                  # look for a checksum file named the same as this file
-                  checksum = nil
-                  FileUtils.cd(File.join(@bundle_dir, druid))
-                  md_files = Dir.glob("**/" + filename + ".md5")
-                  checksum = get_checksum(File.join(@bundle_dir, druid, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
-
-                  xml.file(:id => filename, :preserve => preserve, :publish => publish, :shelve => shelve) {
-                    xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
-                  } # end file
-                end # end loop over files
-              } # end resource
-            end # end loop over resources
-          } # end CM tag
-        } # end XML tag
-
-        FileUtils.cd(current_directory)
-
-        return builder.to_xml
-      else # no druid found in mainfest
-        return ""
+        resources[current_seq.to_i][:files] << file
+        resources[current_seq.to_i][:thumb] = file[:thumb] if file[:thumb] # any true/yes thumb attribute for any file in that resource triggers the whole resource as thumb=true
       end
+
+      # generate the base of the XML file for this new druid
+      # generate content metadata
+      builder = Nokogiri::XML::Builder.new { |xml|
+        xml.contentMetadata(:objectId => druid, :type => @cm_type) {
+          resources.keys.sort.each do |seq|
+            resource = resources[seq]
+            resource_attributes = { :sequence => seq.to_s, :id => "#{druid}_#{seq}", :type => resource[:resource_type] }
+            resource_attributes[:thumb] = 'yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
+            xml.resource(resource_attributes) {
+              xml.label resource[:label]
+
+              resource[:files].each do |file|
+                filename = file[:filename] || ""
+                role = file[:role]
+                file_attributes = @file_attributes[role.downcase] || @file_attributes['default']
+
+                publish  = file[:publish]  || file_attributes[:publish]  || "true"
+                preserve = file[:preserve] || file_attributes[:preserve] || "true"
+                shelve   = file[:shelve]   || file_attributes[:shelve]   || "true"
+
+                # look for a checksum file named the same as this file
+                checksum = nil
+                FileUtils.cd(File.join(@bundle_dir, druid))
+                md_files = Dir.glob("**/" + filename + ".md5")
+                checksum = get_checksum(File.join(@bundle_dir, druid, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
+
+                xml.file(:id => filename, :preserve => preserve, :publish => publish, :shelve => shelve) {
+                  xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
+                }
+              end
+            } # end resource
+          end # end loop over resources
+        } # end CM tag
+      } # end XML tag
+      FileUtils.cd(current_directory)
+      builder.to_xml
     end
 
     def get_checksum(md5_file)
