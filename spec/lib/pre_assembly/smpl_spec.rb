@@ -25,7 +25,7 @@ RSpec.describe PreAssembly::Smpl do
       counts = exp_xml.css('Count')
       expect(counts.size).to eq(4) # four nodes that have file info
       # look for some specific bits in the files that have been assembled
-      expect(counts.map(&:content)).to eq(['279', '217', '280', '218'])
+      expect(counts.map(&:content)).to eq(%w[279 217 280 218])
     end
 
     it "generates content metadata from a SMPL manifest with no thumb columns" do

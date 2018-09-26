@@ -1,10 +1,10 @@
 RSpec.describe BundleContext, type: :model do
-  let(:attr_hash) {
+  let(:attr_hash) do
     {
       project_name: 'Images_jp2_tif',
-      bundle_dir: 'spec/test_data/images_jp2_tif',
+      bundle_dir: 'spec/test_data/images_jp2_tif'
     }
-  }
+  end
   subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
 
   context "validation" do

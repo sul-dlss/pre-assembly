@@ -17,9 +17,9 @@ RSpec.describe PreAssembly::Bundle do
       bc.save
       b = PreAssembly::Bundle.new bc
       pids = []
-      expect {
+      expect do
         pids = b.run_pre_assembly
-      }.not_to raise_error
+      end.not_to raise_error
       expect(pids).to eq ["druid:jy812bp9403", "druid:tz250tk7584", "druid:gn330dv6119"]
     end
   end
@@ -29,7 +29,7 @@ RSpec.describe PreAssembly::Bundle do
       allow(smpl_multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
       expect(smpl_multimedia.skippables).to eq({})
       smpl_multimedia.load_skippables
-      expect(smpl_multimedia.skippables).to eq({ "aa" => true, "bb" => true })
+      expect(smpl_multimedia.skippables).to eq("aa" => true, "bb" => true)
     end
   end
 
@@ -60,7 +60,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#object_discovery: discovery via manifest and crawl' do
     it "discover_containers_via_manifest() should return expected information" do
-      vals = %w(123.tif 456.tif 789.tif)
+      vals = %w[123.tif 456.tif 789.tif]
       flat_dir_images.manifest_cols[:object_container] = :col_foo
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
       expect(flat_dir_images.discover_containers_via_manifest).to eq(vals.map { |v| flat_dir_images.path_in_bundle v })
@@ -75,7 +75,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe 'object discovery: #discover_object_files' do
     let(:fs) do
-      %w(
+      %w[
         gn330dv6119/image1.jp2
         gn330dv6119/image1.tif
         gn330dv6119/image2.jp2
@@ -85,10 +85,10 @@ RSpec.describe PreAssembly::Bundle do
         jy812bp9403/05/image1.jp2
         tz250tk7584/00/image1.tif
         tz250tk7584/00/image2.tif
-      )
+      ]
     end
     let(:files) { fs.map { |f| images_jp2_tif.path_in_bundle f } }
-    let(:dirs) { %w(gn330dv6119 jy812bp9403 tz250tk7584).map { |d| images_jp2_tif.path_in_bundle d } }
+    let(:dirs) { %w[gn330dv6119 jy812bp9403 tz250tk7584].map { |d| images_jp2_tif.path_in_bundle d } }
 
     it "finds expected files with correct relative paths" do
       tests = [
@@ -143,7 +143,7 @@ RSpec.describe PreAssembly::Bundle do
         # - within a subdir of bundle dir, with file deeper
         { :stageable    => 'BUNDLE/a/b',
           :file_path    => 'BUNDLE/a/b/c/d/x.tif',
-          :exp_rel_path => 'b/c/d/x.tif' },
+          :exp_rel_path => 'b/c/d/x.tif' }
       ]
       tests.each do |t|
         ofile = flat_dir_images.new_object_file t[:stageable], t[:file_path]
@@ -232,7 +232,7 @@ RSpec.describe PreAssembly::Bundle do
 
     it "#dir_glob returns expected information" do
       exp = [1, 2, 3].map { |n| flat_dir_images.path_in_bundle "image#{n}.tif" }
-      expect(flat_dir_images.dir_glob(flat_dir_images.path_in_bundle "*.tif")).to eq(exp)
+      expect(flat_dir_images.dir_glob(flat_dir_images.path_in_bundle("*.tif"))).to eq(exp)
     end
 
     it "#find_files_recursively returns expected information" do
@@ -256,7 +256,7 @@ RSpec.describe PreAssembly::Bundle do
           "manifest.csv",
           "tz250tk7584/00/image1.tif",
           "tz250tk7584/00/image2.tif"
-        ],
+        ]
       }.each do |proj, files|
         b = described_class.new(bundle_context_from_hash(proj))
         exp_files = files.map { |f| b.path_in_bundle f }

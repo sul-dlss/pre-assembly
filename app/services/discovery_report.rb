@@ -41,7 +41,7 @@ class DiscoveryReport
     counts = {
       total_size: dobj.object_files.map(&:filesize).sum,
       mimetypes: Hash.new(0),
-      filename_no_extension: filename_no_extension.count,
+      filename_no_extension: filename_no_extension.count
     }
     dobj.object_files.each { |obj| counts[:mimetypes][obj.mimetype] += 1 } # number of files by mimetype
     empty_files = dobj.object_files.count { |obj| obj.filesize == 0 }
@@ -79,7 +79,7 @@ class DiscoveryReport
       return { apo_not_registered: true }
     end
   rescue RuntimeError # HTTP timeout, network error, whatever
-    return { dor_connection_error: true }
+    { dor_connection_error: true }
   end
 
   # For use by template

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 # This class generates contentMetadata from a SMPL supplied manifest
 # see the "SMPL Content" section here for a description of the manifest:
 # https://consul.stanford.edu/pages/viewpage.action?pageId=136365158#AutomatedAccessioningandObjectRemediation(pre-assemblyandassembly)-SMPLContent
@@ -48,7 +46,7 @@ module PreAssembly
         resource_type = defined?(row[:resource_type]) ? row[:resource_type] || nil : nil
 
         # set the thumb attribute for this resource if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
-        thumb = (defined?(row[:thumb]) && row[:thumb] && ['true', 'yes', 'thumb'].include?(row[:thumb].downcase)) ? true : false
+        thumb = defined?(row[:thumb]) && row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase) ? true : false
 
         # set the publish/preserve/shelve if available, otherwise we'll use the defaults
         publish  = defined?(row[:publish])  ? row[:publish]  || nil : nil
@@ -56,7 +54,7 @@ module PreAssembly
         preserve = defined?(row[:preserve]) ? row[:preserve] || nil : nil
 
         manifest[druid] = { :source_id => '', :files => [] } if manifest[druid].nil?
-        manifest[druid][:source_id] = row[:source_id] if (defined?(row[:source_id]) && row[:source_id])
+        manifest[druid][:source_id] = row[:source_id] if defined?(row[:source_id]) && row[:source_id]
         manifest[druid][:files] << { :thumb => thumb, :publish => publish, :shelve => shelve, :preserve => preserve, :resource_type => resource_type, :role => role, :file_extention => file_extension, :filename => row[:filename], :label => row[:label], :sequence => row[:sequence] }
       end # loop over all rows
     end # load_manifest
@@ -75,7 +73,7 @@ module PreAssembly
         seq = file[:sequence]
         label = file[:label] || ''
         resource_type = file[:resource_type] || 'media'
-        if (!seq.nil? && seq != '' && seq != current_seq) # this is a new resource if we have a non-blank different sequence number
+        if !seq.nil? && seq != '' && seq != current_seq # this is a new resource if we have a non-blank different sequence number
           resources[seq.to_i] = { :label => label, :sequence => seq, :resource_type => resource_type, :files => [] }
           current_seq = seq
         end
@@ -85,13 +83,13 @@ module PreAssembly
 
       # generate the base of the XML file for this new druid
       # generate content metadata
-      builder = Nokogiri::XML::Builder.new { |xml|
-        xml.contentMetadata(:objectId => druid, :type => 'media') {
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.contentMetadata(:objectId => druid, :type => 'media') do
           resources.keys.sort.each do |seq|
             resource = resources[seq]
             resource_attributes = { :sequence => seq.to_s, :id => "#{druid}_#{seq}", :type => resource[:resource_type] }
             resource_attributes[:thumb] = 'yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
-            xml.resource(resource_attributes) {
+            xml.resource(resource_attributes) do
               xml.label resource[:label]
 
               resource[:files].each do |file|
@@ -107,14 +105,14 @@ module PreAssembly
                 md_files = Dir.glob("**/" + filename + ".md5")
                 checksum = get_checksum(File.join(bundle_dir, druid, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
 
-                xml.file(:id => filename, :preserve => preserve, :publish => publish, :shelve => shelve) {
+                xml.file(:id => filename, :preserve => preserve, :publish => publish, :shelve => shelve) do
                   xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
-                }
+                end
               end
-            } # end resource
+            end # end resource
           end # end loop over resources
-        } # end CM tag
-      } # end XML tag
+        end # end CM tag
+      end # end XML tag
       FileUtils.cd(current_directory)
       builder.to_xml
     end
@@ -127,7 +125,7 @@ module PreAssembly
 
     def get_role(filename)
       matches = filename.scan(/_pm|_sl|_sh/)
-      if matches.size == 0
+      if matches.empty?
         return 'Images' if ['.tif', '.tiff', '.jpg', '.jpeg', '.jp2'].include? File.extname(filename).downcase
         return 'Transcript' if ['.pdf', '.txt', '.doc'].include? File.extname(filename).downcase
         return ''
@@ -138,7 +136,7 @@ module PreAssembly
 
     def get_druid(filename)
       matches = filename.scan(/[0-9a-zA-Z]{11}/)
-      return '' if matches.size == 0
+      return '' if matches.empty?
       matches.first.strip
     end
   end

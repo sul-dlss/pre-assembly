@@ -108,7 +108,7 @@ RSpec.describe DiscoveryReport do
         druid: "druid:kk203bw3276",
         errors: { dupes: true },
         counts: {
-          total_size: 254802,
+          total_size: 254_802,
           mimetypes: { 'image/tiff' => 4, 'image/jp2' => 2 },
           filename_no_extension: 0
         }

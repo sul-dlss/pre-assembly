@@ -48,3 +48,9 @@ Style/FrozenStringLiteralComment:
 
 Style/NumericPredicate: # "> 0" is not less readable than ".positive?"
   Enabled: false
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Style/SymbolArray:
+  MinSize: 4

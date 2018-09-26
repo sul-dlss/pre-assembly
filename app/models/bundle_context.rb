@@ -105,7 +105,7 @@ class BundleContext < ApplicationRecord
   end
 
   def normalize_dir(dir)
-    dir.chomp('/') if dir
+    dir&.chomp('/')
   end
 
   def normalize_bundle_dir

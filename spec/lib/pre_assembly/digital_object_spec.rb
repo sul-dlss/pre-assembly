@@ -19,7 +19,7 @@ RSpec.describe PreAssembly::DigitalObject do
         :path                 => "#{dobj.bundle_dir}/#{dru}/#{f}",
         :relative_path        => f,
         :exclude_from_content => false,
-        :checksum             => "#{i}" * 4
+        :checksum             => i.to_s * 4
       )
     end
   end
@@ -116,7 +116,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
-      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
@@ -129,7 +129,7 @@ RSpec.describe PreAssembly::DigitalObject do
       ofiles = dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
+      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
     end
 
     it "generates the expected xml text" do
@@ -142,7 +142,7 @@ RSpec.describe PreAssembly::DigitalObject do
         file_name = File.join(tmp_area, 'metadata', dobj.send(:content_md_file))
         expect(File.exist?(file_name)).to eq(false)
         dobj.write_content_metadata
-        expect(noko_doc(File.read file_name)).to be_equivalent_to exp_xml
+        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
       end
     end
   end
@@ -240,7 +240,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
-      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
@@ -253,7 +253,7 @@ RSpec.describe PreAssembly::DigitalObject do
       ofiles = dobj.content_object_files
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map { |f| f.relative_path }).to eq(files[m..-1].sort)
+      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
     end
 
     it "generates the expected xml text" do
@@ -305,7 +305,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it "content_object_files() should filter @object_files correctly" do
       # Generate some object_files.
-      files = %w(file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif)
+      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       dobj.object_files = files.map do |f|
         PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
       end

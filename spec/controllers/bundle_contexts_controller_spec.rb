@@ -20,7 +20,7 @@ RSpec.describe BundleContextsController, type: :controller do
   end
 
   context 'users persisted in db' do
-    before { sign_in(create :user) }
+    before { sign_in(create(:user)) }
 
     it "should have current_user" do
       expect(subject.current_user).not_to be_nil
@@ -70,20 +70,20 @@ RSpec.describe BundleContextsController, type: :controller do
         it 'do not create objects' do
           params[:bundle_context].merge!(project_name: nil)
           expect { post :create, params: params }.not_to change(BundleContext, :count)
-          expect {
+          expect do
             post :create, params: { bundle_context: {
               project_name: '',
               content_structure: '',
               content_metadata_creation: '',
               bundle_dir: ''
-            } }}.not_to change(BundleContext, :count)
-          expect {
+            } } end.not_to change(BundleContext, :count)
+          expect do
             post :create, params: { bundle_context: {
               project_name: "SMPL's folly",
               content_structure: '',
               content_metadata_creation: '',
               bundle_dir: ''
-            } }}.not_to change(BundleContext, :count)
+            } } end.not_to change(BundleContext, :count)
         end
       end
     end

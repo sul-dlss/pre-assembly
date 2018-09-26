@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module PreAssembly
   class Bundle
     include PreAssembly::Logging
@@ -30,9 +28,7 @@ module PreAssembly
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
-      if bundle_context.smpl_cm_style?
-        self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir)
-      end
+      self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir) if bundle_context.smpl_cm_style?
       self.skippables = {}
       load_skippables
     end
@@ -63,7 +59,7 @@ module PreAssembly
         :project_name => project_name,
         :bundle_dir => bundle_dir,
         :assembly_staging_dir => Settings.assembly_staging_dir,
-        :environment => ENV['RAILS_ENV'],
+        :environment => ENV['RAILS_ENV']
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
@@ -106,7 +102,7 @@ module PreAssembly
     # manifest columns. The column name to use is configured by the
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
-      raise RuntimeError, ':manifest_cols must be specified' unless manifest_cols
+      raise ':manifest_cols must be specified' unless manifest_cols
       # TODO: note that manifest_cols is a constant in bundle_context
       obj_sym = manifest_cols[:object_container].to_sym
       manifest_rows.each_with_index { |r, i| raise "Missing #{obj_sym} in row #{i}: #{r}" unless r[obj_sym] }
@@ -136,7 +132,7 @@ module PreAssembly
       object_files = []
       Array(stageable_items).each do |stageable|
         find_files_recursively(stageable).each do |file_path|
-          object_files.push(new_object_file stageable, file_path)
+          object_files.push(new_object_file(stageable, file_path))
         end
       end
       object_files
@@ -145,7 +141,7 @@ module PreAssembly
     # A convenience method to return all ObjectFiles for all digital objects.
     # Also used for stubbing during testing.
     def all_object_files
-      digital_objects.map { |dobj| dobj.object_files }.flatten
+      digital_objects.map(&:object_files).flatten
     end
 
     def new_object_file(stageable, file_path)
@@ -195,7 +191,7 @@ module PreAssembly
         log "#{total_obj - n} remaining in run | #{total_obj} running"
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
-        num_no_file_warnings += 1 if dobj.object_files.size == 0
+        num_no_file_warnings += 1 if dobj.object_files.empty?
 
         begin
           # Try to pre_assemble the digital object.
@@ -214,12 +210,12 @@ module PreAssembly
         total_time_remaining = (avg_time_per_object * (total_obj - next_n)).floor
       end
 
-      log "**WARNING**: #{num_no_file_warnings} objects had no files" if (num_no_file_warnings > 0)
+      log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
       log "#{total_obj} objects pre-assembled"
     end
 
     def objects_to_process
-      @o2p ||= digital_objects.reject { |dobj| skippables.has_key?(dobj.container) }
+      @o2p ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
     end
 
     def log_progress_info(dobj)

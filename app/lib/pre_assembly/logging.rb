@@ -5,17 +5,17 @@ module PreAssembly
       :error => Logger::ERROR,
       :warn  => Logger::WARN,
       :info  => Logger::INFO,
-      :debug => Logger::DEBUG,
-    }
+      :debug => Logger::DEBUG
+    }.freeze
 
-    LOG_FORMAT    = "%-6s -- %s -- %s\n"
-    TIME_FORMAT   = "%Y-%m-%d %H:%M:%S"
+    LOG_FORMAT    = "%-6s -- %s -- %s\n".freeze
+    TIME_FORMAT   = "%Y-%m-%d %H:%M:%S".freeze
 
     @@log       ||= Logger.new(File.join(Rails.root, 'log', "#{Rails.env}.log"))
     @@log.level   = LEVELS[:info]
 
     @@log.formatter = proc do |severity, datetime, _progname, msg|
-      LOG_FORMAT % [severity, datetime.strftime(TIME_FORMAT), msg]
+      format(LOG_FORMAT, severity, datetime.strftime(TIME_FORMAT), msg)
     end
 
     def log(msg, severity = :info)
