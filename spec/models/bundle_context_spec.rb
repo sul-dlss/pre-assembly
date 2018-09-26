@@ -140,7 +140,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe '#verify_output_dir (private method)' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
-    after { Dir.delete(bc.output_dir) if Dir.exists?(bc.output_dir) } # cleanup
+    after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
 
     context 'when bundle_context is new' do
       before { allow(bc).to receive(:persisted?).and_return(false) }
