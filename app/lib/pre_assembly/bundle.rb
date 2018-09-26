@@ -156,7 +156,7 @@ module PreAssembly
     # whether it matches the current file path.
     def exclude_from_content(file_path)
       return false unless content_exclusion
-      file_path =~ content_exclusion ? true : false
+      file_path&.match?(content_exclusion) ? true : false
     end
 
     # Takes a DigitalObject. For each of its ObjectFiles,
