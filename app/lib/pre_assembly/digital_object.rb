@@ -282,7 +282,7 @@ module PreAssembly
     end
 
     def retry_handler(method_name, logger, params = {})
-      Proc.new do |exception, attempt_number, total_delay|
+      Proc.new do |_exception, attempt_number, total_delay|
         log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor_services.num_attempts}; delayed #{total_delay} seconds")
       end
     end
