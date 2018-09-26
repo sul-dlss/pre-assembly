@@ -6,5 +6,4 @@ class JobMailer < ApplicationMailer
     @user = @job_run.bundle_context.user
     mail(to: @user.email, subject: 'Your pre-assembly job has completed')
   end
-
 end

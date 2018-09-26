@@ -126,9 +126,9 @@ RSpec.describe BundleContext, type: :model do
     it "expect the content of manifest rows" do
       expect(bc.manifest_rows).to eq(
         [
-          {"druid"=>"druid:jy812bp9403", "sourceid"=>"bar-1.0", "object"=>"jy812bp9403", "label"=>"Label 1", "description"=>"This is a description for label 1"},
-          {"druid"=>"druid:tz250tk7584", "sourceid"=>"bar-2.1", "object"=>"tz250tk7584", "label"=>"Label 2", "description"=>"This is a description for label 2"},
-          {"druid"=>"druid:gn330dv6119", "sourceid"=>"bar-3.1", "object"=>"gn330dv6119", "label"=>"Label 3", "description"=>"This is a description for label 3"}
+          { "druid" => "druid:jy812bp9403", "sourceid" => "bar-1.0", "object" => "jy812bp9403", "label" => "Label 1", "description" => "This is a description for label 1" },
+          { "druid" => "druid:tz250tk7584", "sourceid" => "bar-2.1", "object" => "tz250tk7584", "label" => "Label 2", "description" => "This is a description for label 2" },
+          { "druid" => "druid:gn330dv6119", "sourceid" => "bar-3.1", "object" => "gn330dv6119", "label" => "Label 3", "description" => "This is a description for label 3" }
         ]
       )
     end
