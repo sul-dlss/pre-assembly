@@ -14,7 +14,7 @@ RSpec.describe PreAssembly::Smpl do
     let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
     let(:dobj2) { setup_dobj('bb222bb2222', smpl_manifest) }
     let(:smpl_manifest) do
-      described_class.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => bundle_dir, :verbose => false)
+      described_class.new(:csv_filename => 'smpl_manifest.csv', :bundle_dir => bundle_dir)
     end
 
     it "generates technicalMetadata for SMPL by combining all existing _techmd.xml files" do
@@ -38,7 +38,7 @@ RSpec.describe PreAssembly::Smpl do
 
   describe '#create_content_metadata - with thumb declaration' do
     it "generates content metadata from a SMPL manifest with a thumb column set to yes" do
-      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata
@@ -48,7 +48,7 @@ RSpec.describe PreAssembly::Smpl do
     end
 
     it "generates content metadata from a SMPL manifest with a thumb column set to true" do
-      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb_true.csv', :bundle_dir => bundle_dir)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata
@@ -58,7 +58,7 @@ RSpec.describe PreAssembly::Smpl do
     end
 
     it "generates content metadata from a SMPL manifest with no thumbs when the thumb column is set to no" do
-      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => bundle_dir, :verbose => false)
+      smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_thumb_no.csv', :bundle_dir => bundle_dir)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
       dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
       dobj1.create_content_metadata
