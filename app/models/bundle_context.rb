@@ -11,7 +11,7 @@ class BundleContext < ApplicationRecord
   validate :verify_bundle_directory
   validate :verify_content_metadata_creation
 
-  after_initialize :normalize_bundle_dir
+  after_initialize :normalize_bundle_dir, :default_enums
 
   enum content_structure: {
     "simple_image" => 0,
@@ -99,6 +99,11 @@ class BundleContext < ApplicationRecord
   end
 
   private
+
+  def default_enums
+    self[:content_structure] ||= 0
+    self[:content_metadata_creation] ||= 0
+  end
 
   def normalize_dir(dir)
     dir.chomp('/') if dir

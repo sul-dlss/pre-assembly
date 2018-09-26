@@ -188,7 +188,7 @@ RSpec.describe PreAssembly::Bundle do
 
     it "returns a filtered list of digital objects" do
       flat_dir_images.skippables = {}
-      flat_dir_images.skippables[flat_dir_images.digital_objects[-1].unadjusted_container] = true
+      flat_dir_images.skippables[flat_dir_images.digital_objects.last.container] = true
       o2p = flat_dir_images.objects_to_process
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
@@ -199,7 +199,7 @@ RSpec.describe PreAssembly::Bundle do
     it "returns expected info about a digital object" do
       dobj = flat_dir_images.digital_objects[0]
       exp = {
-        :unadjusted_container => dobj.unadjusted_container,
+        :container => dobj.container,
         :pid                  => dobj.pid,
         :pre_assem_finished   => dobj.pre_assem_finished,
         :timestamp            => Time.now.strftime('%Y-%m-%d %H:%I:%S')

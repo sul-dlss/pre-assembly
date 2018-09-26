@@ -1,7 +1,16 @@
 RSpec.describe PreAssembly::Smpl do
   let(:bundle_dir) { Rails.root.join('spec/test_data/smpl_multimedia') }
+  let(:bc_params) do
+    {
+      :project_name  => 'ProjectBar',
+      # :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
+      :bundle_dir    => bundle_dir,
+      :content_metadata_creation => :smpl_cm_style
+    }
+  end
+  let(:bc) { build(:bundle_context, bc_params) }
 
-  describe 'SMPL content metadata generation and techMetadata generation - no thumb declaration' do
+  describe '#create_content_metadata - no thumb declaration' do
     let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
     let(:dobj2) { setup_dobj('bb222bb2222', smpl_manifest) }
     let(:smpl_manifest) do
@@ -25,9 +34,9 @@ RSpec.describe PreAssembly::Smpl do
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
       expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
-  end # end no thumb declaration
+  end
 
-  describe 'SMPL content metadata generation with thumb declaration' do
+  describe '#create_content_metadata - with thumb declaration' do
     it "generates content metadata from a SMPL manifest with a thumb column set to yes" do
       smpl_manifest = described_class.new(:csv_filename => 'smpl_manifest_with_thumb.csv', :bundle_dir => bundle_dir, :verbose => false)
       dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
@@ -57,26 +66,15 @@ RSpec.describe PreAssembly::Smpl do
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
       expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
-  end # end with thumb declaration
+  end
 
   # some helper methods for these tests
-
   def setup_dobj(druid, smpl_manifest)
-    ps = {
-      :source_id     => 'SourceIDFoo',
-      :project_name  => 'ProjectBar',
-      :label         => 'LabelQuux',
-      # :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
-      :project_style => {},
-      :bundle_dir    => bundle_dir,
-      :smpl_manifest => smpl_manifest,
-      :content_md_creation => :smpl_cm_style
-    }
-    dobj = PreAssembly::DigitalObject.new(ps)
-    allow(dobj).to receive(:pid).and_return("druid:#{druid}")
-    dobj.container = druid
-    dobj.content_md_creation = 'smpl_cm_style'
-    dobj
+    allow(bc.bundle).to receive(:smpl_manifest).and_return(smpl_manifest)
+    PreAssembly::DigitalObject.new(bc.bundle, container: druid).tap do |dobj|
+      allow(dobj).to receive(:pid).and_return("druid:#{druid}")
+      allow(dobj).to receive(:content_md_creation).and_return('smpl_cm_style')
+    end
   end
 
   def exp_xml_object_aa111aa1111

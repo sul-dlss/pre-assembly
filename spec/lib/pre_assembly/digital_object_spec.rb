@@ -1,24 +1,16 @@
 RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
-  let(:context_params) do
-    { :source_id  => 'SourceIDFoo' }
-  end
-  let(:ps) do
-    context_params.merge(
-      :bundle_dir => 'spec/test_data/images_jp2_tif',
-      :content_md_creation => 'default',
-      :progress_log_file => Tempfile.new('images_jp2_tif').path,
-      :project_name  => 'ProjectBar',
-      :project_style => {},
-      :staging_style => 'copy'
-    )
-  end
-  let(:dobj) { described_class.new(ps) }
+  let(:bc) { create(:bundle_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
+  let(:dobj) { described_class.new(bc.bundle) }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
-  before { dobj.object_files = [] }
+  before(:all) { FileUtils.rm_rf('log/test_jobs') }
+  before do
+    allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
+    dobj.object_files = []
+  end
 
   def add_object_files(extension = 'tif')
     (1..2).each do |i|
@@ -40,57 +32,43 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "file staging" do
-    it "is able to copy stageable items successfully" do
+  describe 'file staging' do
+    let(:files) { [1, 2, 3].map { |n| "image#{n}.tif" } }
+    let(:tmp_area) do
+      Dir.mktmpdir(*tmp_dir_args)
+    end
+    before do
       allow(dobj).to receive(:druid).and_return(druid)
+      allow(dobj).to receive(:bundle_dir).and_return(tmp_area)
+      allow(dobj).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
+      allow(dobj).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
+      dobj.stageable_items.each { |si| FileUtils.touch si }
+      FileUtils.mkdir dobj.assembly_staging_dir
+    end
+    after { FileUtils.remove_entry tmp_area }
 
-      Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-        # Add some stageable items to the digital object, and create those files.
-        files = [1, 2, 3].map { |n| "image#{n}.tif" }
-        dobj.bundle_dir = tmp_area
-        dobj.assembly_staging_dir = "#{tmp_area}/target"
-        dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
-        dobj.stageable_items.each { |si| FileUtils.touch si }
-        dobj.staging_style = 'copy'
-
-        # Stage the files via copy.
-        FileUtils.mkdir dobj.assembly_staging_dir
-        dobj.stage_files
-
-        # Check outcome: both source and copy should exist.
-        files.each_with_index do |f, i|
-          src = dobj.stageable_items[i]
-          cpy = File.join dobj.content_dir, f
-          expect(File.exist?(src)).to eq(true)
-          expect(File.exist?(cpy)).to eq(true)
-        end
+    it "is able to copy stageable items successfully" do
+      dobj.stage_files
+      # Check outcome: both source and copy should exist.
+      files.each_with_index do |f, i|
+        src = dobj.stageable_items[i]
+        cpy = File.join(dobj.content_dir, f)
+        expect(File.exist?(src)).to eq(true)
+        expect(File.exist?(cpy)).to eq(true)
+        expect(File.symlink?(cpy)).to eq(false)
       end
     end
 
     it "is able to symlink stageable items successfully" do
-      allow(dobj).to receive(:druid).and_return(druid)
-
-      Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-        # Add some stageable items to the digital object, and create those files.
-        files = [1, 2, 3].map { |n| "image#{n}.tif" }
-        dobj.bundle_dir = tmp_area
-        dobj.assembly_staging_dir = "#{tmp_area}/target"
-        dobj.stageable_items = files.map { |f| File.expand_path("#{tmp_area}/#{f}") }
-        dobj.stageable_items.each { |si| FileUtils.touch si }
-        dobj.staging_style = 'symlink'
-
-        # Stage the files via symlink.
-        FileUtils.mkdir dobj.assembly_staging_dir
-        dobj.stage_files
-
-        # Check outcome: both source and copy should exist.
-        files.each_with_index do |f, i|
-          src = dobj.stageable_items[i]
-          cpy = File.join dobj.content_dir, f
-          expect(File.exist?(src)).to eq(true)
-          expect(File.exist?(cpy)).to eq(true)
-          expect(File.symlink?(cpy)).to eq(true)
-        end
+      allow(bc).to receive(:staging_style_symlink).and_return(true)
+      dobj.stage_files
+      # Check outcome: both source and copy should exist.
+      files.each_with_index do |f, i|
+        src = dobj.stageable_items[i]
+        cpy = File.join(dobj.content_dir, f)
+        expect(File.exist?(src)).to eq(true)
+        expect(File.exist?(cpy)).to eq(true)
+        expect(File.symlink?(cpy)).to eq(true)
       end
     end
   end
@@ -130,7 +108,7 @@ RSpec.describe PreAssembly::DigitalObject do
     before do
       allow(dobj).to receive(:druid).and_return(druid)
       allow(dobj).to receive(:content_type_tag).and_return("")
-      dobj.project_style = 'simple_image'
+      allow(bc).to receive(:content_structure).and_return('simple_image')
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -161,7 +139,7 @@ RSpec.describe PreAssembly::DigitalObject do
     it "is able to write the content_metadata XML to a file" do
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         dobj.druid_tree_dir = tmp_area
-        file_name = File.join(tmp_area, "metadata", dobj.content_md_file)
+        file_name = File.join(tmp_area, 'metadata', dobj.send(:content_md_file))
         expect(File.exist?(file_name)).to eq(false)
         dobj.write_content_metadata
         expect(noko_doc(File.read file_name)).to be_equivalent_to exp_xml
@@ -172,9 +150,9 @@ RSpec.describe PreAssembly::DigitalObject do
   describe 'druid tree' do
     it 'has the correct folders (using the contemporary style)' do
       allow(dobj).to receive(:druid).and_return(druid)
-      expect(dobj.druid_tree_dir).to eq('gn/330/dv/6119/gn330dv6119')
-      expect(dobj.metadata_dir).to eq('gn/330/dv/6119/gn330dv6119/metadata')
-      expect(dobj.content_dir).to eq('gn/330/dv/6119/gn330dv6119/content')
+      expect(dobj.druid_tree_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119')
+      expect(dobj.metadata_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/metadata')
+      expect(dobj.content_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/content')
     end
   end
 
@@ -207,8 +185,8 @@ RSpec.describe PreAssembly::DigitalObject do
     before do
       allow(dobj).to receive(:druid).and_return(druid)
       allow(dobj).to receive(:content_type_tag).and_return("")
-      dobj.content_md_creation = 'filename'
-      dobj.project_style = 'simple_book'
+      allow(bc).to receive(:content_structure).and_return('simple_book')
+      allow(bc).to receive(:content_md_creation).and_return('filename')
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
@@ -253,8 +231,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.project_style[:content_structure] = 'simple_image' # this is the default
-      dobj.project_style[:content_tag_override] = true        # this allows override of content structure
+      allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
       add_object_files('tif')
       add_object_files('jp2')
@@ -318,8 +295,8 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     before do
+      allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
       allow(dobj).to receive(:druid).and_return(druid)
-      dobj.project_style[:content_structure] = 'simple_image' # this is the default
       allow(dobj).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
       add_object_files('tif')
       add_object_files('jp2')

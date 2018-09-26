@@ -1,12 +1,12 @@
 --- 
 :pre_assem_finished: true
-:unadjusted_container: aa
+:container: aa
 :pid: druid:cb837cp4412
---- 
+---
 :pre_assem_finished: true
-:unadjusted_container: bb
+:container: bb
 :pid: druid:cm057cr1745
---- 
+---
 :pre_assem_finished: false
-:unadjusted_container: cc
+:container: cc
 :pid: druid:cp898cs9946

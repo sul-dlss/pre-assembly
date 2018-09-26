@@ -4,47 +4,49 @@ module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
 
-    INIT_PARAMS = [
-      :assembly_staging_dir,
-      :bundle_dir,
-      :container,
-      :content_md_creation,
-      :object_files,
-      :project_name,
-      :project_style,
-      :smpl_manifest,
-      :stageable_items,
-      :staging_style,
-      :unadjusted_container
-    ]
+    attr_reader :bundle, :stageable_items
 
-    attr_accessor :content_md_file,
+    delegate :assembly_staging_dir,
+             :bundle_dir,
+             :content_md_creation,
+             :content_structure,
+             :project_name,
+             :smpl_manifest,
+             :staging_style_symlink,
+             to: :bundle
+
+    attr_accessor :container,
                   :content_md_xml,
-                  :content_structure,
+                  :dor_object,
                   :label,
                   :manifest_row,
+                  :object_files,
                   :pre_assem_finished,
                   :source_id,
-                  :technical_md_file,
                   :technical_md_xml
 
     attr_writer :dor_object, :druid_tree_dir
 
-    INIT_PARAMS.each { |p| attr_accessor p }
+    INIT_PARAMS = [:container, :stageable_items, :object_files]
 
-    # @param [Hash] params
-    def initialize(params = {})
+    # @param [PreAssembly::Bundle] bundle
+    # @param [Hash<Symbol => Object>] params
+    def initialize(bundle, params = {})
+      @bundle = bundle
       INIT_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
-      self.label             = 'Unknown' # used for registration when no label is provided in the manifest
-      self.content_md_file   = 'contentMetadata.xml'
-      self.technical_md_file = 'technicalMetadata.xml'
-      self.content_md_xml    = ''
-      self.technical_md_xml  = ''
-      self.content_structure = (project_style ? project_style : 'file')
+      bad_params = params.keys.reject { |k| INIT_PARAMS.include?(k) }
+      raise ArgumentError, "Unrecognized param #{bad_params.first}" unless bad_params.empty?
+      setup
+    end
+
+    def setup
+      self.label            = 'Unknown' # used for registration when no label is provided in the manifest
+      self.content_md_xml   = ''
+      self.technical_md_xml = ''
     end
 
     def stager(source, destination)
-      if staging_style
+      if staging_style_symlink
         FileUtils.ln_s source, destination, :force => true
       else
         FileUtils.cp_r source, destination
@@ -52,6 +54,7 @@ module PreAssembly
     end
 
     # set this object's content_md_creation_style
+    # @return [Symbol]
     def content_md_creation_style
       # map the content type tags set inside an object to content metadata creation styles supported by the assembly-objectfile gem
       # format is 'tag_value' => 'gem style name'
@@ -64,16 +67,12 @@ module PreAssembly
         'Manuscript (image-only)' => :book_as_image,
         'Map' => :map
       }
-      content_type_tag_mapping[content_type_tag] || default_content_md_creation_style
-    end
-
-    def default_content_md_creation_style
-      project_style.to_sym
+      content_type_tag_mapping[content_type_tag] || content_structure.to_sym
     end
 
     # compute the base druid tree folder for this object
     def druid_tree_dir
-      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, assembly_staging_dir).path()
+      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, assembly_staging_dir).path
     end
 
     def content_dir
@@ -193,8 +192,7 @@ module PreAssembly
     # write technical metadata out to a file only if it exists
     def write_technical_metadata
       return if technical_md_xml.blank?
-
-      file_name = File.join metadata_dir, @technical_md_file
+      file_name = File.join(metadata_dir, technical_md_file)
       log "    - write_technical_metadata_xml(#{file_name})"
       create_object_directories
       File.open(file_name, 'w') { |fh| fh.puts technical_md_xml }
@@ -271,6 +269,16 @@ module PreAssembly
 
     def assembly_workflow_url
       "#{Dor::Config.dor_services.url}/objects/#{druid.druid}/apo_workflows/assemblyWF"
+    end
+
+    private
+
+    def technical_md_file
+      'technicalMetadata.xml'
+    end
+
+    def content_md_file
+      'contentMetadata.xml'
     end
 
     def retry_handler(method_name, logger, params = {})
