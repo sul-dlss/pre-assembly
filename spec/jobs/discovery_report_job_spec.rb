@@ -7,6 +7,10 @@ RSpec.describe DiscoveryReportJob, type: :job do
   after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
 
   describe '#perform' do
+    let(:jbuilder) { instance_double(Jbuilder, target!: '{"x":1}') } # mock the expensive stuff
+
+    before { allow(job_run.to_discovery_report).to receive(:to_builder).and_return(jbuilder) }
+
     it 'requires param' do
       expect { job.perform }.to raise_error(ArgumentError)
       expect { job.perform(job_run) }.not_to raise_error
