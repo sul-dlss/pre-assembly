@@ -1,0 +1,28 @@
+<script type="text/x-tmpl" id="tmpl-job-history-table">
+      {% for (var i=0; i<o.length; i++) { %}
+      <tr>
+          <td><a href="/job_runs/{%= o[i].id %}">{%= o[i].id %}</a></td>
+          <td>{%= o[i].job_type %}</td>
+          <td>{%= o[i].created_at %}</td>
+      </tr>
+      {% } %}
+</script>
+
+<h4>Recent jobs</h4>
+<div class="container">
+  <dl class="row">
+    <%= link_to '[view full history]', job_runs_path %>
+  </dl>
+</div>
+<div class="container">
+  <table class="table">
+      <thead>
+        <tr>
+          <th>Job #</th>
+          <th>Job Type</th>
+          <th>Created at</th>
+        </th>
+      </thead>
+    <tbody id="job-history-table" />
+  </table>
+</div>
