@@ -135,17 +135,6 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe 'manifest_cols' do
-    it 'sets the column names' do
-      expect(bc.manifest_cols).to eq(
-        label: 'label',
-        source_id: 'sourceid',
-        object_container: 'object', # object referring to filename or foldername
-        druid: 'druid'
-      )
-    end
-  end
-
   describe '#verify_output_dir (private method)' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
 

@@ -87,16 +87,6 @@ class BundleContext < ApplicationRecord
     @manifest_rows ||= CsvImporter.parse_to_hash(path_in_bundle(manifest))
   end
 
-  # TODO: make this simpler / remove it (#329)
-  def manifest_cols
-    {
-      label: 'label', # only used by SMPL manifests
-      source_id: 'sourceid', # only used by SMPL manifests
-      object_container: 'object', # object referring to filename or foldername
-      druid: 'druid'
-    }
-  end
-
   private
 
   def default_enums
