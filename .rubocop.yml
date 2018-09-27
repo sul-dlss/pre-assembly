@@ -32,6 +32,11 @@ Metrics/LineLength:
 RSpec/ContextWording:
   Enabled: false # too dogmatic
 
+# Offense count: 2
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/views/**/*.rb' # In view tests, the view is named, not the class
+
 RSpec/ExampleLength:
   Max: 25
 
