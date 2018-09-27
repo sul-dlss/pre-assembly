@@ -3,7 +3,7 @@ RSpec.describe JobMailer, type: :mailer do
   let(:job_notification) { described_class.with(job_run: job_run).completion_email }
 
   it 'renders the headers' do
-    expect(job_notification.subject).to eq("Your Discovery report job completed")
+    expect(job_notification.subject).to eq("[Test_Project] Your Discovery report job completed")
     expect(job_notification.to).to eq([job_run.bundle_context.user.email])
     expect(job_notification.from).to eq(["no-reply-preassembly-job@stanford.edu"])
   end
@@ -12,7 +12,7 @@ RSpec.describe JobMailer, type: :mailer do
     before { job_run.job_type = 1 }
 
     it 'adapts depending on job_type' do
-      expect(job_notification.subject).to eq("Your Preassembly job completed")
+      expect(job_notification.subject).to eq("[Test_Project] Your Preassembly job completed")
     end
   end
 
