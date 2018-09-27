@@ -44,8 +44,8 @@ RSpec.describe BundleContextsController, type: :controller do
 
         it 'passes newly created object' do
           expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted
-          expect(response).to have_http_status(200)
-          expect(response).to render_template("create")
+          expect(response).to have_http_status(302) # HTTP code for found
+          expect(response).to redirect_to(job_runs_path(created: 1))
         end
         it 'has the correct attributes' do
           bc = assigns(:bundle_context)

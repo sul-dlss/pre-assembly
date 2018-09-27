@@ -31,7 +31,7 @@ RSpec.describe JobRunsController, type: :controller do
     it 'before job is complete, renders page with flash' do
       allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, output_location: nil))
       get :download, params: { id: 123 }
-      expect(flash[:notice]).to eq('Job is not complete.  Please check back later.')
+      expect(flash[:notice]).to eq('Job is not complete. Please check back later.')
     end
     it 'when job is complete, returns file attachment' do
       job_run_double = instance_double(JobRun, output_location: 'spec/test_data/input/mock_progress_log.yaml')

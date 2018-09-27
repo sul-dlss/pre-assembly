@@ -11,8 +11,10 @@
 
   <body>
     <%= render "shared/header" %>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
+    <div class="container mx-auto mt-5" style="width: 50em">
+      <p class="notice alert-info" role="alert"><%= notice %></p>
+      <p class="alert" role="alert"><%= alert %></p>
+    </div>
     <%= yield %>
   </body>
 </html>
