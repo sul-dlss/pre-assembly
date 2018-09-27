@@ -13,6 +13,20 @@ RSpec.describe JobRunsController, type: :controller do
     end
   end
 
+  describe 'GET #index' do
+    it 'returns http success for html view' do
+      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
+      get :index
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns http success for json view' do
+      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
+      get :index, format: 'JSON'
+      expect(response).to have_http_status(:success)
+    end
+  end
+
   describe 'GET #download' do
     it 'before job is complete, renders page with flash' do
       allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, output_location: nil))

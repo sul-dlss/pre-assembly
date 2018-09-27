@@ -1,10 +1,7 @@
 <div class="container">
-  <dl class="row">
-    <%= link_to '[start new job]', root_path %>
-  </dl>
+  <%= link_to '[start new job]', root_path %>
 </div>
 <div class="container">
-  <dl class="row">
   <h2>Job Run History</h2>
 
   <%= paginate @job_runs %>
@@ -28,9 +25,9 @@
         <td><%=job_run.output_location ? "complete" : "not complete"%></td>
         <td><%=job_run.created_at.to_formatted_s(:long)%></td>
       </tr>
-    </tbody>
     <% end %>
+   </tbody>
   </table>
 
 <%= paginate @job_runs %>
-</dl>
+</div>
