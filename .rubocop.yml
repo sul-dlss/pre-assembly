@@ -33,6 +33,9 @@ RSpec/ContextWording:
 RSpec/ExampleLength:
   Max: 25
 
+RSpec/ImplicitSubject: # we use this for `define_enum_for`, `validate_presence_of`, etc.
+  Enabled: false
+
 # we like 'expect(x).to receive' better than 'have_received'
 RSpec/MessageSpies:
   Enabled: false

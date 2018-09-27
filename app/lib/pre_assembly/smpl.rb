@@ -23,12 +23,12 @@ module PreAssembly
 
       # default publish/shelve/preserve attributes per "type" as defined in smpl filenames
       @file_attributes = {
-        'default'    => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
-        'pm'         => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
-        'sh'         => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
-        'sl'         => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' },
-        'images'     => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' },
-        'transcript' => { :publish => 'yes', :shelve => 'yes', :preserve => 'yes' }
+        'default'    => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'pm'         => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'sh'         => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'sl'         => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
+        'images'     => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
+        'transcript' => { publish: 'yes', shelve: 'yes', preserve: 'yes' }
       }
       @manifest = {}
       # read CSV
@@ -53,9 +53,9 @@ module PreAssembly
         shelve   = defined?(row[:shelve])   ? row[:shelve]   || nil : nil
         preserve = defined?(row[:preserve]) ? row[:preserve] || nil : nil
 
-        manifest[druid] = { :source_id => '', :files => [] } if manifest[druid].nil?
+        manifest[druid] = { source_id: '', files: [] } if manifest[druid].nil?
         manifest[druid][:source_id] = row[:source_id] if defined?(row[:source_id]) && row[:source_id]
-        manifest[druid][:files] << { :thumb => thumb, :publish => publish, :shelve => shelve, :preserve => preserve, :resource_type => resource_type, :role => role, :file_extention => file_extension, :filename => row[:filename], :label => row[:label], :sequence => row[:sequence] }
+        manifest[druid][:files] << { thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type, role: role, file_extention: file_extension, filename: row[:filename], label: row[:label], sequence: row[:sequence] }
       end # loop over all rows
     end # load_manifest
 
@@ -74,7 +74,7 @@ module PreAssembly
         label = file[:label] || ''
         resource_type = file[:resource_type] || 'media'
         if !seq.nil? && seq != '' && seq != current_seq # this is a new resource if we have a non-blank different sequence number
-          resources[seq.to_i] = { :label => label, :sequence => seq, :resource_type => resource_type, :files => [] }
+          resources[seq.to_i] = { label: label, sequence: seq, resource_type: resource_type, files: [] }
           current_seq = seq
         end
         resources[current_seq.to_i][:files] << file
@@ -84,29 +84,29 @@ module PreAssembly
       # generate the base of the XML file for this new druid
       # generate content metadata
       builder = Nokogiri::XML::Builder.new do |xml|
-        xml.contentMetadata(:objectId => druid, :type => 'media') do
+        xml.contentMetadata(objectId: druid, type: 'media') do
           resources.keys.sort.each do |seq|
             resource = resources[seq]
-            resource_attributes = { :sequence => seq.to_s, :id => "#{druid}_#{seq}", :type => resource[:resource_type] }
+            resource_attributes = { sequence: seq.to_s, id: "#{druid}_#{seq}", type: resource[:resource_type] }
             resource_attributes[:thumb] = 'yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
             xml.resource(resource_attributes) do
               xml.label resource[:label]
 
               resource[:files].each do |file|
-                filename = file[:filename] || ""
+                filename = file[:filename] || ''
                 attrs    = file_attributes[file[:role].downcase] || file_attributes['default']
-                publish  = file[:publish]  || attrs[:publish]  || "true"
-                preserve = file[:preserve] || attrs[:preserve] || "true"
-                shelve   = file[:shelve]   || attrs[:shelve]   || "true"
+                publish  = file[:publish]  || attrs[:publish]  || 'true'
+                preserve = file[:preserve] || attrs[:preserve] || 'true'
+                shelve   = file[:shelve]   || attrs[:shelve]   || 'true'
 
                 # look for a checksum file named the same as this file
                 checksum = nil
                 FileUtils.cd(File.join(bundle_dir, druid))
-                md_files = Dir.glob("**/" + filename + ".md5")
+                md_files = Dir.glob('**/' + filename + '.md5')
                 checksum = get_checksum(File.join(bundle_dir, druid, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
 
-                xml.file(:id => filename, :preserve => preserve, :publish => publish, :shelve => shelve) do
-                  xml.checksum(checksum, :type => 'md5') if checksum && checksum != ''
+                xml.file(id: filename, preserve: preserve, publish: publish, shelve: shelve) do
+                  xml.checksum(checksum, type: 'md5') if checksum && checksum != ''
                 end
               end
             end # end resource
@@ -120,7 +120,7 @@ module PreAssembly
     def get_checksum(md5_file)
       s = IO.read(md5_file)
       checksums = s.scan(/[0-9a-fA-F]{32}/)
-      checksums.first ? checksums.first.strip : ""
+      checksums.first ? checksums.first.strip : ''
     end
 
     def get_role(filename)

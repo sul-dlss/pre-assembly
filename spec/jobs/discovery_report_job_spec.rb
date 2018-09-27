@@ -4,6 +4,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
   let(:outfile) { 'tmp/foo.out' }
 
   before { allow(job_run.to_discovery_report).to receive(:output_path).and_return(outfile) }
+
   after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
 
   describe '#perform' do

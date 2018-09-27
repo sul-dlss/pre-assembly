@@ -68,46 +68,11 @@ RSpec/DescribeClass:
     - 'spec/views/bundle_context_spec.rb'
     - 'spec/views/job_runs/index.json.jbuilder_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: SkipBlocks, EnforcedStyle.
-# SupportedStyles: described_class, explicit
-RSpec/DescribedClass:
-  Exclude:
-    - 'spec/lib/pre_assembly/bundle_spec.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterFinalLet:
-  Exclude:
-    - 'spec/controllers/bundle_contexts_controller_spec.rb'
-    - 'spec/lib/pre_assembly/bundle_spec.rb'
-    - 'spec/models/bundle_context_spec.rb'
-    - 'spec/models/job_run_spec.rb'
-    - 'spec/services/discovery_report_spec.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-RSpec/EmptyLineAfterHook:
-  Exclude:
-    - 'spec/jobs/discovery_report_job_spec.rb'
-    - 'spec/jobs/preassembly_job_spec.rb'
-    - 'spec/lib/pre_assembly/bundle_spec.rb'
-    - 'spec/models/bundle_context_spec.rb'
-    - 'spec/models/job_run_spec.rb'
-
 # Offense count: 2
 # Configuration parameters: Max.
 RSpec/ExampleLength:
   Exclude:
     - 'spec/lib/pre_assembly/bundle_spec.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: CustomTransform, IgnoredWords.
-RSpec/ExampleWording:
-  Exclude:
-    - 'spec/controllers/bundle_contexts_controller_spec.rb'
 
 # Offense count: 3
 # Cop supports --auto-correct.
@@ -123,13 +88,6 @@ RSpec/ImplicitSubject:
 RSpec/InstanceVariable:
   Exclude:
     - 'spec/lib/pre_assembly/object_file_spec.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-RSpec/LeadingSubject:
-  Exclude:
-    - 'spec/models/bundle_context_spec.rb'
-    - 'spec/services/discovery_report_spec.rb'
 
 # Offense count: 1
 RSpec/LetSetup:
@@ -160,14 +118,6 @@ RSpec/VerifiedDoubles:
     - 'spec/models/job_run_spec.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'app/lib/pre_assembly/object_file.rb'
-
-# Offense count: 1
 Style/ClassVars:
   Exclude:
     - 'app/lib/pre_assembly/logging.rb'
@@ -180,27 +130,4 @@ Style/CommentedKeyword:
 
 # Offense count: 19
 Style/Documentation:
-  Enabled: false
-
-# Offense count: 140
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-Style/HashSyntax:
-  Exclude:
-    - 'app/lib/csv_importer.rb'
-    - 'app/lib/pre_assembly/bundle.rb'
-    - 'app/lib/pre_assembly/digital_object.rb'
-    - 'app/lib/pre_assembly/logging.rb'
-    - 'app/lib/pre_assembly/smpl.rb'
-    - 'spec/lib/pre_assembly/bundle_spec.rb'
-    - 'spec/lib/pre_assembly/digital_object_spec.rb'
-    - 'spec/lib/pre_assembly/object_file_spec.rb'
-    - 'spec/lib/pre_assembly/smpl_spec.rb'
-
-# Offense count: 210
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
   Enabled: false

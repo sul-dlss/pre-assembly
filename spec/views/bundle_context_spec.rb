@@ -1,5 +1,5 @@
 RSpec.describe 'bundle_contexts/new' do
-  context "Displays the Bundle Context Form" do
+  context 'Displays the Bundle Context Form' do
     it 'displays the form correctly' do
       assign(:bundle_context, BundleContext.new)
       # Should render the test page
@@ -8,7 +8,7 @@ RSpec.describe 'bundle_contexts/new' do
     end
   end
 
-  context "Displays errors in Bundle Context Form"
+  context 'Displays errors in Bundle Context Form'
   it 'displays error message when missing project name' do
     bc = build(:bundle_context, project_name: nil).tap(&:valid?)
     assign(:bundle_context, bc)

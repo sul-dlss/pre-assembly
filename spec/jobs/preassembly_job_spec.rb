@@ -4,6 +4,7 @@ RSpec.describe PreassemblyJob, type: :job do
   let(:outfile) { 'tmp/foobar_progress.yaml' }
 
   before { allow(job_run.bundle_context).to receive(:progress_log_file).and_return(outfile) }
+
   after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
 
   describe '#perform' do

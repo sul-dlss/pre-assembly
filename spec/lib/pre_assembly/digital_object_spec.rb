@@ -7,6 +7,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
   before(:all) { FileUtils.rm_rf('log/test_jobs') }
+
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
     dobj.object_files = []
@@ -16,10 +17,10 @@ RSpec.describe PreAssembly::DigitalObject do
     (1..2).each do |i|
       f = "image#{i}.#{extension}"
       dobj.object_files.push PreAssembly::ObjectFile.new(
-        :path                 => "#{dobj.bundle_dir}/#{dru}/#{f}",
-        :relative_path        => f,
-        :exclude_from_content => false,
-        :checksum             => i.to_s * 4
+        path: "#{dobj.bundle_dir}/#{dru}/#{f}",
+        relative_path: f,
+        exclude_from_content: false,
+        checksum: i.to_s * 4
       )
     end
   end
@@ -37,6 +38,7 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:tmp_area) do
       Dir.mktmpdir(*tmp_dir_args)
     end
+
     before do
       allow(dobj).to receive(:druid).and_return(druid)
       allow(dobj).to receive(:bundle_dir).and_return(tmp_area)
@@ -45,9 +47,10 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.stageable_items.each { |si| FileUtils.touch si }
       FileUtils.mkdir dobj.assembly_staging_dir
     end
+
     after { FileUtils.remove_entry tmp_area }
 
-    it "is able to copy stageable items successfully" do
+    it 'is able to copy stageable items successfully' do
       dobj.stage_files
       # Check outcome: both source and copy should exist.
       files.each_with_index do |f, i|
@@ -59,7 +62,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    it "is able to symlink stageable items successfully" do
+    it 'is able to symlink stageable items successfully' do
       allow(bc).to receive(:staging_style_symlink).and_return(true)
       dobj.stage_files
       # Check outcome: both source and copy should exist.
@@ -73,7 +76,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "default content metadata" do
+  describe 'default content metadata' do
     let(:exp_xml) do
       noko_doc <<-END
         <contentMetadata type="image" objectId="gn330dv6119">
@@ -107,20 +110,20 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      allow(dobj).to receive(:content_type_tag).and_return("")
+      allow(dobj).to receive(:content_type_tag).and_return('')
       allow(bc).to receive(:content_structure).and_return('simple_image')
       add_object_files('tif')
       add_object_files('jp2')
       dobj.create_content_metadata
     end
 
-    it "content_object_files() should filter @object_files correctly" do
+    it 'content_object_files() should filter @object_files correctly' do
       # Generate some object_files.
       files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
+        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(n)
@@ -132,11 +135,11 @@ RSpec.describe PreAssembly::DigitalObject do
       expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
     end
 
-    it "generates the expected xml text" do
+    it 'generates the expected xml text' do
       expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to exp_xml
     end
 
-    it "is able to write the content_metadata XML to a file" do
+    it 'is able to write the content_metadata XML to a file' do
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
         dobj.druid_tree_dir = tmp_area
         file_name = File.join(tmp_area, 'metadata', dobj.send(:content_md_file))
@@ -156,7 +159,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe "bundled by filename, simple book content metadata without file attributes" do
+  describe 'bundled by filename, simple book content metadata without file attributes' do
     let(:exp_xml) do
       noko_doc <<-END
       <contentMetadata type="book" objectId="gn330dv6119">
@@ -184,7 +187,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(dobj).to receive(:druid).and_return(druid)
-      allow(dobj).to receive(:content_type_tag).and_return("")
+      allow(dobj).to receive(:content_type_tag).and_return('')
       allow(bc).to receive(:content_structure).and_return('simple_book')
       allow(bc).to receive(:content_md_creation).and_return('filename')
       add_object_files('tif')
@@ -192,12 +195,12 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.create_content_metadata
     end
 
-    it "generates the expected xml text" do
+    it 'generates the expected xml text' do
       expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to(exp_xml)
     end
   end
 
-  describe "content metadata generated from object tag in DOR if present and overriding is allowed" do
+  describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
     let(:exp_xml) do
       noko_doc <<-END
         <contentMetadata type="file" objectId="gn330dv6119">
@@ -238,13 +241,13 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.create_content_metadata
     end
 
-    it "content_object_files() should filter @object_files correctly" do
+    it 'content_object_files() should filter @object_files correctly' do
       # Generate some object_files.
       files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
+        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(n)
@@ -256,13 +259,13 @@ RSpec.describe PreAssembly::DigitalObject do
       expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
     end
 
-    it "generates the expected xml text" do
+    it 'generates the expected xml text' do
       expect(dobj.content_md_creation_style).to eq(:file)
       expect(noko_doc(dobj.content_md_xml)).to be_equivalent_to(exp_xml)
     end
   end
 
-  describe "content metadata generated from object tag in DOR if present but overriding is not allowed" do
+  describe 'content metadata generated from object tag in DOR if present but overriding is not allowed' do
     let(:exp_xml) do
       noko_doc <<-END
         <contentMetadata type="image" objectId="gn330dv6119">
@@ -303,11 +306,11 @@ RSpec.describe PreAssembly::DigitalObject do
       dobj.create_content_metadata
     end
 
-    it "content_object_files() should filter @object_files correctly" do
+    it 'content_object_files() should filter @object_files correctly' do
       # Generate some object_files.
       files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(:exclude_from_content => false, :relative_path => f)
+        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(files.size)

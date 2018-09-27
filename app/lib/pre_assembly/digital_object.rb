@@ -25,7 +25,7 @@ module PreAssembly
 
     attr_writer :dor_object, :druid_tree_dir
 
-    INIT_PARAMS = [:container, :stageable_items, :object_files]
+    INIT_PARAMS = [:container, :stageable_items, :object_files].freeze
 
     # @param [PreAssembly::Bundle] bundle
     # @param [Hash<Symbol => Object>] params
@@ -45,7 +45,7 @@ module PreAssembly
 
     def stager(source, destination)
       if staging_style_symlink
-        FileUtils.ln_s source, destination, :force => true
+        FileUtils.ln_s source, destination, force: true
       else
         FileUtils.cp_r source, destination
       end
@@ -112,7 +112,7 @@ module PreAssembly
     end
 
     def query_dor_by_barcode(barcode)
-      Dor::SearchService.query_by_id :barcode => barcode
+      Dor::SearchService.query_by_id barcode: barcode
     end
 
     def get_dor_item_apos(_pid)
@@ -126,7 +126,7 @@ module PreAssembly
     end
 
     def content_type_tag
-      dor_object.nil? ? "" : dor_object.content_type_tag
+      dor_object.nil? ? '' : dor_object.content_type_tag
     end
 
     def container_basename
@@ -171,15 +171,15 @@ module PreAssembly
       return unless content_md_creation == 'smpl_cm_style'
 
       tm = Nokogiri::XML::Document.new
-      tm_node = Nokogiri::XML::Node.new("technicalMetadata", tm)
+      tm_node = Nokogiri::XML::Node.new('technicalMetadata', tm)
       tm_node['objectId'] = pid
-      tm_node['datetime'] = Time.now.utc.strftime("%Y-%m-%d-T%H:%M:%SZ")
+      tm_node['datetime'] = Time.now.utc.strftime('%Y-%m-%d-T%H:%M:%SZ')
       tm << tm_node
 
       # find all technical metadata files and just append the xml to the combined technicalMetadata
       current_directory = Dir.pwd
       FileUtils.cd(File.join(bundle_dir, container_basename))
-      Dir.glob("**/*_techmd.xml").sort.each do |filename|
+      Dir.glob('**/*_techmd.xml').sort.each do |filename|
         tech_md_xml = Nokogiri::XML(File.open(File.join(bundle_dir, container_basename, filename)))
         tm.root << tech_md_xml.root
       end
@@ -205,11 +205,11 @@ module PreAssembly
     # Invoke the contentMetadata creation method used by the project
     # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
     def create_content_metadata
-      if content_md_creation == "smpl_cm_style"
+      if content_md_creation == 'smpl_cm_style'
         self.content_md_xml = smpl_manifest.generate_cm(druid.id)
       else
         # otherwise use the content metadata generation gem
-        params = { :druid => druid.id, :objects => content_object_files, :add_exif => false, :bundle => content_md_creation.to_sym, :style => content_md_creation_style }
+        params = { druid: druid.id, objects: content_object_files, add_exif: false, bundle: content_md_creation.to_sym, style: content_md_creation_style }
         self.content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
       end
     end
@@ -279,7 +279,7 @@ module PreAssembly
       'contentMetadata.xml'
     end
 
-    def retry_handler(method_name, logger, params = {})
+    def retry_handler(method_name, _logger, params = {})
       proc do |_exception, attempt_number, total_delay|
         log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor_services.num_attempts}; delayed #{total_delay} seconds")
       end

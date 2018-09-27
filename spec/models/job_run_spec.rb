@@ -21,7 +21,9 @@ RSpec.describe JobRun, type: :model do
   describe 'send_notification' do
     let(:mock_mailer) { double JobMailer }
     let(:mock_delivery) { double ActionMailer::MessageDelivery }
+
     before { job_run.save }
+
     it 'does not send an email if output_location is unchanged' do
       expect(job_run).not_to receive(:send_notification)
       job_run.save
