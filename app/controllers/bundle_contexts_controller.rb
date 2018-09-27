@@ -10,7 +10,7 @@ class BundleContextsController < ApplicationController
   def create
     @bundle_context = BundleContext.new(bundle_contexts_params)
     if @bundle_context.save
-      render :create
+      redirect_to controller: 'job_runs', created: 1
     else
       render :new
     end
