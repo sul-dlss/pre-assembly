@@ -82,13 +82,6 @@ class DiscoveryReport
     { dor_connection_error: true }
   end
 
-  # For use by template
-  def skipped_files
-    files = ['Thumbs.db', '.DS_Store', manifest] # if these files are in the bundle directory but not in the manifest, they will be ignorned and not reported as missing
-    files << File.basename(content_md_creation[:smpl_manifest]) if using_smpl_manifest?
-    files
-  end
-
   # @return [Boolean]
   def using_smpl_manifest?
     content_md_creation == "smpl_cm_style" && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
