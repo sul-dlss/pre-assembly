@@ -15,7 +15,6 @@ module PreAssembly
 
     attr_accessor :container,
                   :content_md_xml,
-                  :dor_object,
                   :label,
                   :manifest_row,
                   :object_files,
