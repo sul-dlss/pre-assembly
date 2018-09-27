@@ -1,2 +1,2 @@
-Your <%=@job_run.job_type%> job #<%=@job_run.id%> completed.  View the job details here: "=url_for(@job_run) will go here".
-<%# TODO: update URL_FOR above when https://github.com/sul-dlss/pre-assembly/issues/295 completed %>
+Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> completed.
+You can view the job details and log file at: <%= job_run_url(@job_run); %>
