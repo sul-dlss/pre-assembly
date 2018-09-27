@@ -5,7 +5,7 @@ class BundleContext < ApplicationRecord
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
-    message: "only allows A-Z, a-z, 0-9, hyphen and underscore" }
+                                                     message: "only allows A-Z, a-z, 0-9, hyphen and underscore" }
   validates :staging_style_symlink, inclusion: { in: [true, false] }
 
   validate :verify_bundle_directory
@@ -28,7 +28,6 @@ class BundleContext < ApplicationRecord
   }
 
   accepts_nested_attributes_for :job_runs
-
 
   # return [PreAssembly::Bundle]
   def bundle
@@ -106,7 +105,7 @@ class BundleContext < ApplicationRecord
   end
 
   def normalize_dir(dir)
-    dir.chomp('/') if dir
+    dir&.chomp('/')
   end
 
   def normalize_bundle_dir

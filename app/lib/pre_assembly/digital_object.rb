@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
@@ -233,12 +231,12 @@ module PreAssembly
 
     # Object files that should be included in content metadata.
     def content_object_files
-      object_files.reject { |ofile| ofile.exclude_from_content }.sort
+      object_files.reject(&:exclude_from_content).sort
     end
 
     # Checks filesystem for expected files
     def object_files_exist?
-      return false if object_files.size == 0
+      return false if object_files.empty?
       object_files.map(&:path).all? { |path| File.readable?(path) }
     end
 
@@ -261,8 +259,8 @@ module PreAssembly
       # TODO: use dor-workflow-service gem for this (see #194)
       with_retries(max_tries: Dor::Config.dor_services.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
         RestClient.post(assembly_workflow_url, {}).tap do |result|
-          next if result && (200..204).include?(result.code)
-          raise RuntimeError, "POST #{assembly_workflow_url} returned #{result.code}"
+          next if result && (200..204).cover?(result.code)
+          raise "POST #{assembly_workflow_url} returned #{result.code}"
         end
       end
     end
@@ -282,7 +280,7 @@ module PreAssembly
     end
 
     def retry_handler(method_name, logger, params = {})
-      Proc.new do |exception, attempt_number, total_delay|
+      proc do |_exception, attempt_number, total_delay|
         log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor_services.num_attempts}; delayed #{total_delay} seconds")
       end
     end

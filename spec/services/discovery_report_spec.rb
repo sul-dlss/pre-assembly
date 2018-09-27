@@ -69,7 +69,7 @@ RSpec.describe DiscoveryReport do
     end
 
     context "folders are not empty" do
-      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: "random/path", filesize: 324, mimetype: "")}
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: "random/path", filesize: 324, mimetype: "") }
 
       before do
         allow(dobj).to receive(:object_files).and_return([obj_file, obj_file])
@@ -108,7 +108,7 @@ RSpec.describe DiscoveryReport do
         druid: "druid:kk203bw3276",
         errors: { dupes: true },
         counts: {
-          total_size: 254802,
+          total_size: 254_802,
           mimetypes: { 'image/tiff' => 4, 'image/jp2' => 2 },
           filename_no_extension: 0
         }

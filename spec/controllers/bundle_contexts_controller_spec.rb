@@ -19,9 +19,8 @@ RSpec.describe BundleContextsController, type: :controller do
     end
   end
 
-
   context 'users persisted in db' do
-    before { sign_in(create :user) }
+    before { sign_in(create(:user)) }
 
     it "should have current_user" do
       expect(subject.current_user).not_to be_nil
@@ -62,27 +61,31 @@ RSpec.describe BundleContextsController, type: :controller do
 
         it "fails if job_type is nil" do
           Dir.delete(output_dir) if Dir.exist?(output_dir)
-          params[:bundle_context].merge!(job_runs_attributes: {"0" => { job_type: "" }})
+          params[:bundle_context][:job_runs_attributes] = { "0" => { job_type: "" } }
           expect { post :create, params: params }.not_to change(JobRun, :count)
         end
       end
 
       context "Invalid Parameters" do
         it 'do not create objects' do
-          params[:bundle_context].merge!(project_name: nil)
+          params[:bundle_context][:project_name] = nil
           expect { post :create, params: params }.not_to change(BundleContext, :count)
-          expect { post :create, params: { bundle_context: {
-            project_name: '',
-            content_structure: '',
-            content_metadata_creation: '',
-            bundle_dir: ''
-          }}}.not_to change(BundleContext, :count)
-          expect { post :create, params: { bundle_context: {
-            project_name: "SMPL's folly",
-            content_structure: '',
-            content_metadata_creation: '',
-            bundle_dir: ''
-          }}}.not_to change(BundleContext, :count)
+          expect do
+            post :create, params: { bundle_context: {
+              project_name: '',
+              content_structure: '',
+              content_metadata_creation: '',
+              bundle_dir: ''
+            } }
+          end .not_to change(BundleContext, :count)
+          expect do
+            post :create, params: { bundle_context: {
+              project_name: "SMPL's folly",
+              content_structure: '',
+              content_metadata_creation: '',
+              bundle_dir: ''
+            } }
+          end .not_to change(BundleContext, :count)
         end
       end
     end
