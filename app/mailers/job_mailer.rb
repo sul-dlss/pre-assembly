@@ -4,7 +4,6 @@ class JobMailer < ApplicationMailer
   def completion_email
     @job_run = params[:job_run]
     @user = @job_run.bundle_context.user
-    mail(to: @user.email, subject: 'Your pre-assembly job has completed')
+    mail(to: @user.email, subject: @job_run.mail_subject)
   end
-
 end

@@ -16,6 +16,11 @@ class JobRun < ApplicationRecord
     "#{job_type.camelize}Job".constantize.perform_later(self)
   end
 
+  # @return [String] Subject line for notification email
+  def mail_subject
+    "[#{bundle_context.project_name}] Your #{job_type.humanize} job completed"
+  end
+
   def send_notification
     return unless output_location
     JobMailer.with(job_run: self).completion_email.deliver_later
