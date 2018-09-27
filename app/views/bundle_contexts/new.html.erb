@@ -1,3 +1,16 @@
+<script>
+  $(document).ready(function() {
+    jQuery.ajax({
+      type: "GET",
+      dataType: "json",
+      url: "<%=job_runs_path(format: :json)%>",
+      success: function(data) {
+        document.getElementById("job-history-table").innerHTML = tmpl("tmpl-job-history-table", data);
+      }
+    });
+  });
+
+</script>
 <div class="container mt-3">
   <div class="row">
     <section class="col-7">
@@ -5,21 +18,8 @@
     </section>
     <section class="col-5">
       <ul class="nav nav-pills nav-fill">
-        <li class="nav-item">
-          <a id="project-queue-tab"
-             data-toggle="tab"
-             class="nav-link active" href="#project-queue">
-             Queue of projects
-           </a>
-        </li>
-        <%= render "history/tab_list_item" %>
+        <%= render "job_runs/recent_history" %>
       </ul>
-      <div class="tab-content" id="jobs-queue-history-content">
-        <div class="tab-pane fade" id="project-queue" role="tabpanel"
-           aria-labelledby="project-queue-tab">
-         </div>
-      </div>
-        <%= render "history/tab_pane" %>
     </section>
   </div>
 </div>

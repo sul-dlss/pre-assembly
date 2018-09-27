@@ -1,4 +1,6 @@
-<%= link_to '[all jobs]',job_runs_path %>
+<div class="container">
+  <%= link_to '[all jobs]',job_runs_path %>
+</div>
 
 <div class="container">
   <h2><%= @job_run.job_type.humanize %> #<%= @job_run.id %></h2>
