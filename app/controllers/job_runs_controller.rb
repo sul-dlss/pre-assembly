@@ -13,7 +13,7 @@ class JobRunsController < ApplicationController
     if @job_run.output_location
       send_file @job_run.output_location
     else
-      flash[:notice] = 'Job is not complete.  Please check back later.'
+      flash[:notice] = 'Job is not complete. Please check back later.'
       render 'show'
     end
   end
