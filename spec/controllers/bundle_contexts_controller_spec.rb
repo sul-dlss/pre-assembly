@@ -23,7 +23,7 @@ RSpec.describe BundleContextsController, type: :controller do
     before { sign_in(create(:user)) }
 
     it 'has current_user' do
-      expect(subject.current_user).not_to be_nil
+      expect(controller.current_user).not_to be_nil
     end
 
     context 'GET new' do

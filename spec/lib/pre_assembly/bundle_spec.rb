@@ -8,7 +8,9 @@ RSpec.describe PreAssembly::Bundle do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
 
     before do
-      allow(RestClient).to receive(:post).with(a_string_matching(exp_workflow_svc_url), {}).and_return(instance_double(RestClient::Response, code: 200))
+      allow(RestClient).to receive(:post)
+        .with(a_string_matching(exp_workflow_svc_url), {})
+        .and_return(instance_double(RestClient::Response, code: 200))
       allow(Dor::Item).to receive(:find).with(any_args)
     end
 
@@ -19,9 +21,7 @@ RSpec.describe PreAssembly::Bundle do
       bc.save
       b = described_class.new bc
       pids = []
-      expect do
-        pids = b.run_pre_assembly
-      end.not_to raise_error
+      expect { pids = b.run_pre_assembly }.not_to raise_error
       expect(pids).to eq ['druid:jy812bp9403', 'druid:tz250tk7584', 'druid:gn330dv6119']
     end
   end
@@ -44,7 +44,7 @@ RSpec.describe PreAssembly::Bundle do
   describe '#processed_pids' do
     it 'pulls pids from digital_objects' do
       exp_pids = [11, 22, 33]
-      flat_dir_images.digital_objects = exp_pids.map { |p| double('dobj', pid: p) }
+      flat_dir_images.digital_objects = exp_pids.map { |p| instance_double(PreAssembly::DigitalObject, pid: p) }
       expect(flat_dir_images.processed_pids).to eq(exp_pids)
     end
   end
@@ -112,7 +112,7 @@ RSpec.describe PreAssembly::Bundle do
   describe 'object discovery: other' do
     it 'is able to exercise all_object_files()' do
       fake_files = [[1, 2], [3, 4], [5, 6]]
-      fake_dobjs = fake_files.map { |fs| double('dobj', object_files: fs) }
+      fake_dobjs = fake_files.map { |fs| instance_double(PreAssembly::DigitalObject, object_files: fs) }
       flat_dir_images.digital_objects = fake_dobjs
       expect(flat_dir_images.all_object_files).to eq(fake_files.flatten)
     end

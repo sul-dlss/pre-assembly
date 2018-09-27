@@ -19,8 +19,8 @@ RSpec.describe JobRun, type: :model do
   end
 
   describe 'send_notification' do
-    let(:mock_mailer) { double JobMailer }
-    let(:mock_delivery) { double ActionMailer::MessageDelivery }
+    let(:mock_mailer) { instance_double JobMailer }
+    let(:mock_delivery) { instance_double ActionMailer::MessageDelivery }
 
     before { job_run.save }
 

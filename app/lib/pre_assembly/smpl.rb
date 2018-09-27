@@ -110,10 +110,10 @@ module PreAssembly
                   xml.checksum(checksum, type: 'md5') if checksum && checksum != ''
                 end
               end
-            end # end resource
-          end # end loop over resources
-        end # end CM tag
-      end # end XML tag
+            end
+          end
+        end
+      end
       FileUtils.cd(current_directory)
       builder.to_xml
     end

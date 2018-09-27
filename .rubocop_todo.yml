@@ -77,26 +77,9 @@ RSpec/ExampleLength:
     - 'spec/lib/pre_assembly/bundle_spec.rb'
 
 # Offense count: 1
-# Configuration parameters: AssignmentOnly.
-RSpec/InstanceVariable:
-  Exclude:
-    - 'spec/lib/pre_assembly/object_file_spec.rb'
-
-# Offense count: 2
-RSpec/LetSetup:
-  Exclude:
-    - 'spec/views/bundle_contexts/new.html.erb_spec.rb'
-    - 'spec/views/job_runs/index.json.jbuilder_spec.rb'
-
-# Offense count: 1
 # Configuration parameters: AggregateFailuresByDefault.
 RSpec/MultipleExpectations:
   Max: 7
-
-# Offense count: 1
-RSpec/NamedSubject:
-  Exclude:
-    - 'spec/controllers/bundle_contexts_controller_spec.rb'
 
 # Offense count: 10
 RSpec/SubjectStub:
@@ -104,22 +87,10 @@ RSpec/SubjectStub:
     - 'spec/models/bundle_context_spec.rb'
     - 'spec/services/discovery_report_spec.rb'
 
-# Offense count: 4
-# Configuration parameters: IgnoreSymbolicNames.
-RSpec/VerifiedDoubles:
-  Exclude:
-    - 'spec/lib/pre_assembly/bundle_spec.rb'
-    - 'spec/models/job_run_spec.rb'
-
 # Offense count: 1
 Style/ClassVars:
   Exclude:
     - 'app/lib/pre_assembly/logging.rb'
-
-# Offense count: 6
-Style/CommentedKeyword:
-  Exclude:
-    - 'app/lib/pre_assembly/smpl.rb'
 
 # Offense count: 19
 Style/Documentation:
