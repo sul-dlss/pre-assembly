@@ -10,9 +10,7 @@ RSpec.describe CsvImporter do
       headers = %w[format sourceid object label year inst_notes prod_notes has_more_metadata description]
       expect(manifest).to all(be_an(ActiveSupport::HashWithIndifferentAccess)) # accessible w/ string and symbols
       expect(manifest).to all(include(*headers))
-      expect(manifest[0][:description]).to be_nil
-      expect(manifest[1][:description]).to eq('')
-      expect(manifest[2][:description]).to eq('yo, this is a description')
+      expect(manifest.pluck(:description)).to eq([nil, '', 'yo, this is a description'])
     end
   end
 end

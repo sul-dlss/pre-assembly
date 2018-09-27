@@ -43,21 +43,22 @@ module PreAssembly
         role = get_role(row[:filename])
         file_extension = File.extname(row[:filename])
         # set the resource type if available, otherwise we'll use a default
-        resource_type = defined?(row[:resource_type]) ? row[:resource_type] || nil : nil
+        resource_type = row[:resource_type] || nil
 
         # set the thumb attribute for this resource if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
-        thumb = defined?(row[:thumb]) && row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase) ? true : false
+        thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase) ? true : false
 
         # set the publish/preserve/shelve if available, otherwise we'll use the defaults
-        publish  = defined?(row[:publish])  ? row[:publish]  || nil : nil
-        shelve   = defined?(row[:shelve])   ? row[:shelve]   || nil : nil
-        preserve = defined?(row[:preserve]) ? row[:preserve] || nil : nil
+        publish  = row[:publish]  || nil
+        shelve   = row[:shelve]   || nil
+        preserve = row[:preserve] || nil
 
-        manifest[druid] = { source_id: '', files: [] } if manifest[druid].nil?
-        manifest[druid][:source_id] = row[:source_id] if defined?(row[:source_id]) && row[:source_id]
-        manifest[druid][:files] << { thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type, role: role, file_extention: file_extension, filename: row[:filename], label: row[:label], sequence: row[:sequence] }
-      end # loop over all rows
-    end # load_manifest
+        manifest[druid] ||= { source_id: '', files: [] }
+        manifest[druid][:source_id] = row[:source_id] if row[:source_id]
+        files_hash = { role: role, file_extention: file_extension, filename: row[:filename], label: row[:label], sequence: row[:sequence] }
+        manifest[druid][:files] << files_hash.merge(thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type)
+      end
+    end
 
     # actually generate content metadata for a specific druid in the manifest
     # @return [String] XML

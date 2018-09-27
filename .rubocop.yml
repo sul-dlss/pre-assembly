@@ -26,6 +26,8 @@ Layout/SpaceBeforeBlockBraces:
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200
+  Exclude:
+    - 'config/initializers/**/*.rb' # generated files
 
 RSpec/ContextWording:
   Enabled: false # too dogmatic
