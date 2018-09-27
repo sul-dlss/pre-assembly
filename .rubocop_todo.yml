@@ -117,14 +117,6 @@ RSpec/VerifiedDoubles:
     - 'spec/models/job_run_spec.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'app/lib/pre_assembly/object_file.rb'
-
-# Offense count: 1
 Style/ClassVars:
   Exclude:
     - 'app/lib/pre_assembly/logging.rb'
