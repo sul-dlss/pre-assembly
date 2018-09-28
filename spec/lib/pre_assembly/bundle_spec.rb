@@ -63,7 +63,6 @@ RSpec.describe PreAssembly::Bundle do
   describe '#object_discovery: discovery via manifest and crawl' do
     it 'discover_containers_via_manifest() should return expected information' do
       vals = %w[123.tif 456.tif 789.tif]
-      flat_dir_images.manifest_cols[:object_container] = :col_foo
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
       expect(flat_dir_images.discover_containers_via_manifest).to eq(vals.map { |v| flat_dir_images.path_in_bundle v })
     end

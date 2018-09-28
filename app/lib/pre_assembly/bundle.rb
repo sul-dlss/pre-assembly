@@ -15,7 +15,6 @@ module PreAssembly
              :content_exclusion,
              :content_md_creation,
              :content_structure,
-             :manifest_cols,
              :manifest_rows,
              :path_in_bundle,
              :progress_log_file,
@@ -89,8 +88,8 @@ module PreAssembly
         DigitalObject.new(self, params).tap do |dobj|
           r = manifest_rows[i]
           # Get label and source_id from column names declared in YAML config.
-          dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ''
-          dobj.source_id    = r[manifest_cols[:source_id]] if manifest_cols[:source_id]
+          dobj.label        = r['label'] || ''
+          dobj.source_id    = r['sourceid']
           # Also store a hash of all values from the manifest row, using column names as keys.
           dobj.manifest_row = r
         end
@@ -102,11 +101,8 @@ module PreAssembly
     # manifest columns. The column name to use is configured by the
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
-      raise ':manifest_cols must be specified' unless manifest_cols
-      # TODO: note that manifest_cols is a constant in bundle_context
-      obj_sym = manifest_cols[:object_container].to_sym
-      manifest_rows.each_with_index { |r, i| raise "Missing #{obj_sym} in row #{i}: #{r}" unless r[obj_sym] }
-      manifest_rows.map { |r| path_in_bundle r[obj_sym] }
+      manifest_rows.each_with_index { |r, i| raise "Missing 'object' in row #{i}: #{r}" unless r[:object] }
+      manifest_rows.map { |r| path_in_bundle r[:object] }
     end
 
     # A method to discover object containers or stageable items.
@@ -168,7 +164,7 @@ module PreAssembly
 
     # confirm that the all of the source IDs supplied within a manifest are locally unique
     def manifest_sourceids_unique?
-      all_source_ids = manifest_rows.collect { |r| r[manifest_cols[:source_id]] }
+      all_source_ids = manifest_rows.collect { |r| r['sourceid'] }
       all_source_ids.size == all_source_ids.uniq.size
     end
 
