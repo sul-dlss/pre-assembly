@@ -38,30 +38,29 @@ RSpec.describe BundleContextsController, type: :controller do
       context 'Valid Parameters' do
         let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.sunet_id}/SMPL-multimedia" }
 
-        before do
-          Dir.delete(output_dir) if Dir.exist?(output_dir)
-          post :create, params: params
-        end
+        before { Dir.delete(output_dir) if Dir.exist?(output_dir) }
 
         it 'passes newly created object' do
+          post :create, params: params
           expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted
           expect(response).to have_http_status(302) # HTTP code for found
           expect(response).to redirect_to(job_runs_path(created: 1))
         end
         it 'has the correct attributes' do
+          post :create, params: params
           bc = assigns(:bundle_context)
           expect(bc.project_name).to eq 'SMPL-multimedia'
           expect(bc.content_structure).to eq 'simple_image'
           expect(bc.content_metadata_creation).to eq 'default'
           expect(bc.bundle_dir).to eq 'spec/test_data/smpl_multimedia'
         end
-        it 'persists the JobRun' do
-          Dir.delete(output_dir) if Dir.exist?(output_dir)
+        it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
+          expect { post :create, params: params }.to raise_error(RuntimeError, /Output directory.*should not already exist/)
+          Dir.delete(output_dir) if Dir.exist?(output_dir) # even if the directory is missing, cannot reuse user & project_name
+          expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
-
         it 'fails if job_type is nil' do
-          Dir.delete(output_dir) if Dir.exist?(output_dir)
           params[:bundle_context][:job_runs_attributes] = { '0' => { job_type: '' } }
           expect { post :create, params: params }.not_to change(JobRun, :count)
         end
