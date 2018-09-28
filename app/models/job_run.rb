@@ -5,8 +5,8 @@ class JobRun < ApplicationRecord
   after_update :send_notification, if: -> { saved_change_to_output_location? }
 
   enum job_type: {
-    "discovery_report" => 0,
-    "preassembly" => 1
+    'discovery_report' => 0,
+    'preassembly' => 1
   }
 
   # throw to asynchronous processing via correct Job class for job_type

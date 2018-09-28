@@ -1,15 +1,15 @@
 module PreAssembly
   module Logging
     LEVELS = {
-      :fatal => Logger::FATAL,
-      :error => Logger::ERROR,
-      :warn  => Logger::WARN,
-      :info  => Logger::INFO,
-      :debug => Logger::DEBUG
+      fatal: Logger::FATAL,
+      error: Logger::ERROR,
+      warn: Logger::WARN,
+      info: Logger::INFO,
+      debug: Logger::DEBUG
     }.freeze
 
     LOG_FORMAT    = "%-6s -- %s -- %s\n".freeze
-    TIME_FORMAT   = "%Y-%m-%d %H:%M:%S".freeze
+    TIME_FORMAT   = '%Y-%m-%d %H:%M:%S'.freeze
 
     @@log       ||= Logger.new(File.join(Rails.root, 'log', "#{Rails.env}.log"))
     @@log.level   = LEVELS[:info]

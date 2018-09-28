@@ -1,6 +1,6 @@
 class JobRunsController < ApplicationController
   def index
-    flash[:notice] = "Success! Your job is queued. A link to your validation report will be emailed to you when it is ready." if params[:created]
+    flash[:notice] = 'Success! Your job is queued. A link to your validation report will be emailed to you when it is ready.' if params[:created]
     @job_runs = JobRun.order('created_at desc').page params[:page]
   end
 

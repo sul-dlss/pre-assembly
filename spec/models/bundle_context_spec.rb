@@ -1,14 +1,15 @@
 RSpec.describe BundleContext, type: :model do
+  subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
+
   let(:attr_hash) do
     {
       project_name: 'Images_jp2_tif',
       bundle_dir: 'spec/test_data/images_jp2_tif'
     }
   end
-  subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
 
-  context "validation" do
-    it "is not valid unless it has all required attributes" do
+  context 'validation' do
+    it 'is not valid unless it has all required attributes' do
       expect(BundleContext.new).not_to be_valid
       expect(bc).to be_valid
     end
@@ -40,18 +41,18 @@ RSpec.describe BundleContext, type: :model do
 
   it do
     is_expected.to define_enum_for(:content_structure).with(
-      "simple_image" => 0,
-      "simple_book" => 1,
-      "book_as_image" => 2,
-      "file" => 3,
-      "smpl" => 4
+      'simple_image' => 0,
+      'simple_book' => 1,
+      'book_as_image' => 2,
+      'file' => 3,
+      'smpl' => 4
     )
   end
   it do
     is_expected.to define_enum_for(:content_metadata_creation).with(
-      "default" => 0,
-      "filename" => 1,
-      "smpl_cm_style" => 2
+      'default' => 0,
+      'filename' => 1,
+      'smpl_cm_style' => 2
     )
   end
 
@@ -64,7 +65,7 @@ RSpec.describe BundleContext, type: :model do
   end
 
   it 'bundle_dir has trailing slash removed' do
-    expect(bc.bundle_dir).to eq "spec/test_data/images_jp2_tif"
+    expect(bc.bundle_dir).to eq 'spec/test_data/images_jp2_tif'
   end
 
   describe '#bundle' do
@@ -76,27 +77,27 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe "#assembly_staging_dir" do
+  describe '#assembly_staging_dir' do
     it 'comes from Settings file' do
       expect(described_class.new.assembly_staging_dir).to eq Settings.assembly_staging_dir
     end
   end
 
-  describe "#smpl_manifest" do
-    it "returns the file name" do
+  describe '#smpl_manifest' do
+    it 'returns the file name' do
       expect(described_class.new.smpl_manifest).to eq 'smpl_manifest.csv'
     end
   end
 
-  describe "#manifest" do
-    it "returns the file name" do
+  describe '#manifest' do
+    it 'returns the file name' do
       expect(described_class.new.manifest).to eq 'manifest.csv'
     end
   end
 
-  describe "#path_in_bundle" do
-    it "creates a relative path" do
-      expect(bc.path_in_bundle("manifest.csv")).to eq "spec/test_data/images_jp2_tif/manifest.csv"
+  describe '#path_in_bundle' do
+    it 'creates a relative path' do
+      expect(bc.path_in_bundle('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
     end
   end
 
@@ -106,36 +107,36 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe "#progress_log_file" do
+  describe '#progress_log_file' do
     it 'is project_name + "_progress.yml" in output_dir' do
       expect(bc.progress_log_file).to eq "#{bc.output_dir}/#{bc.project_name}_progress.yml"
     end
   end
 
-  describe "manifest_rows" do
-    it "loads the manifest CSV" do
-      expect(CsvImporter).to receive(:parse_to_hash).with("spec/test_data/images_jp2_tif/manifest.csv")
+  describe 'manifest_rows' do
+    it 'loads the manifest CSV' do
+      expect(CsvImporter).to receive(:parse_to_hash).with('spec/test_data/images_jp2_tif/manifest.csv')
       bc.manifest_rows
     end
 
-    it "memoizes the manifest rows" do
-      expect(CsvImporter).to receive(:parse_to_hash).once.with("spec/test_data/images_jp2_tif/manifest.csv").and_call_original
+    it 'memoizes the manifest rows' do
+      expect(CsvImporter).to receive(:parse_to_hash).once.with('spec/test_data/images_jp2_tif/manifest.csv').and_call_original
       2.times { bc.manifest_rows }
     end
 
-    it "expect the content of manifest rows" do
+    it 'expect the content of manifest rows' do
       expect(bc.manifest_rows).to eq(
         [
-          { "druid" => "druid:jy812bp9403", "sourceid" => "bar-1.0", "object" => "jy812bp9403", "label" => "Label 1", "description" => "This is a description for label 1" },
-          { "druid" => "druid:tz250tk7584", "sourceid" => "bar-2.1", "object" => "tz250tk7584", "label" => "Label 2", "description" => "This is a description for label 2" },
-          { "druid" => "druid:gn330dv6119", "sourceid" => "bar-3.1", "object" => "gn330dv6119", "label" => "Label 3", "description" => "This is a description for label 3" }
+          { 'druid' => 'druid:jy812bp9403', 'sourceid' => 'bar-1.0', 'object' => 'jy812bp9403', 'label' => 'Label 1', 'description' => 'This is a description for label 1' },
+          { 'druid' => 'druid:tz250tk7584', 'sourceid' => 'bar-2.1', 'object' => 'tz250tk7584', 'label' => 'Label 2', 'description' => 'This is a description for label 2' },
+          { 'druid' => 'druid:gn330dv6119', 'sourceid' => 'bar-3.1', 'object' => 'gn330dv6119', 'label' => 'Label 3', 'description' => 'This is a description for label 3' }
         ]
       )
     end
   end
 
-  describe "manifest_cols" do
-    it "sets the column names" do
+  describe 'manifest_cols' do
+    it 'sets the column names' do
       expect(bc.manifest_cols).to eq(
         label: 'label',
         source_id: 'sourceid',
@@ -147,6 +148,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe '#verify_output_dir (private method)' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
+
     after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
 
     context 'when bundle_context is new' do

@@ -14,13 +14,13 @@ end
 
 def bundle_context_from_hash(proj)
   hash = hash_from_proj(proj)
-  cmc = hash["content_md_creation"]["style"]
-  cmc += '_cm_style' if cmc == "smpl"
+  cmc = hash['content_md_creation']['style']
+  cmc += '_cm_style' if cmc == 'smpl'
   build(
     :bundle_context,
-    project_name: hash["project_name"],
-    content_structure: hash["project_style"]["content_structure"],
-    bundle_dir: hash["bundle_dir"],
+    project_name: hash['project_name'],
+    content_structure: hash['project_style']['content_structure'],
+    bundle_dir: hash['bundle_dir'],
     content_metadata_creation: cmc,
     user: build(:user, sunet_id: 'Jdoe@stanford.edu')
   )

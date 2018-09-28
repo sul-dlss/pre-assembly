@@ -1,6 +1,7 @@
 RSpec.describe DiscoveryReport do
-  let(:bundle) { bundle_setup(:flat_dir_images) }
   subject(:report) { described_class.new(bundle) }
+
+  let(:bundle) { bundle_setup(:flat_dir_images) }
 
   describe '#initialize' do
     it 'raises if PreAssembly::Bundle not received' do
@@ -62,14 +63,14 @@ RSpec.describe DiscoveryReport do
       )
     end
 
-    context "folders are empty" do
-      it "adds empty_object error" do
+    context 'folders are empty' do
+      it 'adds empty_object error' do
         expect(report.process_dobj(dobj)).to match a_hash_including(errors: a_hash_including(empty_object: true))
       end
     end
 
-    context "folders are not empty" do
-      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: "random/path", filesize: 324, mimetype: "") }
+    context 'folders are not empty' do
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: 'random/path', filesize: 324, mimetype: '') }
 
       before do
         allow(dobj).to receive(:object_files).and_return([obj_file, obj_file])
@@ -77,16 +78,16 @@ RSpec.describe DiscoveryReport do
         allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
       end
 
-      it "does not add empty_object error" do
+      it 'does not add empty_object error' do
         expect(report.process_dobj(dobj)).not_to include(a_hash_including(empty_object: true))
       end
     end
   end
 
-  context "integration test" do
+  context 'integration test' do
     let(:bc_params) do
       {
-        project_name: "SmokeTest",
+        project_name: 'SmokeTest',
         content_structure: 0,
         bundle_dir: 'spec/test_data/images_jp2_tif',
         staging_style_symlink: false,
@@ -99,13 +100,13 @@ RSpec.describe DiscoveryReport do
     let(:dobj) { report.bundle.objects_to_process.first }
 
     before do
-      allow(dobj).to receive(:pid).and_return("kk203bw3276")
+      allow(dobj).to receive(:pid).and_return('kk203bw3276')
       allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
     end
 
     it 'process_dobj gives expected output for one dobj' do
       expect(report.process_dobj(dobj)).to eq(
-        druid: "druid:kk203bw3276",
+        druid: 'druid:kk203bw3276',
         errors: { dupes: true },
         counts: {
           total_size: 254_802,

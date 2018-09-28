@@ -5,7 +5,7 @@ class BundleContext < ApplicationRecord
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
-                                                     message: "only allows A-Z, a-z, 0-9, hyphen and underscore" }
+                                                     message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, inclusion: { in: [true, false] }
 
   validate :verify_bundle_directory
@@ -14,17 +14,17 @@ class BundleContext < ApplicationRecord
   after_initialize :normalize_bundle_dir, :default_enums
 
   enum content_structure: {
-    "simple_image" => 0,
-    "simple_book" => 1,
-    "book_as_image" => 2,
-    "file" => 3,
-    "smpl" => 4
+    'simple_image' => 0,
+    'simple_book' => 1,
+    'book_as_image' => 2,
+    'file' => 3,
+    'smpl' => 4
   }
 
   enum content_metadata_creation: {
-    "default" => 0,
-    "filename" => 1,
-    "smpl_cm_style" => 2
+    'default' => 0,
+    'filename' => 1,
+    'smpl_cm_style' => 2
   }
 
   accepts_nested_attributes_for :job_runs

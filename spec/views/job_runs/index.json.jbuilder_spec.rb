@@ -1,8 +1,8 @@
 RSpec.describe 'job_runs/index.json.jbuilder' do
-  let!(:job_runs) { create_list(:job_run, 2) }
+  let(:job_runs) { create_list(:job_run, 2) }
 
   it 'renders a list of job_runs' do
-    assign(:job_runs, JobRun.all.page(1))
+    assign(:job_runs, job_runs)
     render
     json = JSON.parse(rendered)
     expect(json.class).to eq Array

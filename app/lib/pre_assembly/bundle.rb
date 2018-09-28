@@ -28,7 +28,7 @@ module PreAssembly
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
-      self.smpl_manifest = PreAssembly::Smpl.new(:csv_filename => bundle_context.smpl_manifest, :bundle_dir => bundle_dir) if bundle_context.smpl_cm_style?
+      self.smpl_manifest = PreAssembly::Smpl.new(csv_filename: bundle_context.smpl_manifest, bundle_dir: bundle_dir) if bundle_context.smpl_cm_style?
       self.skippables = {}
       load_skippables
     end
@@ -55,11 +55,11 @@ module PreAssembly
 
     def run_log_msg
       log_params = {
-        :content_structure => content_structure,
-        :project_name => project_name,
-        :bundle_dir => bundle_dir,
-        :assembly_staging_dir => Settings.assembly_staging_dir,
-        :environment => ENV['RAILS_ENV']
+        content_structure: content_structure,
+        project_name: project_name,
+        bundle_dir: bundle_dir,
+        assembly_staging_dir: Settings.assembly_staging_dir,
+        environment: ENV['RAILS_ENV']
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
@@ -82,14 +82,14 @@ module PreAssembly
     def digital_objects
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         params = {
-          :container       => c,
-          :stageable_items => discover_items_via_crawl(c)
+          container: c,
+          stageable_items: discover_items_via_crawl(c)
         }
         params[:object_files] = discover_object_files(params[:stageable_items])
         DigitalObject.new(self, params).tap do |dobj|
           r = manifest_rows[i]
           # Get label and source_id from column names declared in YAML config.
-          dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ""
+          dobj.label        = manifest_cols[:label] ? r[manifest_cols[:label]] : ''
           dobj.source_id    = r[manifest_cols[:source_id]] if manifest_cols[:source_id]
           # Also store a hash of all values from the manifest row, using column names as keys.
           dobj.manifest_row = r
@@ -146,9 +146,9 @@ module PreAssembly
 
     def new_object_file(stageable, file_path)
       ObjectFile.new(
-        :path                 => file_path,
-        :relative_path        => relative_path(get_base_dir(stageable), file_path),
-        :exclude_from_content => exclude_from_content(file_path)
+        path: file_path,
+        relative_path: relative_path(get_base_dir(stageable), file_path),
+        exclude_from_content: exclude_from_content(file_path)
       )
     end
 
@@ -162,7 +162,7 @@ module PreAssembly
     # Takes a DigitalObject. For each of its ObjectFiles,
     # sets the checksum attribute.
     def load_checksums(dobj)
-      log "  - load_checksums()"
+      log '  - load_checksums()'
       dobj.object_files.each { |file| file.checksum = file.md5 }
     end
 
@@ -220,10 +220,10 @@ module PreAssembly
 
     def log_progress_info(dobj)
       {
-        :container          => dobj.container,
-        :pid                => dobj.pid,
-        :pre_assem_finished => dobj.pre_assem_finished,
-        :timestamp          => Time.now.strftime('%Y-%m-%d %H:%I:%S')
+        container: dobj.container,
+        pid: dobj.pid,
+        pre_assem_finished: dobj.pre_assem_finished,
+        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
     end
 

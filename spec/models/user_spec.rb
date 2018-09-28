@@ -1,8 +1,8 @@
 RSpec.describe User, type: :model do
   subject(:user) { build(:user, sunet_id: 'jdoe@stanford.edu') }
 
-  context "validation" do
-    it "is not valid unless it has all required attributes" do
+  context 'validation' do
+    it 'is not valid unless it has all required attributes' do
       expect(User.new).not_to be_valid
       expect(user).to be_valid
     end
@@ -23,7 +23,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  context "email address" do
+  context 'email address' do
     it "returns the user's email address if the sunet_id is already an address" do
       expect(user.email).to eq('jdoe@stanford.edu')
     end

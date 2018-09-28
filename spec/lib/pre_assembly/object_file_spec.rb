@@ -1,13 +1,9 @@
 RSpec.describe PreAssembly::ObjectFile do
-  before do
-    @f = described_class.new(
-      :path => 'spec/test_data/flat_dir_images/image1.tif'
-    )
-  end
+  let(:object_file) { described_class.new(path: 'spec/test_data/flat_dir_images/image1.tif') }
 
-  describe "initialization" do
-    it "can initialize an ObjectFile" do
-      expect(@f).to be_kind_of described_class
+  describe 'initialization' do
+    it 'can initialize an ObjectFile' do
+      expect(object_file).to be_a(described_class) # useless test ("Does Ruby Work??")
     end
   end
 end
