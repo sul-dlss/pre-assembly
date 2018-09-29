@@ -16,6 +16,10 @@ class BundleContextsController < ApplicationController
     end
   end
 
+  def show
+    @bundle_context = BundleContext.find(params[:id])
+  end
+
   private
 
   def bundle_contexts_params
