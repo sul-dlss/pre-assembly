@@ -67,25 +67,13 @@ RSpec.describe BundleContextsController, type: :controller do
       end
 
       context 'Invalid Parameters' do
+        let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', bundle_dir: '' } }
         it 'do not create objects' do
           params[:bundle_context][:project_name] = nil
           expect { post :create, params: params }.not_to change(BundleContext, :count)
-          expect do
-            post :create, params: { bundle_context: {
-              project_name: '',
-              content_structure: '',
-              content_metadata_creation: '',
-              bundle_dir: ''
-            } }
-          end .not_to change(BundleContext, :count)
-          expect do
-            post :create, params: { bundle_context: {
-              project_name: "SMPL's folly",
-              content_structure: '',
-              content_metadata_creation: '',
-              bundle_dir: ''
-            } }
-          end .not_to change(BundleContext, :count)
+          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
+          bc_params.merge!(project_name: "SMPL's folly")
+          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
         end
       end
     end
