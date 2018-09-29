@@ -17,9 +17,8 @@ RSpec.describe PreAssembly::DigitalObject do
     (1..2).each do |i|
       f = "image#{i}.#{extension}"
       dobj.object_files.push PreAssembly::ObjectFile.new(
-        path: "#{dobj.bundle_dir}/#{dru}/#{f}",
+        "#{dobj.bundle_dir}/#{dru}/#{f}",
         relative_path: f,
-        exclude_from_content: false,
         checksum: i.to_s * 4
       )
     end
@@ -123,7 +122,7 @@ RSpec.describe PreAssembly::DigitalObject do
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
+        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(n)
@@ -247,7 +246,7 @@ RSpec.describe PreAssembly::DigitalObject do
       n = files.size
       m = n / 2
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
+        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(n)
@@ -310,7 +309,7 @@ RSpec.describe PreAssembly::DigitalObject do
       # Generate some object_files.
       files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
       dobj.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new(exclude_from_content: false, relative_path: f)
+        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
       end
       # All of them are included in content.
       expect(dobj.content_object_files.size).to eq(files.size)

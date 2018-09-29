@@ -140,9 +140,10 @@ module PreAssembly
       digital_objects.map(&:object_files).flatten
     end
 
+    # @return [PreAssembly::ObjectFile]
     def new_object_file(stageable, file_path)
       ObjectFile.new(
-        path: file_path,
+        file_path,
         relative_path: relative_path(get_base_dir(stageable), file_path),
         exclude_from_content: exclude_from_content(file_path)
       )
@@ -159,7 +160,7 @@ module PreAssembly
     # sets the checksum attribute.
     def load_checksums(dobj)
       log '  - load_checksums()'
-      dobj.object_files.each { |file| file.checksum = file.md5 }
+      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
     end
 
     # confirm that the all of the source IDs supplied within a manifest are locally unique
