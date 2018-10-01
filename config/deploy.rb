@@ -28,9 +28,7 @@ set :deploy_to, '/opt/app/preassembly/pre-assembly'
 append :linked_files, 'config/master.key', 'config/honeybadger.yml', 'config/database.yml'
 
 # Default value for linked_dirs is []
-# TODO: config/cli_environments can be removed after PRs addressing #169 are merged
-#   and no deployments will need them (and shared_configs PRs for it too)
-append :linked_dirs, 'log', 'config/certs', 'config/cli_environments', 'config/settings', 'tmp', 'vendor/bundle'
+append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bundle'
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
