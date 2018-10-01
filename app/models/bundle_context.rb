@@ -1,6 +1,6 @@
 class BundleContext < ApplicationRecord
   belongs_to :user
-  has_many :job_runs
+  has_many :job_runs, dependent: :destroy
   before_save :verify_output_dir
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
