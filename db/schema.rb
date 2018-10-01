@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_28_021042) do
+ActiveRecord::Schema.define(version: 2018_10_01_182157) do
 
   create_table "bundle_contexts", force: :cascade do |t|
     t.string "project_name", null: false
@@ -35,10 +35,10 @@ ActiveRecord::Schema.define(version: 2018_09_28_021042) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "sunet_id", null: false
+    t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sunet_id"], name: "index_users_on_sunet_id", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
 end
