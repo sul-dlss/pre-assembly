@@ -92,7 +92,7 @@ RSpec.describe DiscoveryReport do
         bundle_dir: 'spec/test_data/images_jp2_tif',
         staging_style_symlink: false,
         content_metadata_creation: 0,
-        user: build(:user, sunet_id: 'jdoe@stanford.edu')
+        user: build(:user, email: 'jdoe@stanford.edu')
       }
     end
     let(:bundle_context) { BundleContext.new(bc_params) }
