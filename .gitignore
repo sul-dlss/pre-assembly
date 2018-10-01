@@ -11,8 +11,6 @@ memory_report.txt
 
 config/certs/*
 config/honeybadger.yml
-config/cli_environments/stage.rb
-config/cli_environments/local.rb
 db/*.sqlite3
 spec/test_data/logging/*
 spec/examples.txt
