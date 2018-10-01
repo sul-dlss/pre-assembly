@@ -114,7 +114,7 @@ class BundleContext < ApplicationRecord
 
   def verify_bundle_directory
     return if errors.key?(:bundle_dir)
-    errors.add(:bundle_dir, "Bundle directory: #{bundle_dir} not found.") unless File.directory?(bundle_dir)
+    errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
   end
 
   def verify_content_metadata_creation

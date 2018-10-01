@@ -25,6 +25,6 @@ RSpec.describe 'bundle_contexts/new' do
     bc = build(:bundle_context, bundle_dir: 'bad path').tap(&:valid?)
     assign(:bundle_context, bc)
     render
-    expect(render).to match(/Bundle dir Bundle directory: bad path not found./)
+    expect(render).to match(/Bundle dir &#39;bad path&#39; not found./)
   end
 end
