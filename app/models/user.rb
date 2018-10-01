@@ -1,9 +1,9 @@
 class User < ApplicationRecord
   devise :remote_user_authenticatable # We don't want other (default) Devise modules
-  has_many :bundle_contexts, dependent: :destroy
-  validates :email, presence: true, uniqueness: true
+  has_many :bundle_contexts
+  validates :sunet_id, presence: true, uniqueness: true
 
-  def sunet_id
-    email.split('@').first
+  def email
+    sunet_id.include?('@') ? sunet_id : "#{sunet_id}@stanford.edu"
   end
 end
