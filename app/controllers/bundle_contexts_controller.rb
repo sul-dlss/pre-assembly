@@ -1,7 +1,7 @@
 class BundleContextsController < ApplicationController
   def new
     @bundle_context = BundleContext.new(
-      job_runs: [JobRun.new(job_type: 'preassembly')],
+      job_runs: [JobRun.new],
       content_structure: 'simple_image',
       content_metadata_creation: 'default'
     )
