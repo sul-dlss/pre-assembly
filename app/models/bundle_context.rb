@@ -104,7 +104,6 @@ class BundleContext < ApplicationRecord
 
   def verify_output_dir
     if persisted?
-      # FIXME: or should we just try to create it?
       raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
     else
       raise "Output directory (#{output_dir}) should not already exist" if Dir.exist?(output_dir)
