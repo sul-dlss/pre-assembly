@@ -44,7 +44,8 @@ RSpec.describe BundleContextsController, type: :controller do
           post :create, params: params
           expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted
           expect(response).to have_http_status(302) # HTTP code for found
-          expect(response).to redirect_to(job_runs_path(created: 1))
+          expect(response).to redirect_to(job_runs_path)
+          expect(flash[:success]).to start_with('Success! Your job is queued.')
         end
         it 'has the correct attributes' do
           post :create, params: params
@@ -63,25 +64,14 @@ RSpec.describe BundleContextsController, type: :controller do
       end
 
       context 'Invalid Parameters' do
+        let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', bundle_dir: '' } }
+
         it 'do not create objects' do
           params[:bundle_context][:project_name] = nil
           expect { post :create, params: params }.not_to change(BundleContext, :count)
-          expect do
-            post :create, params: { bundle_context: {
-              project_name: '',
-              content_structure: '',
-              content_metadata_creation: '',
-              bundle_dir: ''
-            } }
-          end .not_to change(BundleContext, :count)
-          expect do
-            post :create, params: { bundle_context: {
-              project_name: "SMPL's folly",
-              content_structure: '',
-              content_metadata_creation: '',
-              bundle_dir: ''
-            } }
-          end .not_to change(BundleContext, :count)
+          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
+          bc_params[:project_name] = "SMPL's folly"
+          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
         end
       end
     end
