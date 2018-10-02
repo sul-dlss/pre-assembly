@@ -1,7 +1,38 @@
 RSpec.describe JobRunsController, type: :controller do
+  let(:bc) { create(:bundle_context_with_deleted_output_dir) }
+
   before { sign_in(create(:user)) }
 
-  describe 'GET #show' do
+  describe '#create' do
+    context 'with good params' do
+      it 'creates JobRun and redirects to index with success flash' do
+        expect { post :create, params: { job_run: { bundle_context_id: bc.id } } }
+          .to change(JobRun, :count).by(1)
+        expect(response).to redirect_to(job_runs_path)
+        expect(flash[:success]).to start_with('Success! Your job is queued.')
+        expect(bc.job_runs.reload.first.job_type).to eq('discovery_report') # the default
+      end
+      it 'creates JobRun with correct job_type' do
+        post :create, params: { job_run: { bundle_context_id: bc.id, job_type: 'preassembly' } }
+        expect(bc.job_runs.reload.first.job_type).to eq('preassembly')
+      end
+    end
+
+    context 'with bad params' do
+      it 'raises' do
+        expect { post :create, params: { job_run: { job_type: 'preassembly' } } }
+          .to raise_error(ActionController::ParameterMissing)
+        expect { post :create, params: { job_run: {} } }.to raise_error(ActionController::ParameterMissing)
+      end
+      it 'redirects to index with error flash' do
+        post :create, params: { job_run: { bundle_context_id: 999 } }
+        expect(response).to redirect_to(job_runs_path)
+        expect(flash[:error]).not_to be_nil
+      end
+    end
+  end
+
+  describe '#show' do
     it 'returns http success' do
       allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
       get :show, params: { id: 123 }
@@ -13,21 +44,20 @@ RSpec.describe JobRunsController, type: :controller do
     end
   end
 
-  describe 'GET #index' do
+  describe '#index' do
     it 'returns http success for html view' do
-      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
       get :index
       expect(response).to have_http_status(:success)
     end
 
-    it 'returns http success for json view' do
-      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
-      get :index, format: 'JSON'
+    it 'successfully returns json' do
+      get :index, format: 'json'
       expect(response).to have_http_status(:success)
+      expect(response.header).to include('Content-Type' => 'application/json; charset=utf-8')
     end
   end
 
-  describe 'GET #download' do
+  describe '#download' do
     it 'before job is complete, renders page with flash' do
       allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, output_location: nil))
       get :download, params: { id: 123 }
