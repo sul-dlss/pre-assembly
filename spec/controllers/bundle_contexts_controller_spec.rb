@@ -60,10 +60,6 @@ RSpec.describe BundleContextsController, type: :controller do
           Dir.delete(output_dir) if Dir.exist?(output_dir) # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
-        it 'fails if job_type is nil' do
-          params[:bundle_context][:job_runs_attributes] = { '0' => { job_type: '' } }
-          expect { post :create, params: params }.not_to change(JobRun, :count)
-        end
       end
 
       context 'Invalid Parameters' do

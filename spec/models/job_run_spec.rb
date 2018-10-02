@@ -51,13 +51,17 @@ RSpec.describe JobRun, type: :model do
         'preassembly' => 1
       )
     end
+    it 'defaults to correct value' do
+      expect(described_class.new.job_type).to eq('discovery_report')
+    end
   end
 
   context 'validation' do
     it 'is not valid without all required fields' do
       expect(described_class.new).not_to be_valid
-      expect(described_class.new(bundle_context: build(:bundle_context))).not_to be_valid
-      expect(job_run).to be_valid
+    end
+    it 'is valid with just bundle_context' do
+      expect(described_class.new(bundle_context: build(:bundle_context))).to be_valid
     end
   end
 end

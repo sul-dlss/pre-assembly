@@ -3,6 +3,7 @@ class JobRun < ApplicationRecord
   validates :job_type, presence: true
   after_create :enqueue!
   after_update :send_notification, if: -> { saved_change_to_output_location? }
+  after_initialize :default_enums
 
   enum job_type: {
     'discovery_report' => 0,
@@ -29,5 +30,11 @@ class JobRun < ApplicationRecord
   # @return [DiscoveryReport]
   def to_discovery_report
     @to_discovery_report ||= DiscoveryReport.new(bundle_context.bundle)
+  end
+
+  private
+
+  def default_enums
+    self[:job_type] ||= 0
   end
 end
