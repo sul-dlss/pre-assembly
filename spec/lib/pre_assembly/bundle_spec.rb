@@ -6,6 +6,13 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
+    let(:b) do
+      bc = bundle_context_from_hash('images_jp2_tif')
+      # need to delete progress log to ensure this test doesn't skip objects already run
+      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
+      bc.save
+      described_class.new bc
+    end
 
     before do
       allow(RestClient).to receive(:post)
@@ -15,22 +22,12 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
-      bc = bundle_context_from_hash('images_jp2_tif')
-      # need to delete progress log to ensure this test doesn't skip objects already run
-      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
-      bc.save
-      b = described_class.new bc
       pids = []
       expect { pids = b.run_pre_assembly }.not_to raise_error
       expect(pids).to eq ['druid:jy812bp9403', 'druid:tz250tk7584', 'druid:gn330dv6119']
     end
 
     it 'logs the start and finish of the run' do
-      bc = bundle_context_from_hash('images_jp2_tif')
-      # need to delete progress log to ensure this test doesn't skip objects already run
-      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
-      bc.save
-      b = described_class.new bc
       allow(b).to receive(:log) # there will be other log statements we don't care about here
       expect(b).to receive(:log).with("\nstarting run_pre_assembly(#{b.run_log_msg})")
       expect(b).to receive(:log).with("\nfinishing run_pre_assembly(#{b.run_log_msg})")
