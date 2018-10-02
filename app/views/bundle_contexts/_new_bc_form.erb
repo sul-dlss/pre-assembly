@@ -1,7 +1,6 @@
 <h3>Complete the form below</h3>
 
 <%= simple_form_for(@bundle_context) do |form| %>
-
     <div class="row">
         <div class="col-5">
             <%= form.input :project_name %>
@@ -23,7 +22,6 @@
 
     <div class="row">
         <div class="col-5">
-
             <%= form.input :content_structure, collection:
             [
                 ['Simple Image', 'simple_image'],
@@ -49,7 +47,7 @@
     </div>
 
     <div class="row">
-        <div class="col-5">    
+        <div class="col-5">
             <%= form.input :content_metadata_creation, collection:
                 [
                     ["Default", "default"],
@@ -61,5 +59,4 @@
     </div>
 
     <%= form.button :submit, class: "btn-sul-dlss" %>
-
 <% end %>
