@@ -47,8 +47,9 @@ module PreAssembly
 
     # Runs the pre-assembly process and returns an array of PIDs of the digital objects processed.
     def run_pre_assembly
-      log "\nrun_pre_assembly(#{run_log_msg})"
+      log "\nstarting run_pre_assembly(#{run_log_msg})"
       process_digital_objects
+      log "\nfinishing run_pre_assembly(#{run_log_msg})"
       processed_pids
     end
 

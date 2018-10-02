@@ -24,6 +24,18 @@ RSpec.describe PreAssembly::Bundle do
       expect { pids = b.run_pre_assembly }.not_to raise_error
       expect(pids).to eq ['druid:jy812bp9403', 'druid:tz250tk7584', 'druid:gn330dv6119']
     end
+
+    it 'logs the start and finish of the run' do
+      bc = bundle_context_from_hash('images_jp2_tif')
+      # need to delete progress log to ensure this test doesn't skip objects already run
+      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
+      bc.save
+      b = described_class.new bc
+      allow(b).to receive(:log) # there will be other log statements we don't care about here
+      expect(b).to receive(:log).with("\nstarting run_pre_assembly(#{b.run_log_msg})")
+      expect(b).to receive(:log).with("\nfinishing run_pre_assembly(#{b.run_log_msg})")
+      b.run_pre_assembly
+    end
   end
 
   describe '#load_skippables' do
@@ -38,6 +50,14 @@ RSpec.describe PreAssembly::Bundle do
   describe '#run_log_msg' do
     it 'returns a string' do
       expect(flat_dir_images.run_log_msg).to be_a(String)
+    end
+
+    it 'returns a string with the expected values' do
+      expect(flat_dir_images.run_log_msg).to match(/content_structure="#{flat_dir_images.content_structure}"/)
+      expect(flat_dir_images.run_log_msg).to match(/project_name="#{flat_dir_images.project_name}"/)
+      expect(flat_dir_images.run_log_msg).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
+      expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{flat_dir_images.assembly_staging_dir}"/)
+      expect(flat_dir_images.run_log_msg).to match(/environment="test"/)
     end
   end
 
