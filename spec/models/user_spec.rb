@@ -1,5 +1,5 @@
 RSpec.describe User, type: :model do
-  subject(:user) { build(:user, sunet_id: 'jdoe@stanford.edu') }
+  subject(:user) { build(:user, sunet_id: 'jdoe') }
 
   context 'validation' do
     it 'is not valid unless it has all required attributes' do

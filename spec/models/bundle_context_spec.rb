@@ -103,7 +103,7 @@ RSpec.describe BundleContext, type: :model do
 
   describe 'output_dir' do
     it 'returns "Settings.job_output_parent_dir/user_id/project_name"' do
-      expect(bc.output_dir).to eq "#{Settings.job_output_parent_dir}/#{bc.user.sunet_id}/#{bc.project_name}"
+      expect(bc.output_dir).to eq "#{Settings.job_output_parent_dir}/#{bc.user.email}/#{bc.project_name}"
     end
   end
 
