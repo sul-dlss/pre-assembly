@@ -22,6 +22,6 @@ def bundle_context_from_hash(proj)
     content_structure: hash['project_style']['content_structure'],
     bundle_dir: hash['bundle_dir'],
     content_metadata_creation: cmc,
-    user: build(:user, email: 'Jdoe@stanford.edu')
+    user: build(:user, sunet_id: 'Jdoe@stanford.edu')
   )
 end
