@@ -37,6 +37,16 @@ RSpec.describe BundleContext, type: :model do
         expect { bc.project_name = valid_chars }.not_to change(bc, :valid?).from(true)
       end
     end
+
+    context 'bundle_dir must be a sub dir of allowed parent directories' do
+      it 'cannot jailbreak' do
+        expect { bc.bundle_dir = 'tmp/../../foo/' }.to change(bc, :valid?).to(false)
+      end
+
+      it 'cannot use the root directly' do
+        expect { bc.bundle_dir = 'tmp/' }.to change(bc, :valid?).to(false)
+      end
+    end
   end
 
   it do

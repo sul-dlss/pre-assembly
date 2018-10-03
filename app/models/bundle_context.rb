@@ -10,6 +10,7 @@ class BundleContext < ApplicationRecord
 
   validate :verify_bundle_directory
   validate :verify_content_metadata_creation
+  validate :verify_bundle_dir_path
 
   after_initialize :normalize_bundle_dir, :default_enums
 
@@ -102,6 +103,11 @@ class BundleContext < ApplicationRecord
     self[:bundle_dir] = normalize_dir(bundle_dir)
   end
 
+  def bundle_dir_path
+    return unless bundle_dir
+    Pathname.new(bundle_dir).expand_path
+  end
+
   def verify_output_dir
     if persisted?
       raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
@@ -119,5 +125,16 @@ class BundleContext < ApplicationRecord
   def verify_content_metadata_creation
     return unless smpl_cm_style?
     errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") unless File.exist?(File.join(bundle_dir, smpl_manifest))
+  end
+
+  def verify_bundle_dir_path
+    match_flag = nil
+    bundle_dir_path&.ascend do |sub_path|
+      next unless ::ALLOWABLE_BUNDLE_DIRS.include?(sub_path.to_s)
+      match_flag = sub_path
+      break
+    end
+    return unless match_flag.nil? || match_flag == bundle_dir_path
+    errors.add(:bundle_dir, 'not a sub directory of allowed parent directories.')
   end
 end
