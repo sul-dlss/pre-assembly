@@ -154,6 +154,26 @@ brew install exiftool
 bundle exec rspec
 ```
 
+## Running the application for local development
+
+Just the usual:
+
+```bash
+bundle exec rails server
+```
+
+When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
+its sessions. To override that behavior and specify an alternate user, you can manually specify the `REMOTE_USER`
+environment variable at startup, like so:
+
+```bash
+REMOTE_USER="ima_user" bundle exec rails server
+```
+
+Because the application looks for user info in an environment variable, and because local dev environments don't have
+an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
+sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
+
 ## Troubleshooting
 
 ### Seeing an error like this when you try to run pre-assembly or a discovery report?
