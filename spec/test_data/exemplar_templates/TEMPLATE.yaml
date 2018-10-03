@@ -63,63 +63,6 @@ bundle_dir:  '/foo/bar/revs'  # Input location for the project content (i.e., th
 staging_style:    'copy'     # the staging style, can be "copy" or "symlink", defaults to "copy" if not specified or nil
                              #  if set to "copy" then all discovered files that need to be staged will be copied from the bundle directory to the staging directory
                              #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the bundle directory
-####
-# Once object containers have been identified, specify which files within those
-# containers should be staged (i.e., copied to the assembly_staging_dir).
-####
-
-stageable_discovery:
-
-  # Option 1: If you set 'use_container' to true, this will simply stage the entire object directory that was matched with the glob above.
-  use_container: true    # If true , set glob and regex to nil below.
-                 false   # If false, use glob and regex below.
-
-  # Option 2: If you set 'use_container' to false, staging will be done via a two-phase container crawl based on the glob and regex patterns specified below.
-  #
-  # The glob parameter can be used to flatten or partially flatten the input
-  # directory structure. For example, consider this input structure:
-  #
-  #   aa111bb2222/
-  #     00/
-  #       1.tif
-  #       2.tif
-  #       1.jp2
-  #       2.jp2
-  #
-  # If glob = '*', both the 00 and 01 subdirectories will be staged in
-  # their entirely, preserving the original structure.
-  #
-  # If glob = '00', only the 00 subdirectory will be staged, preserving
-  # its original structure.
-  #
-  # If glob = '00/*', only the files within 00 will be staged, which means
-  # that the 00 subdirectory will not appear in the staged materials, as
-  # shown here:
-  #
-  #    aa/111/bb/2222/
-  #      1.tif
-  #      2.tif
-  #
-  # As above, express the glob and regex in relative terms -- in
-  # this case, relative to the container.
-  #
-  #  Optionally, the results of that glob pattern can be filtered,
-  #     retaining only the items matching the given regex (Ruby regular expression).
-  #     See http://www.ruby-doc.org/core-1.9.3/Regexp.html
-  #
-  # Various examples are shown.
-  glob:  '0[12]/'  # Stage the 00, 01, and 02 subdirectories.
-         '00/*'    # Stage the items in the 00 subdirectory only, but not the '00' folder itself.
-         '*/*'     # Stage the items residing at the second level in the structure.
-         '**/*'    # Stage all leaf items. Results it total flattening. Use with caution since it may cause file name clashes.  Note-this will also stage all folders
-                   #   as well, unless you further restrict to specific files only using the regex below.
-         '*'       # Stage all items at the root level of the container (useful for a container that has no structure, just a list of files)
-
-  regex:  ~                       # No filtering.
-         '(?ix) \. (tif|xml) $'  # Stage only items with .tif and .xml extentions.
-  files_only:  true     # if set to true, then only files will be staged, regardless of glob specified above (i.e. any folders that match the glob will
-                        #  be ignored) -- this is useful to avoid duplication of staged files
-                        #  if set to false or left off, then anything that matches the glob (and not filtered by regex) will be staged
 
 ####
 # Additional materials accompaning the bundle.
