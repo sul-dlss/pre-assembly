@@ -6,13 +6,7 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#run_pre_assembly' do
     let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
-    let(:b) do
-      bc = bundle_context_from_hash('images_jp2_tif')
-      # need to delete progress log to ensure this test doesn't skip objects already run
-      FileUtils.rm_rf(bc.output_dir) if Dir.exist?(bc.output_dir)
-      bc.save
-      described_class.new bc
-    end
+    let(:b) { described_class.new(create(:bundle_context_with_deleted_output_dir)) }
 
     before do
       allow(RestClient).to receive(:post)
@@ -21,10 +15,10 @@ RSpec.describe PreAssembly::Bundle do
       allow(Dor::Item).to receive(:find).with(any_args)
     end
 
-    it 'runs images_jp2_tif cleanly using images_jp2_tif.yaml for options' do
+    it 'runs cleanly and returns the list of druids that were processed' do
       pids = []
       expect { pids = b.run_pre_assembly }.not_to raise_error
-      expect(pids).to eq ['druid:jy812bp9403', 'druid:tz250tk7584', 'druid:gn330dv6119']
+      expect(pids).to eq ['druid:aa111aa1111', 'druid:bb222bb2222']
     end
 
     it 'logs the start and finish of the run' do
