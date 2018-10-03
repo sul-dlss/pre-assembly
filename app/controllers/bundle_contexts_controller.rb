@@ -10,7 +10,7 @@ class BundleContextsController < ApplicationController
   def create
     @bundle_context = BundleContext.new(bundle_contexts_params)
     if @bundle_context.save
-      flash[:success] = 'Success! Your job is queued. A link to your validation report will be emailed to you when it is ready.'
+      flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs'
     else
       render :new
