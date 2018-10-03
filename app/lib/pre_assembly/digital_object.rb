@@ -202,7 +202,6 @@ module PreAssembly
     end
 
     # Invoke the contentMetadata creation method used by the project
-    # if we are not using a standard known style of content metadata generation, pass the task off to a custom method
     def create_content_metadata
       if content_md_creation == 'smpl_cm_style'
         self.content_md_xml = smpl_manifest.generate_cm(druid.id)
