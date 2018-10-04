@@ -1,7 +1,8 @@
 class BundleContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy
-  before_save :verify_output_dir
+  before_save :output_dir_exists!, if: proc { persisted? }
+  before_create :output_dir_no_exists!
 
   validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
@@ -108,13 +109,18 @@ class BundleContext < ApplicationRecord
     Pathname.new(bundle_dir).expand_path
   end
 
-  def verify_output_dir
-    if persisted?
-      raise "Output directory (#{output_dir}) should already exist, but doesn't" unless Dir.exist?(output_dir)
-    else
-      raise "Output directory (#{output_dir}) should not already exist" if Dir.exist?(output_dir)
-      FileUtils.mkdir_p(output_dir)
+  def output_dir_exists!
+    return if Dir.exist?(output_dir)
+    errors.add(:bundle_dir, "Output directory (#{output_dir}) should already exist, but doesn't")
+    throw(:abort)
+  end
+
+  def output_dir_no_exists!
+    if Dir.exist?(output_dir)
+      errors.add(:bundle_dir, "Output directory (#{output_dir}) should not already exist")
+      throw(:abort)
     end
+    FileUtils.mkdir_p(output_dir)
   end
 
   def verify_bundle_directory
@@ -134,6 +140,7 @@ class BundleContext < ApplicationRecord
       match_flag = sub_path
       break
     end
+    # match_flag = nil means we are not in the sub path, match_flag == bundle_dir_path means the user only entered the root path.
     return unless match_flag.nil? || match_flag == bundle_dir_path
     errors.add(:bundle_dir, 'not a sub directory of allowed parent directories.')
   end

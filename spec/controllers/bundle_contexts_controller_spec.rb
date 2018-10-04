@@ -57,7 +57,7 @@ RSpec.describe BundleContextsController, type: :controller do
         end
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
-          expect { post :create, params: params }.to raise_error(RuntimeError, /Output directory.*should not already exist/)
+          expect { post :create, params: params }.not_to change(BundleContext, :count)
           Dir.delete(output_dir) if Dir.exist?(output_dir) # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
