@@ -145,7 +145,7 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#verify_output_dir (private method)' do
+  describe '#output_dir_no_exists! (private method)' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
 
     after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
@@ -154,25 +154,29 @@ RSpec.describe BundleContext, type: :model do
       before { allow(bc).to receive(:persisted?).and_return(false) }
 
       it 'creates directory' do
-        expect { bc.send(:verify_output_dir) }.to change { Dir.exist?(bc.output_dir) }.from(false).to(true)
+        expect { bc.send(:output_dir_no_exists!) }.to change { Dir.exist?(bc.output_dir) }.from(false).to(true)
       end
-      it 'raises error if directory already exists' do
+      it 'adds error if directory already exists' do
         FileUtils.mkdir_p(bc.output_dir) unless Dir.exist?(bc.output_dir)
-        exp_msg = "Output directory (#{bc.output_dir}) should not already exist"
-        expect { bc.send(:verify_output_dir) }.to raise_error(RuntimeError, exp_msg)
+        expect(bc).to receive(:throw)
+        bc.send(:output_dir_no_exists!)
+        expect(bc.errors).not_to be_empty
       end
-      it "raises error if directory can't be created" do
+      it "adds error if directory can't be created" do
         allow(bc).to receive(:output_dir).and_return('/bootx/foo')
-        expect { bc.send(:verify_output_dir) }.to raise_error(SystemCallError, /Permission denied @ dir_s_mkdir - \/bootx/)
+        expect { bc.send(:output_dir_no_exists!) }.to raise_error(SystemCallError, /Permission denied @ dir_s_mkdir - \/bootx/)
       end
     end
+  end
 
+  describe '#output_dir_exists! (private method)' do
     context 'when bundle_context is not new' do
       before { allow(bc).to receive(:persisted?).and_return(true) } # fake save
 
-      it "raises error if directory doesn't exist" do
-        exp_msg = "Output directory (#{bc.output_dir}) should already exist, but doesn't"
-        expect { bc.send(:verify_output_dir) }.to raise_error(RuntimeError, exp_msg)
+      it "adds error if directory doesn't exist" do
+        expect(bc).to receive(:throw)
+        bc.send(:output_dir_exists!)
+        expect(bc.errors).not_to be_empty
       end
     end
   end
