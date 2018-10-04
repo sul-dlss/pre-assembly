@@ -1,46 +1,38 @@
 <div class="container">
-  <%= link_to '[all jobs]',job_runs_path %>
+  <%= link_to '[all jobs]', job_runs_path %>
 </div>
 
 <div class="container">
   <h2><%= @job_run.job_type.humanize %> #<%= @job_run.id %></h2>
+</div>
+
+<div class="container">
+  <div class="row m-3">
+    <div class="col-sm-12">
+      On project <%= link_to @job_run.bundle_context.project_name, @job_run.bundle_context %> by <%= @job_run.bundle_context.user.email %>
+      <button class="btn btn-sul-dlss btn-sm ml-1" type="button" data-toggle="collapse" data-target="#bc_details" aria-expanded="false" aria-controls="bc_details">
+        Details
+      </button>
+    </div>
+  </div>
+  <div id="bc_details" class="collapse bg-light">
+    <%= render @job_run.bundle_context %>
+  </div>
+</div>
+
+<div class="container">
   <dl class="row">
-  <% for attribute in @job_run.attributes.keys.sort %>
-    <% if attribute == 'bundle_context_id' %>
-      <dt class="col-sm-3">Bundle Context</dt>
-      <dd class="col-sm-9">
-        <table>
-          <tr>
-            <th>Project Name</th>
-            <td><%= @job_run.bundle_context.project_name %></td>
-          </tr>
-          <tr>
-            <th>User</th>
-            <td><%= @job_run.bundle_context.user.email %></td>
-          </tr>
-          <tr>
-            <th>Content Structure</th>
-            <td><%= @job_run.bundle_context.content_structure %></td>
-          </tr>
-          <tr>
-            <th>Staging Style Symlink?</th>
-            <td><%= @job_run.bundle_context.staging_style_symlink %></td>
-          </tr>
-        </table>
-      </dd>
-    <% elsif attribute == 'output_location' %>
-      <dt class="col-sm-3">Job Output Log</dt>
-      <dd class="col-sm-9">
-      <% if @job_run.output_location %>
-        <%= link_to 'Download', download_path(@job_run) %>
-      <% else %>
-        Job is not yet complete.  Please check back later.
-      <% end %>
-      </dd>
-    <% else %>
-      <dt class="col-sm-3"><%= attribute.humanize %></dt>
-      <dd class="col-sm-9"><%= @job_run.attributes[attribute].to_s %></dd>
+    <% ['job_type', 'created_at', 'updated_at'].each do |attribute| %>
+      <dt class="col-sm-2"><%= attribute.humanize %></dt>
+      <dd class="col-sm-10"><%= @job_run.attributes[attribute].to_s %></dd>
     <% end %>
-  <% end %>
+    <dt class="col-sm-2">Job Output Log</dt>
+    <dd class="col-sm-10">
+    <% if @job_run.output_location %>
+      <%= link_to 'Download', download_path(@job_run) %>
+    <% else %>
+      Job is not yet complete.  Please check back later.
+    <% end %>
+    </dd>
   </dl>
 </div>
