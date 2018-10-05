@@ -164,6 +164,10 @@ module PreAssembly
     # The latter drives the two-stage discovery process:
     #   - A glob pattern to obtain a list of dirs and/or files.
     #   - A regex to filter that list.
+    # FIXME: configuration of aforementioned stageable_discovery data structure is currently unsupported.
+    # the remnants are vestiges of v3-legacy branch that we didn't have time to properly disposition.
+    # behavior should either be fully removed, or properly reimplemented and tested.
+    # see: #274, https://github.com/sul-dlss/pre-assembly/blob/v3-legacy/config/projects/TEMPLATE.yaml
     def discover_items_via_crawl(root)
       glob  = stageable_discovery[:glob] || '**/*' # default value
       regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]

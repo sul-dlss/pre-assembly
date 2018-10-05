@@ -57,6 +57,7 @@ class BundleContext < ApplicationRecord
   end
 
   # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
+  # @deprecated - since it's not currently configurable, and non-default usage isn't tested anyway
   def stageable_discovery
     {}
   end
