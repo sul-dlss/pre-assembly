@@ -67,11 +67,6 @@ class BundleContext < ApplicationRecord
     nil
   end
 
-  # TODO: Delete everywhere in code as single commit (#228)
-  def file_attr
-    nil
-  end
-
   def smpl_manifest
     'smpl_manifest.csv'
   end
