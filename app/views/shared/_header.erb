@@ -1,9 +1,24 @@
-<nav class="navbar">
-  <div>
-    <a class="navbar-brand" href="#"><%= link_to image_tag('sul-logo.png', height: '30'), :root %></a>
-  </div>
-  <div>
-    <a class="nav-link user-instruct" href="https://github.com/sul-dlss/pre-assembly/wiki">Usage Instructions</a>
+<nav class="navbar navbar-expand-sm">
+  <a class="navbar-brand" href="#"><%= link_to image_tag('sul-logo.png', height: '30'), :root %></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav mx-auto">
+      <li class="nav-item">
+        <%= link_to 'All Jobs', job_runs_path, class: "nav-link"%>
+      </li>
+      <li class="nav-item">
+        <%= link_to 'Start New Project', root_path, class: "nav-link" %>
+      </li>
+      <li class = "nav-item">
+        <a class="nav-link" href="https://github.com/sul-dlss/pre-assembly/wiki">Usage Instructions</a>
+      </li>
+    </ul>
+    <div>
+      <a class="nav-link" href="https://github.com/sul-dlss/pre-assembly/wiki">Usage Instructions</a>
+    </div>
   </div>
 </nav>
 <div style="background-color: #8c1515; color: white; font-family: serif">
