@@ -41,11 +41,8 @@ module PreAssembly
       end
     end
 
-    ####
-    # The main process.
-    ####
-
-    # Runs the pre-assembly process and returns an array of PIDs of the digital objects processed.
+    # Runs the pre-assembly process
+    # @return [Array<String>] PIDs of the digital objects processed
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
       process_digital_objects
@@ -96,6 +93,62 @@ module PreAssembly
         end
       end
     end
+
+    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
+    # @param [DigitalObject] dobj
+    def load_checksums(dobj)
+      log '  - load_checksums()'
+      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
+    end
+
+    ####
+    # Digital object processing.
+    ####
+    def process_digital_objects
+      num_no_file_warnings = 0
+      o2p = objects_to_process # Get the non-skipped objects to process
+      total_obj = o2p.size
+      log "process_digital_objects(#{total_obj} objects)"
+      log "#{total_obj} objects to pre-assemble"
+      log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
+
+      o2p.each_with_index do |dobj, n|
+        log "#{total_obj - n} remaining in run | #{total_obj} running"
+        log "  - Processing object: #{dobj.container}"
+        log "  - N object files: #{dobj.object_files.size}"
+        num_no_file_warnings += 1 if dobj.object_files.empty?
+
+        begin
+          # Try to pre_assemble the digital object.
+          load_checksums(dobj)
+          dobj.pre_assemble
+          # Indicate that we finished.
+          dobj.pre_assem_finished = true
+          log "Completed #{dobj.druid}"
+        ensure
+          # Log the outcome no matter what.
+          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }
+        end
+      end
+    ensure
+      log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      log "#{total_obj || 0} objects pre-assembled"
+    end
+
+    def objects_to_process
+      @o2p ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
+    end
+
+    def log_progress_info(dobj)
+      {
+        container: dobj.container,
+        pid: dobj.pid,
+        pre_assem_finished: dobj.pre_assem_finished,
+        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
+      }
+    end
+
+    private
 
     # Discover object containers from a manifest.
     # The relative path to the container is supplied in one of the
@@ -155,74 +208,6 @@ module PreAssembly
     def exclude_from_content(file_path)
       return false unless content_exclusion
       file_path&.match?(content_exclusion) ? true : false
-    end
-
-    # Takes a DigitalObject. For each of its ObjectFiles,
-    # sets the checksum attribute.
-    def load_checksums(dobj)
-      log '  - load_checksums()'
-      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
-    end
-
-    # confirm that the all of the source IDs supplied within a manifest are locally unique
-    def manifest_sourceids_unique?
-      all_source_ids = manifest_rows.collect { |r| r['sourceid'] }
-      all_source_ids.size == all_source_ids.uniq.size
-    end
-
-    ####
-    # Digital object processing.
-    ####
-    def process_digital_objects
-      # Get the non-skipped objects to process
-      o2p = objects_to_process
-      total_obj = o2p.size
-      log "process_digital_objects(#{total_obj} objects)"
-      log "#{total_obj} objects to pre-assemble"
-      log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
-      num_no_file_warnings = 0
-      total_time_remaining = 0
-      start_time = Time.now
-
-      # Start processing.
-      o2p.each_with_index do |dobj, n|
-        log "#{total_obj - n} remaining in run | #{total_obj} running"
-        log "  - Processing object: #{dobj.container}"
-        log "  - N object files: #{dobj.object_files.size}"
-        num_no_file_warnings += 1 if dobj.object_files.empty?
-
-        begin
-          # Try to pre_assemble the digital object.
-          load_checksums(dobj)
-          dobj.pre_assemble
-          # Indicate that we finished.
-          dobj.pre_assem_finished = true
-          log "Completed #{dobj.druid}"
-        ensure
-          # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }
-        end
-
-        next_n = n + 1
-        avg_time_per_object = (Time.now - start_time) / next_n
-        total_time_remaining = (avg_time_per_object * (total_obj - next_n)).floor
-      end
-
-      log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      log "#{total_obj} objects pre-assembled"
-    end
-
-    def objects_to_process
-      @o2p ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
-    end
-
-    def log_progress_info(dobj)
-      {
-        container: dobj.container,
-        pid: dobj.pid,
-        pre_assem_finished: dobj.pre_assem_finished,
-        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
-      }
     end
 
     ####
