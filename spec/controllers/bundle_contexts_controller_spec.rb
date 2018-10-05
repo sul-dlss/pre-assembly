@@ -26,7 +26,7 @@ RSpec.describe BundleContextsController, type: :controller do
       expect(controller.current_user).not_to be_nil
     end
 
-    context 'GET new' do
+    context '#new' do
       it 'renders the new template' do
         get :new
         expect(response).to render_template('new')
@@ -34,7 +34,15 @@ RSpec.describe BundleContextsController, type: :controller do
       end
     end
 
-    context 'POST create' do
+    describe '#index' do
+      it 'renders index' do
+        get :index
+        expect(response).to render_template('index')
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context '#create' do
       context 'Valid Parameters' do
         let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/SMPL-multimedia" }
 
