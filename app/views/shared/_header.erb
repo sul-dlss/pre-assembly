@@ -1,5 +1,10 @@
 <nav class="navbar">
-  <a class="navbar-brand" href="#"><%= image_tag('sul-logo.png', height: '30') %></a>
+  <div>
+    <a class="navbar-brand" href="#"><%= link_to image_tag('sul-logo.png', height: '30'), :root %></a>
+  </div>
+  <div>
+    <a class="nav-link user-instruct" href="https://github.com/sul-dlss/pre-assembly/wiki">Usage Instructions</a>
+  </div>
 </nav>
 <div style="background-color: #8c1515; color: white; font-family: serif">
   <h1 class="p-4">Accessioning</h1>
