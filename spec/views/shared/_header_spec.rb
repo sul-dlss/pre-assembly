@@ -10,6 +10,9 @@ RSpec.describe 'shared/_header.erb' do
     it 'Start New Projects' do
       expect(rendered).to include("<a class=\"nav-link\" href=\"/\">Start New Project</a>\n")
     end
+    it 'All Projects' do
+      expect(rendered).to include("<a class=\"nav-link\" href=\"/bundle_contexts\">All Projects</a>\n")
+    end
     it 'Accessioning' do
       expect(rendered).to include("<h1 class=\"p-4\">Accessioning</h1>\n")
     end
