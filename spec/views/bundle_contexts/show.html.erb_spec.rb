@@ -5,7 +5,7 @@ RSpec.describe 'bundle_contexts/show.html.erb', type: :view do
 
   it 'diplays BundleContext info' do
     render
-    expect(rendered).to include("<dd class=\"col-sm-9\">#{bc.project_name}</dd>")
+    expect(rendered).to include("<a href=\"/bundle_contexts/1\">#{bc.project_name}</a> by #{bc.user.email}")
     expect(rendered).to include('<i class="far fa-times-circle"></i>') # icon for symlink="false"
   end
 

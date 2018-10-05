@@ -17,6 +17,10 @@ class BundleContextsController < ApplicationController
     end
   end
 
+  def index
+    @bundle_contexts = BundleContext.order(:created_at).page(params[:page])
+  end
+
   def show
     @bundle_context = BundleContext.find(params[:id])
   end
