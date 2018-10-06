@@ -145,7 +145,7 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#output_dir_no_exists! (private method)' do
+  describe '#output_dir_no_exists!' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
 
     after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
@@ -169,7 +169,7 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#output_dir_exists! (private method)' do
+  describe '#output_dir_exists!' do
     context 'when bundle_context is not new' do
       before { allow(bc).to receive(:persisted?).and_return(true) } # fake save
 
@@ -178,6 +178,24 @@ RSpec.describe BundleContext, type: :model do
         bc.send(:output_dir_exists!)
         expect(bc.errors).not_to be_empty
       end
+    end
+  end
+
+  describe '#verify_bundle_directory' do
+    it 'does nothing if bundle_dir already has errors' do
+      bc.errors.add(:bundle_dir, 'test')
+      expect(File).not_to receive(:directory?)
+      expect { bc.send(:verify_bundle_directory) }.not_to change(bc, :errors)
+    end
+    it 'adds error if missing manifest.csv' do
+      allow(File).to receive(:exist?).with('spec/test_data/images_jp2_tif/manifest.csv').and_return(false)
+      bc.send(:verify_bundle_directory)
+      expect(bc.errors.to_h).to include(bundle_dir: /missing manifest/)
+    end
+    it 'adds error if spml object is missing smpl_manifest.csv' do
+      allow(bc).to receive(:smpl_cm_style?).and_return(true)
+      bc.send(:verify_bundle_directory)
+      expect(bc.errors.to_h).to include(bundle_dir: /missing SMPL manifest/)
     end
   end
 end
