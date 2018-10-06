@@ -12,7 +12,6 @@ module PreAssembly
              :apply_tag,
              :bundle_dir,
              :config_filename,
-             :content_exclusion,
              :content_md_creation,
              :content_structure,
              :manifest_rows,
@@ -202,16 +201,8 @@ module PreAssembly
     def new_object_file(stageable, file_path)
       ObjectFile.new(
         file_path,
-        relative_path: relative_path(get_base_dir(stageable), file_path),
-        exclude_from_content: exclude_from_content(file_path)
+        relative_path: relative_path(get_base_dir(stageable), file_path)
       )
-    end
-
-    # If user supplied a content exclusion regex pattern, see
-    # whether it matches the current file path.
-    def exclude_from_content(file_path)
-      return false unless content_exclusion
-      file_path&.match?(content_exclusion) ? true : false
     end
 
     ####

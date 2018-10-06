@@ -10,7 +10,6 @@ class BundleContext < ApplicationRecord
   validates :staging_style_symlink, inclusion: { in: [true, false] }
 
   validate :verify_bundle_directory
-  validate :verify_content_metadata_creation
   validate :verify_bundle_dir_path
 
   after_initialize :normalize_bundle_dir, :default_enums
@@ -60,16 +59,6 @@ class BundleContext < ApplicationRecord
   # @deprecated - since it's not currently configurable, and non-default usage isn't tested anyway
   def stageable_discovery
     {}
-  end
-
-  # TODO: Delete everywhere in code as single commit (#227)
-  def content_exclusion
-    nil
-  end
-
-  # TODO: Delete everywhere in code as single commit (#228)
-  def file_attr
-    nil
   end
 
   def smpl_manifest
@@ -126,15 +115,14 @@ class BundleContext < ApplicationRecord
 
   def verify_bundle_directory
     return if errors.key?(:bundle_dir)
-    errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
-  end
-
-  def verify_content_metadata_creation
-    return unless smpl_cm_style?
-    errors.add(:content_metadata_creation, "The SMPL manifest #{smpl_manifest} was not found in #{bundle_dir}.") unless File.exist?(File.join(bundle_dir, smpl_manifest))
+    return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
+    errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
+    return unless smpl_cm_style? # only smpl objects require smpl_manifest.csv
+    errors.add(:bundle_dir, "missing SMPL manifest: #{bundle_dir}/#{smpl_manifest}") unless File.exist?(File.join(bundle_dir, smpl_manifest))
   end
 
   def verify_bundle_dir_path
+    return if errors.key?(:bundle_dir)
     match_flag = nil
     bundle_dir_path&.ascend do |sub_path|
       next unless ::ALLOWABLE_BUNDLE_DIRS.include?(sub_path.to_s)
