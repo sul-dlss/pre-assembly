@@ -10,16 +10,10 @@ stageable_discovery:
   regex: ~
 
 manifest:   ~
-checksums_file:   ~
-desc_md_template: ~
 
 project_name:      'Gould'
 
 progress_log_file: '/dor/preassembly/gould_log.yaml'
 
-content_exclusion: ~
-
 content_md_creation:
   style:       'default'
-
-publish_attr: ~

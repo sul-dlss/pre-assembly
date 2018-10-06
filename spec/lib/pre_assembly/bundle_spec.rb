@@ -182,7 +182,6 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#new_object_file' do
     it 'returns an ObjectFile with expected path values' do
-      allow(flat_dir_images).to receive(:exclude_from_content).and_return(false)
       tests = [
         # Stageable is a file:
         # - immediately in bundle dir.

@@ -65,16 +65,6 @@ staging_style:    'copy'     # the staging style, can be "copy" or "symlink", de
                              #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the bundle directory
 
 ####
-# Additional materials accompaning the bundle.
-#
-# These file names below should be expressed in relative terms -- relative to bundle_dir.
-####
-
-manifest:         'manifest.csv'       # The manifest file, if 'use_manifest' is true.  Path must be relative to the bundle path. Otherwise, set to ~
-checksums_file:   'checksums.txt'      # A provider checksum file (in default md5sum format).  Path must be relative to the bundle path. If none provided, set to ~
-desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML template to use in conjunction with the manifest.  Path can be absolute or relative to the bundle path.
-
-####
 # The CSV file is expected with columns (always lowercase):
 # - 'druid', required
 # - 'object', required
@@ -82,10 +72,6 @@ desc_md_template: 'mods_template.xml'  # An optional descriptive metadata XML te
 ####
 # Attributes related to content metadata generation.
 ####
-
-# A regex to exclude staged files from contentMetadata.xml (content will still be staged though).
-content_exclusion: ~             # Include all staged files in content metadata.
-                   '(?i)\.xml$'  # Exclude xml files from content metadata.
 
 # The method used to bundle resources together when generating content metadata.
 content_md_creation:
@@ -96,33 +82,3 @@ content_md_creation:
                                          # part of a single resource node.
                'smpl'                   # Only used by SMPL projects.  Will generate a content metadata file using the SMPL preContentMetadata.
                'none'                   # Do not generate any contentMetadata.xml file.  Select this option only if you have a previously created valid contentMetadata.xml in the root of your staged folder.
-  smpl_manifest:    'smpl_manifest.csv'  # The manifest file for use in SMPL projects.  Typically set to ~ unless style='smpl'
-
-
-####
-# Attributes related common-accessioning steps.
-####
-
-publish_attr:  ~  # Most projects should set this to nil.  If not specified or nil, they will be added by the assembly robots based on mimetype.
-
-  # If you want to specify them here, you can do it in two ways.  First off, don't set 'publish_attr' to nil.  Next
-  # set it globally for all files, like this:
-  shelve:   'no'
-  publish:  'no'
-  preserve: 'yes'
-
-  # The second is by mime-type, nesting under each mimetype (which must be quoted), like this.  The attributes will be set according to the
-  #  mime-type of the file.  You must also set a 'default', which will be applied if no mime-type matches.  If any of the default attributes are
-  # set to nil and no mime-type matches, the attributes will be left off and added during assembly according to the defaults.
-  'image/jp2':
-    publish:            'yes'
-    shelve:             'yes'
-    preserve:           'no'
-  'image/tiff':
-    publish:            'no'
-    shelve:             'no'
-    preserve:           'yes'
-  'default':
-    publish:             'no'
-    shelve:              'no'
-    preserve:            'yes'
