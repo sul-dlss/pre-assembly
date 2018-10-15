@@ -53,7 +53,7 @@ RSpec.describe JobRunsController, type: :controller do
     it 'successfully returns json' do
       get :index, format: 'json'
       expect(response).to have_http_status(:success)
-      expect(response.header).to include('Content-Type' => 'application/json; charset=utf-8')
+      expect(response.header['Content-Type']).to eq 'application/json; charset=utf-8'
     end
   end
 
@@ -68,10 +68,8 @@ RSpec.describe JobRunsController, type: :controller do
       allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
       get :download, params: { id: 123 }
       expect(response).to have_http_status(:success)
-      expect(response.header).to include(
-        'Content-Type' => 'application/x-yaml',
-        'Content-Disposition' => 'attachment; filename="mock_progress_log.yaml"'
-      )
+      expect(response.header['Content-Type']).to eq 'application/x-yaml'
+      expect(response.header['Content-Disposition']).to eq 'attachment; filename="mock_progress_log.yaml"'
       expect(flash[:warning]).to be_nil
     end
     it 'requires ID param' do
