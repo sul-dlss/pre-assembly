@@ -17,7 +17,9 @@ and `-prod`.  Both the `v3-legacy` code and the `lyberservcies` servers themselv
 
 The contemporary `Pre-Assembly` is a rails web-app.
 
-## Running
+## Running the legacy application
+
+### Documentation for the contemporary (web) app is in the wiki:  https://github.com/sul-dlss/pre-assembly/wiki
 
 1.  Gather information about your project, including:
     *   The location of the materials.  You will need read access to this
@@ -154,7 +156,7 @@ brew install exiftool
 bundle exec rspec
 ```
 
-## Running the application for local development
+## Running the (contemporary web) application for local development
 
 Just the usual:
 
@@ -174,7 +176,7 @@ Because the application looks for user info in an environment variable, and beca
 an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
 sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
 
-## Troubleshooting
+## Troubleshooting (the legacy application)
 
 ### Seeing an error like this when you try to run pre-assembly or a discovery report?
 ```
@@ -251,7 +253,7 @@ try loading the YAML again on the console to confirm.
 
 Use [Argo](https://argo.stanford.edu/).
 
-## Manifests
+## Manifests (applicable to both the legacy command line app and the contemporary web app)
 
 Manifests are a way of indicating which objects you will be accessioning. A
 manifest file is a CSV, UTF-8 encoded file and works for projects which have
@@ -260,8 +262,8 @@ files per object (where container = folder).
 
 **WARNING**: if you export from Microsoft Excel, you may not get a properly
 formatted UTF-8 CSV file. You should open any CSV that has been exported from
-Excel in a text editor and re-save it in proper UTF-8 files (like TextMate on
-a Mac).
+Excel in a text editor and re-save it in proper UTF-8 files (e.g. Atom, Sublime,
+or TextMate).
 
 There are a few columns in the manifest, with two required:
 
