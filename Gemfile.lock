@@ -289,13 +289,6 @@ GEM
       iso-639
       nokogiri
       nom-xml (~> 1.0)
-    modsulator (1.2.1)
-      activesupport
-      deprecation (~> 0)
-      equivalent-xml (>= 0.6.0)
-      nokogiri
-      roo (= 2.5.1)
-      stanford-mods-normalizer (~> 0.1)
     mono_logger (1.1.0)
     multi_json (1.13.1)
     multipart-post (2.0.0)
@@ -557,7 +550,6 @@ DEPENDENCIES
   jquery-rails
   kaminari
   listen
-  modsulator
   nokogiri
   okcomputer
   pg
