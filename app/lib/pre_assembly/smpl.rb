@@ -23,11 +23,11 @@ module PreAssembly
 
       # default publish/shelve/preserve attributes per "type" as defined in smpl filenames
       @file_attributes = {
-        'default'    => { publish: 'no', shelve: 'no', preserve: 'yes' },
-        'pm'         => { publish: 'no', shelve: 'no', preserve: 'yes' },
-        'sh'         => { publish: 'no', shelve: 'no', preserve: 'yes' },
-        'sl'         => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
-        'images'     => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
+        'default' => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'pm' => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'sh' => { publish: 'no', shelve: 'no', preserve: 'yes' },
+        'sl' => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
+        'images' => { publish: 'yes', shelve: 'yes', preserve: 'yes' },
         'transcript' => { publish: 'yes', shelve: 'yes', preserve: 'yes' }
       }
       @manifest = {}
