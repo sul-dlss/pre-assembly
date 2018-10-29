@@ -30,7 +30,6 @@ gem 'capistrano-resque-pool'
 gem 'assembly-image'
 gem 'assembly-objectfile', '~> 1.7'
 gem 'dor-services', '~> 5.29'
-gem 'modsulator'
 
 group :test do
   gem 'coveralls', require: false
