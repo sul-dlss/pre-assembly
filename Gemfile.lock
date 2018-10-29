@@ -563,7 +563,7 @@ DEPENDENCIES
   retries
   roo
   rspec-rails (~> 3.7)
-  rubocop (~> 0.58)
+  rubocop (~> 0.60.0)
   rubocop-rspec
   ruby-prof
   shoulda-matchers!
