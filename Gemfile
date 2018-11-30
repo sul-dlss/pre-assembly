@@ -35,7 +35,7 @@ group :test do
   gem 'coveralls', require: false
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
-  gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers.git', branch: 'rails-5'
+  gem 'shoulda-matchers', '~> 4.0.0.rc1'
 end
 
 group :deployment do
