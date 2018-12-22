@@ -29,14 +29,13 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#process_digital_objects' do
-    let(:exp_workflow_svc_url) { Regexp.new("^#{Dor::Config.dor_services.url}/objects/.*/apo_workflows/assemblyWF$") }
-
     before do
-      allow(RestClient).to receive(:post)
-        .with(a_string_matching(exp_workflow_svc_url), {})
-        .and_return(instance_double(RestClient::Response, code: 200))
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:api_client).and_return(client)
       allow(Dor::Item).to receive(:find).with(any_args)
+      allow(client).to receive(:initialize_workflow)
     end
+
+    let(:client) { double }
 
     it 'runs cleanly' do
       expect { b.process_digital_objects }.not_to raise_error
