@@ -1,3 +1,5 @@
+require 'dor/services/client'
+
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
@@ -256,18 +258,21 @@ module PreAssembly
     def initialize_assembly_workflow
       # TODO: use dor-workflow-service gem for this (see #194)
       with_retries(max_tries: Dor::Config.dor_services.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        RestClient.post(assembly_workflow_url, {}).tap do |result|
-          next if result && (200..204).cover?(result.code)
-          raise "POST #{assembly_workflow_url} returned #{result.code}"
-        end
+        api_client.initialize_workflow(object: druid.druid, wf_name: workflow_name)
+      rescue StandardError => error
+        raise "POST to assemblyWF endpoint at #{Settings.dor_services_url} returned #{error}"
       end
     end
 
-    def assembly_workflow_url
-      "#{Dor::Config.dor_services.url}/objects/#{druid.druid}/apo_workflows/assemblyWF"
+    private
+
+    def api_client
+      @api_client ||= Dor::Services::Client.configure(url: Settings.dor_services.url)
     end
 
-    private
+    def workflow_name
+      'assemblyWF'
+    end
 
     def technical_md_file
       'technicalMetadata.xml'
