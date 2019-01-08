@@ -4,8 +4,6 @@ gem 'bootstrap', '~> 4.1.3'
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
-gem 'dor-services-client', '~> 0.6'
-gem 'erubis' # implicit dependency for (old) rdf-rdfa, no longer default in Rails 5.1+
 gem 'honeybadger', '~> 3.1'
 gem 'jbuilder'
 gem 'jquery-rails'
@@ -31,6 +29,7 @@ gem 'capistrano-resque-pool'
 gem 'assembly-image'
 gem 'assembly-objectfile', '~> 1.7'
 gem 'dor-services', '~> 5.29'
+gem 'dor-services-client', '~> 0.6'
 
 group :test do
   gem 'coveralls', require: false
