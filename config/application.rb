@@ -1,6 +1,5 @@
 require_relative 'boot'
 require 'rails/all'
-require_relative 'erubis_monkeypatch.rb'
 
 CERT_DIR = File.join(File.dirname(__FILE__), '.', 'certs')
 

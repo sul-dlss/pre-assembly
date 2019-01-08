@@ -209,7 +209,6 @@ GEM
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
     erubi (1.8.0)
-    erubis (2.7.0)
     execjs (2.7.0)
     factory_bot (4.11.1)
       activesupport (>= 3.0.0)
@@ -544,7 +543,6 @@ DEPENDENCIES
   dor-services (~> 5.29)
   dor-services-client (~> 0.6)
   equivalent-xml
-  erubis
   factory_bot_rails
   honeybadger (~> 3.1)
   jbuilder
