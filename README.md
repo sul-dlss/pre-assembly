@@ -12,8 +12,8 @@ See the [RELEASES](./RELEASES.md) list.
 
 ### Legacy
 
-The legacy command-line version of this code is represented by the `v3-legacy` branch.  That branch is deployed to `sul-lyberservices-test`
-and `-prod`.  Both the `v3-legacy` code and the `lyberservcies` servers themselves are deprecated.
+The legacy command-line version of this code is represented by the `v3-legacy` branch. That branch is deployed to `sul-lyberservices-test`
+and `-prod`, and is still actively used by a small number of power users in the PSM group. Until the [desired functionality](https://github.com/sul-dlss/pre-assembly/issues/221) in the `v3-legacy` branch has been ported to the web application in `master`, we should continue to maintain the `v3-legacy` branch.
 
 The contemporary `Pre-Assembly` is a rails web-app.
 
