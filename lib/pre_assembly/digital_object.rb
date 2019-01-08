@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'dor/services/client'
 require 'modsulator'
 
 module PreAssembly
@@ -491,24 +492,27 @@ module PreAssembly
     ####
 
     def initialize_assembly_workflow
-
       # Call web service to add assemblyWF to the object in DOR.
       return unless @init_assembly_wf
       log "    - initialize_assembly_workflow()"
-      url = assembly_workflow_url
 
       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        result = RestClient.post url, {}
-        raise PreAssembly::UnknownError unless result && [200,201,202,204].include?(result.code)
-        result
+        begin
+          api_client.initialize_workflow(object: @druid.druid, wf_name: workflow_name)
+        rescue StandardError => error
+          raise PreAssembly::UnknownError, "POST to assemblyWF endpoint at #{Dor::Config.dor_services_url} returned #{error}"
+        end
       end
     end
 
-    def assembly_workflow_url
-      druid = @pid.include?('druid') ? @pid : "druid:#{@pid}"
-      "#{Dor::Config.dor_services.url}/objects/#{druid}/apo_workflows/assemblyWF"
+    private
+
+    def api_client
+      @api_client ||= Dor::Services::Client.configure(url: Dor::Config.dor_services.url)
     end
 
+    def workflow_name
+      'assemblyWF'
+    end
   end
-
 end

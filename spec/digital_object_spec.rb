@@ -797,30 +797,49 @@ describe PreAssembly::DigitalObject do
 
   end
 
-  ####################
-
-  describe "initiate assembly workflow" do
-
-    it "initialize_assembly_workflow() should do nothing if init_assembly_wf is false" do
-      @dobj.init_assembly_wf = false
-      expect(@dobj).not_to receive :assembly_workflow_url
-      @dobj.initialize_assembly_workflow
+  describe '#initialize_assembly_workflow' do
+    before do
+      allow(@dobj).to receive(:api_client).and_return(client)
+      allow(Dor::Config).to receive(:dor_services_url).and_return(service_url)
+      @dobj.init_assembly_wf = true
+      @dobj.druid = @druid
     end
 
-    it "assembly_workflow_url() should return expected value" do
-      @dobj.pid = @pid
-      url = @dobj.assembly_workflow_url
-      expect(url).to match(/^http.+assemblyWF$/)
-      expect(url.include?(@pid)).to eq(true)
+    let(:client) { double }
+    let(:service_url) { 'http://example.edu/dor/services/endpoint' }
+
+    context 'when @init_assembly_wf is false' do
+      before do
+        @dobj.init_assembly_wf = false
+      end
+
+      it 'skips initializing workflow' do
+        expect(@dobj).not_to receive(:api_client)
+        @dobj.initialize_assembly_workflow
+      end
     end
 
-    it "assembly_workflow_url() should add the druid: prefix to the pid if it is missing, like it might be in the manifest" do
-      @dobj.pid = @pid.gsub('druid:','')
-      url = @dobj.assembly_workflow_url
-      expect(url).to match(/^http.+assemblyWF$/)
-      expect(url.include?(@pid)).to eq(true)
+    context 'when api client is successful' do
+      before do
+        allow(client).to receive(:initialize_workflow)
+      end
+
+      it 'starts the assembly workflow' do
+        expect { @dobj.initialize_assembly_workflow }.not_to raise_error
+        expect(client).to have_received(:initialize_workflow).once
+      end
     end
 
+    context 'when the api client raises' do
+      before do
+        allow(client).to receive(:initialize_workflow).and_raise(Dor::Services::Client::UnexpectedResponse)
+      end
+
+      it 'raises an exception' do
+        expect { @dobj.initialize_assembly_workflow }.to raise_error(
+          /POST to assemblyWF endpoint at #{service_url} returned Dor::Services::Client::UnexpectedResponse/
+        )
+      end
+    end
   end
-
 end
