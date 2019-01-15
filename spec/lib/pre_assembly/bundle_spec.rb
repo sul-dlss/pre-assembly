@@ -32,7 +32,7 @@ RSpec.describe PreAssembly::Bundle do
     before do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:api_client).and_return(client)
       allow(Dor::Item).to receive(:find).with(any_args)
-      allow(client).to receive(:initialize_workflow)
+      allow(client).to receive_message_chain(:object, :workflow, :create)
     end
 
     let(:client) { double }

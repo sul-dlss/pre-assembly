@@ -258,7 +258,7 @@ module PreAssembly
     def initialize_assembly_workflow
       # TODO: use dor-workflow-service gem for this (see #194)
       with_retries(max_tries: Dor::Config.dor_services.num_attempts, rescue: Exception, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        api_client.initialize_workflow(object: druid.druid, wf_name: workflow_name)
+        api_client.object(druid.druid).workflow.create(wf_name: workflow_name)
       rescue StandardError => error
         raise "POST to assemblyWF endpoint at #{Settings.dor_services_url} returned #{error}"
       end

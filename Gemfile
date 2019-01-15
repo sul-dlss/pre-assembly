@@ -7,6 +7,7 @@ gem 'devise-remote-user'
 gem 'honeybadger', '~> 3.1'
 gem 'jbuilder'
 gem 'jquery-rails'
+gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
@@ -17,19 +18,15 @@ gem 'resque-lock'
 gem 'resque-pool'
 gem 'retries'
 gem 'roo' # for processing spreadsheets
-gem 'ruby-prof'
-gem 'sqlite3'
+gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
 gem 'turbolinks' # improves speed of following links in web application
 gem 'uglifier' # compressor for JavaScript assets
-gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
-gem 'kaminari' # pagination
-gem 'capistrano-resque-pool'
 
 # Stanford gems
 gem 'assembly-image'
 gem 'assembly-objectfile', '~> 1.7'
-gem 'dor-services', '~> 5.29'
-gem 'dor-services-client', '~> 0.6'
+gem 'dor-services', '~> 6.1'
+gem 'dor-services-client', '~> 1.0'
 
 group :test do
   gem 'coveralls', require: false
@@ -42,6 +39,7 @@ group :deployment do
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
+  gem 'capistrano-resque-pool'
   gem 'dlss-capistrano', '~> 3.1'
 end
 
@@ -55,4 +53,6 @@ group :development, :test do
   gem 'rails-controller-testing'
   gem 'rubocop', '~> 0.60.0'
   gem 'rubocop-rspec'
+  gem 'ruby-prof'
+  gem 'sqlite3'
 end

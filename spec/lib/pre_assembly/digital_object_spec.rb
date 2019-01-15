@@ -335,7 +335,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when api client is successful' do
       before do
-        allow(client).to receive(:initialize_workflow)
+        allow(client).to receive_message_chain(:object, :workflow, :create)
       end
 
       it 'starts the assembly workflow' do
@@ -345,7 +345,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the api client raises' do
       before do
-        allow(client).to receive(:initialize_workflow).and_raise(Dor::Services::Client::UnexpectedResponse)
+        allow(client).to receive_message_chain(:object, :workflow, :create).and_raise(Dor::Services::Client::UnexpectedResponse)
       end
 
       it 'raises an exception' do
