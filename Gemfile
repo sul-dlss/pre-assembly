@@ -23,7 +23,7 @@ gem 'turbolinks' # improves speed of following links in web application
 gem 'uglifier' # compressor for JavaScript assets
 
 # Stanford gems
-gem 'assembly-image'
+gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.7'
 gem 'dor-services', '~> 6.1'
 gem 'dor-services-client', '~> 1.0'
