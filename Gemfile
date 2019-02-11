@@ -54,5 +54,5 @@ group :development, :test do
   gem 'rubocop', '~> 0.60.0'
   gem 'rubocop-rspec'
   gem 'ruby-prof'
-  gem 'sqlite3'
+  gem 'sqlite3', '~> 1.3.13'
 end
