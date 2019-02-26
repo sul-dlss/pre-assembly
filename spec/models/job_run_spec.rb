@@ -46,7 +46,7 @@ RSpec.describe JobRun, type: :model do
 
   describe '#job_type enum' do
     it 'defines expected values' do
-      is_expected.to define_enum_for(:job_type).with(
+      is_expected.to define_enum_for(:job_type).with_values(
         'discovery_report' => 0,
         'preassembly' => 1
       )
