@@ -50,7 +50,7 @@ RSpec.describe BundleContext, type: :model do
   end
 
   it do
-    is_expected.to define_enum_for(:content_structure).with(
+    is_expected.to define_enum_for(:content_structure).with_values(
       'simple_image' => 0,
       'simple_book' => 1,
       'book_as_image' => 2,
@@ -59,7 +59,7 @@ RSpec.describe BundleContext, type: :model do
     )
   end
   it do
-    is_expected.to define_enum_for(:content_metadata_creation).with(
+    is_expected.to define_enum_for(:content_metadata_creation).with_values(
       'default' => 0,
       'filename' => 1,
       'smpl_cm_style' => 2
