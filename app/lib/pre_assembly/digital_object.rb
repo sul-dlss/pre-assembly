@@ -264,7 +264,9 @@ module PreAssembly
     private
 
     def api_client
-      @api_client ||= Dor::Services::Client.configure(url: Settings.dor_services.url)
+      @api_client ||= Dor::Services::Client.configure(url: Settings.DOR_SERVICES.URL,
+                                                      username: Settings.DOR_SERVICES.USER,
+                                                      password: Settings.DOR_SERVICES.PASS)
     end
 
     def workflow_name
