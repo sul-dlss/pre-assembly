@@ -10,9 +10,10 @@ Dor::Config.configure do
   #   this is done at end of preassembly to kick off assembly
   # TODO: use dor-workflow-service gem instead (see #194)
   dor_services do
-    url Settings.dor_services_url
+    url Settings.DOR_SERVICES.URL
+    user Settings.DOR_SERVICES.USER
+    pass Settings.DOR_SERVICES.PASS
     num_attempts Settings.dor_services_num_attempts
-    sleep_time Settings.dor_services_sleep_time # time between attempts
   end
 
   # used to look up object existence in DOR for discovery report

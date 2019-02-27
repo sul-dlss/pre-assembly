@@ -3,11 +3,9 @@ dor_client_cert_key:
 
 # used to make dor-workflow-service call for a druid
 #   this is done at end of preassembly to kick off assembly
-# TODO: use dor-workflow-service gem instead (see #194)
-# workflow_services_url: 'https://workflows.example.org/workflow/'
-dor_services_url: 'https://example.com/dor/v1'
+DOR_SERVICES:
+  URL: 'https://example.com/dor/v1'
 dor_services_num_attempts: 1 # how many attempts to contact dor before throwing exception
-dor_services_sleep_time: 0 # how long, in seconds, between attempts
 
 # used to look up object existence in DOR for discovery report
 # TODO: can we use dor-services-app instead? (see #226)
