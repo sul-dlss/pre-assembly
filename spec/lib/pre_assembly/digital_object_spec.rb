@@ -349,9 +349,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'raises an exception' do
-        expect { object.initialize_assembly_workflow }.to raise_error(
-          /POST to assemblyWF endpoint at #{service_url} returned Dor::Services::Client::UnexpectedResponse/
-        )
+        expect { object.initialize_assembly_workflow }.to raise_error(Dor::Services::Client::UnexpectedResponse)
       end
     end
   end
