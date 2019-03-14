@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'bootstrap', '~> 4.1.3'
+gem 'bootstrap', '~> 4.3', '>= 4.3.1'
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
