@@ -12,8 +12,10 @@ See the [RELEASES](./RELEASES.md) list.
 
 ### Legacy
 
-The legacy command-line version of this code is represented by the `v3-legacy` branch. That branch is deployed to `sul-lyberservices-test`
-and `-prod`, and is still actively used by a small number of power users in the PSM group. Until the [desired functionality](https://github.com/sul-dlss/pre-assembly/issues/221) in the `v3-legacy` branch has been ported to the web application in `master`, we should continue to maintain the `v3-legacy` branch.
+The legacy command-line version of this code is represented by the `v3-legacy` branch. That branch in -stage is deployed to `sul-lyberservices-test`
+and in -prod is deployed to `sul-lyberservices-prod` and is still actively used by a small number of power users in the PSM group. Until the
+[desired functionality](https://github.com/sul-dlss/pre-assembly/issues/221) in the `v3-legacy` branch has been ported to the web application in `master`,
+we should continue to maintain the `v3-legacy` branch.
 
 The contemporary `Pre-Assembly` is a rails web-app.
 
@@ -105,13 +107,15 @@ re-generated, and you will end up with two copies, in two different resources.
 
 ## Deployment
 
+Deploy the Web app version from the `master` branch and the legacy version from the `v3-legacy` branch:
+
 ```bash
-cap dev deploy  # for lyberservices-dev
-cap testing deploy  # for lyberservices-test
-cap production deploy # for lyberservices-production
+cap stage deploy
+cap prod deploy
 ```
 
-Enter the branch or tag you want deployed.
+Enter the branch or tag you want deployed.  For the master branch, should usually be `master` (the default).
+For the legacy CLI, it will always be `v3-legacy`.
 
 See the `Capfile` for more info.
 
