@@ -8,8 +8,8 @@ set :ssh_options, {
   auth_methods: %w(publickey password)
 }
 
-# Default branch is :master
-ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
+# Default branch is :v3-legacy
+set :branch, 'v3-legacy'
 
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/home/lyberadmin/pre-assembly'

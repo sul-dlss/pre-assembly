@@ -300,13 +300,10 @@ different resources.
 
 ==Deployment
 
-  cap dev deploy  # for lyberservices-dev
-  cap testing deploy  # for lyberservices-test
-  cap production deploy # for lyberservices-production
+  cap stage deploy  # for lyberservices-test
+  cap prod deploy # for lyberservices-prod
 
-Enter the branch or tag you want deployed.
-
-See the Capfile for more info.
+Only the `v3-legacy` branch is deployed.
 
 ==Setting up code for local development
 
