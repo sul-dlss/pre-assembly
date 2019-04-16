@@ -16,10 +16,10 @@ gem 'honeybadger', '~> 3.1'
 # Stanford gems
 gem 'assembly-image'
 gem 'assembly-objectfile', '> 1.6.6'
-gem 'assembly-utils'
+# gem 'assembly-utils'  # only used by a devel/* scripts, which are not regularly used, but this locks dor-services to an old version
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
-gem 'dor-services', '< 6'
+gem 'dor-services', '~> 6'
 gem 'dor-services-client', '~> 0.6'
 gem 'druid-tools'
 gem 'harvestdor'
