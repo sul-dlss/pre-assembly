@@ -8,6 +8,7 @@ CERT_DIR = File.join(File.dirname(__FILE__), ".", "certs")
 
 # General DLSS infrastructure.
 require 'dor-services'
+require 'dor-workflow-service'
 
 # Environment.
 unless defined?(NO_ENVIRONMENT)
