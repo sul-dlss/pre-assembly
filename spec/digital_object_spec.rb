@@ -800,7 +800,7 @@ describe PreAssembly::DigitalObject do
   describe '#initialize_assembly_workflow' do
     before do
       allow(@dobj).to receive(:api_client).and_return(client)
-      allow(Dor::Config).to receive(:dor_services_url).and_return(service_url)
+      allow(@dobj).to receive(:druid).and_return(@dru)
       @dobj.init_assembly_wf = true
       @dobj.druid = @druid
     end
@@ -819,27 +819,26 @@ describe PreAssembly::DigitalObject do
       end
     end
 
-    context 'when api client is successful' do
+    context 'when @init_assembly_wf is true' do
       before do
-        allow(client).to receive(:initialize_workflow)
+        allow(client).to receive_message_chain(:object, :workflow, :create)
       end
 
       it 'starts the assembly workflow' do
-        expect { @dobj.initialize_assembly_workflow }.not_to raise_error
-        expect(client).to have_received(:initialize_workflow).once
+        expect(@dobj).to receive(:api_client)
+        @dobj.initialize_assembly_workflow
       end
     end
 
     context 'when the api client raises' do
       before do
-        allow(client).to receive(:initialize_workflow).and_raise(Dor::Services::Client::UnexpectedResponse)
+        allow(client).to receive_message_chain(:object, :workflow, :create).and_raise(Exception)
       end
 
       it 'raises an exception' do
-        expect { @dobj.initialize_assembly_workflow }.to raise_error(
-          /POST to assemblyWF endpoint at #{service_url} returned Dor::Services::Client::UnexpectedResponse/
-        )
+        expect { @dobj.initialize_assembly_workflow }.to raise_error(Exception)
       end
     end
+
   end
 end

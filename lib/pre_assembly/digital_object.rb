@@ -496,19 +496,17 @@ module PreAssembly
       return unless @init_assembly_wf
       log "    - initialize_assembly_workflow()"
 
-      with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        begin
-          api_client.initialize_workflow(object: @druid.druid, wf_name: workflow_name)
-        rescue StandardError => error
-          raise PreAssembly::UnknownError, "POST to assemblyWF endpoint at #{Dor::Config.dor_services_url} returned #{error}"
-        end
-      end
+       with_retries(max_tries: Dor::Config.dor.num_attempts, rescue: Exception, handler: PreAssembly.retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
+          api_client.object(@druid.druid).workflow.create(wf_name: workflow_name)
+       end
     end
 
     private
 
     def api_client
-      @api_client ||= Dor::Services::Client.configure(url: Dor::Config.dor_services.url)
+      @api_client ||= Dor::Services::Client.configure(url: Dor::Config.dor_services.url,
+                                                      username: Dor::Config.dor_services.user,
+                                                      password: Dor::Config.dor_services.pass)
     end
 
     def workflow_name
