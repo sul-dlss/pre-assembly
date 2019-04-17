@@ -20,7 +20,7 @@ gem 'assembly-utils'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
 gem 'dor-services', '< 6'
-gem 'dor-services-client', '~> 0.6'
+gem 'dor-services-client'
 gem 'druid-tools'
 gem 'harvestdor'
 gem 'modsulator'

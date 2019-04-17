@@ -140,10 +140,11 @@ GEM
       stanford-mods-normalizer (~> 0.1)
       systemu (~> 2.6)
       uuidtools (~> 2.1.4)
-    dor-services-client (0.10.0)
+    dor-services-client (1.7.0)
       activesupport (>= 4.2, < 6)
       deprecation
       faraday (~> 0.15)
+      moab-versioning (~> 4.0)
       nokogiri (~> 1.8)
     dor-workflow-service (2.12.0)
       activesupport (>= 3.2.1, < 6)
@@ -378,7 +379,7 @@ DEPENDENCIES
   dir_validator
   dlss-capistrano (~> 3.1)
   dor-services (< 6)
-  dor-services-client (~> 0.6)
+  dor-services-client
   druid-tools
   equivalent-xml
   harvestdor
@@ -399,4 +400,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.16.6
+   1.17.2
