@@ -219,7 +219,7 @@ GEM
       nokogiri
       roo (>= 2.7.1)
       stanford-mods-normalizer (~> 0.1)
-    multipart-post (2.0.0)
+    multipart-post (2.1.1)
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
     net-scp (2.0.0)
