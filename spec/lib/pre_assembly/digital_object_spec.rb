@@ -325,31 +325,30 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe '#initialize_assembly_workflow' do
+    subject(:start_workflow) { object.initialize_assembly_workflow }
+
     before do
-      allow(object).to receive(:api_client).and_return(client)
+      allow(Dor::Config.workflow).to receive(:client).and_return(client)
       allow(object).to receive(:druid).and_return(druid)
     end
 
-    let(:client) { double }
+    let(:client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
     let(:service_url) { Settings.dor_services_url }
 
     context 'when api client is successful' do
-      before do
-        allow(client).to receive_message_chain(:object, :workflow, :create)
-      end
-
       it 'starts the assembly workflow' do
-        expect { object.initialize_assembly_workflow }.not_to raise_error
+        start_workflow
+        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF')
       end
     end
 
     context 'when the api client raises' do
       before do
-        allow(client).to receive_message_chain(:object, :workflow, :create).and_raise(Dor::Services::Client::UnexpectedResponse)
+        allow(client).to receive(:create_workflow_by_name).and_raise(StandardError)
       end
 
       it 'raises an exception' do
-        expect { object.initialize_assembly_workflow }.to raise_error(Dor::Services::Client::UnexpectedResponse)
+        expect { start_workflow }.to raise_error(StandardError)
       end
     end
   end
