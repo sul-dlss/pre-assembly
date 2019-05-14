@@ -256,22 +256,10 @@ module PreAssembly
 
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
-      with_retries(max_tries: Dor::Config.dor_services.num_attempts, rescue: StandardError, handler: retry_handler('INITIALIZE_ASSEMBLY_WORKFLOW', method(:log))) do
-        api_client.object(druid.druid).workflow.create(wf_name: workflow_name)
-      end
+      Dor::Config.workflow.client.create_workflow_by_name(druid.druid, 'assemblyWF')
     end
 
     private
-
-    def api_client
-      @api_client ||= Dor::Services::Client.configure(url: Settings.DOR_SERVICES.URL,
-                                                      username: Settings.DOR_SERVICES.USER,
-                                                      password: Settings.DOR_SERVICES.PASS)
-    end
-
-    def workflow_name
-      'assemblyWF'
-    end
 
     def technical_md_file
       'technicalMetadata.xml'
@@ -279,12 +267,6 @@ module PreAssembly
 
     def content_md_file
       'contentMetadata.xml'
-    end
-
-    def retry_handler(method_name, _logger, params = {})
-      proc do |_exception, attempt_number, total_delay|
-        log("      ** #{method_name} FAILED **; with params of #{params.inspect}; and trying attempt #{attempt_number} of #{Dor::Config.dor_services.num_attempts}; delayed #{total_delay} seconds")
-      end
     end
   end
 end

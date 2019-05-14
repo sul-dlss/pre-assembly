@@ -30,12 +30,9 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#process_digital_objects' do
     before do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:api_client).and_return(client)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:initialize_assembly_workflow)
       allow(Dor::Item).to receive(:find).with(any_args)
-      allow(client).to receive_message_chain(:object, :workflow, :create)
     end
-
-    let(:client) { double }
 
     it 'runs cleanly' do
       expect { b.process_digital_objects }.not_to raise_error
