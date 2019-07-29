@@ -3,7 +3,7 @@ RSpec.describe User, type: :model do
 
   context 'validation' do
     it 'is not valid unless it has all required attributes' do
-      expect(User.new).not_to be_valid
+      expect(described_class.new).not_to be_valid
       expect(user).to be_valid
     end
 

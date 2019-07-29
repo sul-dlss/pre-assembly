@@ -10,7 +10,7 @@ RSpec.describe BundleContext, type: :model do
 
   context 'validation' do
     it 'is not valid unless it has all required attributes' do
-      expect(BundleContext.new).not_to be_valid
+      expect(described_class.new).not_to be_valid
       expect(bc).to be_valid
     end
     it 'is not valid without a User' do
