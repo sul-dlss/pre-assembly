@@ -13,7 +13,7 @@ gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'rails', '~> 5.2', '>= 5.2.1'
 gem 'rake'
-gem 'resque', '~> 1.27' # needs to match redis on VM
+gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-lock'
 gem 'resque-pool'
 gem 'roo' # for processing spreadsheets
