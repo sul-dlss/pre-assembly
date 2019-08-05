@@ -4,7 +4,7 @@ gem 'bootstrap', '~> 4.3', '>= 4.3.1'
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
-gem 'honeybadger', '~> 3.1'
+gem 'honeybadger', '~> 4.5'
 gem 'jbuilder'
 gem 'jquery-rails'
 gem 'kaminari' # pagination

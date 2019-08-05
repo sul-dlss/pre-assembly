@@ -225,7 +225,7 @@ GEM
     haml (5.1.1)
       temple (>= 0.8.0)
       tilt
-    honeybadger (3.3.1)
+    honeybadger (4.5.0)
     hooks (0.4.1)
       uber (~> 0.0.14)
     htmlentities (4.3.4)
@@ -542,7 +542,7 @@ DEPENDENCIES
   dor-services (~> 7.1)
   equivalent-xml
   factory_bot_rails
-  honeybadger (~> 3.1)
+  honeybadger (~> 4.5)
   jbuilder
   jquery-rails
   kaminari
