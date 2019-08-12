@@ -195,7 +195,7 @@ RSpec.describe BundleContext, type: :model do
     it 'adds error if spml object is missing smpl_manifest.csv' do
       allow(bc).to receive(:smpl_cm_style?).and_return(true)
       bc.send(:verify_bundle_directory)
-      expect(bc.errors.to_h).to include(bundle_dir: /missing SMPL manifest/)
+      expect(bc.errors.to_h).to include(bundle_dir: /missing Media \(SMPL\) manifest/)
     end
   end
 end
