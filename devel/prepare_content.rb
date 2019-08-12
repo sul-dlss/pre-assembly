@@ -1,11 +1,13 @@
 # Used to stage content from Rumsey or other similar format to folder structure ready for accessioning.
-# Iterate through each row in the manifest, find files, generate contentMetadata and symlink to new location.
+# This script is only known to be used by the Maps Accessioning team (Rumsey Map Center) on sul-lyberservices-prod
+# Full documentation of how it is used is here (which needs to be updated if this script moves):
+# https://consul.stanford.edu/pages/viewpage.action?pageId=146704638
 
+# Iterate through each row in the supplied CSV manifest, find files, generate contentMetadata and symlink to new location.
 # Note: filenames must match exactly (no leading 0s) but can be in any sub-folder
 
 # Peter Mangiafico
 # November 14, 2017
-# see https://consul.stanford.edu/pages/viewpage.action?pageId=146704638 for more documentation
 #
 # Run with
 # ROBOT_ENVIRONMENT=production ruby devel/prepare_content.rb INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
