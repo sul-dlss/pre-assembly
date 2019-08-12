@@ -118,7 +118,7 @@ class BundleContext < ApplicationRecord
     return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
     errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
     return unless smpl_cm_style? # only smpl objects require smpl_manifest.csv
-    errors.add(:bundle_dir, "missing SMPL manifest: #{bundle_dir}/#{smpl_manifest}") unless File.exist?(File.join(bundle_dir, smpl_manifest))
+    errors.add(:bundle_dir, "missing Media (SMPL) manifest: #{bundle_dir}/#{smpl_manifest}") unless File.exist?(File.join(bundle_dir, smpl_manifest))
   end
 
   def verify_bundle_dir_path
