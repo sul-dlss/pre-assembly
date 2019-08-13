@@ -55,7 +55,8 @@ RSpec.describe BundleContext, type: :model do
       'simple_book' => 1,
       'book_as_image' => 2,
       'file' => 3,
-      'smpl' => 4
+      'smpl' => 4,
+      '3d' => 5
     )
   end
   it do

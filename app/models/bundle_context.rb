@@ -19,7 +19,8 @@ class BundleContext < ApplicationRecord
     'simple_book' => 1,
     'book_as_image' => 2,
     'file' => 3,
-    'smpl' => 4
+    'smpl' => 4,
+    '3d' => 5
   }
 
   enum content_metadata_creation: {

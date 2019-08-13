@@ -64,7 +64,8 @@ module PreAssembly
         'Book (image-only)' => :book_as_image,
         'Manuscript (flipbook, ltr)' => :simple_book,
         'Manuscript (image-only)' => :book_as_image,
-        'Map' => :map
+        'Map' => :map,
+        '3D' => :'3d'
       }
       content_type_tag_mapping[content_type_tag] || content_structure.to_sym
     end
