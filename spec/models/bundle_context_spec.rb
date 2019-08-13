@@ -55,7 +55,7 @@ RSpec.describe BundleContext, type: :model do
       'simple_book' => 1,
       'book_as_image' => 2,
       'file' => 3,
-      'smpl' => 4,
+      'media' => 4,
       '3d' => 5
     )
   end
@@ -63,7 +63,7 @@ RSpec.describe BundleContext, type: :model do
     is_expected.to define_enum_for(:content_metadata_creation).with_values(
       'default' => 0,
       'filename' => 1,
-      'smpl_cm_style' => 2
+      'media_cm_style' => 2
     )
   end
 
@@ -94,9 +94,9 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#smpl_manifest' do
+  describe '#media_manifest' do
     it 'returns the file name' do
-      expect(described_class.new.smpl_manifest).to eq 'smpl_manifest.csv'
+      expect(described_class.new.media_manifest).to eq 'media_manifest.csv'
     end
   end
 
@@ -193,10 +193,10 @@ RSpec.describe BundleContext, type: :model do
       bc.send(:verify_bundle_directory)
       expect(bc.errors.to_h).to include(bundle_dir: /missing manifest/)
     end
-    it 'adds error if spml object is missing smpl_manifest.csv' do
-      allow(bc).to receive(:smpl_cm_style?).and_return(true)
+    it 'adds error if media object is missing media_manifest.csv' do
+      allow(bc).to receive(:media_cm_style?).and_return(true)
       bc.send(:verify_bundle_directory)
-      expect(bc.errors.to_h).to include(bundle_dir: /missing Media \(SMPL\) manifest/)
+      expect(bc.errors.to_h).to include(bundle_dir: /missing Media manifest/)
     end
   end
 end

@@ -6,7 +6,7 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :user_params,
                   :skippables,
-                  :smpl_manifest
+                  :media_manifest
 
     delegate :apo_druid_id,
              :apply_tag,
@@ -26,7 +26,7 @@ module PreAssembly
 
     def initialize(bundle_context)
       @bundle_context = bundle_context
-      self.smpl_manifest = PreAssembly::Smpl.new(csv_filename: bundle_context.smpl_manifest, bundle_dir: bundle_dir) if bundle_context.smpl_cm_style?
+      self.media_manifest = PreAssembly::Media.new(csv_filename: bundle_context.media_manifest, bundle_dir: bundle_dir) if bundle_context.media_cm_style?
       self.skippables = {}
       load_skippables
     end

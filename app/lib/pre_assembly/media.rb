@@ -1,24 +1,24 @@
-# This class generates contentMetadata from a SMPL supplied manifest
+# This class generates contentMetadata from a Media supplied manifest
 # see the "SMPL Content" section here for a description of the manifest:
 # https://consul.stanford.edu/pages/viewpage.action?pageId=136365158#AutomatedAccessioningandObjectRemediation(pre-assemblyandassembly)-SMPLContent
 
 # It is used by pre-assembly during the accessioning process in an automated way based on the pre-assembly config .yml file setting of content_md_creation
 
 # Test with
-# cm=PreAssembly::Smpl.new(:bundle_dir=>'/thumpers/dpgthumper2-smpl/ARS0022_speech/content_ready_for_accessioning/content',:csv_filename=>'smpl_manifest.csv',:verbose=>true)
+# cm=PreAssembly::Media.new(:bundle_dir=>'/thumpers/dpgthumper2-media/ARS0022_speech/content_ready_for_accessioning/content',:csv_filename=>'media_manifest.csv',:verbose=>true)
 # cm.generate_cm('zx248jc1918')
 
 # or in the context of a bundle object:
-# cm=PreAssembly::Smpl.new(:csv_filename=>@content_md_creation[:smpl_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
+# cm=PreAssembly::Media.new(:csv_filename=>@content_md_creation[:media_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
 # cm.generate_cm('oo000oo0001')
 
 module PreAssembly
-  class Smpl
+  class Media
     attr_reader :file_attributes, :manifest, :rows, :csv_filename, :bundle_dir
 
     def initialize(params)
       @bundle_dir = params[:bundle_dir]
-      csv_file = params[:csv_filename] || 'smpl_manifest.csv'
+      csv_file = params[:csv_filename] || 'media_manifest.csv'
       @csv_filename = File.join(@bundle_dir, csv_file)
 
       # default publish/shelve/preserve attributes per "type" as defined in smpl filenames
