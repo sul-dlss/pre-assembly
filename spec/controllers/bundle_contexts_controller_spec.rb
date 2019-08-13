@@ -3,10 +3,10 @@ RSpec.describe BundleContextsController, type: :controller do
     {
       bundle_context:
         {
-          project_name: 'SMPL-multimedia',
+          project_name: 'Multimedia',
           content_structure: 'simple_image',
           content_metadata_creation: 'default',
-          bundle_dir: 'spec/test_data/smpl_multimedia',
+          bundle_dir: 'spec/test_data/multimedia',
           job_runs_attributes: { '0' => { job_type: 'preassembly' } }
         }
     }
@@ -44,7 +44,7 @@ RSpec.describe BundleContextsController, type: :controller do
 
     context '#create' do
       context 'Valid Parameters' do
-        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/SMPL-multimedia" }
+        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/multimedia" }
 
         before { Dir.delete(output_dir) if Dir.exist?(output_dir) }
 
@@ -58,10 +58,10 @@ RSpec.describe BundleContextsController, type: :controller do
         it 'has the correct attributes' do
           post :create, params: params
           bc = assigns(:bundle_context)
-          expect(bc.project_name).to eq 'SMPL-multimedia'
+          expect(bc.project_name).to eq 'Multimedia'
           expect(bc.content_structure).to eq 'simple_image'
           expect(bc.content_metadata_creation).to eq 'default'
-          expect(bc.bundle_dir).to eq 'spec/test_data/smpl_multimedia'
+          expect(bc.bundle_dir).to eq 'spec/test_data/multimedia'
         end
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)

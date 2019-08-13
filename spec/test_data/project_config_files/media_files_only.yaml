@@ -1,12 +1,12 @@
-project_name:         'smpl-accession-only'
+project_name:         'media-files-only'
 
 project_style:
-  content_structure:  'smpl'
+  content_structure:  'media'
 
-bundle_dir:           'spec/test_data/smpl_multimedia'
+bundle_dir:           'spec/test_data/multimedia'
 
 content_md_creation:
-  style:              'smpl'
+  style:              'media'
 
 stageable_discovery:
   glob:               '**/*'
