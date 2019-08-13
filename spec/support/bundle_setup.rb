@@ -15,7 +15,7 @@ end
 def bundle_context_from_hash(proj)
   hash = hash_from_proj(proj)
   cmc = hash['content_md_creation']['style']
-  cmc += '_cm_style' if cmc == 'smpl'
+  cmc += '_cm_style' if cmc == 'media'
   build(
     :bundle_context,
     project_name: hash['project_name'],

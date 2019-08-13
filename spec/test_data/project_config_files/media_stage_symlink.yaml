@@ -1,14 +1,14 @@
-project_name:         'smpl-staging-symlink'
+project_name:         'media-staging-symlink'
 
 project_style:
-  content_structure:  'smpl'
+  content_structure:  'media'
 
-bundle_dir:           'spec/test_data/smpl_multimedia'
+bundle_dir:           'spec/test_data/multimedia'
 
 staging_style:        'symlink'
 
 content_md_creation:
-  style:              'smpl'
+  style:              'media'
 
 stageable_discovery:
   glob:               '**/*'
