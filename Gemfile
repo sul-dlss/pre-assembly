@@ -23,7 +23,7 @@ gem 'uglifier' # compressor for JavaScript assets
 
 # Stanford gems
 gem 'assembly-image', '~> 1.7'
-gem 'assembly-objectfile', '~> 1.7'
+gem 'assembly-objectfile', '~> 1.7', '>= 1.7.2' # 1.7.2 is the first version to support 3d content metadata generation
 gem 'dor-services', '~> 7.1'
 
 group :test do

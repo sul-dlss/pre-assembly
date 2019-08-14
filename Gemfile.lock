@@ -63,8 +63,8 @@ GEM
     assembly-image (1.7.5)
       assembly-objectfile (>= 1.6.4)
       mini_exiftool (>= 1.6, < 3)
-    assembly-objectfile (1.7.1)
-      mime-types
+    assembly-objectfile (1.7.2)
+      mime-types (> 3)
       mini_exiftool
       nokogiri
     ast (2.4.0)
@@ -528,7 +528,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image (~> 1.7)
-  assembly-objectfile (~> 1.7)
+  assembly-objectfile (~> 1.7, >= 1.7.2)
   bootstrap (~> 4.3, >= 4.3.1)
   capistrano-bundler
   capistrano-passenger
