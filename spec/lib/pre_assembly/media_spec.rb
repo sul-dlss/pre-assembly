@@ -17,7 +17,6 @@ RSpec.describe PreAssembly::Media do
       described_class.new(csv_filename: 'media_manifest.csv', bundle_dir: bundle_dir)
     end
 
-
     it 'generates technicalMetadata for Media by combining all existing _techmd.xml files' do
       dobj1.create_technical_metadata
       exp_xml = noko_doc(dobj1.technical_md_xml)
@@ -79,7 +78,7 @@ RSpec.describe PreAssembly::Media do
   end
 
   def exp_xml_object_aa111aa1111
-    <<-END
+    <<-XML
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1">
@@ -115,11 +114,11 @@ RSpec.describe PreAssembly::Media do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-    END
+    XML
   end
 
   def exp_xml_object_aa111aa1111_with_thumb
-    <<-END
+    <<-XML
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1" thumb="yes">
@@ -155,11 +154,11 @@ RSpec.describe PreAssembly::Media do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-    END
+    XML
   end
 
   def exp_xml_object_bb222bb2222
-    <<-END
+    <<-XML
             <?xml version="1.0"?>
             <contentMetadata objectId="bb222bb2222" type="media">
               <resource sequence="1" id="bb222bb2222_1" type="media">
@@ -181,6 +180,6 @@ RSpec.describe PreAssembly::Media do
                 <file id="bb222bb2222.pdf" preserve="yes" publish="yes" shelve="yes"/>
               </resource>
             </contentMetadata>
-    END
+    XML
   end
 end
