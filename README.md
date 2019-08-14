@@ -135,6 +135,23 @@ cd pre-assembly
 bundle install
 ```
 
+#### Redis/Resque
+
+The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
+webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
+
+```bash
+brew install redis
+```
+
+and start as needed (if not running as a background process):
+
+```bash
+redis-server /usr/local/etc/redis.conf
+```
+
+See https://redis.io/ for other installation instructions and information.
+
 #### exiftool
 
 You need `exiftool` on your system in order to successfully run all of the tests.
