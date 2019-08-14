@@ -154,7 +154,7 @@ module PreAssembly
     def allowed_values
       {
         :project_style=>{
-          :content_structure=>[:simple_image,:simple_book,:book_as_image,:book_with_pdf,:file,:smpl],
+          :content_structure=>[:simple_image,:simple_book,:book_as_image,:book_with_pdf,:file,:smpl,:'3d'],
           :get_druid_from=>[:suri,:container,:container_barcode,:manifest,:druid_minter],
           },
         :content_md_creation=>{
