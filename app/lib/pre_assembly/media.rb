@@ -21,7 +21,7 @@ module PreAssembly
       csv_file = params[:csv_filename] || 'media_manifest.csv'
       @csv_filename = File.join(@bundle_dir, csv_file)
 
-      # default publish/shelve/preserve attributes per "type" as defined in smpl filenames
+      # default publish/shelve/preserve attributes per "type" as defined in media filenames
       @file_attributes = {
         'default' => { publish: 'no', shelve: 'no', preserve: 'yes' },
         'pm' => { publish: 'no', shelve: 'no', preserve: 'yes' },

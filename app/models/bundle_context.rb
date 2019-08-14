@@ -56,7 +56,7 @@ class BundleContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
-  # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
+  # TODO: See #274. Possibly need to keep for Media style projects (if they don't use manifest?)
   # @deprecated - since it's not currently configurable, and non-default usage isn't tested anyway
   def stageable_discovery
     {}
@@ -118,7 +118,7 @@ class BundleContext < ApplicationRecord
     return if errors.key?(:bundle_dir)
     return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
     errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
-    return unless media_cm_style? # only smpl objects require smpl_manifest.csv
+    return unless media_cm_style? # only media objects require media_manifest.csv
     errors.add(:bundle_dir, "missing Media manifest: #{bundle_dir}/#{media_manifest}") unless File.exist?(File.join(bundle_dir, media_manifest))
   end
 

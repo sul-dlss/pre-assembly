@@ -74,7 +74,7 @@ RSpec.describe DiscoveryReport do
 
       before do
         allow(dobj).to receive(:object_files).and_return([obj_file, obj_file])
-        allow(report).to receive(:using_smpl_manifest?).and_return(false)
+        allow(report).to receive(:using_media_manifest?).and_return(false)
         allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
       end
 

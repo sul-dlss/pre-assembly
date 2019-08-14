@@ -1,9 +1,9 @@
-project_name:         'media_manifest_with_thumb-accession-only'
+project_name:         'media-accession-only'
 
 project_style:
   content_structure:  'media'
 
-bundle_dir:           'spec/test_data/media_multimedia'
+bundle_dir:           'spec/test_data/multimedia'
 
 content_md_creation:
   style:              'media'
