@@ -1,5 +1,3 @@
-require 'dor/services/client'
-
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
