@@ -15,7 +15,7 @@ gem 'honeybadger', '~> 3.1'
 
 # Stanford gems
 gem 'assembly-image'
-gem 'assembly-objectfile', '> 1.6.6'
+gem 'assembly-objectfile', '>= 1.7.2' # 1.7.2 is the first version to support 3d content metadata generation
 gem 'assembly-utils'
 gem 'dir_validator'
 # gem 'dor-fetcher'   # not supported anymore; only used by devel/get_dor_and_sdr_versions.rb script, which is not regularly used
