@@ -160,7 +160,7 @@ module PreAssembly
       end
     end
 
-    # Technical metadata combined file for SMPL.
+    # Technical metadata combined file for Media.
     def generate_technical_metadata
       create_technical_metadata
       write_technical_metadata

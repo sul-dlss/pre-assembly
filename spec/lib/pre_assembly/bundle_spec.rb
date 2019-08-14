@@ -218,8 +218,8 @@ RSpec.describe PreAssembly::Bundle do
   describe '#exclude_from_content' do
     it 'behaves correctly' do
       skip 'web app does not need to support exclude_from_content'
-      expect(smpl_multimedia.send(:exclude_from_content, smpl_multimedia.path_in_bundle('image1.tif'))).to be_falsey
-      expect(smpl_multimedia.send(:exclude_from_content, smpl_multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
+      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('image1.tif'))).to be_falsey
+      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
     end
   end
 

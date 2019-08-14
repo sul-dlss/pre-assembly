@@ -47,9 +47,9 @@ class DiscoveryReport
     empty_files = dobj.object_files.count { |obj| obj.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
 
-    if using_smpl_manifest? # if we are using a SMPL manifest, let's add how many files were found
+    if using_media_manifest? # if we are using a media manifest, let's add how many files were found
       bundle_id = File.basename(dobj.container)
-      cm_files = smpl.manifest[bundle_id].fetch(:files, [])
+      cm_files = media.manifest[bundle_id].fetch(:files, [])
       counts[:files_in_manifest] = cm_files.count
       relative_paths = dobj.object_files.map(&:relative_path)
       counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
@@ -83,13 +83,13 @@ class DiscoveryReport
   end
 
   # @return [Boolean]
-  def using_smpl_manifest?
-    content_md_creation == 'smpl_cm_style' && File.exist?(File.join(bundle_dir, bundle.bundle_context.smpl_manifest))
+  def using_media_manifest?
+    content_md_creation == 'media_cm_style' && File.exist?(File.join(bundle_dir, bundle.bundle_context.media_manifest))
   end
 
-  # @return [PreAssembly::Smpl]
-  def smpl
-    @smpl ||= PreAssembly::Smpl.new(csv_filename: bundle.bundle_context.smpl_manifest, bundle_dir: bundle_dir)
+  # @return [PreAssembly::Media]
+  def media
+    @media ||= PreAssembly::Media.new(csv_filename: bundle.bundle_context.media_manifest, bundle_dir: bundle_dir)
   end
 
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
