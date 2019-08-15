@@ -44,7 +44,7 @@ RSpec.describe BundleContextsController, type: :controller do
 
     context '#create' do
       context 'Valid Parameters' do
-        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/multimedia" }
+        let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/Multimedia" }
 
         before { Dir.delete(output_dir) if Dir.exist?(output_dir) }
 
