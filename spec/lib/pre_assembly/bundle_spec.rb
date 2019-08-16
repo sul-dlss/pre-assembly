@@ -2,7 +2,7 @@ RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:flat_dir_images) { bundle_setup(:flat_dir_images) }
   let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
-  let(:smpl_multimedia) { bundle_setup(:smpl_multimedia) }
+  let(:multimedia) { bundle_setup(:multimedia) }
   let(:b) { create(:bundle_context_with_deleted_output_dir).bundle }
 
   after { FileUtils.rm_rf(b.bundle_context.output_dir) if Dir.exist?(b.bundle_context.output_dir) } # cleanup
@@ -41,10 +41,10 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#load_skippables' do
     it 'returns expected hash of skippable items' do
-      allow(smpl_multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
-      expect(smpl_multimedia.skippables).to eq({})
-      smpl_multimedia.load_skippables
-      expect(smpl_multimedia.skippables).to eq('aa' => true, 'bb' => true)
+      allow(multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
+      expect(multimedia.skippables).to eq({})
+      multimedia.load_skippables
+      expect(multimedia.skippables).to eq('aa' => true, 'bb' => true)
     end
   end
 
@@ -77,15 +77,15 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it 'handles containers correctly' do
-      expect(smpl_multimedia.digital_objects.first.container.size).to be > smpl_multimedia.bundle_dir.size
+      expect(multimedia.digital_objects.first.container.size).to be > multimedia.bundle_dir.size
     end
   end
 
   describe '#load_checksums' do
     it 'loads checksums and attach them to the ObjectFiles' do
-      smpl_multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
-      smpl_multimedia.digital_objects.each { |dobj| smpl_multimedia.load_checksums(dobj) }
-      smpl_multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
+      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
+      multimedia.digital_objects.each { |dobj| multimedia.load_checksums(dobj) }
+      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end
 
@@ -218,8 +218,8 @@ RSpec.describe PreAssembly::Bundle do
   describe '#exclude_from_content' do
     it 'behaves correctly' do
       skip 'web app does not need to support exclude_from_content'
-      expect(smpl_multimedia.send(:exclude_from_content, smpl_multimedia.path_in_bundle('image1.tif'))).to be_falsey
-      expect(smpl_multimedia.send(:exclude_from_content, smpl_multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
+      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('image1.tif'))).to be_falsey
+      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
     end
   end
 

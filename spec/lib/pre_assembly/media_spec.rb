@@ -1,23 +1,23 @@
-RSpec.describe PreAssembly::Smpl do
-  let(:bundle_dir) { Rails.root.join('spec/test_data/smpl_multimedia') }
+RSpec.describe PreAssembly::Media do
+  let(:bundle_dir) { Rails.root.join('spec/test_data/multimedia') }
   let(:bc_params) do
     {
       project_name: 'ProjectBar',
       # :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       bundle_dir: bundle_dir,
-      content_metadata_creation: :smpl_cm_style
+      content_metadata_creation: :media_cm_style
     }
   end
   let(:bc) { build(:bundle_context, bc_params) }
 
   describe '#create_content_metadata - no thumb declaration' do
-    let(:dobj1) { setup_dobj('aa111aa1111', smpl_manifest) }
-    let(:dobj2) { setup_dobj('bb222bb2222', smpl_manifest) }
-    let(:smpl_manifest) do
-      described_class.new(csv_filename: 'smpl_manifest.csv', bundle_dir: bundle_dir)
+    let(:dobj1) { setup_dobj('aa111aa1111', media_manifest) }
+    let(:dobj2) { setup_dobj('bb222bb2222', media_manifest) }
+    let(:media_manifest) do
+      described_class.new(csv_filename: 'media_manifest.csv', bundle_dir: bundle_dir)
     end
 
-    it 'generates technicalMetadata for SMPL by combining all existing _techmd.xml files' do
+    it 'generates technicalMetadata for Media by combining all existing _techmd.xml files' do
       dobj1.create_technical_metadata
       exp_xml = noko_doc(dobj1.technical_md_xml)
       expect(exp_xml.css('technicalMetadata').size).to eq(1) # one top level node
@@ -28,7 +28,7 @@ RSpec.describe PreAssembly::Smpl do
       expect(counts.map(&:content)).to eq(%w[279 217 280 218])
     end
 
-    it 'generates content metadata from a SMPL manifest with no thumb columns' do
+    it 'generates content metadata from a Media manifest with no thumb columns' do
       dobj1.create_content_metadata
       dobj2.create_content_metadata
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
@@ -37,30 +37,30 @@ RSpec.describe PreAssembly::Smpl do
   end
 
   describe '#create_content_metadata - with thumb declaration' do
-    it 'generates content metadata from a SMPL manifest with a thumb column set to yes' do
-      smpl_manifest = described_class.new(csv_filename: 'smpl_manifest_with_thumb.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
-      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+    it 'generates content metadata from a Media manifest with a thumb column set to yes' do
+      media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb.csv', bundle_dir: bundle_dir)
+      dobj1 = setup_dobj('aa111aa1111', media_manifest)
+      dobj2 = setup_dobj('bb222bb2222', media_manifest)
       dobj1.create_content_metadata
       dobj2.create_content_metadata
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
       expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
-    it 'generates content metadata from a SMPL manifest with a thumb column set to true' do
-      smpl_manifest = described_class.new(csv_filename: 'smpl_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
-      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+    it 'generates content metadata from a Media manifest with a thumb column set to true' do
+      media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
+      dobj1 = setup_dobj('aa111aa1111', media_manifest)
+      dobj2 = setup_dobj('bb222bb2222', media_manifest)
       dobj1.create_content_metadata
       dobj2.create_content_metadata
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
       expect(noko_doc(dobj2.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
     end
 
-    it 'generates content metadata from a SMPL manifest with no thumbs when the thumb column is set to no' do
-      smpl_manifest = described_class.new(csv_filename: 'smpl_manifest_thumb_no.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', smpl_manifest)
-      dobj2 = setup_dobj('bb222bb2222', smpl_manifest)
+    it 'generates content metadata from a Media manifest with no thumbs when the thumb column is set to no' do
+      media_manifest = described_class.new(csv_filename: 'media_manifest_thumb_no.csv', bundle_dir: bundle_dir)
+      dobj1 = setup_dobj('aa111aa1111', media_manifest)
+      dobj2 = setup_dobj('bb222bb2222', media_manifest)
       dobj1.create_content_metadata
       dobj2.create_content_metadata
       expect(noko_doc(dobj1.content_md_xml)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
@@ -69,16 +69,16 @@ RSpec.describe PreAssembly::Smpl do
   end
 
   # some helper methods for these tests
-  def setup_dobj(druid, smpl_manifest)
-    allow(bc.bundle).to receive(:smpl_manifest).and_return(smpl_manifest)
+  def setup_dobj(druid, media_manifest)
+    allow(bc.bundle).to receive(:media_manifest).and_return(media_manifest)
     PreAssembly::DigitalObject.new(bc.bundle, container: druid).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
-      allow(dobj).to receive(:content_md_creation).and_return('smpl_cm_style')
+      allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
     end
   end
 
   def exp_xml_object_aa111aa1111
-    <<-END
+    <<-XML
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1">
@@ -114,11 +114,11 @@ RSpec.describe PreAssembly::Smpl do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-    END
+    XML
   end
 
   def exp_xml_object_aa111aa1111_with_thumb
-    <<-END
+    <<-XML
     <?xml version="1.0"?>
          <contentMetadata type="media" objectId="aa111aa1111">
            <resource type="media" sequence="1" id="aa111aa1111_1" thumb="yes">
@@ -154,11 +154,11 @@ RSpec.describe PreAssembly::Smpl do
              <file publish="yes" preserve="yes" id="aa111aa1111.pdf" shelve="yes"/>
            </resource>
          </contentMetadata>
-    END
+    XML
   end
 
   def exp_xml_object_bb222bb2222
-    <<-END
+    <<-XML
             <?xml version="1.0"?>
             <contentMetadata objectId="bb222bb2222" type="media">
               <resource sequence="1" id="bb222bb2222_1" type="media">
@@ -180,6 +180,6 @@ RSpec.describe PreAssembly::Smpl do
                 <file id="bb222bb2222.pdf" preserve="yes" publish="yes" shelve="yes"/>
               </resource>
             </contentMetadata>
-    END
+    XML
   end
 end

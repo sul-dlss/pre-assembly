@@ -9,7 +9,7 @@ module PreAssembly
              :content_md_creation,
              :content_structure,
              :project_name,
-             :smpl_manifest,
+             :media_manifest,
              :staging_style_symlink,
              to: :bundle
 
@@ -160,15 +160,15 @@ module PreAssembly
       end
     end
 
-    # Technical metadata combined file for SMPL.
+    # Technical metadata combined file for Media.
     def generate_technical_metadata
       create_technical_metadata
       write_technical_metadata
     end
 
-    # create technical metadata for smpl projects only
+    # create technical metadata for media projects only
     def create_technical_metadata
-      return unless content_md_creation == 'smpl_cm_style'
+      return unless content_md_creation == 'media_cm_style'
 
       tm = Nokogiri::XML::Document.new
       tm_node = Nokogiri::XML::Node.new('technicalMetadata', tm)
@@ -204,8 +204,8 @@ module PreAssembly
 
     # Invoke the contentMetadata creation method used by the project
     def create_content_metadata
-      if content_md_creation == 'smpl_cm_style'
-        self.content_md_xml = smpl_manifest.generate_cm(druid.id)
+      if content_md_creation == 'media_cm_style'
+        self.content_md_xml = media_manifest.generate_cm(druid.id)
       else
         # otherwise use the content metadata generation gem
         params = { druid: druid.id, objects: content_object_files, add_exif: false, bundle: content_md_creation.to_sym, style: content_md_creation_style }

@@ -19,14 +19,14 @@ class BundleContext < ApplicationRecord
     'simple_book' => 1,
     'book_as_image' => 2,
     'file' => 3,
-    'smpl' => 4,
+    'media' => 4,
     '3d' => 5
   }
 
   enum content_metadata_creation: {
     'default' => 0,
     'filename' => 1,
-    'smpl_cm_style' => 2
+    'media_cm_style' => 2
   }
 
   accepts_nested_attributes_for :job_runs
@@ -56,14 +56,14 @@ class BundleContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
-  # TODO: See #274. Possibly need to keep for SMPL style projects (if they don't use manifest?)
+  # TODO: See #274. Possibly need to keep for Media style projects (if they don't use manifest?)
   # @deprecated - since it's not currently configurable, and non-default usage isn't tested anyway
   def stageable_discovery
     {}
   end
 
-  def smpl_manifest
-    'smpl_manifest.csv'
+  def media_manifest
+    'media_manifest.csv'
   end
 
   def manifest
@@ -118,8 +118,8 @@ class BundleContext < ApplicationRecord
     return if errors.key?(:bundle_dir)
     return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
     errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
-    return unless smpl_cm_style? # only smpl objects require smpl_manifest.csv
-    errors.add(:bundle_dir, "missing Media (SMPL) manifest: #{bundle_dir}/#{smpl_manifest}") unless File.exist?(File.join(bundle_dir, smpl_manifest))
+    return unless media_cm_style? # only media objects require media_manifest.csv
+    errors.add(:bundle_dir, "missing Media manifest: #{bundle_dir}/#{media_manifest}") unless File.exist?(File.join(bundle_dir, media_manifest))
   end
 
   def verify_bundle_dir_path

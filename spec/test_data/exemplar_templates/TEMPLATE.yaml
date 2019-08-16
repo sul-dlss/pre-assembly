@@ -46,7 +46,7 @@ project_style:
 
                      'book_as_image' # Like simple_book, but with <contentMetadata type="book"> and <resource type="image"> instead of "page".
 
-                     'smpl'          # Used for SMPL projects
+                     'media'         # Used for media projects
 
                      '3d'            # Bundles 3d file types into <contentMetadata type="3d"> and 3d file extensions into <resource type="3d"> and others into <resource type="file">
 
@@ -82,5 +82,5 @@ content_md_creation:
                                           # part of a single resource node.
                'dpg'                 # Collects files together into a single resource based on DPG filenaming convention (ignoring _00_,_05_, etc.) -- files with the same name but different extensions will become
                                          # part of a single resource node.
-               'smpl'                   # Only used by SMPL projects.  Will generate a content metadata file using the SMPL preContentMetadata.
+               'media'                  # Only used by media projects.  Will generate a content metadata file using the Media preContentMetadata.
                'none'                   # Do not generate any contentMetadata.xml file.  Select this option only if you have a previously created valid contentMetadata.xml in the root of your staged folder.
