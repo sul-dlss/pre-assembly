@@ -63,7 +63,7 @@ GEM
     assembly-image (1.7.6)
       assembly-objectfile (>= 1.6.4)
       mini_exiftool (>= 1.6, < 3)
-    assembly-objectfile (1.8.0)
+    assembly-objectfile (1.8.1)
       mime-types (> 3)
       mini_exiftool
       nokogiri
