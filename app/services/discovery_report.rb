@@ -57,7 +57,7 @@ class DiscoveryReport
         errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
         errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
       else
-        errors[:missing_container_name_or_manifest] = true
+        errors[:missing_media_container_name_or_manifest] = true
       end
     end
 
