@@ -82,6 +82,21 @@ RSpec.describe DiscoveryReport do
         expect(report.process_dobj(dobj)).not_to include(a_hash_including(empty_object: true))
       end
     end
+
+    context 'missing_media_container_name_or_manifest' do
+      let(:bundle) { bundle_setup(:media_missing) }
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: '', filesize: 324, mimetype: '') }
+
+      before do
+        allow(dobj).to receive(:object_files).and_return([obj_file, obj_file])
+        allow(report).to receive(:using_media_manifest?).and_return(true)
+        allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
+      end
+
+      it 'adds missing_media_container_name_or_manifest error' do
+        expect(report.process_dobj(dobj)).to match a_hash_including(errors: a_hash_including(missing_media_container_name_or_manifest: true))
+      end
+    end
   end
 
   context 'integration test' do

@@ -49,12 +49,16 @@ class DiscoveryReport
 
     if using_media_manifest? # if we are using a media manifest, let's add how many files were found
       bundle_id = File.basename(dobj.container)
-      cm_files = media.manifest[bundle_id].fetch(:files, [])
-      counts[:files_in_manifest] = cm_files.count
-      relative_paths = dobj.object_files.map(&:relative_path)
-      counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
-      errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
-      errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
+      if bundle_id && media.manifest[bundle_id]
+        cm_files = media.manifest[bundle_id].fetch(:files, [])
+        counts[:files_in_manifest] = cm_files.count
+        relative_paths = dobj.object_files.map(&:relative_path)
+        counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
+        errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
+        errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
+      else
+        errors[:missing_media_container_name_or_manifest] = true
+      end
     end
 
     errors[:empty_object] = true unless counts[:total_size] > 0
