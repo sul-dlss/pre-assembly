@@ -250,6 +250,15 @@ module PreAssembly
     end
 
     ####
+    # Versioning for a re-accession.
+    ####
+
+    # When reaccesioning, we need to first version without kicking off accessionWF instead of starting assemblyWF
+    def version_object
+      Dor::Services::Client.object(druid.druid).open_new_version(vers_md_upd_info: vers_md_upd_info)
+    end
+
+    ####
     # Initialize the assembly workflow.
     ####
 

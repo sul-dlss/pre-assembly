@@ -543,6 +543,7 @@ DEPENDENCIES
   devise-remote-user
   dlss-capistrano (~> 3.1)
   dor-services (~> 7.1)
+  dor-services-client
   equivalent-xml
   factory_bot_rails
   honeybadger (~> 4.5)

@@ -12,3 +12,8 @@ assembly_staging_dir: tmp/assembly
 
 # writable directory where job run artifacts will live
 job_output_parent_dir:  'log/jobs'
+
+DOR_SERVICES:
+  URL: 'http://localhost:3003'
+  TOKEN: 'secret-token'
+  TOKEN_HEADER: 'X-Auth' # This has to match dor-services-app ApplicationController::TOKEN_HEADER
