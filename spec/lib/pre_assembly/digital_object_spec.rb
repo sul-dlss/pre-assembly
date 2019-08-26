@@ -25,6 +25,32 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
+  describe '#pre_assemble' do
+    before do
+      allow(object).to receive(:pid).and_return(pid)
+    end
+
+    it 'does not call version_object for new_objects' do
+      allow(object).to receive(:'new_object?').and_return(true)
+      expect(object).to receive(:stage_files)
+      expect(object).to receive(:generate_content_metadata)
+      expect(object).to receive(:generate_technical_metadata)
+      expect(object).not_to receive(:version_object)
+      expect(object).to receive(:initialize_assembly_workflow)
+      object.pre_assemble
+    end
+
+    it 'calls version_object for existing objects' do
+      allow(object).to receive(:'new_object?').and_return(false)
+      expect(object).to receive(:stage_files)
+      expect(object).to receive(:generate_content_metadata)
+      expect(object).to receive(:generate_technical_metadata)
+      expect(object).to receive(:version_object)
+      expect(object).to receive(:initialize_assembly_workflow)
+      object.pre_assemble
+    end
+  end
+
   describe '#container_basename' do
     it 'returns expected value' do
       d = 'xx111yy2222'
@@ -321,6 +347,39 @@ RSpec.describe PreAssembly::DigitalObject do
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
       expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+    end
+  end
+
+  describe '#new_object?' do
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
+
+    before do
+      allow(object).to receive(:druid).and_return(druid)
+      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+    end
+
+    it 'checks if the object is openable' do
+      expect(dor_services_client_object_version).to receive(:'openable?')
+      expect(dor_services_client_object_version).to receive(:current)
+      object.new_object?
+    end
+  end
+
+  describe '#version_object' do
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
+    let(:vers_md_upd_info) { { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: object.bundle.bundle_context.user.sunet_id } }
+
+    before do
+      allow(object).to receive(:druid).and_return(druid)
+      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+    end
+
+    it 'opens and closes an object version' do
+      expect(dor_services_client_object_version).to receive(:open).with(vers_md_upd_info: vers_md_upd_info)
+      expect(dor_services_client_object_version).to receive(:close).with(start_accession: false)
+      object.version_object
     end
   end
 

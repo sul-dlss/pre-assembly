@@ -91,6 +91,8 @@ module PreAssembly
       stage_files
       generate_content_metadata
       generate_technical_metadata
+      # If the object is not new, we need to version it
+      version_object unless new_object?
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
     end
@@ -253,9 +255,16 @@ module PreAssembly
     # Versioning for a re-accession.
     ####
 
-    # When reaccesioning, we need to first version without kicking off accessionWF instead of starting assemblyWF
+    # A new object is defined as one that is not openable and is on version 1
+    def new_object?
+      !Dor::Services::Client.object(druid.druid).version.openable? && Dor::Services::Client.object(druid.druid).version.current == '1'
+    end
+
+    # When reaccesioning, we need to first open and close a version without kicking off accessionWF
     def version_object
-      Dor::Services::Client.object(druid.druid).open_new_version(vers_md_upd_info: vers_md_upd_info)
+      vers_md_upd_info = { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: bundle.bundle_context.user.sunet_id }
+      Dor::Services::Client.object(druid.druid).version.open(vers_md_upd_info: vers_md_upd_info)
+      Dor::Services::Client.object(druid.druid).version.close(start_accession: false)
     end
 
     ####
