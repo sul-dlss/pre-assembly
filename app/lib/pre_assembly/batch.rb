@@ -100,6 +100,7 @@ module PreAssembly
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
     def process_digital_objects
       num_no_file_warnings = 0
       # Get the non-skipped objects to process
@@ -118,10 +119,15 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          status = dobj.pre_assemble(file_attributes_supplied)
-          # Indicate that we finished.
-          progress[:pre_assem_finished] = true
-          log "Completed #{dobj.druid}"
+          begin
+            status = dobj.pre_assemble(file_attributes_supplied)
+            # Indicate that we finished.
+            progress[:pre_assem_finished] = true
+            log "Completed #{dobj.druid}"
+          rescue StandardError => e
+            progress[:pre_assem_finished] = false
+            log "Error occurred #{e} on #{dobj.druid} : #{e.message}"
+          end
         ensure
           # Log the outcome no matter what.
           File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || incomplete_status).to_yaml }
@@ -133,6 +139,7 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     # @return [Array<DigitalObject>]
     def objects_to_process
