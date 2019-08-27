@@ -266,9 +266,13 @@ module PreAssembly
       @current_object_version ||= Dor::Services::Client.object(druid.druid).version.current
     end
 
-    # When reaccesioning, we need to first open and close a version without kicking off accessionWF
+    # When reaccessioning, we need to first open and close a version without kicking off accessionWF
     def version_object
-      vers_md_upd_info = { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: bundle.bundle_context.user.sunet_id }
+      vers_md_upd_info = {
+        significance: 'major',
+        description: 'pre-assembly re-accession',
+        opening_user_name: bundle.bundle_context.user.sunet_id
+      }
       Dor::Services::Client.object(druid.druid).version.open(vers_md_upd_info: vers_md_upd_info)
       Dor::Services::Client.object(druid.druid).version.close(start_accession: false)
     end

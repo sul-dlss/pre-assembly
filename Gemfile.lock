@@ -160,7 +160,7 @@ GEM
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
       stanford-mods-normalizer (~> 0.1)
-    dor-services-client (2.3.0)
+    dor-services-client (2.4.0)
       activesupport (>= 4.2, < 7)
       faraday (~> 0.15)
       moab-versioning (~> 4.0)
@@ -543,7 +543,7 @@ DEPENDENCIES
   devise-remote-user
   dlss-capistrano (~> 3.1)
   dor-services (~> 7.1)
-  dor-services-client
+  dor-services-client (~> 2.4)
   equivalent-xml
   factory_bot_rails
   honeybadger (~> 4.5)
