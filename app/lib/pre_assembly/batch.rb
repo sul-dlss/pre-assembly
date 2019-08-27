@@ -116,10 +116,15 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          status = dobj.pre_assemble(file_attributes_supplied)
-          # Indicate that we finished.
-          progress[:pre_assem_finished] = true
-          log "Completed #{dobj.druid}"
+          begin
+            status = dobj.pre_assemble(file_attributes_supplied)
+            # Indicate that we finished.
+            progress[:pre_assem_finished] = true
+            log "Completed #{dobj.druid}"
+          rescue StandardError => e
+            progress[:pre_assem_finished] = false
+            log "Error occurred #{e} on #{dobj.druid} : #{e.message}"
+          end
         ensure
           # Log the outcome no matter what.
           File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || incomplete_status).to_yaml }
