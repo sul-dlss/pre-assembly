@@ -31,7 +31,8 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'does not call version_object for new_objects' do
-      allow(object).to receive(:'new_object?').and_return(true)
+      allow(object).to receive(:'versionable?').and_return(false)
+      allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
       expect(object).to receive(:generate_technical_metadata)
@@ -40,8 +41,9 @@ RSpec.describe PreAssembly::DigitalObject do
       object.pre_assemble
     end
 
-    it 'calls version_object for existing objects' do
-      allow(object).to receive(:'new_object?').and_return(false)
+    it 'calls version_object for existing versionable objects' do
+      allow(object).to receive(:'versionable?').and_return(true)
+      allow(object).to receive(:current_object_version).and_return(2)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
       expect(object).to receive(:generate_technical_metadata)
@@ -350,7 +352,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe '#new_object?' do
+  describe '#versionable?' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
@@ -361,8 +363,22 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks if the object is openable' do
       expect(dor_services_client_object_version).to receive(:'openable?')
+      object.versionable?
+    end
+  end
+
+  describe '#current_object_version' do
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
+
+    before do
+      allow(object).to receive(:druid).and_return(druid)
+      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+    end
+
+    it 'checks the current object version' do
       expect(dor_services_client_object_version).to receive(:current)
-      object.new_object?
+      object.current_object_version
     end
   end
 

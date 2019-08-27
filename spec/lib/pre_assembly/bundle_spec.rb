@@ -39,13 +39,22 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     it 'runs cleanly for new objects' do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'new_object?').and_return(true)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'versionable?').and_return(false)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
       expect { b.process_digital_objects }.not_to raise_error
     end
 
-    it 'runs cleanly for re-accessioned objects' do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'new_object?').and_return(false)
+    it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'versionable?').and_return(true)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       expect { b.process_digital_objects }.not_to raise_error
+    end
+
+    it 'throws an exception for re-accessioned objects that are not ready to be versioned' do
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'versionable?').and_return(false)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
+      exp_msg = "druid:aa111aa1111 (v2) can't be re-accessioned because it can't be opened for versioning and has a version > 1"
+      expect { b.process_digital_objects }.to raise_error(RuntimeError, exp_msg)
     end
   end
 
