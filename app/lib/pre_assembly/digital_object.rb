@@ -88,13 +88,12 @@ module PreAssembly
 
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
+      raise "#{druid.druid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" if !openable? && current_object_version > 1
       stage_files
       generate_content_metadata
       generate_technical_metadata
-      # a non-versionable object of version number > 1 is an existing object that cannot currently be safely re-accessioned
-      raise "#{druid.druid} (v#{current_object_version}) can't be re-accessioned because it can't be opened for versioning and has a version > 1" if !versionable? && current_object_version > 1
-      version_object if versionable? # a versionable object is an existing object that can safely be re-accessioned and needs to be versioned
-      initialize_assembly_workflow # an existing or a new object both need to have assemblyWF started
+      create_new_version if openable?
+      initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
     end
 
@@ -256,18 +255,16 @@ module PreAssembly
     # Versioning for a re-accession.
     ####
 
-    # A versionable object is defined as one that is openable
-    def versionable?
+    def openable?
       Dor::Services::Client.object(druid.druid).version.openable?
     end
 
-    # The current object version
     def current_object_version
-      @current_object_version ||= Dor::Services::Client.object(druid.druid).version.current
+      @current_object_version ||= Dor::Services::Client.object(druid.druid).version.current.to_i
     end
 
     # When reaccessioning, we need to first open and close a version without kicking off accessionWF
-    def version_object
+    def create_new_version
       vers_md_upd_info = {
         significance: 'major',
         description: 'pre-assembly re-accession',

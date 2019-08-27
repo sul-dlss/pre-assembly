@@ -30,24 +30,32 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:pid).and_return(pid)
     end
 
-    it 'does not call version_object for new_objects' do
-      allow(object).to receive(:'versionable?').and_return(false)
+    it 'does not call create_new_version for new_objects' do
+      allow(object).to receive(:'openable?').and_return(false)
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
       expect(object).to receive(:generate_technical_metadata)
-      expect(object).not_to receive(:version_object)
+      expect(object).not_to receive(:create_new_version)
       expect(object).to receive(:initialize_assembly_workflow)
       object.pre_assemble
     end
 
-    it 'calls version_object for existing versionable objects' do
-      allow(object).to receive(:'versionable?').and_return(true)
+    it 'throws an exception for existing non-openable objects' do
+      allow(object).to receive(:'openable?').and_return(false)
+      allow(object).to receive(:current_object_version).and_return(2)
+      expect(object).not_to receive(:stage_files)
+      exp_msg = "#{pid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
+      expect { object.pre_assemble }.to raise_error(RuntimeError, exp_msg)
+    end
+
+    it 'calls create_new_version for existing openable objects' do
+      allow(object).to receive(:'openable?').and_return(true)
       allow(object).to receive(:current_object_version).and_return(2)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
       expect(object).to receive(:generate_technical_metadata)
-      expect(object).to receive(:version_object)
+      expect(object).to receive(:create_new_version)
       expect(object).to receive(:initialize_assembly_workflow)
       object.pre_assemble
     end
@@ -352,7 +360,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe '#versionable?' do
+  describe '#openable?' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
@@ -363,7 +371,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks if the object is openable' do
       expect(dor_services_client_object_version).to receive(:'openable?')
-      object.versionable?
+      object.openable?
     end
   end
 
@@ -382,7 +390,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe '#version_object' do
+  describe '#create_new_version' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
     let(:vers_md_upd_info) { { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: object.bundle.bundle_context.user.sunet_id } }
@@ -395,7 +403,7 @@ RSpec.describe PreAssembly::DigitalObject do
     it 'opens and closes an object version' do
       expect(dor_services_client_object_version).to receive(:open).with(vers_md_upd_info: vers_md_upd_info)
       expect(dor_services_client_object_version).to receive(:close).with(start_accession: false)
-      object.version_object
+      object.create_new_version
     end
   end
 
