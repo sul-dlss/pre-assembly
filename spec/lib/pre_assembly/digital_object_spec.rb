@@ -393,7 +393,7 @@ RSpec.describe PreAssembly::DigitalObject do
   describe '#create_new_version' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
-    let(:vers_md_upd_info) { { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: object.bundle.bundle_context.user.sunet_id } }
+    let(:version_options) { { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: object.bundle.bundle_context.user.sunet_id } }
 
     before do
       allow(object).to receive(:druid).and_return(druid)
@@ -401,7 +401,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'opens and closes an object version' do
-      expect(dor_services_client_object_version).to receive(:open).with(vers_md_upd_info: vers_md_upd_info)
+      expect(dor_services_client_object_version).to receive(:open).with(**version_options)
       expect(dor_services_client_object_version).to receive(:close).with(start_accession: false)
       object.create_new_version
     end
