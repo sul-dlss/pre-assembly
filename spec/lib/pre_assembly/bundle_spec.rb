@@ -29,13 +29,32 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#process_digital_objects' do
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
+
     before do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:initialize_assembly_workflow)
+      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
       allow(Dor::Item).to receive(:find).with(any_args)
     end
 
-    it 'runs cleanly' do
+    it 'runs cleanly for new objects' do
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
       expect { b.process_digital_objects }.not_to raise_error
+    end
+
+    it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(true)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
+      expect { b.process_digital_objects }.not_to raise_error
+    end
+
+    it 'throws an exception for re-accessioned objects that are not ready to be versioned' do
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
+      exp_msg = "druid:aa111aa1111 can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
+      expect { b.process_digital_objects }.to raise_error(RuntimeError, exp_msg)
     end
   end
 

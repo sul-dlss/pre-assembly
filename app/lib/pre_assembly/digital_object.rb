@@ -88,9 +88,11 @@ module PreAssembly
 
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
+      raise "#{druid.druid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" if !openable? && current_object_version > 1
       stage_files
       generate_content_metadata
       generate_technical_metadata
+      create_new_version if openable?
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
     end
@@ -247,6 +249,28 @@ module PreAssembly
       FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)
       FileUtils.mkdir_p metadata_dir unless File.directory?(metadata_dir)
       FileUtils.mkdir_p content_dir unless File.directory?(content_dir)
+    end
+
+    ####
+    # Versioning for a re-accession.
+    ####
+
+    def openable?
+      Dor::Services::Client.object(druid.druid).version.openable?
+    end
+
+    def current_object_version
+      @current_object_version ||= Dor::Services::Client.object(druid.druid).version.current.to_i
+    end
+
+    # When reaccessioning, we need to first open and close a version without kicking off accessionWF
+    def create_new_version
+      Dor::Services::Client.object(druid.druid).version.open(
+        significance: 'major',
+        description: 'pre-assembly re-accession',
+        opening_user_name: bundle.bundle_context.user.sunet_id
+      )
+      Dor::Services::Client.object(druid.druid).version.close(start_accession: false)
     end
 
     ####
