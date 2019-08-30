@@ -1,6 +1,7 @@
 <div class="container">
   <h2>Job Run History</h2>
 
+  <%= link_to '[view resque queues]', '/resque/overview', target: 'blank' %>
   <%= paginate @job_runs %>
 
   <table class="table">
