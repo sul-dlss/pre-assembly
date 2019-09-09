@@ -25,9 +25,106 @@ we should continue to maintain the `v3-legacy` branch.
 
 Note that we hope to retire the legacy branch;  if you are writing a new script, please surface it in #dlss-infrastructure channel to see if there is a different way to get the desired result, without adding to our maintenance burden.
 
-## Running the legacy application
+More about Running the legacy application below.
+
+## Deployment
+
+Deploy the Web app version from the `master` branch and the legacy version from the `v3-legacy` branch:
+
+```bash
+cap stage deploy
+cap prod deploy
+```
+
+Enter the branch or tag you want deployed.  For the master branch, should usually be `master` (the default).
+For the legacy CLI, it will always be `v3-legacy`.
+
+See the `Capfile` for more info.
+
+# Web app
 
 ### Documentation for the contemporary (web) app is in the wiki:  https://github.com/sul-dlss/pre-assembly/wiki
+
+## Setting up code for local development
+
+Clone project.
+```bash
+git clone git@github.com:sul-dlss/pre-assembly.git
+cd pre-assembly
+```
+
+## Prerequisites
+
+### Get needed gems
+
+```bash
+bundle install
+```
+
+#### Redis/Resque
+
+The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
+webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
+
+```bash
+brew install redis
+```
+
+and start as needed (if not running as a background process):
+
+```bash
+redis-server /usr/local/etc/redis.conf
+```
+
+See https://redis.io/ for other installation instructions and information.
+
+#### exiftool
+
+You need `exiftool` on your system in order to successfully run all of the tests.
+
+On RHEL, download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
+
+```bash
+tar -xf Image-ExifTool-#.##.tar.gz
+cd Image-ExifTool-#.##
+perl Makefile.PL
+make test
+sudo make install
+```
+
+On MacOSX, use `homebrew` to install:
+```bash
+brew install exiftool
+```
+
+## Running tests
+
+```bash
+bundle exec rspec
+```
+
+## Running the (contemporary web) application for local development
+
+Just the usual:
+
+```bash
+bundle exec rails server
+```
+
+When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
+its sessions. To override that behavior and specify an alternate user, you can manually specify the `REMOTE_USER`
+environment variable at startup, like so:
+
+```bash
+REMOTE_USER="ima_user" bundle exec rails server
+```
+
+Because the application looks for user info in an environment variable, and because local dev environments don't have
+an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
+sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
+
+
+# Running the legacy application
 
 1.  Gather information about your project, including:
     *   The location of the materials.  You will need read access to this
@@ -111,97 +208,6 @@ will NOT have JP2s re-generated from the source TIFFs). If you do stage the
 JP2 files and they have a different basename than the TIFFs, they WILL be
 re-generated, and you will end up with two copies, in two different resources.
 
-## Deployment
-
-Deploy the Web app version from the `master` branch and the legacy version from the `v3-legacy` branch:
-
-```bash
-cap stage deploy
-cap prod deploy
-```
-
-Enter the branch or tag you want deployed.  For the master branch, should usually be `master` (the default).
-For the legacy CLI, it will always be `v3-legacy`.
-
-See the `Capfile` for more info.
-
-## Setting up code for local development
-
-Clone project.
-```bash
-git clone git@github.com:sul-dlss/pre-assembly.git
-cd pre-assembly
-```
-
-## Prerequisites
-
-### Get needed gems
-
-```bash
-bundle install
-```
-
-#### Redis/Resque
-
-The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
-webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
-
-```bash
-brew install redis
-```
-
-and start as needed (if not running as a background process):
-
-```bash
-redis-server /usr/local/etc/redis.conf
-```
-
-See https://redis.io/ for other installation instructions and information.
-
-#### exiftool
-
-You need `exiftool` on your system in order to successfully run all of the tests.
-
-On RHEL, download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
-
-```bash
-tar -xf Image-ExifTool-#.##.tar.gz
-cd Image-ExifTool-#.##
-perl Makefile.PL
-make test
-sudo make install
-```
-
-On MacOSX, use `homebrew` to install:
-```bash
-brew install exiftool
-```
-
-## Running tests
-
-```bash
-bundle exec rspec
-```
-
-## Running the (contemporary web) application for local development
-
-Just the usual:
-
-```bash
-bundle exec rails server
-```
-
-When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
-its sessions. To override that behavior and specify an alternate user, you can manually specify the `REMOTE_USER`
-environment variable at startup, like so:
-
-```bash
-REMOTE_USER="ima_user" bundle exec rails server
-```
-
-Because the application looks for user info in an environment variable, and because local dev environments don't have
-an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
-sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
 
 ## Troubleshooting (the legacy application)
 
