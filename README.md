@@ -10,6 +10,12 @@ assembled and then accessioned into the SUL digital library.
 
 See the [RELEASES](./RELEASES.md) list.
 
+### Web app
+
+The contemporary `Pre-Assembly` is a rails web-app.
+
+The strongly preferred way of working with this code is to use it as a web app at https://sul-preassembly-prod.stanford.edu/.  There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.
+
 ### Legacy
 
 The legacy command-line version of this code is represented by the `v3-legacy` branch. That branch in -stage is deployed to `sul-lyberservices-test`
@@ -17,7 +23,7 @@ and in -prod is deployed to `sul-lyberservices-prod` and is still actively used 
 [desired functionality](https://github.com/sul-dlss/pre-assembly/issues/221) in the `v3-legacy` branch has been ported to the web application in `master`,
 we should continue to maintain the `v3-legacy` branch.
 
-The contemporary `Pre-Assembly` is a rails web-app.
+Note that we hope to retire the legacy branch;  if you are writing a new script, please surface it in #dlss-infrastructure channel to see if there is a different way to get the desired result, without adding to our maintenance burden.
 
 ## Running the legacy application
 
