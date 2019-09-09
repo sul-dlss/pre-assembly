@@ -10,6 +10,12 @@ assembled and then accessioned into the SUL digital library.
 
 See the [RELEASES](./RELEASES.md) list.
 
+### Web app
+
+The contemporary `Pre-Assembly` is a rails web-app.
+
+The strongly preferred way of working with this code is to use it as a web app at https://sul-preassembly-prod.stanford.edu/.  There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.
+
 ### Legacy
 
 The legacy command-line version of this code is represented by the `v3-legacy` branch. That branch in -stage is deployed to `sul-lyberservices-test`
@@ -17,11 +23,108 @@ and in -prod is deployed to `sul-lyberservices-prod` and is still actively used 
 [desired functionality](https://github.com/sul-dlss/pre-assembly/issues/221) in the `v3-legacy` branch has been ported to the web application in `master`,
 we should continue to maintain the `v3-legacy` branch.
 
-The contemporary `Pre-Assembly` is a rails web-app.
+Note that we hope to retire the legacy branch;  if you are writing a new script, please surface it in #dlss-infrastructure channel to see if there is a different way to get the desired result, without adding to our maintenance burden.
 
-## Running the legacy application
+More about Running the legacy application below.
+
+## Deployment
+
+Deploy the Web app version from the `master` branch and the legacy version from the `v3-legacy` branch:
+
+```bash
+cap stage deploy
+cap prod deploy
+```
+
+Enter the branch or tag you want deployed.  For the master branch, should usually be `master` (the default).
+For the legacy CLI, it will always be `v3-legacy`.
+
+See the `Capfile` for more info.
+
+# Web app
 
 ### Documentation for the contemporary (web) app is in the wiki:  https://github.com/sul-dlss/pre-assembly/wiki
+
+## Setting up code for local development
+
+Clone project.
+```bash
+git clone git@github.com:sul-dlss/pre-assembly.git
+cd pre-assembly
+```
+
+## Prerequisites
+
+### Get needed gems
+
+```bash
+bundle install
+```
+
+#### Redis/Resque
+
+The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
+webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
+
+```bash
+brew install redis
+```
+
+and start as needed (if not running as a background process):
+
+```bash
+redis-server /usr/local/etc/redis.conf
+```
+
+See https://redis.io/ for other installation instructions and information.
+
+#### exiftool
+
+You need `exiftool` on your system in order to successfully run all of the tests.
+
+On RHEL, download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
+
+```bash
+tar -xf Image-ExifTool-#.##.tar.gz
+cd Image-ExifTool-#.##
+perl Makefile.PL
+make test
+sudo make install
+```
+
+On MacOSX, use `homebrew` to install:
+```bash
+brew install exiftool
+```
+
+## Running tests
+
+```bash
+bundle exec rspec
+```
+
+## Running the (contemporary web) application for local development
+
+Just the usual:
+
+```bash
+bundle exec rails server
+```
+
+When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
+its sessions. To override that behavior and specify an alternate user, you can manually specify the `REMOTE_USER`
+environment variable at startup, like so:
+
+```bash
+REMOTE_USER="ima_user" bundle exec rails server
+```
+
+Because the application looks for user info in an environment variable, and because local dev environments don't have
+an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
+sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
+
+
+# Running the legacy application
 
 1.  Gather information about your project, including:
     *   The location of the materials.  You will need read access to this
@@ -105,97 +208,6 @@ will NOT have JP2s re-generated from the source TIFFs). If you do stage the
 JP2 files and they have a different basename than the TIFFs, they WILL be
 re-generated, and you will end up with two copies, in two different resources.
 
-## Deployment
-
-Deploy the Web app version from the `master` branch and the legacy version from the `v3-legacy` branch:
-
-```bash
-cap stage deploy
-cap prod deploy
-```
-
-Enter the branch or tag you want deployed.  For the master branch, should usually be `master` (the default).
-For the legacy CLI, it will always be `v3-legacy`.
-
-See the `Capfile` for more info.
-
-## Setting up code for local development
-
-Clone project.
-```bash
-git clone git@github.com:sul-dlss/pre-assembly.git
-cd pre-assembly
-```
-
-## Prerequisites
-
-### Get needed gems
-
-```bash
-bundle install
-```
-
-#### Redis/Resque
-
-The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
-webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
-
-```bash
-brew install redis
-```
-
-and start as needed (if not running as a background process):
-
-```bash
-redis-server /usr/local/etc/redis.conf
-```
-
-See https://redis.io/ for other installation instructions and information.
-
-#### exiftool
-
-You need `exiftool` on your system in order to successfully run all of the tests.
-
-On RHEL, download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
-
-```bash
-tar -xf Image-ExifTool-#.##.tar.gz
-cd Image-ExifTool-#.##
-perl Makefile.PL
-make test
-sudo make install
-```
-
-On MacOSX, use `homebrew` to install:
-```bash
-brew install exiftool
-```
-
-## Running tests
-
-```bash
-bundle exec rspec
-```
-
-## Running the (contemporary web) application for local development
-
-Just the usual:
-
-```bash
-bundle exec rails server
-```
-
-When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
-its sessions. To override that behavior and specify an alternate user, you can manually specify the `REMOTE_USER`
-environment variable at startup, like so:
-
-```bash
-REMOTE_USER="ima_user" bundle exec rails server
-```
-
-Because the application looks for user info in an environment variable, and because local dev environments don't have
-an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
-sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
 
 ## Troubleshooting (the legacy application)
 
@@ -310,9 +322,8 @@ See the sample manifest file [`TEMPLATE_manifest.csv`](spec/test_data/exemplar_t
 ## Descriptive Metadata
 
 If descriptive metadata is supplied in a source known to common accessioning
-(currently MDToolkit or Symphony), then no action is required during
-pre-assembly other than ensuring your DRUIDs and/or barcodes match the ones in
-MDToolkit or Symphony.
+(currently Symphony), then no action is required during
+pre-assembly other than ensuring your DRUIDs and/or barcodes match the ones in Symphony.
 
 If you are supplying a manifest file instead of using object discovery via
 file system crawling, then you can also create a descriptive metadata MODs
