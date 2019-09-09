@@ -310,9 +310,8 @@ See the sample manifest file [`TEMPLATE_manifest.csv`](spec/test_data/exemplar_t
 ## Descriptive Metadata
 
 If descriptive metadata is supplied in a source known to common accessioning
-(currently MDToolkit or Symphony), then no action is required during
-pre-assembly other than ensuring your DRUIDs and/or barcodes match the ones in
-MDToolkit or Symphony.
+(currently Symphony), then no action is required during
+pre-assembly other than ensuring your DRUIDs and/or barcodes match the ones in Symphony.
 
 If you are supplying a manifest file instead of using object discovery via
 file system crawling, then you can also create a descriptive metadata MODs
