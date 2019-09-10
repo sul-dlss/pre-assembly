@@ -8,6 +8,12 @@ require 'druid-tools'
 # Pass into the full path to the input CSV below and the full path to the output location.
 # The input CSV must have a column called 'druid' containing the druid, other columns are ignored
 # August 29, 2019
+# Written by: Peter Mangiafico
+# To produce data requested by: Nicole Coleman
+# Project use:
+#  1. Exporting ETDs for export to EBSCO (use unknown)
+#  2. Exporting ETD PDFs and MODs files for Yewno (will be used to see if Yewno can extract keywords for potential metadata supplementing)
+
 # run with:
 # ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks FULL_PATH_TO_INPUT.csv FULL_PATH_TO_OUTPUT_FOLDER
 # e.g. ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks '/dor/staging/Yewno/WorldViewETDs.csv' '/dor/staging/Yewno'
