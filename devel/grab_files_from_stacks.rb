@@ -10,13 +10,14 @@ require 'druid-tools'
 # August 29, 2019
 # Written by: Peter Mangiafico
 # To produce data requested by: Nicole Coleman
+# Note: unsupported and untested one-off request
 # Project use:
 #  1. Exporting ETDs for export to EBSCO (use unknown)
 #  2. Exporting ETD PDFs and MODs files for Yewno (will be used to see if Yewno can extract keywords for potential metadata supplementing)
 
 # run with:
-# ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks FULL_PATH_TO_INPUT.csv FULL_PATH_TO_OUTPUT_FOLDER
-# e.g. ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks '/dor/staging/Yewno/WorldViewETDs.csv' '/dor/staging/Yewno'
+# ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks.rb FULL_PATH_TO_INPUT.csv FULL_PATH_TO_OUTPUT_FOLDER
+# e.g. ROBOT_ENVIRONMENT=production ruby devel/grab_files_from_stacks.rb '/dor/staging/Yewno/WorldViewETDs.csv' '/dor/staging/Yewno'
 
 input_file = ARGV[0]
 output_location = ARGV[1]
@@ -30,9 +31,12 @@ results = CSV.parse(csv_text, headers: true)
 puts "Input file: #{input_file}"
 puts "Output location: #{output_location}"
 num_rows = results.size
+error_count = 0
 puts "Found #{num_rows} rows"
+puts "Started at #{Time.now}"
 
 results.each_with_index do |row, i|
+  begin
    pid = row['druid'] || row['Druid'] || row['DRUID']
    druid = pid.include?('druid') ? pid : "druid:#{pid}" # add druid prefix if needed
    puts "[#{i+1} of #{num_rows}] : #{druid}"
@@ -53,4 +57,9 @@ results.each_with_index do |row, i|
    # copy mods from the purl cache
    FileUtils.cd(path_to_purl_cache)
    FileUtils.cp File.join(path_to_purl_cache, 'mods'), output_druid_location
+ rescue StandardError => e
+   error_count += 1
+   puts "*** ERROR: #{e.message}"
+ end
 end
+puts "Ended at #{Time.now}. #{num_rows} rows. #{error_count} errors."
