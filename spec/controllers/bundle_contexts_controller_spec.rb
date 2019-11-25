@@ -15,7 +15,7 @@ RSpec.describe BundleContextsController, type: :controller do
   context 'users not persisted in db' do
     it 'blocks unauthenticated access' do
       get :new
-      expect(response).to have_http_status(401)
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe BundleContextsController, type: :controller do
       it 'renders the new template' do
         get :new
         expect(response).to render_template('new')
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe BundleContextsController, type: :controller do
       it 'renders index' do
         get :index
         expect(response).to render_template('index')
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe BundleContextsController, type: :controller do
         it 'passes newly created object' do
           post :create, params: params
           expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted
-          expect(response).to have_http_status(302) # HTTP code for found
+          expect(response).to have_http_status(:found) # HTTP code for found
           expect(response).to redirect_to(job_runs_path)
           expect(flash[:success]).to start_with('Success! Your job is queued.')
         end
