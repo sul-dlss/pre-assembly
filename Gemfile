@@ -50,7 +50,7 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'rspec-rails', '~> 3.7'
   gem 'rails-controller-testing'
-  gem 'rubocop', '~> 0.60.0'
+  gem 'rubocop', '~> 0.76.0'
   gem 'rubocop-rspec'
   gem 'ruby-prof'
   gem 'sqlite3', '~> 1.3.13'
