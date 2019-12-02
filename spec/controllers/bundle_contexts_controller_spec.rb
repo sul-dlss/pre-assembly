@@ -26,7 +26,7 @@ RSpec.describe BundleContextsController, type: :controller do
       expect(controller.current_user).not_to be_nil
     end
 
-    context '#new' do
+    describe '#new' do
       it 'renders the new template' do
         get :new
         expect(response).to render_template('new')
@@ -42,7 +42,7 @@ RSpec.describe BundleContextsController, type: :controller do
       end
     end
 
-    context '#create' do
+    describe '#create' do
       context 'Valid Parameters' do
         let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/Multimedia" }
 
