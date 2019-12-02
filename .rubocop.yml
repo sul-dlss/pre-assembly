@@ -37,6 +37,9 @@ RSpec/DescribeClass:
   Exclude:
     - 'spec/views/**/*.rb' # In view tests, the view is named, not the class
 
+RSpec/EmptyLineAfterExample:
+  Enabled: false
+
 RSpec/ExampleLength:
   Max: 25
 
