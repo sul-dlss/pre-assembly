@@ -88,12 +88,6 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#assembly_staging_dir' do
-    it 'comes from Settings file' do
-      expect(described_class.new.assembly_staging_dir).to eq Settings.assembly_staging_dir
-    end
-  end
-
   describe '#media_manifest' do
     it 'returns the file name' do
       expect(described_class.new.media_manifest).to eq 'media_manifest.csv'
