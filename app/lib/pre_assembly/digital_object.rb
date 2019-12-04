@@ -4,8 +4,7 @@ module PreAssembly
 
     attr_reader :bundle, :stageable_items
 
-    delegate :assembly_staging_dir,
-             :bundle_dir,
+    delegate :bundle_dir,
              :content_md_creation,
              :content_structure,
              :project_name,
@@ -22,7 +21,7 @@ module PreAssembly
                   :source_id,
                   :technical_md_xml
 
-    attr_writer :dor_object, :druid_tree_dir
+    attr_writer :dor_object
 
     INIT_PARAMS = [:container, :stageable_items, :object_files].freeze
 
@@ -68,20 +67,6 @@ module PreAssembly
       content_type_tag_mapping[content_type_tag] || content_structure.to_sym
     end
 
-    # compute the base druid tree folder for this object
-    def druid_tree_dir
-      @druid_tree_dir ||= DruidTools::Druid.new(druid.id, assembly_staging_dir).path
-    end
-
-    def content_dir
-      @content_dir ||= File.join(druid_tree_dir, 'content')
-    end
-
-    # the metadata subfolder
-    def metadata_dir
-      @metadata_dir ||= File.join(druid_tree_dir, 'metadata')
-    end
-
     ####
     # The main process.
     ####
@@ -89,6 +74,7 @@ module PreAssembly
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
       raise "#{druid.druid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" if !openable? && current_object_version > 1
+      @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata
       generate_technical_metadata
@@ -96,6 +82,8 @@ module PreAssembly
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
     end
+
+    attr_reader :assembly_directory
 
     ####
     # Determining the druid.
@@ -150,14 +138,11 @@ module PreAssembly
     # Create the druid tree within the staging directory,
     # and then copy-recursive all stageable items to that area.
     def stage_files
-      # these are the names of special datastream files that will be staged in the 'metadata' folder instead of the 'content' folder
-      metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
-      log "    - staging(druid_tree_dir = #{druid_tree_dir.inspect})"
-      create_object_directories
+      log "    - staging(druid_tree_dir = #{assembly_directory.druid_tree_dir.inspect})"
       stageable_items.each do |si_path|
-        log "      - staging(#{si_path}, #{content_dir})", :debug
         # determine destination of staged file by looking to see if it is a known datastream XML file or not
-        destination = metadata_files.include?(File.basename(si_path).downcase) ? metadata_dir : content_dir
+        destination = assembly_directory.path_for(si_path)
+        log "      - staging(#{si_path}, #{destination})", :debug
         stager si_path, destination
       end
     end
@@ -192,9 +177,8 @@ module PreAssembly
     # write technical metadata out to a file only if it exists
     def write_technical_metadata
       return if technical_md_xml.blank?
-      file_name = File.join(metadata_dir, technical_md_file)
+      file_name = assembly_directory.technical_metadata_file
       log "    - write_technical_metadata_xml(#{file_name})"
-      create_object_directories
       File.open(file_name, 'w') { |fh| fh.puts technical_md_xml }
     end
 
@@ -217,8 +201,7 @@ module PreAssembly
 
     # write content metadata out to a file
     def write_content_metadata
-      file_name = File.join(metadata_dir, content_md_file)
-      create_object_directories
+      file_name = assembly_directory.content_metadata_file
 
       File.open(file_name, 'w') { |fh| fh.puts content_md_xml }
 
@@ -239,16 +222,6 @@ module PreAssembly
     def object_files_exist?
       return false if object_files.empty?
       object_files.map(&:path).all? { |path| File.readable?(path) }
-    end
-
-    ####
-    # Descriptive metadata.
-    ####
-
-    def create_object_directories
-      FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)
-      FileUtils.mkdir_p metadata_dir unless File.directory?(metadata_dir)
-      FileUtils.mkdir_p content_dir unless File.directory?(content_dir)
     end
 
     ####
@@ -280,16 +253,6 @@ module PreAssembly
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
       Dor::Config.workflow.client.create_workflow_by_name(druid.druid, 'assemblyWF')
-    end
-
-    private
-
-    def technical_md_file
-      'technicalMetadata.xml'
-    end
-
-    def content_md_file
-      'contentMetadata.xml'
     end
   end
 end
