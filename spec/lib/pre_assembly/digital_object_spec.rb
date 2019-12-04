@@ -74,14 +74,16 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:tmp_area) do
       Dir.mktmpdir(*tmp_dir_args)
     end
+    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
 
     before do
       allow(object).to receive(:druid).and_return(druid)
       allow(object).to receive(:bundle_dir).and_return(tmp_area)
-      allow(object).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
+      allow(assembly_directory).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
       allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
+      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
       object.stageable_items.each { |si| FileUtils.touch si }
-      FileUtils.mkdir object.assembly_staging_dir
+      assembly_directory.create_object_directories
     end
 
     after { FileUtils.remove_entry tmp_area }
@@ -91,7 +93,7 @@ RSpec.describe PreAssembly::DigitalObject do
       # Check outcome: both source and copy should exist.
       files.each_with_index do |f, i|
         src = object.stageable_items[i]
-        cpy = File.join(object.content_dir, f)
+        cpy = File.join(assembly_directory.content_dir, f)
         expect(File.exist?(src)).to eq(true)
         expect(File.exist?(cpy)).to eq(true)
         expect(File.symlink?(cpy)).to eq(false)
@@ -104,7 +106,7 @@ RSpec.describe PreAssembly::DigitalObject do
       # Check outcome: both source and copy should exist.
       files.each_with_index do |f, i|
         src = object.stageable_items[i]
-        cpy = File.join(object.content_dir, f)
+        cpy = File.join(assembly_directory.content_dir, f)
         expect(File.exist?(src)).to eq(true)
         expect(File.exist?(cpy)).to eq(true)
         expect(File.symlink?(cpy)).to eq(true)
@@ -176,22 +178,17 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'is able to write the content_metadata XML to a file' do
+      assembly_directory = PreAssembly::AssemblyDirectory.new(druid_id: druid.id)
+      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+
       Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-        object.druid_tree_dir = tmp_area
-        file_name = File.join(tmp_area, 'metadata', object.send(:content_md_file))
+        allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+        assembly_directory.create_object_directories
+        file_name = object.assembly_directory.content_metadata_file
         expect(File.exist?(file_name)).to eq(false)
         object.write_content_metadata
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
       end
-    end
-  end
-
-  describe 'druid tree' do
-    it 'has the correct folders (using the contemporary style)' do
-      allow(object).to receive(:druid).and_return(druid)
-      expect(object.druid_tree_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119')
-      expect(object.metadata_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/metadata')
-      expect(object.content_dir).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/content')
     end
   end
 
