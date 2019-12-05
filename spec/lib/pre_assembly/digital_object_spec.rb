@@ -1,8 +1,11 @@
 RSpec.describe PreAssembly::DigitalObject do
-  subject(:object) { described_class.new(bc.bundle, object_files: []) }
+  subject(:object) do
+    described_class.new(bc.bundle, object_files: [], stager: stager)
+  end
 
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
+  let(:stager) { PreAssembly::CopyStager }
   let(:bc) { create(:bundle_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
@@ -68,7 +71,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe 'file staging' do
+  describe '#stage_files' do
     let(:files) { [1, 2, 3].map { |n| "image#{n}.tif" } }
     let(:tmp_area) do
       Dir.mktmpdir(*tmp_dir_args)
@@ -87,28 +90,33 @@ RSpec.describe PreAssembly::DigitalObject do
 
     after { FileUtils.remove_entry tmp_area }
 
-    it 'is able to copy stageable items successfully' do
-      object.stage_files
-      # Check outcome: both source and copy should exist.
-      files.each_with_index do |f, i|
-        src = object.stageable_items[i]
-        cpy = File.join(assembly_directory.content_dir, f)
-        expect(File.exist?(src)).to eq(true)
-        expect(File.exist?(cpy)).to eq(true)
-        expect(File.symlink?(cpy)).to eq(false)
+    context 'when the copy stager is passed' do
+      it 'is able to copy stageable items successfully' do
+        object.stage_files
+        # Check outcome: both source and copy should exist.
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = File.join(assembly_directory.content_dir, f)
+          expect(File.exist?(src)).to eq(true)
+          expect(File.exist?(cpy)).to eq(true)
+          expect(File.symlink?(cpy)).to eq(false)
+        end
       end
     end
 
-    it 'is able to symlink stageable items successfully' do
-      allow(bc).to receive(:staging_style_symlink).and_return(true)
-      object.stage_files
-      # Check outcome: both source and copy should exist.
-      files.each_with_index do |f, i|
-        src = object.stageable_items[i]
-        cpy = File.join(assembly_directory.content_dir, f)
-        expect(File.exist?(src)).to eq(true)
-        expect(File.exist?(cpy)).to eq(true)
-        expect(File.symlink?(cpy)).to eq(true)
+    context 'when the link stager is passed' do
+      let(:stager) { PreAssembly::LinkStager }
+
+      it 'is able to symlink stageable items successfully' do
+        object.stage_files
+        # Check outcome: both source and copy should exist.
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = File.join(assembly_directory.content_dir, f)
+          expect(File.exist?(src)).to eq(true)
+          expect(File.exist?(cpy)).to eq(true)
+          expect(File.symlink?(cpy)).to eq(true)
+        end
       end
     end
   end

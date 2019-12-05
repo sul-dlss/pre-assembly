@@ -2,14 +2,13 @@ module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
 
-    attr_reader :bundle, :stageable_items, :object_files
+    attr_reader :bundle, :stageable_items, :object_files, :stager
 
     delegate :bundle_dir,
              :content_md_creation,
              :content_structure,
              :project_name,
              :media_manifest,
-             :staging_style_symlink,
              to: :bundle
 
     attr_accessor :container,
@@ -24,24 +23,18 @@ module PreAssembly
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
-    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil)
+    # @param [Object] stager the implementation of how to stage an object
+    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil, stager:)
       @bundle = bundle
       @container = container
       @stageable_items = stageable_items
       @object_files = object_files
+      @stager = stager
       setup
     end
 
     def setup
       self.label = 'Unknown' # used for registration when no label is provided in the manifest
-    end
-
-    def stager(source, destination)
-      if staging_style_symlink
-        FileUtils.ln_s source, destination, force: true
-      else
-        FileUtils.cp_r source, destination
-      end
     end
 
     # set this object's content_md_creation_style
@@ -138,7 +131,7 @@ module PreAssembly
         # determine destination of staged file by looking to see if it is a known datastream XML file or not
         destination = assembly_directory.path_for(si_path)
         log "      - staging(#{si_path}, #{destination})", :debug
-        stager si_path, destination
+        stager.stage si_path, destination
       end
     end
 

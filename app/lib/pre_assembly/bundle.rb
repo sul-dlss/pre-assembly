@@ -78,7 +78,8 @@ module PreAssembly
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         params = {
           container: c,
-          stageable_items: discover_items_via_crawl(c)
+          stageable_items: discover_items_via_crawl(c),
+          stager: stager
         }
         params[:object_files] = discover_object_files(params[:stageable_items])
         DigitalObject.new(self, params).tap do |dobj|
@@ -147,6 +148,10 @@ module PreAssembly
     end
 
     private
+
+    def stager
+      staging_style_symlink ? LinkStager : CopyStager
+    end
 
     # Discover object containers from a manifest.
     # The relative path to the container is supplied in one of the
