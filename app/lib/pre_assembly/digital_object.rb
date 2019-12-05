@@ -2,7 +2,7 @@ module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
 
-    attr_reader :bundle, :stageable_items
+    attr_reader :bundle, :stageable_items, :object_files
 
     delegate :bundle_dir,
              :content_md_creation,
@@ -15,21 +15,20 @@ module PreAssembly
     attr_accessor :container,
                   :label,
                   :manifest_row,
-                  :object_files,
                   :pre_assem_finished,
                   :source_id
 
     attr_writer :dor_object
 
-    INIT_PARAMS = [:container, :stageable_items, :object_files].freeze
-
     # @param [PreAssembly::Bundle] bundle
-    # @param [Hash<Symbol => Object>] params
-    def initialize(bundle, params = {})
+    # @param [String] container the identifier (non-namespaced)
+    # @param [Array<String>] stageable_items items to stage
+    # @param [Array<ObjectFile>] object_files path to files that are part of the object
+    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil)
       @bundle = bundle
-      INIT_PARAMS.each { |p| instance_variable_set "@#{p}", params[p] }
-      bad_params = params.keys.reject { |k| INIT_PARAMS.include?(k) }
-      raise ArgumentError, "Unrecognized param #{bad_params.first}" unless bad_params.empty?
+      @container = container
+      @stageable_items = stageable_items
+      @object_files = object_files
       setup
     end
 
