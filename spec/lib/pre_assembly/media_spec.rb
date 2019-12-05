@@ -65,7 +65,8 @@ RSpec.describe PreAssembly::Media do
   # some helper methods for these tests
   def setup_dobj(druid, media_manifest)
     allow(bc.bundle).to receive(:media_manifest).and_return(media_manifest)
-    PreAssembly::DigitalObject.new(bc.bundle, container: druid).tap do |dobj|
+    PreAssembly::DigitalObject.new(bc.bundle, container: druid,
+                                              stager: PreAssembly::CopyStager).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
     end
