@@ -115,7 +115,6 @@ RSpec.describe PreAssembly::Bundle do
         expect(dobj.label).to be_a(String)
         expect(dobj.label).not_to eq('Unknown') # hardcoded in class
         expect(dobj.source_id).to be_a(String)
-        expect(dobj.manifest_row).to be_a(Hash)
       end
     end
   end

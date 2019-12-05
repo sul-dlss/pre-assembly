@@ -2,7 +2,8 @@ module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
 
-    attr_reader :bundle, :stageable_items, :object_files, :stager
+    attr_reader :bundle, :stageable_items, :object_files,
+                :stager, :label, :pid, :source_id
 
     delegate :bundle_dir,
              :content_md_creation,
@@ -12,28 +13,29 @@ module PreAssembly
              to: :bundle
 
     attr_accessor :container,
-                  :label,
-                  :manifest_row,
-                  :pre_assem_finished,
-                  :source_id
+                  :pre_assem_finished
 
     # @param [PreAssembly::Bundle] bundle
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
+    # @param [String] label The label for this object
+    # @param [String] pid The identifier for the item
+    # @param [String] source_id The source identifier
     # @param [Object] stager the implementation of how to stage an object
-    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil, stager:)
+    # rubocop:disable Metrics/ParameterLists
+    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil,
+                   label: nil, pid: nil, source_id: nil, stager:)
       @bundle = bundle
       @container = container
       @stageable_items = stageable_items
       @object_files = object_files
+      @label = label
+      @pid = pid
+      @source_id = source_id
       @stager = stager
-      setup
     end
-
-    def setup
-      self.label = 'Unknown' # used for registration when no label is provided in the manifest
-    end
+    # rubocop:enable Metrics/ParameterLists
 
     # set this object's content_md_creation_style
     # @return [Symbol]
@@ -78,13 +80,6 @@ module PreAssembly
     # @return [DruidTools::Druid]
     def druid
       @druid ||= DruidTools::Druid.new(pid)
-    end
-
-    def pid
-      @pid ||= begin
-        raise 'manifest_row is required' unless manifest_row
-        manifest_row[:druid]
-      end
     end
 
     def dor_object
