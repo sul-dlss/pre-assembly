@@ -18,8 +18,6 @@ module PreAssembly
                   :pre_assem_finished,
                   :source_id
 
-    attr_writer :dor_object
-
     # @param [PreAssembly::Bundle] bundle
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage
@@ -94,14 +92,6 @@ module PreAssembly
         raise 'manifest_row is required' unless manifest_row
         manifest_row[:druid]
       end
-    end
-
-    def query_dor_by_barcode(barcode)
-      Dor::SearchService.query_by_id barcode: barcode
-    end
-
-    def get_dor_item_apos(_pid)
-      dor_object.nil? ? [] : dor_object.admin_policy_object
     end
 
     def dor_object
