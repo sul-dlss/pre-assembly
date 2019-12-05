@@ -23,6 +23,10 @@ Layout/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
   Max: 200

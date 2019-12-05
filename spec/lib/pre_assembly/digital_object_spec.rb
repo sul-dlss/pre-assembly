@@ -1,5 +1,5 @@
 RSpec.describe PreAssembly::DigitalObject do
-  subject(:object) { described_class.new(bc.bundle) }
+  subject(:object) { described_class.new(bc.bundle, object_files: []) }
 
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
@@ -11,7 +11,6 @@ RSpec.describe PreAssembly::DigitalObject do
 
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
-    object.object_files = []
   end
 
   def add_object_files(extension = 'tif')
@@ -155,22 +154,30 @@ RSpec.describe PreAssembly::DigitalObject do
       object.create_content_metadata
     end
 
-    it 'content_object_files() should filter @object_files correctly' do
-      # Generate some object_files.
-      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
-      n = files.size
-      m = n / 2
-      object.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+    describe '#content_object_files' do
+      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
+      let(:object_files) do
+        files.map do |f|
+          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+        end
       end
-      # All of them are included in content.
-      expect(object.content_object_files.size).to eq(n)
-      # Now exclude some. Make sure we got correct N of items.
-      (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-      ofiles = object.content_object_files
-      expect(ofiles.size).to eq(m)
-      # Also check their ordering.
-      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+
+      before do
+        allow(object).to receive(:object_files).and_return(object_files)
+      end
+
+      it 'filters @object_files correctly' do
+        m = files.size / 2
+
+        # All of them are included in content.
+        expect(object.content_object_files.size).to eq(files.size)
+        # Now exclude some. Make sure we got correct N of items.
+        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
+        ofiles = object.content_object_files
+        expect(ofiles.size).to eq(m)
+        # Also check their ordering.
+        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+      end
     end
 
     it 'generates the expected xml text' do
@@ -274,22 +281,29 @@ RSpec.describe PreAssembly::DigitalObject do
       object.create_content_metadata
     end
 
-    it 'content_object_files() should filter @object_files correctly' do
-      # Generate some object_files.
-      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
-      n = files.size
-      m = n / 2
-      object.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+    describe '#content_object_files' do
+      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
+      let(:object_files) do
+        files.map do |f|
+          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+        end
       end
-      # All of them are included in content.
-      expect(object.content_object_files.size).to eq(n)
-      # Now exclude some. Make sure we got correct N of items.
-      (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-      ofiles = object.content_object_files
-      expect(ofiles.size).to eq(m)
-      # Also check their ordering.
-      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+
+      before do
+        allow(object).to receive(:object_files).and_return(object_files)
+      end
+
+      it 'content_object_files() should filter @object_files correctly' do
+        m = files.size / 2
+        # All of them are included in content.
+        expect(object.content_object_files.size).to eq(files.size)
+        # Now exclude some. Make sure we got correct N of items.
+        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
+        ofiles = object.content_object_files
+        expect(ofiles.size).to eq(m)
+        # Also check their ordering.
+        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+      end
     end
 
     it 'generates the expected xml text' do
@@ -339,21 +353,29 @@ RSpec.describe PreAssembly::DigitalObject do
       object.create_content_metadata
     end
 
-    it 'content_object_files() should filter @object_files correctly' do
-      # Generate some object_files.
-      files = %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif]
-      object.object_files = files.map do |f|
-        PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+    describe '#content_object_files' do
+      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
+      let(:object_files) do
+        files.map do |f|
+          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
+        end
       end
-      # All of them are included in content.
-      expect(object.content_object_files.size).to eq(files.size)
-      m = files.size / 2
-      # Now exclude some. Make sure we got correct M of items.
-      (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-      ofiles = object.content_object_files
-      expect(ofiles.size).to eq(m)
-      # Also check their ordering.
-      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+
+      before do
+        allow(object).to receive(:object_files).and_return(object_files)
+      end
+
+      it 'filters @object_files correctly' do
+        # All of them are included in content.
+        expect(object.content_object_files.size).to eq(files.size)
+        m = files.size / 2
+        # Now exclude some. Make sure we got correct M of items.
+        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
+        ofiles = object.content_object_files
+        expect(ofiles.size).to eq(m)
+        # Also check their ordering.
+        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+      end
     end
   end
 
