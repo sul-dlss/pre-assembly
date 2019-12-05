@@ -152,7 +152,6 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(bc).to receive(:content_structure).and_return('simple_image')
       add_object_files('tif')
       add_object_files('jp2')
-      object.create_content_metadata
     end
 
     it 'content_object_files() should filter @object_files correctly' do
@@ -174,7 +173,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'generates the expected xml text' do
-      expect(noko_doc(object.content_md_xml)).to be_equivalent_to exp_xml
+      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to exp_xml
     end
 
     it 'is able to write the content_metadata XML to a file' do
@@ -186,7 +185,7 @@ RSpec.describe PreAssembly::DigitalObject do
         assembly_directory.create_object_directories
         file_name = object.assembly_directory.content_metadata_file
         expect(File.exist?(file_name)).to eq(false)
-        object.write_content_metadata
+        object.generate_content_metadata
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
       end
     end
@@ -225,11 +224,10 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(bc).to receive(:content_md_creation).and_return('filename')
       add_object_files('tif')
       add_object_files('jp2')
-      object.create_content_metadata
     end
 
     it 'generates the expected xml text' do
-      expect(noko_doc(object.content_md_xml)).to be_equivalent_to(exp_xml)
+      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to(exp_xml)
     end
   end
 
@@ -271,7 +269,6 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
       add_object_files('tif')
       add_object_files('jp2')
-      object.create_content_metadata
     end
 
     it 'content_object_files() should filter @object_files correctly' do
@@ -294,7 +291,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'generates the expected xml text' do
       expect(object.content_md_creation_style).to eq(:file)
-      expect(noko_doc(object.content_md_xml)).to be_equivalent_to(exp_xml)
+      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to(exp_xml)
     end
   end
 

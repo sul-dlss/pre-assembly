@@ -13,13 +13,11 @@ module PreAssembly
              to: :bundle
 
     attr_accessor :container,
-                  :content_md_xml,
                   :label,
                   :manifest_row,
                   :object_files,
                   :pre_assem_finished,
-                  :source_id,
-                  :technical_md_xml
+                  :source_id
 
     attr_writer :dor_object
 
@@ -36,9 +34,7 @@ module PreAssembly
     end
 
     def setup
-      self.label            = 'Unknown' # used for registration when no label is provided in the manifest
-      self.content_md_xml   = ''
-      self.technical_md_xml = ''
+      self.label = 'Unknown' # used for registration when no label is provided in the manifest
     end
 
     def stager(source, destination)
@@ -147,12 +143,6 @@ module PreAssembly
       end
     end
 
-    # Technical metadata combined file for Media.
-    def generate_technical_metadata
-      create_technical_metadata
-      write_technical_metadata
-    end
-
     # create technical metadata for media projects only
     def create_technical_metadata
       return unless content_md_creation == 'media_cm_style'
@@ -171,46 +161,33 @@ module PreAssembly
         tm.root << tech_md_xml.root
       end
       FileUtils.cd(current_directory)
-      self.technical_md_xml = tm.to_xml
+      tm.to_xml
     end
 
-    # write technical metadata out to a file only if it exists
-    def write_technical_metadata
+    # write technical metadata out for media projects
+    def generate_technical_metadata
+      technical_md_xml = create_technical_metadata
       return if technical_md_xml.blank?
       file_name = assembly_directory.technical_metadata_file
       log "    - write_technical_metadata_xml(#{file_name})"
       File.open(file_name, 'w') { |fh| fh.puts technical_md_xml }
     end
 
-    # Content metadata.
+    # Write contentMetadata.xml file
     def generate_content_metadata
-      create_content_metadata
-      write_content_metadata
+      File.open(assembly_directory.content_metadata_file, 'w') { |fh| fh.puts create_content_metadata }
     end
 
     # Invoke the contentMetadata creation method used by the project
     def create_content_metadata
-      if content_md_creation == 'media_cm_style'
-        self.content_md_xml = media_manifest.generate_cm(druid.id)
-      else
-        # otherwise use the content metadata generation gem
-        params = { druid: druid.id, objects: content_object_files, add_exif: false, bundle: content_md_creation.to_sym, style: content_md_creation_style }
-        self.content_md_xml = Assembly::ContentMetadata.create_content_metadata(params)
-      end
-    end
+      return media_manifest.generate_cm(druid.id) if content_md_creation == 'media_cm_style'
 
-    # write content metadata out to a file
-    def write_content_metadata
-      file_name = assembly_directory.content_metadata_file
-
-      File.open(file_name, 'w') { |fh| fh.puts content_md_xml }
-
-      # NOTE: This is being skipped because it now removes empty nodes, and we need an a node like this: <file id="filename" /> when first starting with contentMetadat
-      #        If this node gets removed, then nothing works.  - Peter Mangiafico, October 3, 2015
-      # mods_xml_doc = Nokogiri::XML(@content_md_xml) # create a nokogiri doc
-      # normalizer = Normalizer.new
-      # normalizer.normalize_document(mods_xml_doc.root) # normalize it
-      # File.open(file_name, 'w') { |fh| fh.puts mods_xml_doc.to_xml } # write out normalized result
+      # otherwise use the content metadata generation gem
+      Assembly::ContentMetadata.create_content_metadata(druid: druid.id,
+                                                        objects: content_object_files,
+                                                        add_exif: false,
+                                                        bundle: content_md_creation.to_sym,
+                                                        style: content_md_creation_style)
     end
 
     # Object files that should be included in content metadata.
