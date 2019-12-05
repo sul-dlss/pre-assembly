@@ -20,7 +20,6 @@ module PreAssembly
              :project_name,
              :set_druid_id,
              :stageable_discovery,
-             :assembly_staging_dir,
              :staging_style_symlink,
              to: :bundle_context
 

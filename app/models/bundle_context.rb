@@ -44,10 +44,6 @@ class BundleContext < ApplicationRecord
     content_structure
   end
 
-  def assembly_staging_dir
-    Settings.assembly_staging_dir
-  end
-
   def output_dir
     @output_dir ||= File.join(normalize_dir(Settings.job_output_parent_dir), user.email, project_name)
   end

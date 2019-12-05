@@ -76,7 +76,7 @@ RSpec.describe PreAssembly::Bundle do
       expect(flat_dir_images.run_log_msg).to match(/content_structure="#{flat_dir_images.content_structure}"/)
       expect(flat_dir_images.run_log_msg).to match(/project_name="#{flat_dir_images.project_name}"/)
       expect(flat_dir_images.run_log_msg).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
-      expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{flat_dir_images.assembly_staging_dir}"/)
+      expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
       expect(flat_dir_images.run_log_msg).to match(/environment="test"/)
     end
   end
