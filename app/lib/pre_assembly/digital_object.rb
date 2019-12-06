@@ -102,14 +102,6 @@ module PreAssembly
     end
 
     ####
-    # Registration and other Dor interactions.
-    ####
-
-    def add_collection_relationship_params(druid)
-      [:is_member_of_collection, "info:fedora/#{druid}"]
-    end
-
-    ####
     # Staging files.
     ####
 
