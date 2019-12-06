@@ -63,7 +63,7 @@ module PreAssembly
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata
-      generate_technical_metadata
+      generate_media_project_technical_metadata if content_md_creation == 'media_cm_style'
       create_new_version if openable?
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
@@ -97,10 +97,6 @@ module PreAssembly
       dor_object.nil? ? '' : dor_object.content_type_tag
     end
 
-    def container_basename
-      File.basename(container)
-    end
-
     ####
     # Registration and other Dor interactions.
     ####
@@ -125,30 +121,11 @@ module PreAssembly
       end
     end
 
-    # create technical metadata for media projects only
-    def create_technical_metadata
-      return unless content_md_creation == 'media_cm_style'
-
-      tm = Nokogiri::XML::Document.new
-      tm_node = Nokogiri::XML::Node.new('technicalMetadata', tm)
-      tm_node['objectId'] = pid
-      tm_node['datetime'] = Time.now.utc.strftime('%Y-%m-%d-T%H:%M:%SZ')
-      tm << tm_node
-
-      # find all technical metadata files and just append the xml to the combined technicalMetadata
-      current_directory = Dir.pwd
-      FileUtils.cd(File.join(bundle_dir, container_basename))
-      Dir.glob('**/*_techmd.xml').sort.each do |filename|
-        tech_md_xml = Nokogiri::XML(File.open(File.join(bundle_dir, container_basename, filename)))
-        tm.root << tech_md_xml.root
-      end
-      FileUtils.cd(current_directory)
-      tm.to_xml
-    end
-
-    # write technical metadata out for media projects
-    def generate_technical_metadata
-      technical_md_xml = create_technical_metadata
+    # generate technical metadata for media projects
+    def generate_media_project_technical_metadata
+      technical_md_xml = MediaProjectTechnicalMetadataCreator.new(pid: pid,
+                                                                  bundle_dir: bundle_dir,
+                                                                  container: container).create
       return if technical_md_xml.blank?
       file_name = assembly_directory.technical_metadata_file
       log "    - write_technical_metadata_xml(#{file_name})"
