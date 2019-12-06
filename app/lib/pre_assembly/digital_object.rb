@@ -162,19 +162,11 @@ module PreAssembly
 
     # Invoke the contentMetadata creation method used by the project
     def create_content_metadata
-      return media_manifest.generate_cm(druid.id) if content_md_creation == 'media_cm_style'
-
-      # otherwise use the content metadata generation gem
-      Assembly::ContentMetadata.create_content_metadata(druid: druid.id,
-                                                        objects: content_object_files,
-                                                        add_exif: false,
-                                                        bundle: content_md_creation.to_sym,
-                                                        style: content_md_creation_style)
-    end
-
-    # Object files that should be included in content metadata.
-    def content_object_files
-      object_files.reject(&:exclude_from_content).sort
+      ContentMetadataCreator.new(druid_id: druid.id,
+                                 content_md_creation: content_md_creation,
+                                 object_files: object_files,
+                                 content_md_creation_style: content_md_creation_style,
+                                 media_manifest: media_manifest).create
     end
 
     # Checks filesystem for expected files

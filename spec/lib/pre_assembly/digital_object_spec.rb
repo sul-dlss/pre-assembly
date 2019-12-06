@@ -161,32 +161,6 @@ RSpec.describe PreAssembly::DigitalObject do
       add_object_files('jp2')
     end
 
-    describe '#content_object_files' do
-      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
-      let(:object_files) do
-        files.map do |f|
-          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
-        end
-      end
-
-      before do
-        allow(object).to receive(:object_files).and_return(object_files)
-      end
-
-      it 'filters @object_files correctly' do
-        m = files.size / 2
-
-        # All of them are included in content.
-        expect(object.content_object_files.size).to eq(files.size)
-        # Now exclude some. Make sure we got correct N of items.
-        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-        ofiles = object.content_object_files
-        expect(ofiles.size).to eq(m)
-        # Also check their ordering.
-        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
-      end
-    end
-
     it 'generates the expected xml text' do
       expect(noko_doc(object.create_content_metadata)).to be_equivalent_to exp_xml
     end
@@ -286,101 +260,9 @@ RSpec.describe PreAssembly::DigitalObject do
       add_object_files('jp2')
     end
 
-    describe '#content_object_files' do
-      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
-      let(:object_files) do
-        files.map do |f|
-          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
-        end
-      end
-
-      before do
-        allow(object).to receive(:object_files).and_return(object_files)
-      end
-
-      it 'content_object_files() should filter @object_files correctly' do
-        m = files.size / 2
-        # All of them are included in content.
-        expect(object.content_object_files.size).to eq(files.size)
-        # Now exclude some. Make sure we got correct N of items.
-        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-        ofiles = object.content_object_files
-        expect(ofiles.size).to eq(m)
-        # Also check their ordering.
-        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
-      end
-    end
-
     it 'generates the expected xml text' do
       expect(object.content_md_creation_style).to eq(:file)
       expect(noko_doc(object.create_content_metadata)).to be_equivalent_to(exp_xml)
-    end
-  end
-
-  describe 'content metadata generated from object tag in DOR if present but overriding is not allowed' do
-    let(:exp_xml) do
-      noko_doc <<-END
-        <contentMetadata type="image" objectId="gn330dv6119">
-          <resource type="image" sequence="1" id="gn330dv6119_1">
-            <label>Image 1</label>
-            <file id="image1.jp2">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="image" sequence="2" id="gn330dv6119_2">
-            <label>Image 2</label>
-            <file id="image1.tif">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="image" sequence="3" id="gn330dv6119_3">
-            <label>Image 3</label>
-            <file id="image2.jp2">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-          <resource type="image" sequence="4" id="gn330dv6119_4">
-            <label>Image 4</label>
-            <file id="image2.tif">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-        </contentMetadata>
-      END
-    end
-
-    before do
-      allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
-      allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:content_type_tag).and_return('File') # this is what the object tag says, but it should be ignored since overriding is not allowed
-      add_object_files('tif')
-      add_object_files('jp2')
-      object.create_content_metadata
-    end
-
-    describe '#content_object_files' do
-      let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }
-      let(:object_files) do
-        files.map do |f|
-          PreAssembly::ObjectFile.new("/path/to/#{f}", relative_path: f)
-        end
-      end
-
-      before do
-        allow(object).to receive(:object_files).and_return(object_files)
-      end
-
-      it 'filters @object_files correctly' do
-        # All of them are included in content.
-        expect(object.content_object_files.size).to eq(files.size)
-        m = files.size / 2
-        # Now exclude some. Make sure we got correct M of items.
-        (0...m).each { |i| object.object_files[i].exclude_from_content = true }
-        ofiles = object.content_object_files
-        expect(ofiles.size).to eq(m)
-        # Also check their ordering.
-        expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
-      end
     end
   end
 
