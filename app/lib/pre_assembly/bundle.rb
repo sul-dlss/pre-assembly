@@ -76,20 +76,17 @@ module PreAssembly
     # @return [Array<DigitalObject>]
     def digital_objects
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
-        params = {
-          container: c,
-          stageable_items: discover_items_via_crawl(c),
-          stager: stager
-        }
-        params[:object_files] = discover_object_files(params[:stageable_items])
-        DigitalObject.new(self, params).tap do |dobj|
-          r = manifest_rows[i]
-          # Get label and source_id from column names declared in YAML config.
-          dobj.label        = r['label'] || ''
-          dobj.source_id    = r['sourceid']
-          # Also store a hash of all values from the manifest row, using column names as keys.
-          dobj.manifest_row = r
-        end
+        stageable_items = discover_items_via_crawl(c)
+        row = manifest_rows[i]
+
+        DigitalObject.new(self,
+                          container: c,
+                          stageable_items: stageable_items,
+                          object_files: discover_object_files(stageable_items),
+                          label: row.fetch('label', ''),
+                          source_id: row['sourceid'],
+                          pid: row[:druid],
+                          stager: stager)
       end
     end
 
