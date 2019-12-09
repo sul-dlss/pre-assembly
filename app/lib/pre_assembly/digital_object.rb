@@ -156,12 +156,6 @@ module PreAssembly
                                  media_manifest: media_manifest).create
     end
 
-    # Checks filesystem for expected files
-    def object_files_exist?
-      return false if object_files.empty?
-      object_files.map(&:path).all? { |path| File.readable?(path) }
-    end
-
     ####
     # Versioning for a re-accession.
     ####
