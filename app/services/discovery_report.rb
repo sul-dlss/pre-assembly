@@ -20,9 +20,9 @@ class DiscoveryReport
     return enum_for(:each_row) unless block_given?
     bundle.objects_to_process.each do |dobj|
       row = process_dobj(dobj)
-      summary[:total_size] += row[:counts][:total_size]
-      summary[:objects_with_error] += 1 unless row[:errors].empty?
-      row[:counts][:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
+      summary[:total_size] += row.counts[:total_size]
+      summary[:objects_with_error] += 1 unless row.errors.empty?
+      row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
       yield row
     end
   end
