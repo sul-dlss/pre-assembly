@@ -37,7 +37,6 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
-      expect(object).to receive(:generate_technical_metadata)
       expect(object).not_to receive(:create_new_version)
       expect(object).to receive(:initialize_assembly_workflow)
       object.pre_assemble
@@ -56,18 +55,9 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:current_object_version).and_return(2)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
-      expect(object).to receive(:generate_technical_metadata)
       expect(object).to receive(:create_new_version)
       expect(object).to receive(:initialize_assembly_workflow)
       object.pre_assemble
-    end
-  end
-
-  describe '#container_basename' do
-    it 'returns expected value' do
-      d = 'xx111yy2222'
-      object.container = "foo/bar/#{d}"
-      expect(object.container_basename).to eq(d)
     end
   end
 

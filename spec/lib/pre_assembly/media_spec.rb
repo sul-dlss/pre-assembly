@@ -17,16 +17,6 @@ RSpec.describe PreAssembly::Media do
       described_class.new(csv_filename: 'media_manifest.csv', bundle_dir: bundle_dir)
     end
 
-    it 'generates technicalMetadata for Media by combining all existing _techmd.xml files' do
-      exp_xml = noko_doc(dobj1.create_technical_metadata)
-      expect(exp_xml.css('technicalMetadata').size).to eq(1) # one top level node
-      expect(exp_xml.css('Mediainfo').size).to eq(2) # two Mediainfo nodes
-      counts = exp_xml.css('Count')
-      expect(counts.size).to eq(4) # four nodes that have file info
-      # look for some specific bits in the files that have been assembled
-      expect(counts.map(&:content)).to eq(%w[279 217 280 218])
-    end
-
     it 'generates content metadata from a Media manifest with no thumb columns' do
       expect(noko_doc(dobj1.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
       expect(noko_doc(dobj2.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
