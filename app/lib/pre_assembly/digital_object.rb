@@ -3,7 +3,7 @@ module PreAssembly
     include PreAssembly::Logging
 
     attr_reader :bundle, :stageable_items, :object_files,
-                :stager, :label, :pid, :source_id
+                :stager, :label, :pid, :source_id, :container
 
     delegate :bundle_dir,
              :content_md_creation,
@@ -12,8 +12,7 @@ module PreAssembly
              :media_manifest,
              to: :bundle
 
-    attr_accessor :container,
-                  :pre_assem_finished
+    attr_accessor :pre_assem_finished
 
     # @param [PreAssembly::Bundle] bundle
     # @param [String] container the identifier (non-namespaced)
