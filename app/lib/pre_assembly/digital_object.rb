@@ -141,18 +141,22 @@ module PreAssembly
       Dor::Services::Client.object(druid.druid).version.openable?
     end
 
+    def version_client
+      @version_client ||= Dor::Services::Client.object(druid.druid).version
+    end
+
     def current_object_version
-      @current_object_version ||= Dor::Services::Client.object(druid.druid).version.current.to_i
+      @current_object_version ||= version_client.current.to_i
     end
 
     # When reaccessioning, we need to first open and close a version without kicking off accessionWF
     def create_new_version
-      Dor::Services::Client.object(druid.druid).version.open(
+      version_client.open(
         significance: 'major',
         description: 'pre-assembly re-accession',
         opening_user_name: bundle.bundle_context.user.sunet_id
       )
-      Dor::Services::Client.object(druid.druid).version.close(start_accession: false)
+      version_client.close(start_accession: false)
     end
 
     ####
