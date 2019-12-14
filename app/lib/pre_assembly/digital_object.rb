@@ -138,7 +138,7 @@ module PreAssembly
     ####
 
     def openable?
-      Dor::Services::Client.object(druid.druid).version.openable?
+      version_client.openable?
     end
 
     def version_client
