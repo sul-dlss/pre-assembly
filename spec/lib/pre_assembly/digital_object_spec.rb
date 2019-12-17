@@ -84,7 +84,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the copy stager is passed' do
       it 'is able to copy stageable items successfully' do
-        object.stage_files
+        object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
@@ -100,7 +100,7 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:stager) { PreAssembly::LinkStager }
 
       it 'is able to symlink stageable items successfully' do
-        object.stage_files
+        object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
@@ -145,30 +145,36 @@ RSpec.describe PreAssembly::DigitalObject do
       END
     end
 
+    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
+
     before do
       allow(object).to receive(:druid).and_return(druid)
       allow(object).to receive(:content_type_tag).and_return('')
       allow(bc).to receive(:content_structure).and_return('simple_image')
       add_object_files('tif')
       add_object_files('jp2')
+      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+    end
+
+    around do |example|
+      RSpec::Mocks.with_temporary_scope do
+        Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
+          allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+          example.run
+        end
+      end
     end
 
     it 'generates the expected xml text' do
-      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to exp_xml
+      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to exp_xml
     end
 
     it 'is able to write the content_metadata XML to a file' do
-      assembly_directory = PreAssembly::AssemblyDirectory.new(druid_id: druid.id)
-      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
-
-      Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-        allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-        assembly_directory.create_object_directories
-        file_name = object.assembly_directory.content_metadata_file
-        expect(File.exist?(file_name)).to eq(false)
-        object.generate_content_metadata
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
-      end
+      assembly_directory.create_object_directories
+      file_name = object.send(:assembly_directory).content_metadata_file
+      expect(File.exist?(file_name)).to eq(false)
+      object.send(:generate_content_metadata)
+      expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
     end
   end
 
@@ -208,7 +214,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'generates the expected xml text' do
-      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to(exp_xml)
+      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
     end
   end
 
@@ -254,7 +260,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'generates the expected xml text' do
       expect(object.content_md_creation_style).to eq(:file)
-      expect(noko_doc(object.create_content_metadata)).to be_equivalent_to(exp_xml)
+      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
     end
   end
 
@@ -269,7 +275,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks if the object is openable' do
       expect(dor_services_client_object_version).to receive(:'openable?')
-      object.openable?
+      object.send(:openable?)
     end
   end
 
@@ -284,7 +290,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks the current object version' do
       expect(dor_services_client_object_version).to receive(:current)
-      object.current_object_version
+      object.send(:current_object_version)
     end
   end
 
@@ -301,12 +307,12 @@ RSpec.describe PreAssembly::DigitalObject do
     it 'opens and closes an object version' do
       expect(dor_services_client_object_version).to receive(:open).with(**version_options)
       expect(dor_services_client_object_version).to receive(:close).with(start_accession: false)
-      object.create_new_version
+      object.send(:create_new_version)
     end
   end
 
   describe '#initialize_assembly_workflow' do
-    subject(:start_workflow) { object.initialize_assembly_workflow }
+    subject(:start_workflow) { object.send(:initialize_assembly_workflow) }
 
     before do
       allow(Dor::Config.workflow).to receive(:client).and_return(client)
