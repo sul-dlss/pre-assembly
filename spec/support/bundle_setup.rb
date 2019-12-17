@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # @return [PreAssembly::Bundle]
 def bundle_setup(proj)
   PreAssembly::Bundle.new(bundle_context_from_hash(proj))

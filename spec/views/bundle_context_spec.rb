@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'bundle_contexts/new' do
   context 'Displays the Bundle Context Form' do
     it 'displays the form correctly' do

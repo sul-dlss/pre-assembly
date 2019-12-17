@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   class CopyStager
     def self.stage(source, destination)

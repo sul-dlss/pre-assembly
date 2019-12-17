@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiscoveryReportJob < ApplicationJob
   queue_as :discovery_report
 

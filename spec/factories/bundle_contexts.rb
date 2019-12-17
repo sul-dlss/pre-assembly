@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :bundle_context do
     bundle_dir { 'spec/test_data/multimedia' }

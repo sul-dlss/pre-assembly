@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PreassemblyJob < ApplicationJob
   queue_as :preassembly
 

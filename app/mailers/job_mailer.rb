@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobMailer < ApplicationMailer
   default from: 'no-reply-preassembly-job@stanford.edu'
 

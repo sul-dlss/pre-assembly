@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::MediaProjectTechnicalMetadataCreator do
   subject(:creator) do
     described_class.new(pid: "druid:#{druid}",

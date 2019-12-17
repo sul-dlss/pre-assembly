@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe JobRunsController, type: :controller do
   let(:bc) { create(:bundle_context_with_deleted_output_dir) }
 

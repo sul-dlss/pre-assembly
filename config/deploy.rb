@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 set :application, 'pre-assembly'
 set :repo_url, 'ssh://git@github.com/sul-dlss/pre-assembly'
 

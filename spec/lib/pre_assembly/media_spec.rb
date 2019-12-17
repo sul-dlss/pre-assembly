@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::Media do
   let(:bundle_dir) { Rails.root.join('spec/test_data/multimedia') }
   let(:bc_params) do

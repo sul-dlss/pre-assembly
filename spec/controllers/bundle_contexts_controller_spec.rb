@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe BundleContextsController, type: :controller do
   let(:params) do
     {

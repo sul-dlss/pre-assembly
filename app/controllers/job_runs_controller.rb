@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobRunsController < ApplicationController
   def create
     raise ActionController::ParameterMissing, :bundle_context_id unless job_run_params[:bundle_context_id]

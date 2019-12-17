@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   # Represents the assembly structure on the filesystem
   class AssemblyDirectory

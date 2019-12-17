@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe DiscoveryReportJob, type: :job do
   let(:job) { described_class.new }
   let(:job_run) { create(:job_run) }

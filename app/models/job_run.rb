@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class JobRun < ApplicationRecord
   belongs_to :bundle_context
   validates :job_type, presence: true

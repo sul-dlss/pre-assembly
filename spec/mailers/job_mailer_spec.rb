@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe JobMailer, type: :mailer do
   let(:job_run) { create(:job_run) }
   let(:job_notification) { described_class.with(job_run: job_run).completion_email }

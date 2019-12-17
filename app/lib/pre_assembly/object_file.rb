@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   class ObjectFile < Assembly::ObjectFile
     include ActiveModel::AttributeMethods

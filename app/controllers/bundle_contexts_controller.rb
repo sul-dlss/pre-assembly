@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BundleContextsController < ApplicationController
   def new
     @bundle_context = BundleContext.new(

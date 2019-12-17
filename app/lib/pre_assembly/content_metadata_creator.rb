@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   class ContentMetadataCreator
     def initialize(druid_id:, content_md_creation:, object_files:, content_md_creation_style:, media_manifest:)

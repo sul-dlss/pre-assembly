@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This class generates contentMetadata from a Media supplied manifest
 # see the "SMPL Content" section here for a description of the manifest:
 # https://consul.stanford.edu/pages/viewpage.action?pageId=136365158#AutomatedAccessioningandObjectRemediation(pre-assemblyandassembly)-SMPLContent

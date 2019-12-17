@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tmpdir'
 require 'equivalent-xml/rspec_matchers'
 require 'byebug'

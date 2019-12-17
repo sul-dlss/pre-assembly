@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::ObjectFile do
   let(:object_file) { described_class.new('spec/test_data/flat_dir_images/image1.tif') }
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Previously a single untested 200-line method from ./lib/pre_assembly/reporting.rb
 # Takes a Bundle, enumerates report data via #each_row
 class DiscoveryReport

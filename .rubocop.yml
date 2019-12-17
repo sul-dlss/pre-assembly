@@ -60,9 +60,6 @@ RSpec/MultipleExpectations:
 RSpec/NestedGroups:
   Max: 4 # default: 3
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 Style/NumericPredicate: # "> 0" is not less readable than ".positive?"
   Enabled: false
 
