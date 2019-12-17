@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe CsvImporter do
   describe '#parse_to_hash' do
     let(:manifest) do

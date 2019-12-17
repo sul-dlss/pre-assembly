@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'shared/_header.erb' do
   context 'should have the right links on the header' do
     before { render }

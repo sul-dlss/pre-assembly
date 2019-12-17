@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
     described_class.new(bc.bundle, object_files: [], stager: stager)

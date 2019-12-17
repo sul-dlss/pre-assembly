@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   class Bundle
     include PreAssembly::Logging

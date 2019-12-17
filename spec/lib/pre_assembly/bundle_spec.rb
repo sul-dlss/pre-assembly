@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::Bundle do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:flat_dir_images) { bundle_setup(:flat_dir_images) }

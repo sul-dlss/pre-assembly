@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe BundleContext, type: :model do
   subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
 

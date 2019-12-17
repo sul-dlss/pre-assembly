@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PreAssembly
   # Looks for *_techmd.xml files in the bundle_dir and concatenates them
   class MediaProjectTechnicalMetadataCreator

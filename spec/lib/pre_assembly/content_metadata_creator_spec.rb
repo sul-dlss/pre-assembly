@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::ContentMetadataCreator do
   subject(:object) do
     described_class.new(druid_id: druid_id,

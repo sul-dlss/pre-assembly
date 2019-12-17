@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BundleContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy

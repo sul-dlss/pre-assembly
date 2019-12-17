@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe DiscoveryReport do
   subject(:report) { described_class.new(bundle) }
 

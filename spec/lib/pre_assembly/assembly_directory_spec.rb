@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe PreAssembly::AssemblyDirectory do
   subject(:object) { described_class.new(druid_id: 'gn330dv6119') }
 

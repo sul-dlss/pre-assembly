@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is a Rack middleware that we use in development. It sets an env var in such a way as to
 # simulate the way mod_shib injects request headers that then result in an env var being set
 # for the request.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe User, type: :model do
   subject(:user) { build(:user, sunet_id: 'jdoe') }
 

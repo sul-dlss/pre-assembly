@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe JobRun, type: :model do
   let(:job_run) { build(:job_run) }
 

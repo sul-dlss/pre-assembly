@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe ObjectFileValidator do
   subject(:validator) { described_class.new(object: object, bundle: bundle) }
 

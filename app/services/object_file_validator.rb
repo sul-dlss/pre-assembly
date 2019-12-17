@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ObjectFileValidator
   def initialize(object:, bundle:)
     @object = object

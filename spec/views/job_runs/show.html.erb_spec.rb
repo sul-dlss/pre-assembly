@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe 'job_runs/show.html.erb', type: :view do
   let(:job_run) { create(:job_run) }
 
