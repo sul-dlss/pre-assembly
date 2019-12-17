@@ -38,24 +38,6 @@ class DiscoveryReport
     ObjectFileValidator.new(object: dobj, bundle: bundle).validate
   end
 
-  # @param [DruidTools]
-  # @return [Hash<Symbol => Boolean>] errors
-  def registration_check(druid)
-    begin
-      obj = Dor::Item.find(druid.druid)
-    rescue ActiveFedora::ObjectNotFoundError
-      return { item_not_registered: true }
-    end
-    begin
-      return { apo_empty: true } unless obj.admin_policy_object
-      {}
-    rescue ActiveFedora::ObjectNotFoundError
-      return { apo_not_registered: true }
-    end
-  rescue RuntimeError # HTTP timeout, network error, whatever
-    { dor_connection_error: true }
-  end
-
   # @return [Boolean]
   def using_media_manifest?
     content_md_creation == 'media_cm_style' && File.exist?(File.join(bundle_dir, bundle.bundle_context.media_manifest))

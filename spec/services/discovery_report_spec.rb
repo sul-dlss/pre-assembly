@@ -65,7 +65,6 @@ RSpec.describe DiscoveryReport do
     before do
       allow(dobj).to receive(:pid).and_return('kk203bw3276')
       allow(Dor::Item).to receive(:find).and_return(instance_double(Dor::Item, admin_policy_object: ''))
-      allow(report).to receive(:registration_check).and_return({}) # pretend everything is in Dor
     end
 
     it 'process_dobj gives expected output for one dobj' do
