@@ -462,7 +462,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    shoulda-matchers (4.0.1)
+    shoulda-matchers (4.1.2)
       activesupport (>= 4.2.0)
     simple_form (5.0.1)
       actionpack (>= 5.0)
@@ -569,7 +569,7 @@ DEPENDENCIES
   rubocop-rspec
   ruby-prof
   sassc (~> 2.0.1)
-  shoulda-matchers (~> 4.0.0.rc1)
+  shoulda-matchers (~> 4.1)
   simple_form
   sqlite3 (~> 1.3.13)
   turbolinks
