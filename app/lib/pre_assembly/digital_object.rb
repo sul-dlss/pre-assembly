@@ -14,8 +14,6 @@ module PreAssembly
              :media_manifest,
              to: :bundle
 
-    attr_accessor :pre_assem_finished
-
     # @param [PreAssembly::Bundle] bundle
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage
@@ -74,8 +72,6 @@ module PreAssembly
       { status: 'success' }
     end
 
-    attr_reader :assembly_directory
-
     ####
     # Determining the druid.
     ####
@@ -85,14 +81,15 @@ module PreAssembly
       @druid ||= DruidTools::Druid.new(pid)
     end
 
-    def dor_object
-      @dor_object ||= Dor::Item.find(pid)
-    rescue ActiveFedora::ObjectNotFoundError
-      @dor_object = nil
-    end
+    private
+
+    attr_reader :assembly_directory
 
     def content_type_tag
-      dor_object.nil? ? '' : dor_object.content_type_tag
+      dor_object = Dor::Item.find(pid)
+      dor_object.content_type_tag
+    rescue ActiveFedora::ObjectNotFoundError
+      ''
     end
 
     ####

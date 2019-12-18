@@ -5,51 +5,52 @@ RSpec.describe PreAssembly::Bundle do
   let(:flat_dir_images) { bundle_setup(:flat_dir_images) }
   let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
   let(:multimedia) { bundle_setup(:multimedia) }
-  let(:b) { create(:bundle_context_with_deleted_output_dir).bundle }
+  let(:bundle) { create(:bundle_context_with_deleted_output_dir).bundle }
 
-  after { FileUtils.rm_rf(b.bundle_context.output_dir) if Dir.exist?(b.bundle_context.output_dir) } # cleanup
+  after { FileUtils.rm_rf(bundle.bundle_context.output_dir) if Dir.exist?(bundle.bundle_context.output_dir) } # cleanup
 
   describe '#run_pre_assembly' do
     before do
-      allow(b).to receive(:process_digital_objects) # stub expensive call
-      allow(b).to receive(:log) # log statements we don't care about here
+      allow(bundle).to receive(:process_digital_objects) # stub expensive call
+      allow(bundle).to receive(:log) # log statements we don't care about here
     end
 
     it 'returns processed_pids' do
-      allow(b).to receive(:processed_pids).and_return ['druid:aa111aa1111', 'druid:bb222bb2222']
-      expect(b.run_pre_assembly).to eq ['druid:aa111aa1111', 'druid:bb222bb2222']
+      allow(bundle).to receive(:processed_pids).and_return ['druid:aa111aa1111', 'druid:bb222bb2222']
+      expect(bundle.run_pre_assembly).to eq ['druid:aa111aa1111', 'druid:bb222bb2222']
     end
     it 'logs the start and finish of the run' do
-      expect(b).to receive(:log).with("\nstarting run_pre_assembly(#{b.run_log_msg})")
-      expect(b).to receive(:log).with("\nfinishing run_pre_assembly(#{b.run_log_msg})")
-      b.run_pre_assembly
+      expect(bundle).to receive(:log).with("\nstarting run_pre_assembly(#{bundle.run_log_msg})")
+      expect(bundle).to receive(:log).with("\nfinishing run_pre_assembly(#{bundle.run_log_msg})")
+      bundle.run_pre_assembly
     end
     it 'calls process_digital_objects' do
-      expect(b).to receive(:process_digital_objects)
-      b.run_pre_assembly
+      expect(bundle).to receive(:process_digital_objects)
+      bundle.run_pre_assembly
     end
   end
 
   describe '#process_digital_objects' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
+    let(:item) { instance_double(Dor::Item, content_type_tag: 'image') }
 
     before do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:initialize_assembly_workflow)
       allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
-      allow(Dor::Item).to receive(:find).with(any_args)
+      allow(Dor::Item).to receive(:find).and_return(item)
     end
 
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect { b.process_digital_objects }.not_to raise_error
+      expect { bundle.process_digital_objects }.not_to raise_error
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      expect { b.process_digital_objects }.not_to raise_error
+      expect { bundle.process_digital_objects }.not_to raise_error
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
@@ -99,9 +100,10 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#digital_objects' do
+    let(:bundle) { bundle_setup(:folder_manifest) }
+
     it 'finds the correct number of objects' do
-      b = bundle_setup(:folder_manifest)
-      expect(b.digital_objects.size).to eq(3)
+      expect(bundle.digital_objects.size).to eq(3)
     end
 
     it 'handles containers correctly' do
@@ -144,15 +146,16 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#log_progress_info' do
-    subject { flat_dir_images.log_progress_info(dobj, status: 'success') }
+    subject { flat_dir_images.log_progress_info(progress, status: 'success') }
 
     let(:dobj) { flat_dir_images.digital_objects[0] }
+    let(:progress) { dobj: dobj }
 
     it {
       is_expected.to eq(
-        container: dobj.container,
-        pid: dobj.pid,
-        pre_assem_finished: dobj.pre_assem_finished,
+        container: progress[:dobj].container,
+        pid: progress[:dobj].pid,
+        pre_assem_finished: nil,
         timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S'),
         status: 'success'
       )
