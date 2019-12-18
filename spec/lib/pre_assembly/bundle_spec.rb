@@ -60,8 +60,8 @@ RSpec.describe PreAssembly::Bundle do
       end
 
       it 'logs an error' do
-        b.process_digital_objects
-        yaml = YAML.load_file(b.progress_log_file)
+        bundle.process_digital_objects
+        yaml = YAML.load_file(bundle.progress_log_file)
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
