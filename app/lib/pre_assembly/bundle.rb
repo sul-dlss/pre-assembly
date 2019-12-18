@@ -119,13 +119,13 @@ module PreAssembly
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          dobj.pre_assemble
+          status = dobj.pre_assemble
           # Indicate that we finished.
           progress[:pre_assem_finished] = true
           log "Completed #{dobj.druid}"
         ensure
           # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress).to_yaml }
+          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status).to_yaml }
         end
       end
     ensure
@@ -137,13 +137,13 @@ module PreAssembly
       @o2p ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
     end
 
-    def log_progress_info(info)
+    def log_progress_info(info, status)
       {
         container: info[:dobj].container,
         pid: info[:dobj].pid,
         pre_assem_finished: info[:pre_assem_finished],
         timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
-      }
+      }.merge(status)
     end
 
     private

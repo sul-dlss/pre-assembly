@@ -53,11 +53,18 @@ RSpec.describe PreAssembly::Bundle do
       expect { bundle.process_digital_objects }.not_to raise_error
     end
 
-    it 'throws an exception for re-accessioned objects that are not ready to be versioned' do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      exp_msg = "druid:aa111aa1111 can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
-      expect { bundle.process_digital_objects }.to raise_error(RuntimeError, exp_msg)
+    context 'when there are re-accessioned objects that are not ready to be versioned' do
+      before do
+        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
+        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
+      end
+
+      it 'logs an error' do
+        bundle.process_digital_objects
+        yaml = YAML.load_file(bundle.progress_log_file)
+        expect(yaml[:status]).to eq 'error'
+        expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
+      end
     end
   end
 
@@ -139,17 +146,20 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#log_progress_info' do
-    it 'returns expected info about a digital object' do
-      dobj = flat_dir_images.digital_objects[0]
-      info = { dobj: dobj, pre_assem_finished: nil }
-      exp = {
-        container: dobj.container,
-        pid: dobj.pid,
+    subject { flat_dir_images.log_progress_info(progress, status: 'success') }
+
+    let(:dobj) { flat_dir_images.digital_objects[0] }
+    let(:progress) { { dobj: dobj } }
+
+    it {
+      is_expected.to eq(
+        container: progress[:dobj].container,
+        pid: progress[:dobj].pid,
         pre_assem_finished: nil,
-        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
-      }
-      expect(flat_dir_images.log_progress_info(info)).to eq(exp)
-    end
+        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S'),
+        status: 'success'
+      )
+    }
   end
 
   ### Private methods
