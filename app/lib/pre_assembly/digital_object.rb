@@ -14,8 +14,6 @@ module PreAssembly
              :media_manifest,
              to: :bundle
 
-    attr_accessor :pre_assem_finished
-
     # @param [PreAssembly::Bundle] bundle
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage

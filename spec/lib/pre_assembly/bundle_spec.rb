@@ -139,13 +139,14 @@ RSpec.describe PreAssembly::Bundle do
   describe '#log_progress_info' do
     it 'returns expected info about a digital object' do
       dobj = flat_dir_images.digital_objects[0]
+      info = { dobj: dobj, pre_assem_finished: nil }
       exp = {
         container: dobj.container,
         pid: dobj.pid,
-        pre_assem_finished: dobj.pre_assem_finished,
+        pre_assem_finished: nil,
         timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
       }
-      expect(flat_dir_images.log_progress_info(dobj)).to eq(exp)
+      expect(flat_dir_images.log_progress_info(info)).to eq(exp)
     end
   end
 
