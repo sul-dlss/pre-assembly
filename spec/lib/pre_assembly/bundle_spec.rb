@@ -15,15 +15,12 @@ RSpec.describe PreAssembly::Bundle do
       allow(bundle).to receive(:log) # log statements we don't care about here
     end
 
-    it 'returns processed_pids' do
-      allow(bundle).to receive(:processed_pids).and_return ['druid:aa111aa1111', 'druid:bb222bb2222']
-      expect(bundle.run_pre_assembly).to eq ['druid:aa111aa1111', 'druid:bb222bb2222']
-    end
     it 'logs the start and finish of the run' do
       expect(bundle).to receive(:log).with("\nstarting run_pre_assembly(#{bundle.run_log_msg})")
       expect(bundle).to receive(:log).with("\nfinishing run_pre_assembly(#{bundle.run_log_msg})")
       bundle.run_pre_assembly
     end
+
     it 'calls process_digital_objects' do
       expect(bundle).to receive(:process_digital_objects)
       bundle.run_pre_assembly
@@ -88,14 +85,6 @@ RSpec.describe PreAssembly::Bundle do
       expect(flat_dir_images.run_log_msg).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
       expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
       expect(flat_dir_images.run_log_msg).to match(/environment="test"/)
-    end
-  end
-
-  describe '#processed_pids' do
-    it 'pulls pids from digital_objects' do
-      exp_pids = [11, 22, 33]
-      flat_dir_images.digital_objects = exp_pids.map { |p| instance_double(PreAssembly::DigitalObject, pid: p) }
-      expect(flat_dir_images.processed_pids).to eq(exp_pids)
     end
   end
 

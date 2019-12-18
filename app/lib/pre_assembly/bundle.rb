@@ -42,12 +42,11 @@ module PreAssembly
     end
 
     # Runs the pre-assembly process
-    # @return [Array<String>] PIDs of the digital objects processed
+    # @return [void]
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
       process_digital_objects
       log "\nfinishing run_pre_assembly(#{run_log_msg})"
-      processed_pids
     end
 
     def run_log_msg
@@ -59,10 +58,6 @@ module PreAssembly
         environment: ENV['RAILS_ENV']
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
-    end
-
-    def processed_pids
-      digital_objects.map(&:pid)
     end
 
     def object_filenames_unique?(dobj)
