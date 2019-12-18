@@ -149,7 +149,7 @@ RSpec.describe PreAssembly::Bundle do
     subject { flat_dir_images.log_progress_info(progress, status: 'success') }
 
     let(:dobj) { flat_dir_images.digital_objects[0] }
-    let(:progress) { dobj: dobj }
+    let(:progress) { { dobj: dobj } }
 
     it {
       is_expected.to eq(
