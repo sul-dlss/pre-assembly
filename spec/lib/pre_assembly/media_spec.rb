@@ -5,52 +5,55 @@ RSpec.describe PreAssembly::Media do
   let(:bc_params) do
     {
       project_name: 'ProjectBar',
-      # :publish_attr  => { :publish => 'no', :shelve => 'no', :preserve => 'yes' },
       bundle_dir: bundle_dir,
       content_metadata_creation: :media_cm_style
     }
   end
   let(:bc) { build(:bundle_context, bc_params) }
 
-  describe '#create_content_metadata - no thumb declaration' do
-    let(:dobj1) { setup_dobj('aa111aa1111', media_manifest) }
-    let(:dobj2) { setup_dobj('bb222bb2222', media_manifest) }
-    let(:media_manifest) do
-      described_class.new(csv_filename: 'media_manifest.csv', bundle_dir: bundle_dir)
-    end
+  describe '#create_content_metadata' do
+    context 'without thumb declaration' do
+      let(:dobj1) { setup_dobj('aa111aa1111', media_manifest) }
+      let(:dobj2) { setup_dobj('bb222bb2222', media_manifest) }
+      let(:media_manifest) do
+        described_class.new(csv_filename: 'media_manifest.csv', bundle_dir: bundle_dir)
+      end
 
-    it 'generates content metadata from a Media manifest with no thumb columns' do
-      expect(noko_doc(dobj1.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-      expect(noko_doc(dobj2.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      it 'generates content metadata from a Media manifest with no thumb columns' do
+        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      end
     end
   end
 
-  describe '#create_content_metadata - with thumb declaration' do
-    it 'generates content metadata from a Media manifest with a thumb column set to yes' do
-      media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', media_manifest)
-      dobj2 = setup_dobj('bb222bb2222', media_manifest)
+  describe '#create_content_metadata' do
+    context 'with thumb declaration' do
+      it 'generates content metadata from a Media manifest with a thumb column set to yes' do
+        media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb.csv', bundle_dir: bundle_dir)
+        dobj1 = setup_dobj('aa111aa1111', media_manifest)
+        dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-      expect(noko_doc(dobj1.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-      expect(noko_doc(dobj2.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
-    end
+        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      end
 
-    it 'generates content metadata from a Media manifest with a thumb column set to true' do
-      media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', media_manifest)
-      dobj2 = setup_dobj('bb222bb2222', media_manifest)
+      it 'generates content metadata from a Media manifest with a thumb column set to true' do
+        media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
+        dobj1 = setup_dobj('aa111aa1111', media_manifest)
+        dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-      expect(noko_doc(dobj1.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-      expect(noko_doc(dobj2.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
-    end
+        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      end
 
-    it 'generates content metadata from a Media manifest with no thumbs when the thumb column is set to no' do
-      media_manifest = described_class.new(csv_filename: 'media_manifest_thumb_no.csv', bundle_dir: bundle_dir)
-      dobj1 = setup_dobj('aa111aa1111', media_manifest)
-      dobj2 = setup_dobj('bb222bb2222', media_manifest)
+      it 'generates content metadata from a Media manifest with no thumbs when the thumb column is set to no' do
+        media_manifest = described_class.new(csv_filename: 'media_manifest_thumb_no.csv', bundle_dir: bundle_dir)
+        dobj1 = setup_dobj('aa111aa1111', media_manifest)
+        dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-      expect(noko_doc(dobj1.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-      expect(noko_doc(dobj2.create_content_metadata)).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+      end
     end
   end
 

@@ -24,14 +24,14 @@ gem 'uglifier' # compressor for JavaScript assets
 # Stanford gems
 gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.7', '>= 1.7.2' # 1.7.2 is the first version to support 3d content metadata generation
-gem 'dor-services', '~> 7.1'
+gem 'dor-services', '~> 8.1'
 gem 'dor-services-client', '~> 2.4'
 
 group :test do
   gem 'coveralls', require: false
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
-  gem 'shoulda-matchers', '~> 4.0.0.rc1'
+  gem 'shoulda-matchers', '~> 4.1'
 end
 
 group :deployment do
