@@ -19,7 +19,7 @@ class BundleContext < ApplicationRecord
   enum content_structure: {
     'simple_image' => 0,
     'simple_book' => 1,
-    'book_as_image' => 2,
+    'book_as_image' => 2, # Deprecated
     'file' => 3,
     'media' => 4,
     '3d' => 5
