@@ -44,12 +44,19 @@ RSpec.describe PreAssembly::DigitalObject do
       object.pre_assemble
     end
 
-    it 'throws an exception for existing non-openable objects' do
-      allow(object).to receive(:'openable?').and_return(false)
-      allow(object).to receive(:current_object_version).and_return(2)
-      expect(object).not_to receive(:stage_files)
-      exp_msg = "#{pid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
-      expect { object.pre_assemble }.to raise_error(RuntimeError, exp_msg)
+    context 'when the object is not openable' do
+      before do
+        allow(object).to receive(:'openable?').and_return(false)
+        allow(object).to receive(:current_object_version).and_return(2)
+      end
+
+      let(:status) { object.pre_assemble }
+
+      it 'logs an error for existing non-openable objects' do
+        expect(object).not_to receive(:stage_files)
+        expect(status).to eq(status: 'error',
+                             message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened")
+      end
     end
 
     it 'calls create_new_version for existing openable objects' do

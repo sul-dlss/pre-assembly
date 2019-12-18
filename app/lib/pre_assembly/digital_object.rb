@@ -60,9 +60,10 @@ module PreAssembly
     # The main process.
     ####
 
+    # @return [Hash] the status of the attempt and an optional message
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
-      raise "#{druid.druid} can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" if !openable? && current_object_version > 1
+      return { status: 'error', message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" } if !openable? && current_object_version > 1
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata
@@ -70,6 +71,7 @@ module PreAssembly
       create_new_version if openable?
       initialize_assembly_workflow
       log "    - pre_assemble(#{pid}) finished"
+      { status: 'success' }
     end
 
     attr_reader :assembly_directory
