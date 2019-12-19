@@ -42,7 +42,6 @@ append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bu
 before 'deploy:restart', 'shared_configs:update'
 
 # Resque pool
-before 'deploy:migrate', 'resque:pool:stop'
-after 'deploy:restart', 'resque:pool:start'
+after 'deploy:restart', 'resque:pool:hot_swap'
 
 set :honeybadger_env, fetch(:stage)
