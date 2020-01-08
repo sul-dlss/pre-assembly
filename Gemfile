@@ -25,7 +25,7 @@ gem 'uglifier' # compressor for JavaScript assets
 gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.7', '>= 1.7.2' # 1.7.2 is the first version to support 3d content metadata generation
 gem 'dor-services', '~> 8.1'
-gem 'dor-services-client', '~> 2.4'
+gem 'dor-services-client', '~> 4.0'
 
 group :test do
   gem 'coveralls', require: false

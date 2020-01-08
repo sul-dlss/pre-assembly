@@ -102,7 +102,7 @@ GEM
       capistrano
       resque-pool
     capistrano-shared_configs (0.2.2)
-    cocina-models (0.1.2)
+    cocina-models (0.6.0)
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
       zeitwerk (~> 2.1)
@@ -161,9 +161,9 @@ GEM
       solrizer (~> 3.0)
       stanford-mods (>= 2.3.1)
       stanford-mods-normalizer (~> 0.1)
-    dor-services-client (2.6.2)
+    dor-services-client (4.0.0)
       activesupport (>= 4.2, < 7)
-      cocina-models (~> 0.1.0)
+      cocina-models (~> 0.6.0)
       faraday (~> 0.15)
       moab-versioning (~> 4.0)
       nokogiri (~> 1.8)
@@ -248,7 +248,7 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.7.0)
+    i18n (1.7.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     iso-639 (0.2.8)
@@ -554,7 +554,7 @@ DEPENDENCIES
   devise-remote-user
   dlss-capistrano (~> 3.1)
   dor-services (~> 8.1)
-  dor-services-client (~> 2.4)
+  dor-services-client (~> 4.0)
   equivalent-xml
   factory_bot_rails
   honeybadger (~> 4.5)
