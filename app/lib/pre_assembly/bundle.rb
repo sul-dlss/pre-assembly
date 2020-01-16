@@ -120,7 +120,7 @@ module PreAssembly
           log "Completed #{dobj.druid}"
         ensure
           # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status).to_yaml }
+          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || {}).to_yaml }
         end
       end
     ensure
