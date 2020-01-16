@@ -322,17 +322,20 @@ RSpec.describe PreAssembly::DigitalObject do
     subject(:start_workflow) { object.send(:initialize_assembly_workflow) }
 
     before do
+      allow(Dor::Services::Client).to receive(:object).and_return(object_client)
       allow(Dor::Config.workflow).to receive(:client).and_return(client)
       allow(object).to receive(:druid).and_return(druid)
     end
 
     let(:client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
+    let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '5') }
+    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
     let(:service_url) { Settings.dor_services_url }
 
     context 'when api client is successful' do
       it 'starts the assembly workflow' do
         start_workflow
-        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF')
+        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF', current_version: 5)
       end
     end
 

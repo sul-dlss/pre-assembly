@@ -165,7 +165,7 @@ module PreAssembly
 
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
-      Dor::Config.workflow.client.create_workflow_by_name(druid.druid, 'assemblyWF')
+      Dor::Config.workflow.client.create_workflow_by_name(druid.druid, 'assemblyWF', current_version: current_object_version)
     end
   end
 end
