@@ -335,7 +335,7 @@ RSpec.describe PreAssembly::DigitalObject do
     context 'when api client is successful' do
       it 'starts the assembly workflow' do
         start_workflow
-        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF', current_version: 5)
+        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF', version: 5)
       end
     end
 
