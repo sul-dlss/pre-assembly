@@ -65,13 +65,13 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     context 'when there are objects that do not complete pre_assemble' do
-      it 'logs an error' do
+      it 'logs incomplete_status error' do
         allow(bundle.digital_objects[0]).to receive(:pre_assemble)
         allow(bundle.digital_objects[1]).to receive(:pre_assemble)
         bundle.process_digital_objects
         yaml = YAML.load_file(bundle.progress_log_file)
-        expect(yaml[:status]).to eq 'error'
-        expect(yaml[:message]).to eq 'pre_assemble did not complete'
+        expect(yaml[:status]).to eq bundle.send(:incomplete_status)[:status]
+        expect(yaml[:message]).to eq bundle.send(:incomplete_status)[:message]
       end
     end
   end
@@ -160,6 +160,13 @@ RSpec.describe PreAssembly::Bundle do
         status: 'success'
       )
     }
+
+    it 'uses incomplete_status if no status is passed' do
+      expect { flat_dir_images.log_progress_info(progress, nil) }.not_to raise_error(TypeError)
+      result = flat_dir_images.log_progress_info(progress, nil)
+      expect(result[:status]).to eq bundle.send(:incomplete_status)[:status]
+      expect(result[:message]).to eq bundle.send(:incomplete_status)[:message]
+    end
   end
 
   ### Private methods

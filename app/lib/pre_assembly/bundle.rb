@@ -133,6 +133,7 @@ module PreAssembly
     end
 
     def log_progress_info(info, status)
+      status = incomplete_status unless status&.any?
       {
         container: info[:dobj].container,
         pid: info[:dobj].pid,
