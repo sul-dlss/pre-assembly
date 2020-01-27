@@ -63,6 +63,17 @@ RSpec.describe PreAssembly::Bundle do
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
     end
+
+    context 'when there are objects that do not complete pre_assemble' do
+      it 'logs an error' do
+        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
+        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
+        bundle.process_digital_objects
+        yaml = YAML.load_file(bundle.progress_log_file)
+        expect(yaml[:status]).to eq 'error'
+        expect(yaml[:message]).to eq 'pre_assemble did not complete'
+      end
+    end
   end
 
   describe '#load_skippables' do
