@@ -120,7 +120,7 @@ module PreAssembly
           log "Completed #{dobj.druid}"
         ensure
           # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || {}).to_yaml }
+          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || incomplete_status).to_yaml }
         end
       end
     ensure
@@ -145,6 +145,10 @@ module PreAssembly
 
     def stager
       staging_style_symlink ? LinkStager : CopyStager
+    end
+
+    def incomplete_status
+      { status: 'error', message: 'pre_assemble did not complete' }
     end
 
     # Discover object containers from a manifest.
