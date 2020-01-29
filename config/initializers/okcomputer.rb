@@ -11,7 +11,7 @@ OkComputer::Registry.register 'feature-resque-down', OkComputer::ResqueDownCheck
 
 # check for backed up resque queues: this is a low volume app, so the threshold is low
 Resque.queues.each do |queue|
-  OkComputer::Registry.register "feature-#{queue}-queue-depth", OkComputer::ResqueBackedUpCheck.new(queue, 5)
+  OkComputer::Registry.register "feature-#{queue}-queue-depth", OkComputer::ResqueBackedUpCheck.new(queue, 15)
 end
 
 class DirectoryExistsCheck < OkComputer::Check
