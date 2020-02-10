@@ -3,7 +3,7 @@ dor_client_cert_key:
 
 # used to look up object existence in DOR for discovery report
 # TODO: can we use dor-services-app instead? (see #226)
-fedora_url: 'https://example.com/fedora'
+fedora_url: 'https://fedora-env.localhost/fedora'
 
 workflow_url: 'https://workflow-env.stanford.edu/workflow'
 

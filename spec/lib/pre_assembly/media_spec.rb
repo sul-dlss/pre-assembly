@@ -64,6 +64,7 @@ RSpec.describe PreAssembly::Media do
                                               stager: PreAssembly::CopyStager).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
+      allow(dobj).to receive(:content_type_tag).and_return('media')
     end
   end
 
