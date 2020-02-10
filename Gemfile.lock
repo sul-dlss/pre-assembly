@@ -540,7 +540,7 @@ PLATFORMS
 
 DEPENDENCIES
   assembly-image (~> 1.7)
-  assembly-objectfile (~> 1.7, >= 1.7.2)
+  assembly-objectfile (~> 1.9)
   bootstrap (~> 4.3, >= 4.3.1)
   capistrano-bundler
   capistrano-passenger
