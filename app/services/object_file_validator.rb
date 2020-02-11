@@ -38,17 +38,18 @@ class ObjectFileValidator
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
     errors[:dupes] = true unless bundle.object_filenames_unique?(object)
-    errors.merge!(registration_check(object.druid))
+    errors.merge!(registration_check)
     self
   end
 
   def as_json(*)
-    { druid: object.druid.druid, errors: errors.compact, counts: counts }
+    { druid: druid.druid, errors: errors.compact, counts: counts }
   end
 
   private
 
   attr_reader :object, :bundle
+  delegate :druid, to: :object
 
   # Checks filesystem for expected files
   def object_files_exist?
@@ -62,20 +63,17 @@ class ObjectFileValidator
 
   # @param [DruidTools]
   # @return [Hash<Symbol => Boolean>] errors
-  def registration_check(druid)
-    begin
-      obj = Dor::Item.find(druid.druid)
-    rescue ActiveFedora::ObjectNotFoundError
-      return { item_not_registered: true }
-    end
-    begin
-      return { apo_empty: true } unless obj.admin_policy_object
-      {}
-    rescue ActiveFedora::ObjectNotFoundError
-      return { apo_not_registered: true }
-    end
+  def registration_check
+    object_client.find
+    {}
+  rescue Dor::Services::Client::NotFoundResponse
+    { item_not_registered: true }
   rescue RuntimeError # HTTP timeout, network error, whatever
     { dor_connection_error: true }
+  end
+
+  def object_client
+    @object_client ||= Dor::Services::Client.object(druid.druid)
   end
 
   # @return [PreAssembly::Media]

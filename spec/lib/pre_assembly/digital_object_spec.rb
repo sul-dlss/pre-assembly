@@ -156,7 +156,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:content_type_tag).and_return('')
+      allow(object).to receive(:object_type).and_return('')
       allow(bc).to receive(:content_structure).and_return('simple_image')
       add_object_files('tif')
       add_object_files('jp2')
@@ -213,7 +213,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:content_type_tag).and_return('')
+      allow(object).to receive(:object_type).and_return('')
       allow(bc).to receive(:content_structure).and_return('simple_book')
       allow(bc).to receive(:content_md_creation).and_return('filename')
       add_object_files('tif')
@@ -260,7 +260,7 @@ RSpec.describe PreAssembly::DigitalObject do
     before do
       allow(object).to receive(:druid).and_return(druid)
       allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
-      allow(object).to receive(:content_type_tag).and_return('File') # this is what the object tag says, so we should get the file type out
+      allow(object).to receive(:object_type).and_return(Cocina::Models::Vocab.object) # this is what the object tag says, so we should get the file type out
       add_object_files('tif')
       add_object_files('jp2')
     end
@@ -323,7 +323,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(Dor::Services::Client).to receive(:object).and_return(object_client)
-      allow(Dor::Config.workflow).to receive(:client).and_return(client)
+      allow(Dor::Workflow::Client).to receive(:new).and_return(client)
       allow(object).to receive(:druid).and_return(druid)
     end
 

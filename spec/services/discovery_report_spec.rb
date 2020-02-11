@@ -63,10 +63,12 @@ RSpec.describe DiscoveryReport do
     let(:bundle_context) { BundleContext.new(bc_params) }
     let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
     let(:dobj) { report.bundle.objects_to_process.first }
+    let(:object_client) { instance_double(Dor::Services::Client::Object, find: item) }
+    let(:item) { instance_double(Cocina::Models::DRO) }
 
     before do
       allow(dobj).to receive(:pid).and_return('kk203bw3276')
-      allow(Dor::Item).to receive(:find).and_return(instance_double(Dor::Item, admin_policy_object: ''))
+      allow(Dor::Services::Client).to receive(:object).and_return(object_client)
     end
 
     it 'process_dobj gives expected output for one dobj' do

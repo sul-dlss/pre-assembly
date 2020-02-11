@@ -24,8 +24,9 @@ gem 'uglifier' # compressor for JavaScript assets
 # Stanford gems
 gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.9'
-gem 'dor-services', '~> 8.1'
 gem 'dor-services-client', '~> 4.0'
+gem 'dor-workflow-client'
+gem 'druid-tools'
 
 group :test do
   gem 'coveralls', require: false
