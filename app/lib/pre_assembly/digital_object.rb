@@ -45,9 +45,9 @@ module PreAssembly
         'Image' => :simple_image,
         'File' => :file,
         'Book (flipbook, ltr)' => :simple_book,
-        'Book (image-only)' => :book_as_image, # deprecated
+        'Book (image-only)' => :simple_book,
         'Manuscript (flipbook, ltr)' => :simple_book,
-        'Manuscript (image-only)' => :book_as_image, # deprecated
+        'Manuscript (image-only)' => :simple_book,
         'Map' => :map,
         '3D' => :'3d'
       }
