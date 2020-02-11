@@ -39,19 +39,15 @@ module PreAssembly
     # set this object's content_md_creation_style
     # @return [Symbol]
     def content_md_creation_style
-      # map the content type tags set inside an object to content metadata creation styles supported by the assembly-objectfile gem
-      # format is 'tag_value' => 'gem style name'
-      content_type_tag_mapping = {
-        'Image' => :simple_image,
-        'File' => :file,
-        'Book (flipbook, ltr)' => :simple_book,
-        'Book (image-only)' => :simple_book,
-        'Manuscript (flipbook, ltr)' => :simple_book,
-        'Manuscript (image-only)' => :simple_book,
-        'Map' => :map,
-        '3D' => :'3d'
-      }
-      content_type_tag_mapping[content_type_tag] || content_structure.to_sym
+      # map the object type to content metadata creation styles supported by the assembly-objectfile gem
+      {
+        Cocina::Models::Vocab.image => :simple_image,
+        Cocina::Models::Vocab.object => :file,
+        Cocina::Models::Vocab.book => :simple_book,
+        Cocina::Models::Vocab.manuscript => :simple_book,
+        Cocina::Models::Vocab.map => :map,
+        Cocina::Models::Vocab.three_dimensional => :'3d'
+      }.fetch(object_type, content_structure.to_sym)
     end
 
     ####
@@ -85,10 +81,10 @@ module PreAssembly
 
     attr_reader :assembly_directory
 
-    def content_type_tag
-      dor_object = Dor::Item.find(pid)
-      dor_object.content_type_tag
-    rescue ActiveFedora::ObjectNotFoundError
+    # @return [String] one of the values from Cocina::Models::DRO::TYPES
+    def object_type
+      object_client.find.type
+    rescue Dor::Services::Client::NotFoundResponse
       ''
     end
 
@@ -141,8 +137,12 @@ module PreAssembly
       version_client.openable?
     end
 
+    def object_client
+      @object_client ||= Dor::Services::Client.object(druid.druid)
+    end
+
     def version_client
-      @version_client ||= Dor::Services::Client.object(druid.druid).version
+      object_client.version
     end
 
     def current_object_version
@@ -165,7 +165,12 @@ module PreAssembly
 
     # Call web service to add assemblyWF to the object in DOR.
     def initialize_assembly_workflow
-      Dor::Config.workflow.client.create_workflow_by_name(druid.druid, 'assemblyWF', version: current_object_version)
+      workflow_client.create_workflow_by_name(druid.druid, 'assemblyWF', version: current_object_version)
+    end
+
+    def workflow_client
+      logger = Logger.new(Settings.workflow.logfile, Settings.workflow.shift_age)
+      Dor::Workflow::Client.new(url: Settings.workflow_url, logger: logger, timeout: Settings.workflow.timeout)
     end
   end
 end

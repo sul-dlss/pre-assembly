@@ -29,13 +29,12 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#process_digital_objects' do
     let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
-    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
-    let(:item) { instance_double(Dor::Item, content_type_tag: 'image') }
+    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: item) }
+    let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image) }
 
     before do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:initialize_assembly_workflow)
       allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
-      allow(Dor::Item).to receive(:find).and_return(item)
     end
 
     it 'runs cleanly for new objects' do
