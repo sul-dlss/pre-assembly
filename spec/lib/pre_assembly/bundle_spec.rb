@@ -108,17 +108,7 @@ RSpec.describe PreAssembly::Bundle do
     it 'handles containers correctly' do
       expect(multimedia.digital_objects.first.container.size).to be > multimedia.bundle_dir.size
     end
-  end
 
-  describe '#load_checksums' do
-    it 'loads checksums and attach them to the ObjectFiles' do
-      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
-      multimedia.digital_objects.each { |dobj| multimedia.load_checksums(dobj) }
-      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
-    end
-  end
-
-  describe '#digital_objects' do
     it 'augments the digital objects with additional information' do
       expect(flat_dir_images.digital_objects.size).to eq(3)
       flat_dir_images.digital_objects.each do |dobj|
@@ -126,6 +116,14 @@ RSpec.describe PreAssembly::Bundle do
         expect(dobj.label).not_to eq('Unknown') # hardcoded in class
         expect(dobj.source_id).to be_a(String)
       end
+    end
+  end
+
+  describe '#load_checksums' do
+    it 'loads checksums and attach them to the ObjectFiles' do
+      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
+      multimedia.digital_objects.each { |dobj| multimedia.load_checksums(dobj) }
+      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end
 

@@ -24,9 +24,7 @@ RSpec.describe PreAssembly::Media do
         expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
       end
     end
-  end
 
-  describe '#create_content_metadata' do
     context 'with thumb declaration' do
       it 'generates content metadata from a Media manifest with a thumb column set to yes' do
         media_manifest = described_class.new(csv_filename: 'media_manifest_with_thumb.csv', bundle_dir: bundle_dir)
