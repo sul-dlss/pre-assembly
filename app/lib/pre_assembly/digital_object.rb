@@ -62,8 +62,7 @@ module PreAssembly
       stage_files
       generate_content_metadata
       generate_media_project_technical_metadata if content_md_creation == 'media_cm_style'
-      create_new_version if openable?
-      initialize_assembly_workflow
+      start_accession
       log "    - pre_assemble(#{pid}) finished"
       { status: 'success' }
     end
@@ -150,28 +149,14 @@ module PreAssembly
       @current_object_version ||= version_client.current.to_i
     end
 
-    # When reaccessioning, we need to first open and close a version without kicking off accessionWF
-    def create_new_version
-      version_client.open(
-        significance: 'major',
-        description: 'pre-assembly re-accession',
-        opening_user_name: bundle.bundle_context.user.sunet_id
-      )
-      version_client.close(start_accession: false)
-    end
-
-    ####
-    # Initialize the assembly workflow.
-    ####
-
-    # Call web service to add assemblyWF to the object in DOR.
-    def initialize_assembly_workflow
-      workflow_client.create_workflow_by_name(druid.druid, 'assemblyWF', version: current_object_version)
-    end
-
-    def workflow_client
-      logger = Logger.new(Settings.workflow.logfile, Settings.workflow.shift_age)
-      Dor::Workflow::Client.new(url: Settings.workflow_url, logger: logger, timeout: Settings.workflow.timeout)
+    def start_accession
+      version_params =
+        {
+          significance: 'major',
+          description: 'pre-assembly re-accession',
+          opening_user_name: bundle.bundle_context.user.sunet_id
+        }
+      object_client.accession(version_params)
     end
   end
 end

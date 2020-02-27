@@ -33,7 +33,7 @@ RSpec.describe PreAssembly::Bundle do
     let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image) }
 
     before do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:initialize_assembly_workflow)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:start_accession)
       allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
     end
 

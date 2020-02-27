@@ -8,10 +8,4 @@ DOR_SERVICES:
   URL: 'http://localhost:3003'
   TOKEN: 'secret-token'
 
-workflow_url: 'https://workflow-env.stanford.edu/workflow'
-workflow:
-  logfile: 'log/workflow_service.log'
-  shift_age: 'weekly'
-  timeout: 60
-
 expected_worker_count: 5 # for okcomputer endpoint
