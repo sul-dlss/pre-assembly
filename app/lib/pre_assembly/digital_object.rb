@@ -156,7 +156,7 @@ module PreAssembly
           description: 'pre-assembly re-accession',
           opening_user_name: bundle.bundle_context.user.sunet_id
         }
-      object_client.accession(version_params)
+      object_client.accession.start(version_params)
     end
   end
 end

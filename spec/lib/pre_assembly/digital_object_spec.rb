@@ -335,29 +335,32 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe '#start_accession' do
     subject(:start_accession) { object.send(:start_accession) }
-    subject(:version_params) {
-      {
-        significance: 'major',
-        description: 'pre-assembly re-accession',
-        opening_user_name: bc.user.sunet_id
-      }
-    }
+
     before do
       allow(Dor::Services::Client).to receive(:object).and_return(object_client)
       allow(object).to receive(:druid).and_return(druid)
     end
 
+    let(:version_params) do
+      {
+        significance: 'major',
+        description: 'pre-assembly re-accession',
+        opening_user_name: bc.user.sunet_id
+      }
+    end
     let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '5') }
-    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
+    let(:accession_object) { instance_double(Dor::Services::Client::Accession, start: true) }
+    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client, accession: accession_object) }
     let(:service_url) { Settings.dor_services_url }
 
     context 'when api client is successful' do
       before do
-        allow(object_client).to receive(:accession).and_return(true)
+        allow(object_client.accession).to receive(:start).and_return(true)
       end
+
       it 'starts accession' do
         start_accession
-        expect(object_client).to have_received(:accession).with(version_params)
+        expect(object_client.accession).to have_received(:start).with(version_params)
       end
     end
 
