@@ -117,6 +117,21 @@ RSpec.describe PreAssembly::Bundle do
         expect(dobj.source_id).to be_a(String)
       end
     end
+
+    context 'when all_files_public is true' do
+      let(:bundle_context) do
+        build(:bundle_context, :folder_manifest, :public_files)
+      end
+      let(:bundle) { described_class.new(bundle_context) }
+
+      it 'sets the file attributes to public' do
+        bundle.digital_objects.each do |dobj|
+          dobj.object_files.each do |object_file|
+            expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'yes', publish: 'yes')
+          end
+        end
+      end
+    end
   end
 
   describe '#load_checksums' do

@@ -30,6 +30,10 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  activerecord:
+    attributes:
+      bundle_context:
+        all_files_public: "Preserve, Shelve, Publish Settings"
   helpers:
     submit:
       bundle_context:

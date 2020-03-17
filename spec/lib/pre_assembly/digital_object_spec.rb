@@ -18,14 +18,13 @@ RSpec.describe PreAssembly::DigitalObject do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
   end
 
-  def add_object_files(extension = 'tif')
+  def add_object_files(extension = 'tif', all_files_public: false)
     (1..2).each do |i|
       f = "image#{i}.#{extension}"
-      object.object_files.push PreAssembly::ObjectFile.new(
-        "#{object.bundle_dir}/#{dru}/#{f}",
-        relative_path: f,
-        checksum: i.to_s * 4
-      )
+      options = { relative_path: f, checksum: i.to_s * 4 }
+      options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' } if all_files_public
+
+      object.object_files.push PreAssembly::ObjectFile.new("#{object.bundle_dir}/#{dru}/#{f}", options)
     end
   end
 
@@ -120,154 +119,198 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe 'default content metadata' do
-    let(:exp_xml) do
-      noko_doc <<-END
-        <contentMetadata type="image" objectId="gn330dv6119">
-          <resource type="image" id="gn330dv6119_1" sequence="1">
-            <label>Image 1</label>
-            <file id="image1.jp2">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="image" id="gn330dv6119_2" sequence="2">
-            <label>Image 2</label>
-            <file id="image1.tif">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="image" id="gn330dv6119_3" sequence="3">
-            <label>Image 3</label>
-            <file id="image2.jp2">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-          <resource type="image" id="gn330dv6119_4" sequence="4">
-            <label>Image 4</label>
-            <file id="image2.tif">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-        </contentMetadata>
-      END
-    end
+  describe '#create_content_metadata' do
+    describe 'default content metadata' do
+      let(:exp_xml) do
+        noko_doc <<-END
+          <contentMetadata type="image" objectId="gn330dv6119">
+            <resource type="image" id="gn330dv6119_1" sequence="1">
+              <label>Image 1</label>
+              <file id="image1.jp2">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="image" id="gn330dv6119_2" sequence="2">
+              <label>Image 2</label>
+              <file id="image1.tif">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="image" id="gn330dv6119_3" sequence="3">
+              <label>Image 3</label>
+              <file id="image2.jp2">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+            <resource type="image" id="gn330dv6119_4" sequence="4">
+              <label>Image 4</label>
+              <file id="image2.tif">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        END
+      end
 
-    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
+      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
 
-    before do
-      allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:object_type).and_return('')
-      allow(bc).to receive(:content_structure).and_return('simple_image')
-      add_object_files('tif')
-      add_object_files('jp2')
-      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
-    end
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(object).to receive(:object_type).and_return('')
+        allow(bc).to receive(:content_structure).and_return('simple_image')
+        add_object_files('tif')
+        add_object_files('jp2')
+        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+      end
 
-    around do |example|
-      RSpec::Mocks.with_temporary_scope do
-        Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-          allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-          example.run
+      around do |example|
+        RSpec::Mocks.with_temporary_scope do
+          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
+            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+            example.run
+          end
         end
+      end
+
+      it 'generates the expected xml text' do
+        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to exp_xml
+      end
+
+      it 'is able to write the content_metadata XML to a file' do
+        assembly_directory.create_object_directories
+        file_name = object.send(:assembly_directory).content_metadata_file
+        expect(File.exist?(file_name)).to eq(false)
+        object.send(:generate_content_metadata)
+        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
       end
     end
 
-    it 'generates the expected xml text' do
-      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to exp_xml
-    end
-
-    it 'is able to write the content_metadata XML to a file' do
-      assembly_directory.create_object_directories
-      file_name = object.send(:assembly_directory).content_metadata_file
-      expect(File.exist?(file_name)).to eq(false)
-      object.send(:generate_content_metadata)
-      expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
-    end
-  end
-
-  describe 'bundled by filename, simple book content metadata without file attributes' do
-    let(:exp_xml) do
-      noko_doc <<-END
-      <contentMetadata type="book" objectId="gn330dv6119">
-        <resource type="page" sequence="1" id="gn330dv6119_1">
-          <label>Page 1</label>
-          <file id="image1.jp2">
-            <checksum type="md5">1111</checksum>
-          </file>
-          <file id="image1.tif">
-            <checksum type="md5">1111</checksum>
-          </file>
-        </resource>
-        <resource type="page" sequence="2" id="gn330dv6119_2">
-          <label>Page 2</label>
-          <file id="image2.jp2">
-            <checksum type="md5">2222</checksum>
-          </file>
-          <file id="image2.tif">
-            <checksum type="md5">2222</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-      END
-    end
-
-    before do
-      allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:object_type).and_return('')
-      allow(bc).to receive(:content_structure).and_return('simple_book')
-      allow(bc).to receive(:content_md_creation).and_return('filename')
-      add_object_files('tif')
-      add_object_files('jp2')
-    end
-
-    it 'generates the expected xml text' do
-      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
-    end
-  end
-
-  describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
-    let(:exp_xml) do
-      noko_doc <<-END
-        <contentMetadata type="file" objectId="gn330dv6119">
-          <resource type="file" id="gn330dv6119_1" sequence="1">
-            <label>File 1</label>
+    describe 'bundled by filename, simple book content metadata without file attributes' do
+      let(:exp_xml) do
+        noko_doc <<-END
+        <contentMetadata type="book" objectId="gn330dv6119">
+          <resource type="page" sequence="1" id="gn330dv6119_1">
+            <label>Page 1</label>
             <file id="image1.jp2">
               <checksum type="md5">1111</checksum>
             </file>
-          </resource>
-          <resource type="file" id="gn330dv6119_2" sequence="2">
-            <label>File 2</label>
             <file id="image1.tif">
               <checksum type="md5">1111</checksum>
             </file>
           </resource>
-          <resource type="file" id="gn330dv6119_3" sequence="3">
-            <label>File 3</label>
+          <resource type="page" sequence="2" id="gn330dv6119_2">
+            <label>Page 2</label>
             <file id="image2.jp2">
               <checksum type="md5">2222</checksum>
             </file>
-          </resource>
-          <resource type="file" id="gn330dv6119_4" sequence="4">
-            <label>File 4</label>
             <file id="image2.tif">
               <checksum type="md5">2222</checksum>
             </file>
           </resource>
         </contentMetadata>
-      END
+        END
+      end
+
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(object).to receive(:object_type).and_return('')
+        allow(bc).to receive(:content_structure).and_return('simple_book')
+        allow(bc).to receive(:content_md_creation).and_return('filename')
+        add_object_files('tif')
+        add_object_files('jp2')
+      end
+
+      it 'generates the expected xml text' do
+        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
+      end
     end
 
-    before do
-      allow(object).to receive(:druid).and_return(druid)
-      allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
-      allow(object).to receive(:object_type).and_return(Cocina::Models::Vocab.object) # this is what the object tag says, so we should get the file type out
-      add_object_files('tif')
-      add_object_files('jp2')
+    describe 'with file attributes' do
+      let(:exp_xml) do
+        noko_doc <<-END
+        <contentMetadata type="book" objectId="gn330dv6119">
+          <resource type="page" sequence="1" id="gn330dv6119_1">
+            <label>Page 1</label>
+            <file id="image1.jp2" preserve="yes" shelve="yes" publish="yes">
+              <checksum type="md5">1111</checksum>
+            </file>
+            <file id="image1.tif" preserve="yes" shelve="yes" publish="yes">
+              <checksum type="md5">1111</checksum>
+            </file>
+          </resource>
+          <resource type="page" sequence="2" id="gn330dv6119_2">
+            <label>Page 2</label>
+            <file id="image2.jp2" preserve="yes" shelve="yes" publish="yes">
+              <checksum type="md5">2222</checksum>
+            </file>
+            <file id="image2.tif" preserve="yes" shelve="yes" publish="yes">
+              <checksum type="md5">2222</checksum>
+            </file>
+          </resource>
+        </contentMetadata>
+        END
+      end
+
+      let(:bc) { create(:bundle_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
+
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(object).to receive(:object_type).and_return('')
+        allow(bc).to receive(:content_structure).and_return('simple_book')
+        allow(bc).to receive(:content_md_creation).and_return('filename')
+        add_object_files('tif', all_files_public: true)
+        add_object_files('jp2', all_files_public: true)
+      end
+
+      it 'generates the expected xml text' do
+        expect(object.send(:create_content_metadata)).to be_equivalent_to(exp_xml)
+      end
     end
 
-    it 'generates the expected xml text' do
-      expect(object.content_md_creation_style).to eq(:file)
-      expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
+    describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
+      let(:exp_xml) do
+        noko_doc <<-END
+          <contentMetadata type="file" objectId="gn330dv6119">
+            <resource type="file" id="gn330dv6119_1" sequence="1">
+              <label>File 1</label>
+              <file id="image1.jp2">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="file" id="gn330dv6119_2" sequence="2">
+              <label>File 2</label>
+              <file id="image1.tif">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="file" id="gn330dv6119_3" sequence="3">
+              <label>File 3</label>
+              <file id="image2.jp2">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+            <resource type="file" id="gn330dv6119_4" sequence="4">
+              <label>File 4</label>
+              <file id="image2.tif">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        END
+      end
+
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
+        allow(object).to receive(:object_type).and_return(Cocina::Models::Vocab.object) # this is what the object tag says, so we should get the file type out
+        add_object_files('tif')
+        add_object_files('jp2')
+      end
+
+      it 'generates the expected xml text' do
+        expect(object.content_md_creation_style).to eq(:file)
+        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
+      end
     end
   end
 
