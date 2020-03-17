@@ -11,8 +11,10 @@ OkComputer::Registry.register 'feature-resque-down', OkComputer::ResqueDownCheck
 
 # check for backed up resque queues: this is a low volume app, so the threshold is low
 # 2020-02-20:  Mary Ellen asked for a bigger queue so she could submit a bunch of reports at once.
-Resque.queues.each do |queue|
-  OkComputer::Registry.register "feature-#{queue}-queue-depth", OkComputer::ResqueBackedUpCheck.new(queue, 40)
+if Rails.env.production?
+  Resque.queues.each do |queue|
+    OkComputer::Registry.register "feature-#{queue}-queue-depth", OkComputer::ResqueBackedUpCheck.new(queue, 40)
+  end
 end
 
 class DirectoryExistsCheck < OkComputer::Check
