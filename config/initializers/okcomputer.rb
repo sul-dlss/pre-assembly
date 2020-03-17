@@ -41,5 +41,21 @@ end
 # Confirm job_output_parent_dir exists (or else jobs cannot output)
 OkComputer::Registry.register 'feature-job_output_parent_dir', DirectoryExistsCheck.new(Settings.job_output_parent_dir)
 
+# check for the right number of workers
+class WorkerCountCheck < OkComputer::Check
+  def check
+    expected_count = Settings.expected_worker_count
+    actual_count = Resque.workers.count
+    message = "#{actual_count} out of #{expected_count} expected workers are up."
+    if actual_count >= expected_count
+      mark_message message
+    else
+      mark_failure
+      mark_message "only #{message}"
+    end
+  end
+  OkComputer::Registry.register 'feature-worker-count', WorkerCountCheck.new
+end
+
 # To make checks optional:
 # OkComputer.make_optional %w[feature-resque-down]
