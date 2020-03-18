@@ -50,6 +50,9 @@ class WorkerCountCheck < OkComputer::Check
     actual_count = Resque.workers.count
     message = "#{actual_count} out of #{expected_count} expected workers are up."
     if actual_count >= expected_count
+      # this branch is for both == and >, as it is normal for > to happen in 2 cases:
+      # 1. very briefly right after a deploy, as hot_swap gracefully shuts down existing workers when they are done
+      # 2. when there is a long running job (e.g. production has been known to have them run for 2 days) that hot_swap lets complete
       mark_message message
     else
       mark_failure
