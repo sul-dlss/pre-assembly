@@ -11,7 +11,7 @@ gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
-gem 'rails', '~> 5.2', '>= 5.2.1'
+gem 'rails', '~> 6.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-lock'
@@ -49,10 +49,10 @@ end
 
 group :development, :test do
   gem 'pry-byebug'
-  gem 'rspec-rails', '~> 3.7'
+  gem 'rspec-rails', '~> 4.0.0.rc1'
   gem 'rails-controller-testing'
   gem 'rubocop', '~> 0.76.0'
   gem 'rubocop-rspec'
   gem 'ruby-prof'
-  gem 'sqlite3', '~> 1.3.13'
+  gem 'sqlite3'
 end

@@ -71,7 +71,7 @@ RSpec.describe JobRunsController, type: :controller do
       get :download, params: { id: 123 }
       expect(response).to have_http_status(:success)
       expect(response.header['Content-Type']).to eq 'application/x-yaml'
-      expect(response.header['Content-Disposition']).to eq 'attachment; filename="mock_progress_log.yaml"'
+      expect(response.header['Content-Disposition']).to start_with 'attachment; filename="mock_progress_log.yaml"'
       expect(flash[:warning]).to be_nil
     end
     it 'requires ID param' do
