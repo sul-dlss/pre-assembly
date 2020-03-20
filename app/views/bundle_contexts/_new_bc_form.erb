@@ -1,62 +1,41 @@
 <h3>Complete the form below</h3>
 
-<%= simple_form_for(@bundle_context) do |form| %>
-    <div class="row">
-        <div class="col-5">
-            <%= form.input :project_name %>
-        </div>
-    </div>
+<%= simple_form_for @bundle_context, html: { class: 'col-md-8' } do |form| %>
+    <%= form.input :project_name %>
 
-    <div class="row">
-        <div class="col-5">
-            <%= form.simple_fields_for :job_runs do |jt| %>
-                <%= jt.input :job_type, collection:
-                    [
-                        ["Pre Assembly Run", "preassembly"],
-                        ["Discovery Report", "discovery_report"]
-                    ]
-                %>
-            <% end %>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-5">
-            <%= form.input :content_structure, collection:
+    <%= form.simple_fields_for :job_runs do |jt| %>
+        <%= jt.input :job_type, collection:
             [
-                ['Simple Image', 'simple_image'],
-                ['Simple Book', 'simple_book'],
-                ['File', 'file'],
-                ['Media', 'media'],
-                ['3D', '3d'],
+                ["Pre Assembly Run", "preassembly"],
+                ["Discovery Report", "discovery_report"]
             ]
-            %>
-        </div>
-    </div>
+        %>
+    <% end %>
 
-    <div class="row">
-        <div class="col-5">
-            <%= form.input :bundle_dir %>
-        </div>
-    </div>
+    <%= form.input :content_structure, collection:
+    [
+        ['Simple Image', 'simple_image'],
+        ['Simple Book', 'simple_book'],
+        ['File', 'file'],
+        ['Media', 'media'],
+        ['3D', '3d'],
+    ]
+    %>
 
-    <div class="row">
-        <div class="col-5">
-            <%= form.input :staging_style_symlink %>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-5">
-            <%= form.input :content_metadata_creation, collection:
-                [
-                    ["Default", "default"],
-                    ["Filename", "filename"],
-                    ["Media", "media_cm_style"]
-                ]
-            %>
-        </div>
-    </div>
+    <%= form.input :bundle_dir %>
+    <%= form.input :staging_style_symlink %>
+    <%= form.input :content_metadata_creation, collection:
+        [
+            ["Default", "default"],
+            ["Filename", "filename"],
+            ["Media", "media_cm_style"]
+        ]
+    %>
+
+    <%= form.input :all_files_public,
+                   as: :radio_buttons,
+                   collection: [['Default', false], ['Preserve=Yes, Shelve=Yes, Publish=Yes', true]] %>
 
     <%= form.button :submit, class: "btn-sul-dlss" %>
 <% end %>

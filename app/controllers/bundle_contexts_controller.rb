@@ -31,7 +31,9 @@ class BundleContextsController < ApplicationController
 
   def bundle_contexts_params
     params.require(:bundle_context)
-          .permit(:project_name, :content_structure, :staging_style_symlink, :content_metadata_creation, :bundle_dir, job_runs_attributes: [:job_type])
+          .permit(:project_name, :content_structure, :staging_style_symlink,
+                  :content_metadata_creation, :bundle_dir, :all_files_public,
+                  job_runs_attributes: [:job_type])
           .merge(user: current_user)
   end
 end

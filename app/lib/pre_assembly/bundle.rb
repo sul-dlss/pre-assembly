@@ -75,7 +75,6 @@ module PreAssembly
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         stageable_items = discover_items_via_crawl(c)
         row = manifest_rows[i]
-
         DigitalObject.new(self,
                           container: c,
                           stageable_items: stageable_items,
@@ -202,10 +201,9 @@ module PreAssembly
 
     # @return [PreAssembly::ObjectFile]
     def new_object_file(stageable, file_path)
-      ObjectFile.new(
-        file_path,
-        relative_path: relative_path(get_base_dir(stageable), file_path)
-      )
+      options = { relative_path: relative_path(get_base_dir(stageable), file_path) }
+      options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' } if bundle_context.all_files_public?
+      ObjectFile.new(file_path, options)
     end
 
     ####

@@ -126,7 +126,8 @@ module PreAssembly
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
-                                 media_manifest: media_manifest).create
+                                 media_manifest: media_manifest,
+                                 add_file_attributes: bundle.bundle_context.all_files_public?).create
     end
 
     ####
