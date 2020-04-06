@@ -33,13 +33,12 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:pid).and_return(pid)
     end
 
-    it 'does not call create_new_version for new_objects' do
+    it 'calls all methods needed to accession' do
       allow(object).to receive(:'openable?').and_return(false)
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
-      expect(object).not_to receive(:create_new_version)
-      expect(object).to receive(:initialize_assembly_workflow)
+      expect(object).to receive(:start_accession)
       object.pre_assemble
     end
 
@@ -56,16 +55,6 @@ RSpec.describe PreAssembly::DigitalObject do
         expect(status).to eq(status: 'error',
                              message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened")
       end
-    end
-
-    it 'calls create_new_version for existing openable objects' do
-      allow(object).to receive(:'openable?').and_return(true)
-      allow(object).to receive(:current_object_version).and_return(2)
-      expect(object).to receive(:stage_files)
-      expect(object).to receive(:generate_content_metadata)
-      expect(object).to receive(:create_new_version)
-      expect(object).to receive(:initialize_assembly_workflow)
-      object.pre_assemble
     end
   end
 
@@ -344,51 +333,44 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe '#create_new_version' do
-    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
-    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
-    let(:version_options) { { significance: 'major', description: 'pre-assembly re-accession', opening_user_name: object.bundle.bundle_context.user.sunet_id } }
-
-    before do
-      allow(object).to receive(:druid).and_return(druid)
-      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
-    end
-
-    it 'opens and closes an object version' do
-      expect(dor_services_client_object_version).to receive(:open).with(**version_options)
-      expect(dor_services_client_object_version).to receive(:close).with(start_accession: false)
-      object.send(:create_new_version)
-    end
-  end
-
-  describe '#initialize_assembly_workflow' do
-    subject(:start_workflow) { object.send(:initialize_assembly_workflow) }
+  describe '#start_accession' do
+    subject(:start_accession) { object.send(:start_accession) }
 
     before do
       allow(Dor::Services::Client).to receive(:object).and_return(object_client)
-      allow(Dor::Workflow::Client).to receive(:new).and_return(client)
       allow(object).to receive(:druid).and_return(druid)
     end
 
-    let(:client) { instance_double(Dor::Workflow::Client, create_workflow_by_name: true) }
+    let(:version_params) do
+      {
+        significance: 'major',
+        description: 'pre-assembly re-accession',
+        opening_user_name: bc.user.sunet_id
+      }
+    end
     let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '5') }
-    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
+    let(:accession_object) { instance_double(Dor::Services::Client::Accession, start: true) }
+    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client, accession: accession_object) }
     let(:service_url) { Settings.dor_services_url }
 
     context 'when api client is successful' do
-      it 'starts the assembly workflow' do
-        start_workflow
-        expect(client).to have_received(:create_workflow_by_name).with(druid.druid, 'assemblyWF', version: 5)
+      before do
+        allow(object_client.accession).to receive(:start).and_return(true)
+      end
+
+      it 'starts accession' do
+        start_accession
+        expect(object_client.accession).to have_received(:start).with(version_params)
       end
     end
 
     context 'when the api client raises' do
       before do
-        allow(client).to receive(:create_workflow_by_name).and_raise(StandardError)
+        allow(object_client).to receive(:accession).and_raise(StandardError)
       end
 
       it 'raises an exception' do
-        expect { start_workflow }.to raise_error(StandardError)
+        expect { start_accession }.to raise_error(StandardError)
       end
     end
   end
