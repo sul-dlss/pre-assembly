@@ -4,6 +4,13 @@ RSpec.describe ObjectFileValidator do
   subject(:validator) { described_class.new(object: object, bundle: bundle) }
 
   let(:bundle) { bundle_setup(:flat_dir_images) }
+  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
+  let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
+  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
+
+  before do
+    allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+  end
 
   describe '#validate' do
     subject(:json) { validator.validate.as_json }

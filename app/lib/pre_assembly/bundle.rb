@@ -78,7 +78,7 @@ module PreAssembly
         DigitalObject.new(self,
                           container: c,
                           stageable_items: stageable_items,
-                          object_files: discover_object_files(stageable_items),
+                          object_files: discover_object_files(stageable_items, row[:druid]),
                           label: row.fetch('label', ''),
                           source_id: row['sourceid'],
                           pid: row[:druid],
@@ -183,11 +183,12 @@ module PreAssembly
     end
 
     # Returns a list of the ObjectFiles for a digital object.
-    def discover_object_files(stageable_items)
+    def discover_object_files(stageable_items, druid)
       object_files = []
+      dark_obj = dark?(druid)
       Array(stageable_items).each do |stageable|
         find_files_recursively(stageable).each do |file_path|
-          object_files.push(new_object_file(stageable, file_path))
+          object_files.push(new_object_file(stageable, file_path, dark_obj))
         end
       end
       object_files
@@ -199,11 +200,32 @@ module PreAssembly
       digital_objects.map(&:object_files).flatten
     end
 
+    # @param [Boolean] dark_obj - true if object access is dark, false otherwise
     # @return [PreAssembly::ObjectFile]
-    def new_object_file(stageable, file_path)
+    def new_object_file(stageable, file_path, dark_obj)
       options = { relative_path: relative_path(get_base_dir(stageable), file_path) }
-      options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' } if bundle_context.all_files_public?
+      if dark_obj
+        options[:file_attributes] = { preserve: 'yes', shelve: 'no', publish: 'no' }
+      elsif bundle_context.all_files_public?
+        options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' }
+      end
       ObjectFile.new(file_path, options)
+    end
+
+    # @return [Boolean] - true if object access is dark, false otherwise
+    def dark?(druid)
+      dobj = object_client(druid).find
+      dobj.access.access == 'dark'
+    rescue Dor::Services::Client::NotFoundResponse
+      { item_not_registered: true }
+    rescue RuntimeError # HTTP timeout, network error, whatever
+      { dor_connection_error: true }
+    end
+
+    def object_client(druid)
+      d = druid
+      d = "druid:#{d}" unless d.start_with?('druid:')
+      @object_client ||= Dor::Services::Client.object(d)
     end
 
     ####
