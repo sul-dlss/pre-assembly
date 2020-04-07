@@ -18,7 +18,7 @@ module PreAssembly
     def create
       return media_manifest.generate_cm(druid_id) if content_md_creation == 'media_cm_style'
 
-      # otherwise use the content metadata generation gem
+      # otherwise use the content metadata generation gem (assembly-objectfile)
       Assembly::ContentMetadata.create_content_metadata(druid: druid_id,
                                                         objects: content_object_files,
                                                         add_exif: false,
