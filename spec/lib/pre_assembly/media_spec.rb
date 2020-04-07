@@ -20,8 +20,8 @@ RSpec.describe PreAssembly::Media do
       end
 
       it 'generates content metadata from a Media manifest with no thumb columns' do
-        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+        expect(noko_doc(dobj1.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+        expect(noko_doc(dobj2.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
       end
     end
 
@@ -31,8 +31,8 @@ RSpec.describe PreAssembly::Media do
         dobj1 = setup_dobj('aa111aa1111', media_manifest)
         dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+        expect(noko_doc(dobj1.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+        expect(noko_doc(dobj2.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
       end
 
       it 'generates content metadata from a Media manifest with a thumb column set to true' do
@@ -40,8 +40,8 @@ RSpec.describe PreAssembly::Media do
         dobj1 = setup_dobj('aa111aa1111', media_manifest)
         dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
-        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+        expect(noko_doc(dobj1.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
+        expect(noko_doc(dobj2.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
       end
 
       it 'generates content metadata from a Media manifest with no thumbs when the thumb column is set to no' do
@@ -49,8 +49,8 @@ RSpec.describe PreAssembly::Media do
         dobj1 = setup_dobj('aa111aa1111', media_manifest)
         dobj2 = setup_dobj('bb222bb2222', media_manifest)
 
-        expect(noko_doc(dobj1.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
-        expect(noko_doc(dobj2.send(:create_content_metadata))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
+        expect(noko_doc(dobj1.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
+        expect(noko_doc(dobj2.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
       end
     end
   end

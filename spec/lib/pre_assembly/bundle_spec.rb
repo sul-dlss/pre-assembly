@@ -76,6 +76,29 @@ RSpec.describe PreAssembly::Bundle do
         expect(yaml[:message]).to eq bundle.send(:incomplete_status)[:message]
       end
     end
+
+    context 'when there are dark objects' do
+      it 'calls digital_object.pre_assemble with true for the dark objects' do
+        allow(bundle).to receive(:dark?).with(bundle.digital_objects[0].pid).and_return(true)
+        allow(bundle).to receive(:dark?).with(bundle.digital_objects[1].pid).and_return(false)
+        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
+        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
+        bundle.process_digital_objects
+        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(false)
+      end
+    end
+
+    context 'when bundle_context.all_files_public? is true' do
+      it 'calls digital_object.pre_assemble with true for all objects' do
+        allow(bundle.bundle_context).to receive(:all_files_public?).and_return(true)
+        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
+        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
+        bundle.process_digital_objects
+        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(true)
+      end
+    end
   end
 
   describe '#load_skippables' do

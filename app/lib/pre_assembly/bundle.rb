@@ -110,10 +110,11 @@ module PreAssembly
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.empty?
         progress = { dobj: dobj }
+        file_attributes_supplied = bundle_context.all_files_public? || dark?(dobj.pid)
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
-          status = dobj.pre_assemble
+          status = dobj.pre_assemble(file_attributes_supplied)
           # Indicate that we finished.
           progress[:pre_assem_finished] = true
           log "Completed #{dobj.druid}"

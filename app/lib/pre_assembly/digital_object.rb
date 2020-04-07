@@ -54,13 +54,14 @@ module PreAssembly
     # The main process.
     ####
 
+    # @param [Boolean] file_attributes_supplied - set to true if publish/preserve/shelve attribs are supplied
     # @return [Hash] the status of the attempt and an optional message
-    def pre_assemble
+    def pre_assemble(file_attributes_supplied = false)
       log "  - pre_assemble(#{source_id}) started"
       return { status: 'error', message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" } if !openable? && current_object_version > 1
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
-      generate_content_metadata
+      generate_content_metadata(file_attributes_supplied)
       generate_media_project_technical_metadata if content_md_creation == 'media_cm_style'
       start_accession
       log "    - pre_assemble(#{pid}) finished"
@@ -115,18 +116,20 @@ module PreAssembly
     end
 
     # Write contentMetadata.xml file
-    def generate_content_metadata
-      File.open(assembly_directory.content_metadata_file, 'w') { |fh| fh.puts create_content_metadata }
+    # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
+    def generate_content_metadata(file_attributes_supplied)
+      File.open(assembly_directory.content_metadata_file, 'w') { |fh| fh.puts create_content_metadata(file_attributes_supplied) }
     end
 
     # Invoke the contentMetadata creation method used by the project
-    def create_content_metadata
+    # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
+    def create_content_metadata(file_attributes_supplied)
       ContentMetadataCreator.new(druid_id: druid.id,
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
                                  media_manifest: media_manifest,
-                                 add_file_attributes: bundle.bundle_context.all_files_public?).create
+                                 add_file_attributes: file_attributes_supplied).create
     end
 
     ####
