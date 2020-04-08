@@ -161,7 +161,7 @@ RSpec.describe BundleContext, type: :model do
       end
       it "adds error if directory can't be created" do
         allow(bc).to receive(:output_dir).and_return('/bootx/foo')
-        expect { bc.send(:output_dir_no_exists!) }.to raise_error(SystemCallError, /Permission denied @ dir_s_mkdir - \/bootx/)
+        expect { bc.send(:output_dir_no_exists!) }.to raise_error(SystemCallError, / @ dir_s_mkdir - \/bootx/)
       end
     end
   end

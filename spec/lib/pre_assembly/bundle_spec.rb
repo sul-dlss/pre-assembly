@@ -6,6 +6,14 @@ RSpec.describe PreAssembly::Bundle do
   let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
   let(:multimedia) { bundle_setup(:multimedia) }
   let(:bundle) { create(:bundle_context_with_deleted_output_dir).bundle }
+  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
+  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
+  let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: item) }
+
+  before do
+    allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+  end
 
   after { FileUtils.rm_rf(bundle.bundle_context.output_dir) if Dir.exist?(bundle.bundle_context.output_dir) } # cleanup
 
@@ -28,13 +36,8 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#process_digital_objects' do
-    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
-    let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: item) }
-    let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image) }
-
     before do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:start_accession)
-      allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
     end
 
     it 'runs cleanly for new objects' do
@@ -71,6 +74,29 @@ RSpec.describe PreAssembly::Bundle do
         yaml = YAML.load_file(bundle.progress_log_file)
         expect(yaml[:status]).to eq bundle.send(:incomplete_status)[:status]
         expect(yaml[:message]).to eq bundle.send(:incomplete_status)[:message]
+      end
+    end
+
+    context 'when there are dark objects' do
+      it 'calls digital_object.pre_assemble with true for the dark objects' do
+        allow(bundle).to receive(:dark?).with(bundle.digital_objects[0].pid).and_return(true)
+        allow(bundle).to receive(:dark?).with(bundle.digital_objects[1].pid).and_return(false)
+        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
+        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
+        bundle.process_digital_objects
+        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(false)
+      end
+    end
+
+    context 'when bundle_context.all_files_public? is true' do
+      it 'calls digital_object.pre_assemble with true for all objects' do
+        allow(bundle.bundle_context).to receive(:all_files_public?).and_return(true)
+        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
+        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
+        bundle.process_digital_objects
+        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end
     end
   end
@@ -128,6 +154,28 @@ RSpec.describe PreAssembly::Bundle do
         bundle.digital_objects.each do |dobj|
           dobj.object_files.each do |object_file|
             expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'yes', publish: 'yes')
+          end
+        end
+      end
+    end
+
+    context 'when object is dark' do
+      let(:bundle_context) do
+        build(:bundle_context, :folder_manifest)
+      end
+      let(:bundle) { described_class.new(bundle_context) }
+      let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
+      let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_dark_access) }
+      let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: dark_item) }
+
+      before do
+        allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
+      end
+
+      it 'sets the file attributes to preserve only' do
+        bundle.digital_objects.each do |dobj|
+          dobj.object_files.each do |object_file|
+            expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'no', publish: 'no')
           end
         end
       end
@@ -217,12 +265,12 @@ RSpec.describe PreAssembly::Bundle do
     let(:dirs) { %w[gn330dv6119 jy812bp9403 tz250tk7584].map { |d| images_jp2_tif.path_in_bundle d } }
 
     it 'finds expected files with correct relative paths from files' do
-      ofiles = images_jp2_tif.send(:discover_object_files, files)
+      ofiles = images_jp2_tif.send(:discover_object_files, files, 'oo000oo0000')
       expect(ofiles.map(&:path)).to eq(files)
       expect(ofiles.map(&:relative_path)).to eq(fs.map { |f| File.basename f })
     end
     it 'finds expected files with correct relative paths from dirs' do
-      ofiles = images_jp2_tif.send(:discover_object_files, dirs)
+      ofiles = images_jp2_tif.send(:discover_object_files, dirs, 'oo000oo0000')
       expect(ofiles.map(&:path)).to eq(files)
       expect(ofiles.map(&:relative_path)).to eq(fs)
     end
@@ -259,9 +307,9 @@ RSpec.describe PreAssembly::Bundle do
           exp_rel_path: 'b/c/d/x.tif' }
       ]
       tests.each do |t|
-        ofile = flat_dir_images.send(:new_object_file, t[:stageable], t[:file_path])
+        ofile = flat_dir_images.send(:new_object_file, t[:stageable], t[:file_path], false)
         expect(ofile).to be_a(PreAssembly::ObjectFile)
-        expect(ofile.path).to          eq(t[:file_path])
+        expect(ofile.path).to eq(t[:file_path])
         expect(ofile.relative_path).to eq(t[:exp_rel_path])
       end
     end

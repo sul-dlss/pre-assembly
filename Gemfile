@@ -11,6 +11,7 @@ gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
+gem 'pry-rails' # useful for rails console
 gem 'rails', '~> 6.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM

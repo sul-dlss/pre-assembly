@@ -63,15 +63,17 @@ RSpec.describe DiscoveryReport do
     let(:bundle_context) { BundleContext.new(bc_params) }
     let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
     let(:dobj) { report.bundle.objects_to_process.first }
-    let(:object_client) { instance_double(Dor::Services::Client::Object, find: item) }
-    let(:item) { instance_double(Cocina::Models::DRO) }
+    let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
+    let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
+    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 
     before do
-      allow(dobj).to receive(:pid).and_return('kk203bw3276')
-      allow(Dor::Services::Client).to receive(:object).and_return(object_client)
+      allow(Dor::Services::Client).to receive(:object).and_return(client_object)
     end
 
     it 'process_dobj gives expected output for one dobj' do
+      allow(dobj).to receive(:pid).and_return('kk203bw3276')
       expect(report.process_dobj(dobj).as_json).to eq(
         druid: 'druid:kk203bw3276',
         errors: { dupes: true },

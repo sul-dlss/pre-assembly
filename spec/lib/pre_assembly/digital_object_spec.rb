@@ -162,14 +162,14 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to exp_xml
+        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
       end
 
       it 'is able to write the content_metadata XML to a file' do
         assembly_directory.create_object_directories
         file_name = object.send(:assembly_directory).content_metadata_file
         expect(File.exist?(file_name)).to eq(false)
-        object.send(:generate_content_metadata)
+        object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
       end
     end
@@ -210,7 +210,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
+        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to(exp_xml)
       end
     end
 
@@ -252,7 +252,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'generates the expected xml text' do
-        expect(object.send(:create_content_metadata)).to be_equivalent_to(exp_xml)
+        expect(object.send(:create_content_metadata, true)).to be_equivalent_to(exp_xml)
       end
     end
 
@@ -298,7 +298,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       it 'generates the expected xml text' do
         expect(object.content_md_creation_style).to eq(:file)
-        expect(noko_doc(object.send(:create_content_metadata))).to be_equivalent_to(exp_xml)
+        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to(exp_xml)
       end
     end
   end
