@@ -9,7 +9,7 @@ RSpec.describe PreAssembly::Media do
       content_metadata_creation: :media_cm_style
     }
   end
-  let(:bc) { build(:bundle_context, bc_params) }
+  let(:bc) { build(:batch_context, bc_params) }
 
   describe '#create_content_metadata' do
     context 'without thumb declaration' do

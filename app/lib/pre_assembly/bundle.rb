@@ -4,7 +4,7 @@ module PreAssembly
   class Bundle
     include PreAssembly::Logging
 
-    attr_reader :bundle_context
+    attr_reader :batch_context
     attr_writer :digital_objects
     attr_accessor :user_params,
                   :skippables,
@@ -23,11 +23,11 @@ module PreAssembly
              :set_druid_id,
              :stageable_discovery,
              :staging_style_symlink,
-             to: :bundle_context
+             to: :batch_context
 
-    def initialize(bundle_context)
-      @bundle_context = bundle_context
-      self.media_manifest = PreAssembly::Media.new(csv_filename: bundle_context.media_manifest, bundle_dir: bundle_dir) if bundle_context.media_cm_style?
+    def initialize(batch_context)
+      @batch_context = batch_context
+      self.media_manifest = PreAssembly::Media.new(csv_filename: batch_context.media_manifest, bundle_dir: bundle_dir) if batch_context.media_cm_style?
       self.skippables = {}
       load_skippables
     end
@@ -110,7 +110,7 @@ module PreAssembly
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.empty?
         progress = { dobj: dobj }
-        file_attributes_supplied = bundle_context.all_files_public? || dark?(dobj.pid)
+        file_attributes_supplied = batch_context.all_files_public? || dark?(dobj.pid)
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
@@ -207,7 +207,7 @@ module PreAssembly
       options = { relative_path: relative_path(get_base_dir(stageable), file_path) }
       if dark_obj
         options[:file_attributes] = { preserve: 'yes', shelve: 'no', publish: 'no' }
-      elsif bundle_context.all_files_public?
+      elsif batch_context.all_files_public?
         options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       end
       ObjectFile.new(file_path, options)

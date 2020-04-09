@@ -8,7 +8,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:bundle_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
+  let(:bc) { create(:batch_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
@@ -240,7 +240,7 @@ RSpec.describe PreAssembly::DigitalObject do
         END
       end
 
-      let(:bc) { create(:bundle_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
+      let(:bc) { create(:batch_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
 
       before do
         allow(object).to receive(:druid).and_return(druid)

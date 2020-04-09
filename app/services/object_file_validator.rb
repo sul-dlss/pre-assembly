@@ -78,13 +78,13 @@ class ObjectFileValidator
 
   # @return [PreAssembly::Media]
   def media
-    @media ||= PreAssembly::Media.new(csv_filename: bundle.bundle_context.media_manifest,
+    @media ||= PreAssembly::Media.new(csv_filename: bundle.batch_context.media_manifest,
                                       bundle_dir: bundle.bundle_dir)
   end
 
   # @return [Boolean]
   def using_media_manifest?
     bundle.content_md_creation == 'media_cm_style' &&
-      File.exist?(File.join(bundle.bundle_dir, bundle.bundle_context.media_manifest))
+      File.exist?(File.join(bundle.bundle_dir, bundle.batch_context.media_manifest))
   end
 end

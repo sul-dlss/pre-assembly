@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe BundleContextsController, type: :controller do
+RSpec.describe BatchContextsController, type: :controller do
   let(:params) do
     {
-      bundle_context:
+      batch_context:
         {
           project_name: 'Multimedia',
           content_structure: 'simple_image',
@@ -52,14 +52,14 @@ RSpec.describe BundleContextsController, type: :controller do
 
         it 'passes newly created object' do
           post :create, params: params
-          expect(assigns(:bundle_context)).to be_a(BundleContext).and be_persisted
+          expect(assigns(:batch_context)).to be_a(BatchContext).and be_persisted
           expect(response).to have_http_status(:found) # HTTP code for found
           expect(response).to redirect_to(job_runs_path)
           expect(flash[:success]).to start_with('Success! Your job is queued.')
         end
         it 'has the correct attributes' do
           post :create, params: params
-          bc = assigns(:bundle_context)
+          bc = assigns(:batch_context)
           expect(bc.project_name).to eq 'Multimedia'
           expect(bc.content_structure).to eq 'simple_image'
           expect(bc.content_metadata_creation).to eq 'default'
@@ -67,7 +67,7 @@ RSpec.describe BundleContextsController, type: :controller do
         end
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
-          expect { post :create, params: params }.not_to change(BundleContext, :count)
+          expect { post :create, params: params }.not_to change(BatchContext, :count)
           Dir.delete(output_dir) if Dir.exist?(output_dir) # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
@@ -77,11 +77,11 @@ RSpec.describe BundleContextsController, type: :controller do
         let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', bundle_dir: '' } }
 
         it 'do not create objects' do
-          params[:bundle_context][:project_name] = nil
-          expect { post :create, params: params }.not_to change(BundleContext, :count)
-          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
+          params[:batch_context][:project_name] = nil
+          expect { post :create, params: params }.not_to change(BatchContext, :count)
+          expect { post :create, params: { batch_context: bc_params } }.not_to change(BatchContext, :count)
           bc_params[:project_name] = "SMPL's folly"
-          expect { post :create, params: { bundle_context: bc_params } }.not_to change(BundleContext, :count)
+          expect { post :create, params: { batch_context: bc_params } }.not_to change(BatchContext, :count)
         end
       end
     end

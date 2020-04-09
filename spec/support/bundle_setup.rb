@@ -2,7 +2,7 @@
 
 # @return [PreAssembly::Bundle]
 def bundle_setup(proj)
-  PreAssembly::Bundle.new(bundle_context_from_hash(proj))
+  PreAssembly::Bundle.new(batch_context_from_hash(proj))
 end
 
 def hash_from_proj(proj)
@@ -14,12 +14,12 @@ def noko_doc(x)
   Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
 end
 
-def bundle_context_from_hash(proj)
+def batch_context_from_hash(proj)
   hash = hash_from_proj(proj)
   cmc = hash['content_md_creation']['style']
   cmc += '_cm_style' if cmc == 'media'
   build(
-    :bundle_context,
+    :batch_context,
     project_name: hash['project_name'],
     content_structure: hash['project_style']['content_structure'],
     bundle_dir: hash['bundle_dir'],

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe BundleContext, type: :model do
-  subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
+RSpec.describe BatchContext, type: :model do
+  subject(:bc) { build(:batch_context_with_deleted_output_dir, attr_hash) }
 
   let(:attr_hash) do
     {
@@ -147,7 +147,7 @@ RSpec.describe BundleContext, type: :model do
 
     after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
 
-    context 'when bundle_context is new' do
+    context 'when batch_context is new' do
       before { allow(bc).to receive(:persisted?).and_return(false) }
 
       it 'creates directory' do
@@ -167,7 +167,7 @@ RSpec.describe BundleContext, type: :model do
   end
 
   describe '#output_dir_exists!' do
-    context 'when bundle_context is not new' do
+    context 'when batch_context is not new' do
       before { allow(bc).to receive(:persisted?).and_return(true) } # fake save
 
       it "adds error if directory doesn't exist" do

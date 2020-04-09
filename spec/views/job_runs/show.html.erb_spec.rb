@@ -23,6 +23,6 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
 
   it 'displays user email from bundle context' do
     render
-    expect(rendered).to include(job_run.bundle_context.user.email)
+    expect(rendered).to include(job_run.batch_context.user.email)
   end
 end

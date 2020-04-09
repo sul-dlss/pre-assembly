@@ -31,7 +31,7 @@ class DiscoveryReport
 
   # @return [String] a different string each time
   def output_path
-    Dir::Tmpname.create([self.class.name.underscore + '_', '.json'], bundle.bundle_context.output_dir) { |path| path }
+    Dir::Tmpname.create([self.class.name.underscore + '_', '.json'], bundle.batch_context.output_dir) { |path| path }
   end
 
   # @param [PreAssembly::DigitalObject]
@@ -42,12 +42,12 @@ class DiscoveryReport
 
   # @return [Boolean]
   def using_media_manifest?
-    content_md_creation == 'media_cm_style' && File.exist?(File.join(bundle_dir, bundle.bundle_context.media_manifest))
+    content_md_creation == 'media_cm_style' && File.exist?(File.join(bundle_dir, bundle.batch_context.media_manifest))
   end
 
   # @return [PreAssembly::Media]
   def media
-    @media ||= PreAssembly::Media.new(csv_filename: bundle.bundle_context.media_manifest, bundle_dir: bundle_dir)
+    @media ||= PreAssembly::Media.new(csv_filename: bundle.batch_context.media_manifest, bundle_dir: bundle_dir)
   end
 
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)

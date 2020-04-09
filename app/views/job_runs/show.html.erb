@@ -5,14 +5,14 @@
 <div class="container">
   <div class="row m-3">
     <div class="col-sm-12">
-      On project <%= link_to @job_run.bundle_context.project_name, @job_run.bundle_context %> by <%= @job_run.bundle_context.user.email %>
+      On project <%= link_to @job_run.batch_context.project_name, @job_run.batch_context %> by <%= @job_run.batch_context.user.email %>
       <button class="btn btn-sul-dlss btn-sm ml-1" type="button" data-toggle="collapse" data-target="#bc_details" aria-expanded="false" aria-controls="bc_details">
         Details
       </button>
     </div>
   </div>
   <div id="bc_details" class="collapse bg-light">
-    <%= render @job_run.bundle_context %>
+    <%= render @job_run.batch_context %>
   </div>
 </div>
 

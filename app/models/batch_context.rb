@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BundleContext < ApplicationRecord
+class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy
   before_save :output_dir_exists!, if: proc { persisted? }

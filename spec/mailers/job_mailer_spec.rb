@@ -6,7 +6,7 @@ RSpec.describe JobMailer, type: :mailer do
 
   it 'renders the headers' do
     expect(job_notification.subject).to eq('[Test_Project] Your Discovery report job completed')
-    expect(job_notification.to).to eq([job_run.bundle_context.user.email])
+    expect(job_notification.to).to eq([job_run.batch_context.user.email])
     expect(job_notification.from).to eq(['no-reply-preassembly-job@stanford.edu'])
   end
 

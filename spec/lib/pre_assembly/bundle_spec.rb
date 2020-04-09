@@ -5,7 +5,7 @@ RSpec.describe PreAssembly::Bundle do
   let(:flat_dir_images) { bundle_setup(:flat_dir_images) }
   let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
   let(:multimedia) { bundle_setup(:multimedia) }
-  let(:bundle) { create(:bundle_context_with_deleted_output_dir).bundle }
+  let(:bundle) { create(:batch_context_with_deleted_output_dir).bundle }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
   let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
@@ -15,7 +15,7 @@ RSpec.describe PreAssembly::Bundle do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
   end
 
-  after { FileUtils.rm_rf(bundle.bundle_context.output_dir) if Dir.exist?(bundle.bundle_context.output_dir) } # cleanup
+  after { FileUtils.rm_rf(bundle.batch_context.output_dir) if Dir.exist?(bundle.batch_context.output_dir) } # cleanup
 
   describe '#run_pre_assembly' do
     before do
@@ -89,9 +89,9 @@ RSpec.describe PreAssembly::Bundle do
       end
     end
 
-    context 'when bundle_context.all_files_public? is true' do
+    context 'when batch_context.all_files_public? is true' do
       it 'calls digital_object.pre_assemble with true for all objects' do
-        allow(bundle.bundle_context).to receive(:all_files_public?).and_return(true)
+        allow(bundle.batch_context).to receive(:all_files_public?).and_return(true)
         allow(bundle.digital_objects[0]).to receive(:pre_assemble)
         allow(bundle.digital_objects[1]).to receive(:pre_assemble)
         bundle.process_digital_objects
@@ -145,10 +145,10 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     context 'when all_files_public is true' do
-      let(:bundle_context) do
-        build(:bundle_context, :folder_manifest, :public_files)
+      let(:batch_context) do
+        build(:batch_context, :folder_manifest, :public_files)
       end
-      let(:bundle) { described_class.new(bundle_context) }
+      let(:bundle) { described_class.new(batch_context) }
 
       it 'sets the file attributes to public' do
         bundle.digital_objects.each do |dobj|
@@ -160,10 +160,10 @@ RSpec.describe PreAssembly::Bundle do
     end
 
     context 'when object is dark' do
-      let(:bundle_context) do
-        build(:bundle_context, :folder_manifest)
+      let(:batch_context) do
+        build(:batch_context, :folder_manifest)
       end
-      let(:bundle) { described_class.new(bundle_context) }
+      let(:bundle) { described_class.new(batch_context) }
       let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
       let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_dark_access) }
       let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: dark_item) }
@@ -385,7 +385,7 @@ RSpec.describe PreAssembly::Bundle do
           'tz250tk7584/00/image2.tif'
         ]
       }.each do |proj, files|
-        b = described_class.new(bundle_context_from_hash(proj))
+        b = described_class.new(batch_context_from_hash(proj))
         exp_files = files.map { |f| b.path_in_bundle f }
         expect(b.send(:find_files_recursively, b.bundle_dir).sort).to eq(exp_files)
       end

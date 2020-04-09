@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :bundle_context do
+  factory :batch_context do
     bundle_dir { 'spec/test_data/multimedia' }
     content_metadata_creation { 'default' }
     content_structure { 'simple_image' }
@@ -10,7 +10,7 @@ FactoryBot.define do
     user
 
     # some tests require BCs with clean output_dir
-    factory :bundle_context_with_deleted_output_dir do
+    factory :batch_context_with_deleted_output_dir do
       after(:build) do |bc|
         Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
       end

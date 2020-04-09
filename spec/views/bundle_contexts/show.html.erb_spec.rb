@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-RSpec.describe 'bundle_contexts/show.html.erb', type: :view do
-  let(:bc) { create(:bundle_context) }
+RSpec.describe 'batch_contexts/show.html.erb', type: :view do
+  let(:bc) { create(:batch_context) }
 
-  before { assign(:bundle_context, bc) }
+  before { assign(:batch_context, bc) }
 
-  it 'diplays BundleContext info' do
+  it 'diplays BatchContext info' do
     render
-    expect(rendered).to include("<a href=\"/bundle_contexts/1\">#{bc.project_name}</a> by #{bc.user.email}")
+    expect(rendered).to include("<a href=\"/batch_contexts/1\">#{bc.project_name}</a> by #{bc.user.email}")
     expect(rendered).to include('<i class="far fa-times-circle"></i>') # icon for symlink="false"
   end
 

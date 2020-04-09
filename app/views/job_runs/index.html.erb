@@ -19,7 +19,7 @@
       <tr>
         <td><%=link_to "Job ##{job_run.id}",job_run%></td>
         <td><%=job_run.job_type%></td>
-        <td><%=job_run.bundle_context.user.sunet_id%></td>
+        <td><%=job_run.batch_context.user.sunet_id%></td>
         <td><%=job_run.output_location ? "complete" : "not complete"%></td>
         <td><%=job_run.created_at.to_formatted_s(:long)%></td>
       </tr>

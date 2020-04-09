@@ -39,7 +39,7 @@ RSpec.describe DiscoveryReport do
 
   describe '#output_path' do
     it 'starts with output_dir' do
-      expect(report.output_path).to start_with(report.bundle.bundle_context.output_dir)
+      expect(report.output_path).to start_with(report.bundle.batch_context.output_dir)
     end
     it 'ends with discovery_report[...].json' do
       expect(report.output_path).to match(/discovery_report_.*\.json$/)
@@ -60,8 +60,8 @@ RSpec.describe DiscoveryReport do
         user: build(:user, sunet_id: 'jdoe')
       }
     end
-    let(:bundle_context) { BundleContext.new(bc_params) }
-    let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
+    let(:batch_context) { BatchContext.new(bc_params) }
+    let(:bundle) { PreAssembly::Bundle.new(batch_context) }
     let(:dobj) { report.bundle.objects_to_process.first }
     let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
     let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }

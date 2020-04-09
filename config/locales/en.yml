@@ -32,10 +32,10 @@
 en:
   activerecord:
     attributes:
-      bundle_context:
+      batch_context:
         all_files_public: "Preserve, Shelve, Publish Settings"
   helpers:
     submit:
-      bundle_context:
+      batch_context:
         update: "Submit"
         create: "Submit"
