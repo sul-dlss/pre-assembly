@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class ObjectFileValidator
-  def initialize(object:, bundle:)
+  def initialize(object:, batch:)
     @object = object
-    @bundle = bundle
+    @batch = batch
     @errors = {}
     @counts = {}
   end
@@ -22,9 +22,9 @@ class ObjectFileValidator
     errors[:empty_files] = empty_files if empty_files > 0
 
     if using_media_manifest? # if we are using a media manifest, let's add how many files were found
-      bundle_id = File.basename(object.container)
-      if bundle_id && media.manifest[bundle_id]
-        cm_files = media.manifest[bundle_id].fetch(:files, [])
+      batch_id = File.basename(object.container)
+      if batch_id && media.manifest[batch_id]
+        cm_files = media.manifest[batch_id].fetch(:files, [])
         counts[:files_in_manifest] = cm_files.count
         relative_paths = object.object_files.map(&:relative_path)
         counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
@@ -37,7 +37,7 @@ class ObjectFileValidator
 
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
-    errors[:dupes] = true unless bundle.object_filenames_unique?(object)
+    errors[:dupes] = true unless batch.object_filenames_unique?(object)
     errors.merge!(registration_check)
     self
   end
@@ -48,7 +48,7 @@ class ObjectFileValidator
 
   private
 
-  attr_reader :object, :bundle
+  attr_reader :object, :batch
   delegate :druid, to: :object
 
   # Checks filesystem for expected files
@@ -78,13 +78,13 @@ class ObjectFileValidator
 
   # @return [PreAssembly::Media]
   def media
-    @media ||= PreAssembly::Media.new(csv_filename: bundle.bundle_context.media_manifest,
-                                      bundle_dir: bundle.bundle_dir)
+    @media ||= PreAssembly::Media.new(csv_filename: batch.batch_context.media_manifest,
+                                      bundle_dir: batch.bundle_dir)
   end
 
   # @return [Boolean]
   def using_media_manifest?
-    bundle.content_md_creation == 'media_cm_style' &&
-      File.exist?(File.join(bundle.bundle_dir, bundle.bundle_context.media_manifest))
+    batch.content_md_creation == 'media_cm_style' &&
+      File.exist?(File.join(batch.bundle_dir, batch.batch_context.media_manifest))
   end
 end

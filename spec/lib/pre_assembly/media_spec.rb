@@ -9,7 +9,7 @@ RSpec.describe PreAssembly::Media do
       content_metadata_creation: :media_cm_style
     }
   end
-  let(:bc) { build(:bundle_context, bc_params) }
+  let(:bc) { build(:batch_context, bc_params) }
 
   describe '#create_content_metadata' do
     context 'without thumb declaration' do
@@ -57,9 +57,8 @@ RSpec.describe PreAssembly::Media do
 
   # some helper methods for these tests
   def setup_dobj(druid, media_manifest)
-    allow(bc.bundle).to receive(:media_manifest).and_return(media_manifest)
-    PreAssembly::DigitalObject.new(bc.bundle, container: druid,
-                                              stager: PreAssembly::CopyStager).tap do |dobj|
+    allow(bc.batch).to receive(:media_manifest).and_return(media_manifest)
+    PreAssembly::DigitalObject.new(bc.batch, container: druid, stager: PreAssembly::CopyStager).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
       allow(dobj).to receive(:object_type).and_return(Cocina::Models::Vocab.media)

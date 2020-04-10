@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe BundleContext, type: :model do
-  subject(:bc) { build(:bundle_context_with_deleted_output_dir, attr_hash) }
+RSpec.describe BatchContext, type: :model do
+  subject(:bc) { build(:batch_context_with_deleted_output_dir, attr_hash) }
 
   let(:attr_hash) do
     {
@@ -81,12 +81,12 @@ RSpec.describe BundleContext, type: :model do
     expect(bc.bundle_dir).to eq 'spec/test_data/images_jp2_tif'
   end
 
-  describe '#bundle' do
-    it 'returns a PreAssembly::Bundle' do
-      expect(bc.bundle).to be_a(PreAssembly::Bundle)
+  describe '#batch' do
+    it 'returns a PreAssembly::Batch' do
+      expect(bc.batch).to be_a(PreAssembly::Batch)
     end
-    it 'caches the Bundle' do
-      expect(bc.bundle).to be(bc.bundle) # same instance
+    it 'caches the Batch' do
+      expect(bc.batch).to be(bc.batch) # same instance
     end
   end
 
@@ -102,9 +102,9 @@ RSpec.describe BundleContext, type: :model do
     end
   end
 
-  describe '#path_in_bundle' do
+  describe '#bundle_dir_with_path' do
     it 'creates a relative path' do
-      expect(bc.path_in_bundle('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
+      expect(bc.bundle_dir_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
     end
   end
 
@@ -147,7 +147,7 @@ RSpec.describe BundleContext, type: :model do
 
     after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
 
-    context 'when bundle_context is new' do
+    context 'when batch_context is new' do
       before { allow(bc).to receive(:persisted?).and_return(false) }
 
       it 'creates directory' do
@@ -167,7 +167,7 @@ RSpec.describe BundleContext, type: :model do
   end
 
   describe '#output_dir_exists!' do
-    context 'when bundle_context is not new' do
+    context 'when batch_context is not new' do
       before { allow(bc).to receive(:persisted?).and_return(true) } # fake save
 
       it "adds error if directory doesn't exist" do

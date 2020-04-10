@@ -1,6 +1,6 @@
 <h3>Complete the form below</h3>
 
-<%= simple_form_for @bundle_context, html: { class: 'col-md-8' } do |form| %>
+<%= simple_form_for @batch_context, html: { class: 'col-md-8' } do |form| %>
     <%= form.input :project_name %>
 
     <%= form.simple_fields_for :job_runs do |jt| %>

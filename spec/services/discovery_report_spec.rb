@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscoveryReport do
-  subject(:report) { described_class.new(bundle) }
+  subject(:report) { described_class.new(batch) }
 
-  let(:bundle) { bundle_setup(:flat_dir_images) }
+  let(:batch) { batch_setup(:flat_dir_images) }
 
   describe '#initialize' do
-    it 'raises if PreAssembly::Bundle not received' do
+    it 'raises if PreAssembly::Batch not received' do
       expect { described_class.new }.to raise_error(ArgumentError)
       expect { described_class.new({}) }.to raise_error(ArgumentError)
     end
-    it 'accepts PreAssembly::Bundle' do
-      expect { described_class.new(bundle) }.not_to raise_error
+    it 'accepts PreAssembly::Batch' do
+      expect { described_class.new(batch) }.not_to raise_error
     end
   end
 
@@ -27,7 +27,7 @@ RSpec.describe DiscoveryReport do
       expect(report).to receive(:process_dobj).with(1).and_return(validator1)
       expect(report).to receive(:process_dobj).with(2).and_return(validator2)
       expect(report).to receive(:process_dobj).with(3).and_return(validator3)
-      expect(bundle).to receive(:objects_to_process).and_return([1, 2, 3])
+      expect(batch).to receive(:objects_to_process).and_return([1, 2, 3])
       report.each_row { |_r| } # no-op
       expect(report.summary).to match a_hash_including(
         total_size: 6,
@@ -39,7 +39,7 @@ RSpec.describe DiscoveryReport do
 
   describe '#output_path' do
     it 'starts with output_dir' do
-      expect(report.output_path).to start_with(report.bundle.bundle_context.output_dir)
+      expect(report.output_path).to start_with(report.batch.batch_context.output_dir)
     end
     it 'ends with discovery_report[...].json' do
       expect(report.output_path).to match(/discovery_report_.*\.json$/)
@@ -60,9 +60,9 @@ RSpec.describe DiscoveryReport do
         user: build(:user, sunet_id: 'jdoe')
       }
     end
-    let(:bundle_context) { BundleContext.new(bc_params) }
-    let(:bundle) { PreAssembly::Bundle.new(bundle_context) }
-    let(:dobj) { report.bundle.objects_to_process.first }
+    let(:batch_context) { BatchContext.new(bc_params) }
+    let(:batch) { PreAssembly::Batch.new(batch_context) }
+    let(:dobj) { report.batch.objects_to_process.first }
     let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
     let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
     let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }

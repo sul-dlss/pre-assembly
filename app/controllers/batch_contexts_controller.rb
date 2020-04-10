@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-class BundleContextsController < ApplicationController
+class BatchContextsController < ApplicationController
   def new
-    @bundle_context = BundleContext.new(
+    @batch_context = BatchContext.new(
       job_runs: [JobRun.new],
       content_structure: 'simple_image',
       content_metadata_creation: 'default'
@@ -10,8 +10,8 @@ class BundleContextsController < ApplicationController
   end
 
   def create
-    @bundle_context = BundleContext.new(bundle_contexts_params)
-    if @bundle_context.save
+    @batch_context = BatchContext.new(batch_contexts_params)
+    if @batch_context.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs'
     else
@@ -20,17 +20,17 @@ class BundleContextsController < ApplicationController
   end
 
   def index
-    @bundle_contexts = BundleContext.order(:created_at).page(params[:page])
+    @batch_contexts = BatchContext.order(:created_at).page(params[:page])
   end
 
   def show
-    @bundle_context = BundleContext.find(params[:id])
+    @batch_context = BatchContext.find(params[:id])
   end
 
   private
 
-  def bundle_contexts_params
-    params.require(:bundle_context)
+  def batch_contexts_params
+    params.require(:batch_context)
           .permit(:project_name, :content_structure, :staging_style_symlink,
                   :content_metadata_creation, :bundle_dir, :all_files_public,
                   job_runs_attributes: [:job_type])

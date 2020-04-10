@@ -1,19 +1,19 @@
 <div class="row">
   <h3 class="col bg-light">
-    <%= link_to bundle_context.project_name, bundle_context %> by <%= bundle_context.user.email %>
+    <%= link_to batch_context.project_name, batch_context %> by <%= batch_context.user.email %>
   </h3>
 </div>
 <div class="row p-1 pl-5">
   <div>
-    <%= form_for(bundle_context.job_runs.new) do |form| %>
-    <%= form.hidden_field :bundle_context_id, value: bundle_context.id %>
+    <%= form_for(batch_context.job_runs.new) do |form| %>
+    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
     <%= form.hidden_field :job_type, value: 'discovery_report' %>
     <%= form.submit 'New Discovery Report', class: 'btn btn-sm btn-success' %>
     <% end %>
   </div>
   <div>
-    <%= form_for(bundle_context.job_runs.new) do |form| %>
-    <%= form.hidden_field :bundle_context_id, value: bundle_context.id %>
+    <%= form_for(batch_context.job_runs.new) do |form| %>
+    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
     <%= form.hidden_field :job_type, value: 'preassembly' %>
     <%= form.submit 'Run Preassembly', class: 'btn btn-sm btn-sul-dlss' %>
     <% end %>
@@ -21,19 +21,19 @@
 </div>
 <dl class="dl row">
   <dt class="col-sm-3">Content Structure</dt>
-  <dd class="col-sm-9"><%= bundle_context.content_structure %></dd>
+  <dd class="col-sm-9"><%= batch_context.content_structure %></dd>
   <dt class="col-sm-3">Bundle Directory</dt>
-  <dd class="col-sm-9"><%= bundle_context.bundle_dir %></dd>
+  <dd class="col-sm-9"><%= batch_context.bundle_dir %></dd>
   <dt class="col-sm-3">Staging Style Symlink?</dt>
   <dd class="col-sm-9">
-    <% if bundle_context.staging_style_symlink %>
+    <% if batch_context.staging_style_symlink %>
       <i class="fas fa-check"></i>
     <% else %>
       <i class="far fa-times-circle"></i>
     <% end %>
   </dd>
   <dt class="col-sm-3">Content Metadata Creation</dt>
-  <dd class="col-sm-9"><%= bundle_context.content_metadata_creation %></dd>
+  <dd class="col-sm-9"><%= batch_context.content_metadata_creation %></dd>
   <dt class="col-sm-3">Created At</dt>
-  <dd class="col-sm-9"><%= bundle_context.created_at %></dd>
+  <dd class="col-sm-9"><%= batch_context.created_at %></dd>
 </dl>

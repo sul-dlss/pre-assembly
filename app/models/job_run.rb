@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JobRun < ApplicationRecord
-  belongs_to :bundle_context
+  belongs_to :batch_context
   validates :job_type, presence: true
   after_create :enqueue!
   after_update :send_notification, if: -> { saved_change_to_output_location? }
@@ -21,7 +21,7 @@ class JobRun < ApplicationRecord
 
   # @return [String] Subject line for notification email
   def mail_subject
-    "[#{bundle_context.project_name}] Your #{job_type.humanize} job completed"
+    "[#{batch_context.project_name}] Your #{job_type.humanize} job completed"
   end
 
   def send_notification
@@ -31,7 +31,7 @@ class JobRun < ApplicationRecord
 
   # @return [DiscoveryReport]
   def to_discovery_report
-    @to_discovery_report ||= DiscoveryReport.new(bundle_context.bundle)
+    @to_discovery_report ||= DiscoveryReport.new(batch_context.batch)
   end
 
   private

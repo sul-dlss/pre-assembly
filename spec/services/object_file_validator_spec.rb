@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe ObjectFileValidator do
-  subject(:validator) { described_class.new(object: object, bundle: bundle) }
+  subject(:validator) { described_class.new(object: object, batch: batch) }
 
-  let(:bundle) { bundle_setup(:flat_dir_images) }
+  let(:batch) { batch_setup(:flat_dir_images) }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
   let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
@@ -15,7 +15,7 @@ RSpec.describe ObjectFileValidator do
   describe '#validate' do
     subject(:json) { validator.validate.as_json }
 
-    let(:object) { bundle.objects_to_process.first }
+    let(:object) { batch.objects_to_process.first }
 
     before do
       allow(object).to receive(:pid).and_return('kk203bw3276')
@@ -51,7 +51,7 @@ RSpec.describe ObjectFileValidator do
     end
 
     context 'missing_media_container_name_or_manifest' do
-      let(:bundle) { bundle_setup(:media_missing) }
+      let(:batch) { batch_setup(:media_missing) }
       let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: '', filesize: 324, mimetype: '') }
 
       before do

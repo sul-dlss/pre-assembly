@@ -6,10 +6,6 @@
 This is a Ruby implementation of services needed to prepare objects to be
 assembled and then accessioned into the SUL digital library.
 
-## Releases
-
-See the [RELEASES](./RELEASES.md) list.
-
 ## Basics
 
 `Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/.  There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.

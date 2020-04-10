@@ -2,7 +2,7 @@
 
 class JobRunsController < ApplicationController
   def create
-    raise ActionController::ParameterMissing, :bundle_context_id unless job_run_params[:bundle_context_id]
+    raise ActionController::ParameterMissing, :batch_context_id unless job_run_params[:batch_context_id]
     @job_run = JobRun.new(job_run_params)
     if @job_run.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
@@ -33,6 +33,6 @@ class JobRunsController < ApplicationController
   private
 
   def job_run_params
-    params.require(:job_run).permit(:bundle_context_id, :job_type)
+    params.require(:job_run).permit(:batch_context_id, :job_type)
   end
 end

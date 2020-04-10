@@ -3,7 +3,7 @@
 RSpec.describe JobRun, type: :model do
   let(:job_run) { build(:job_run) }
 
-  it { is_expected.to belong_to(:bundle_context) }
+  it { is_expected.to belong_to(:batch_context) }
 
   describe 'enqueue!' do
     it 'does nothing if unpersisted' do
@@ -62,8 +62,8 @@ RSpec.describe JobRun, type: :model do
     it 'is not valid without all required fields' do
       expect(described_class.new).not_to be_valid
     end
-    it 'is valid with just bundle_context' do
-      expect(described_class.new(bundle_context: build(:bundle_context))).to be_valid
+    it 'is valid with just batch_context' do
+      expect(described_class.new(batch_context: build(:batch_context))).to be_valid
     end
   end
 end

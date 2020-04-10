@@ -2,13 +2,13 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.bundle, object_files: [], stager: stager)
+    described_class.new(bc.batch, object_files: [], stager: stager)
   end
 
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:bundle_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
+  let(:bc) { create(:batch_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
@@ -111,7 +111,7 @@ RSpec.describe PreAssembly::DigitalObject do
   describe '#create_content_metadata' do
     describe 'default content metadata' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
           <contentMetadata type="image" objectId="gn330dv6119">
             <resource type="image" id="gn330dv6119_1" sequence="1">
               <label>Image 1</label>
@@ -138,7 +138,7 @@ RSpec.describe PreAssembly::DigitalObject do
               </file>
             </resource>
           </contentMetadata>
-        END
+        XML
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -174,9 +174,9 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'bundled by filename, simple book content metadata without file attributes' do
+    describe 'grouped by filename, simple book content metadata without file attributes' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
@@ -197,7 +197,7 @@ RSpec.describe PreAssembly::DigitalObject do
             </file>
           </resource>
         </contentMetadata>
-        END
+        XML
       end
 
       before do
@@ -216,7 +216,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'with file attributes' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
@@ -237,10 +237,10 @@ RSpec.describe PreAssembly::DigitalObject do
             </file>
           </resource>
         </contentMetadata>
-        END
+        XML
       end
 
-      let(:bc) { create(:bundle_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
+      let(:bc) { create(:batch_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
 
       before do
         allow(object).to receive(:druid).and_return(druid)
@@ -258,7 +258,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
           <contentMetadata type="file" objectId="gn330dv6119">
             <resource type="file" id="gn330dv6119_1" sequence="1">
               <label>File 1</label>
@@ -285,7 +285,7 @@ RSpec.describe PreAssembly::DigitalObject do
               </file>
             </resource>
           </contentMetadata>
-        END
+        XML
       end
 
       before do

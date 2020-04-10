@@ -33,7 +33,7 @@ progress_log_file: ~                        # Optional - if left as nil a progre
 
 project_style:
 
-  # Defines the default structure of content metadata.  Set content_md_creation[:style] below if you want to bundle files into resources.
+  # Defines the default structure of content metadata.  Set content_md_creation[:style] below if you want to group files into resources.
   # The 'Process : Content Type' tag for each existing object will be examined.  If a known type is set in this tag,
   # it will be used instead of the default below.
   content_structure: 'simple_image'  # Every file in the digital object will appear as a <file> node with <contentMetadata type="image"> and <resource type="image">
@@ -58,7 +58,7 @@ project_style:
 ####
 
 bundle_dir:  '/foo/bar/revs'  # Input location for the project content (i.e., the
-                             # "bundle"). May contain images directly or may contain
+                             # "bundle" or "batch"). May contain images directly or may contain
                              # folders, one per object, usually named by druid.
                              # A fully qualified path.
 
@@ -75,7 +75,7 @@ staging_style:    'copy'     # the staging style, can be "copy" or "symlink", de
 # Attributes related to content metadata generation.
 ####
 
-# The method used to bundle resources together when generating content metadata.
+# The method used to group resources together when generating content metadata.
 content_md_creation:
   style:       'default'                # Used by most projects, creates one resource per file.
                'filename'                 # Collects files together into a single resource based on filename -- files with the same name but different extensions will become
