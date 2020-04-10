@@ -111,7 +111,7 @@ RSpec.describe PreAssembly::DigitalObject do
   describe '#create_content_metadata' do
     describe 'default content metadata' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
           <contentMetadata type="image" objectId="gn330dv6119">
             <resource type="image" id="gn330dv6119_1" sequence="1">
               <label>Image 1</label>
@@ -138,7 +138,7 @@ RSpec.describe PreAssembly::DigitalObject do
               </file>
             </resource>
           </contentMetadata>
-        END
+        XML
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -176,7 +176,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'grouped by filename, simple book content metadata without file attributes' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
@@ -197,7 +197,7 @@ RSpec.describe PreAssembly::DigitalObject do
             </file>
           </resource>
         </contentMetadata>
-        END
+        XML
       end
 
       before do
@@ -216,7 +216,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'with file attributes' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
@@ -237,7 +237,7 @@ RSpec.describe PreAssembly::DigitalObject do
             </file>
           </resource>
         </contentMetadata>
-        END
+        XML
       end
 
       let(:bc) { create(:batch_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
@@ -258,7 +258,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
       let(:exp_xml) do
-        noko_doc <<-END
+        noko_doc <<-XML
           <contentMetadata type="file" objectId="gn330dv6119">
             <resource type="file" id="gn330dv6119_1" sequence="1">
               <label>File 1</label>
@@ -285,7 +285,7 @@ RSpec.describe PreAssembly::DigitalObject do
               </file>
             </resource>
           </contentMetadata>
-        END
+        XML
       end
 
       before do

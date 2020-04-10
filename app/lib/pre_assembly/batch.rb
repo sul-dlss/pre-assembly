@@ -129,7 +129,7 @@ module PreAssembly
     end
 
     def objects_to_process
-      @o2p ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
+      @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
     end
 
     def log_progress_info(info, status)

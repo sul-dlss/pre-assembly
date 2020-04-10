@@ -10,8 +10,8 @@ def hash_from_proj(proj)
   YAML.safe_load(File.read(filename)).merge('config_filename' => filename)
 end
 
-def noko_doc(x)
-  Nokogiri.XML(x) { |conf| conf.default_xml.noblanks }
+def noko_doc(text_xml)
+  Nokogiri.XML(text_xml) { |conf| conf.default_xml.noblanks }
 end
 
 def batch_context_from_hash(proj)
