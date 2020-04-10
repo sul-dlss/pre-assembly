@@ -31,7 +31,7 @@ class JobRun < ApplicationRecord
 
   # @return [DiscoveryReport]
   def to_discovery_report
-    @to_discovery_report ||= DiscoveryReport.new(batch_context.bundle)
+    @to_discovery_report ||= DiscoveryReport.new(batch_context.batch)
   end
 
   private

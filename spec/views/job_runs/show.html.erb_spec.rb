@@ -21,7 +21,7 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
     expect(rendered).to include('Job is not yet complete')
   end
 
-  it 'displays user email from bundle context' do
+  it 'displays user email from batch context' do
     render
     expect(rendered).to include(job_run.batch_context.user.email)
   end

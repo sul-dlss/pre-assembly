@@ -33,9 +33,9 @@ class BatchContext < ApplicationRecord
 
   accepts_nested_attributes_for :job_runs
 
-  # return [PreAssembly::Bundle]
-  def bundle
-    @bundle ||= PreAssembly::Bundle.new(self)
+  # return [PreAssembly::Batch]
+  def batch
+    @batch ||= PreAssembly::Batch.new(self)
   end
 
   def content_md_creation
@@ -68,14 +68,14 @@ class BatchContext < ApplicationRecord
     'manifest.csv'
   end
 
-  def path_in_bundle(rel_path)
+  def bundle_dir_with_path(rel_path)
     File.join(bundle_dir, rel_path)
   end
 
   # On first call, loads the manifest data, caches results
   # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   def manifest_rows
-    @manifest_rows ||= CsvImporter.parse_to_hash(path_in_bundle(manifest))
+    @manifest_rows ||= CsvImporter.parse_to_hash(bundle_dir_with_path(manifest))
   end
 
   private

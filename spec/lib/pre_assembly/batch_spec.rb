@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.describe PreAssembly::Bundle do
+RSpec.describe PreAssembly::Batch do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
-  let(:flat_dir_images) { bundle_setup(:flat_dir_images) }
-  let(:images_jp2_tif) { bundle_setup(:images_jp2_tif) }
-  let(:multimedia) { bundle_setup(:multimedia) }
-  let(:bundle) { create(:batch_context_with_deleted_output_dir).bundle }
+  let(:flat_dir_images) { batch_setup(:flat_dir_images) }
+  let(:images_jp2_tif) { batch_setup(:images_jp2_tif) }
+  let(:multimedia) { batch_setup(:multimedia) }
+  let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
   let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
@@ -15,23 +15,23 @@ RSpec.describe PreAssembly::Bundle do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
   end
 
-  after { FileUtils.rm_rf(bundle.batch_context.output_dir) if Dir.exist?(bundle.batch_context.output_dir) } # cleanup
+  after { FileUtils.rm_rf(batch.batch_context.output_dir) if Dir.exist?(batch.batch_context.output_dir) } # cleanup
 
   describe '#run_pre_assembly' do
     before do
-      allow(bundle).to receive(:process_digital_objects) # stub expensive call
-      allow(bundle).to receive(:log) # log statements we don't care about here
+      allow(batch).to receive(:process_digital_objects) # stub expensive call
+      allow(batch).to receive(:log) # log statements we don't care about here
     end
 
     it 'logs the start and finish of the run' do
-      expect(bundle).to receive(:log).with("\nstarting run_pre_assembly(#{bundle.run_log_msg})")
-      expect(bundle).to receive(:log).with("\nfinishing run_pre_assembly(#{bundle.run_log_msg})")
-      bundle.run_pre_assembly
+      expect(batch).to receive(:log).with("\nstarting run_pre_assembly(#{batch.run_log_msg})")
+      expect(batch).to receive(:log).with("\nfinishing run_pre_assembly(#{batch.run_log_msg})")
+      batch.run_pre_assembly
     end
 
     it 'calls process_digital_objects' do
-      expect(bundle).to receive(:process_digital_objects)
-      bundle.run_pre_assembly
+      expect(batch).to receive(:process_digital_objects)
+      batch.run_pre_assembly
     end
   end
 
@@ -43,13 +43,13 @@ RSpec.describe PreAssembly::Bundle do
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect { bundle.process_digital_objects }.not_to raise_error
+      expect { batch.process_digital_objects }.not_to raise_error
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      expect { bundle.process_digital_objects }.not_to raise_error
+      expect { batch.process_digital_objects }.not_to raise_error
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
@@ -59,8 +59,8 @@ RSpec.describe PreAssembly::Bundle do
       end
 
       it 'logs an error' do
-        bundle.process_digital_objects
-        yaml = YAML.load_file(bundle.progress_log_file)
+        batch.process_digital_objects
+        yaml = YAML.load_file(batch.progress_log_file)
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
@@ -68,35 +68,35 @@ RSpec.describe PreAssembly::Bundle do
 
     context 'when there are objects that do not complete pre_assemble' do
       it 'logs incomplete_status error' do
-        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
-        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
-        bundle.process_digital_objects
-        yaml = YAML.load_file(bundle.progress_log_file)
-        expect(yaml[:status]).to eq bundle.send(:incomplete_status)[:status]
-        expect(yaml[:message]).to eq bundle.send(:incomplete_status)[:message]
+        allow(batch.digital_objects[0]).to receive(:pre_assemble)
+        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        batch.process_digital_objects
+        yaml = YAML.load_file(batch.progress_log_file)
+        expect(yaml[:status]).to eq batch.send(:incomplete_status)[:status]
+        expect(yaml[:message]).to eq batch.send(:incomplete_status)[:message]
       end
     end
 
     context 'when there are dark objects' do
       it 'calls digital_object.pre_assemble with true for the dark objects' do
-        allow(bundle).to receive(:dark?).with(bundle.digital_objects[0].pid).and_return(true)
-        allow(bundle).to receive(:dark?).with(bundle.digital_objects[1].pid).and_return(false)
-        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
-        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
-        bundle.process_digital_objects
-        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
-        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(false)
+        allow(batch).to receive(:dark?).with(batch.digital_objects[0].pid).and_return(true)
+        allow(batch).to receive(:dark?).with(batch.digital_objects[1].pid).and_return(false)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble)
+        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        batch.process_digital_objects
+        expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
       end
     end
 
     context 'when batch_context.all_files_public? is true' do
       it 'calls digital_object.pre_assemble with true for all objects' do
-        allow(bundle.batch_context).to receive(:all_files_public?).and_return(true)
-        allow(bundle.digital_objects[0]).to receive(:pre_assemble)
-        allow(bundle.digital_objects[1]).to receive(:pre_assemble)
-        bundle.process_digital_objects
-        expect(bundle.digital_objects[0]).to have_received(:pre_assemble).with(true)
-        expect(bundle.digital_objects[1]).to have_received(:pre_assemble).with(true)
+        allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble)
+        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        batch.process_digital_objects
+        expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
+        expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end
     end
   end
@@ -125,10 +125,10 @@ RSpec.describe PreAssembly::Bundle do
   end
 
   describe '#digital_objects' do
-    let(:bundle) { bundle_setup(:folder_manifest) }
+    let(:batch) { batch_setup(:folder_manifest) }
 
     it 'finds the correct number of objects' do
-      expect(bundle.digital_objects.size).to eq(3)
+      expect(batch.digital_objects.size).to eq(3)
     end
 
     it 'handles containers correctly' do
@@ -148,10 +148,10 @@ RSpec.describe PreAssembly::Bundle do
       let(:batch_context) do
         build(:batch_context, :folder_manifest, :public_files)
       end
-      let(:bundle) { described_class.new(batch_context) }
+      let(:batch) { described_class.new(batch_context) }
 
       it 'sets the file attributes to public' do
-        bundle.digital_objects.each do |dobj|
+        batch.digital_objects.each do |dobj|
           dobj.object_files.each do |object_file|
             expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'yes', publish: 'yes')
           end
@@ -163,7 +163,7 @@ RSpec.describe PreAssembly::Bundle do
       let(:batch_context) do
         build(:batch_context, :folder_manifest)
       end
-      let(:bundle) { described_class.new(batch_context) }
+      let(:batch) { described_class.new(batch_context) }
       let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
       let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_dark_access) }
       let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: dark_item) }
@@ -173,7 +173,7 @@ RSpec.describe PreAssembly::Bundle do
       end
 
       it 'sets the file attributes to preserve only' do
-        bundle.digital_objects.each do |dobj|
+        batch.digital_objects.each do |dobj|
           dobj.object_files.each do |object_file|
             expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'no', publish: 'no')
           end
@@ -224,8 +224,8 @@ RSpec.describe PreAssembly::Bundle do
     it 'uses incomplete_status if no status is passed' do
       expect { flat_dir_images.log_progress_info(progress, nil) }.not_to raise_error(TypeError)
       result = flat_dir_images.log_progress_info(progress, nil)
-      expect(result[:status]).to eq bundle.send(:incomplete_status)[:status]
-      expect(result[:message]).to eq bundle.send(:incomplete_status)[:message]
+      expect(result[:status]).to eq batch.send(:incomplete_status)[:status]
+      expect(result[:message]).to eq batch.send(:incomplete_status)[:message]
     end
   end
 
@@ -235,13 +235,13 @@ RSpec.describe PreAssembly::Bundle do
     it 'returns expected information' do
       vals = %w[123.tif 456.tif 789.tif]
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
-      expect(flat_dir_images.send(:discover_containers_via_manifest)).to eq(vals.map { |v| flat_dir_images.path_in_bundle v })
+      expect(flat_dir_images.send(:discover_containers_via_manifest)).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
     end
   end
 
   describe '#discover_items_via_crawl' do
     it 'returns expected information' do
-      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| flat_dir_images.path_in_bundle i }
+      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| flat_dir_images.bundle_dir_with_path i }
       allow(flat_dir_images).to receive(:dir_glob).and_return(items)
       expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.bundle_dir)).to eq(items.sort)
     end
@@ -261,8 +261,8 @@ RSpec.describe PreAssembly::Bundle do
         tz250tk7584/00/image2.tif
       ]
     end
-    let(:files) { fs.map { |f| images_jp2_tif.path_in_bundle f } }
-    let(:dirs) { %w[gn330dv6119 jy812bp9403 tz250tk7584].map { |d| images_jp2_tif.path_in_bundle d } }
+    let(:files) { fs.map { |f| images_jp2_tif.bundle_dir_with_path f } }
+    let(:dirs) { %w[gn330dv6119 jy812bp9403 tz250tk7584].map { |d| images_jp2_tif.bundle_dir_with_path d } }
 
     it 'finds expected files with correct relative paths from files' do
       ofiles = images_jp2_tif.send(:discover_object_files, files, 'oo000oo0000')
@@ -318,8 +318,8 @@ RSpec.describe PreAssembly::Bundle do
   describe '#exclude_from_content' do
     it 'behaves correctly' do
       skip 'web app does not need to support exclude_from_content'
-      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('image1.tif'))).to be_falsey
-      expect(multimedia.send(:exclude_from_content, multimedia.path_in_bundle('descMetadata.xml'))).to be_truthy
+      expect(multimedia.send(:exclude_from_content, multimedia.bundle_dir_with_path('image1.tif'))).to be_falsey
+      expect(multimedia.send(:exclude_from_content, multimedia.bundle_dir_with_path('descMetadata.xml'))).to be_truthy
     end
   end
 
@@ -346,17 +346,17 @@ RSpec.describe PreAssembly::Bundle do
 
   describe '#dir_glob' do
     it ' returns expected information' do
-      exp = [1, 2, 3].map { |n| flat_dir_images.path_in_bundle "image#{n}.tif" }
-      expect(flat_dir_images.send(:dir_glob, flat_dir_images.path_in_bundle('*.tif'))).to eq(exp)
+      exp = [1, 2, 3].map { |n| flat_dir_images.bundle_dir_with_path "image#{n}.tif" }
+      expect(flat_dir_images.send(:dir_glob, flat_dir_images.bundle_dir_with_path('*.tif'))).to eq(exp)
     end
   end
 
   describe 'file and directory utilities' do
     let(:relative) { 'abc/def.jpg' }
-    let(:full) { flat_dir_images.path_in_bundle(relative) }
+    let(:full) { flat_dir_images.bundle_dir_with_path(relative) }
 
-    it '#path_in_bundle returns expected value' do
-      expect(flat_dir_images.path_in_bundle(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
+    it '#bundle_dir_with_path returns expected value' do
+      expect(flat_dir_images.bundle_dir_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
     end
     it '#relative_path returns expected value' do
       expect(flat_dir_images.send(:relative_path, flat_dir_images.bundle_dir, full)).to eq(relative)
@@ -386,7 +386,7 @@ RSpec.describe PreAssembly::Bundle do
         ]
       }.each do |proj, files|
         b = described_class.new(batch_context_from_hash(proj))
-        exp_files = files.map { |f| b.path_in_bundle f }
+        exp_files = files.map { |f| b.bundle_dir_with_path f }
         expect(b.send(:find_files_recursively, b.bundle_dir).sort).to eq(exp_files)
       end
     end

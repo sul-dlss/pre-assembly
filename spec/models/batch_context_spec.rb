@@ -81,12 +81,12 @@ RSpec.describe BatchContext, type: :model do
     expect(bc.bundle_dir).to eq 'spec/test_data/images_jp2_tif'
   end
 
-  describe '#bundle' do
-    it 'returns a PreAssembly::Bundle' do
-      expect(bc.bundle).to be_a(PreAssembly::Bundle)
+  describe '#batch' do
+    it 'returns a PreAssembly::Batch' do
+      expect(bc.batch).to be_a(PreAssembly::Batch)
     end
-    it 'caches the Bundle' do
-      expect(bc.bundle).to be(bc.bundle) # same instance
+    it 'caches the Batch' do
+      expect(bc.batch).to be(bc.batch) # same instance
     end
   end
 
@@ -102,9 +102,9 @@ RSpec.describe BatchContext, type: :model do
     end
   end
 
-  describe '#path_in_bundle' do
+  describe '#bundle_dir_with_path' do
     it 'creates a relative path' do
-      expect(bc.path_in_bundle('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
+      expect(bc.bundle_dir_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
     end
   end
 

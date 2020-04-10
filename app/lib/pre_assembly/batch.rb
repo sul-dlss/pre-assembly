@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module PreAssembly
-  class Bundle
+  class Batch
     include PreAssembly::Logging
 
     attr_reader :batch_context
@@ -17,7 +17,7 @@ module PreAssembly
              :content_md_creation,
              :content_structure,
              :manifest_rows,
-             :path_in_bundle,
+             :bundle_dir_with_path,
              :progress_log_file,
              :project_name,
              :set_druid_id,
@@ -158,7 +158,7 @@ module PreAssembly
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
       manifest_rows.each_with_index { |r, i| raise "Missing 'object' in row #{i}: #{r}" unless r[:object] }
-      manifest_rows.map { |r| path_in_bundle r[:object] }
+      manifest_rows.map { |r| bundle_dir_with_path r[:object] }
     end
 
     # A method to discover object containers or stageable items.

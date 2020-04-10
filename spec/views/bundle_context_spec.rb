@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'batch_contexts/new' do
-  context 'Displays the Bundle Context Form' do
+  context 'Displays the Batch Context Form' do
     it 'displays the form correctly' do
       assign(:batch_context, BatchContext.new)
       # Should render the test page
@@ -10,7 +10,7 @@ RSpec.describe 'batch_contexts/new' do
     end
   end
 
-  context 'Displays errors in Bundle Context Form'
+  context 'Displays errors in Batch Context Form'
   it 'displays error message when missing project name' do
     bc = build(:batch_context, project_name: nil).tap(&:valid?)
     assign(:batch_context, bc)

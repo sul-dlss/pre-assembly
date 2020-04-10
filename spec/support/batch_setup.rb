@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# @return [PreAssembly::Bundle]
-def bundle_setup(proj)
-  PreAssembly::Bundle.new(batch_context_from_hash(proj))
+# @return [PreAssembly::Batch]
+def batch_setup(proj)
+  PreAssembly::Batch.new(batch_context_from_hash(proj))
 end
 
 def hash_from_proj(proj)

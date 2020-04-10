@@ -4,7 +4,7 @@ module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
 
-    attr_reader :bundle, :stageable_items, :object_files,
+    attr_reader :batch, :stageable_items, :object_files,
                 :stager, :label, :pid, :source_id, :container
 
     delegate :bundle_dir,
@@ -12,9 +12,9 @@ module PreAssembly
              :content_structure,
              :project_name,
              :media_manifest,
-             to: :bundle
+             to: :batch
 
-    # @param [PreAssembly::Bundle] bundle
+    # @param [PreAssembly::Batch] batch
     # @param [String] container the identifier (non-namespaced)
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
@@ -23,9 +23,9 @@ module PreAssembly
     # @param [String] source_id The source identifier
     # @param [Object] stager the implementation of how to stage an object
     # rubocop:disable Metrics/ParameterLists
-    def initialize(bundle, container: nil, stageable_items: nil, object_files: nil,
+    def initialize(batch, container: nil, stageable_items: nil, object_files: nil,
                    label: nil, pid: nil, source_id: nil, stager:)
-      @bundle = bundle
+      @batch = batch
       @container = container
       @stageable_items = stageable_items
       @object_files = object_files
@@ -157,7 +157,7 @@ module PreAssembly
         {
           significance: 'major',
           description: 'pre-assembly re-accession',
-          opening_user_name: bundle.batch_context.user.sunet_id
+          opening_user_name: batch.batch_context.user.sunet_id
         }
       object_client.accession.start(version_params)
     end

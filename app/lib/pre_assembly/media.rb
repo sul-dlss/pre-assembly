@@ -7,11 +7,11 @@
 # It is used by pre-assembly during the accessioning process in an automated way based on the pre-assembly config .yml file setting of content_md_creation
 
 # Test with
-# cm=PreAssembly::Media.new(:bundle_dir=>'/thumpers/dpgthumper2-media/ARS0022_speech/content_ready_for_accessioning/content',:csv_filename=>'media_manifest.csv',:verbose=>true)
+# cm=PreAssembly::Media.new(bundle_dir: '/thumpers/dpgthumper2-media/ARS0022_speech/content_ready_for_accessioning/content', csv_filename: 'media_manifest.csv', verbose: true)
 # cm.generate_cm('zx248jc1918')
 
-# or in the context of a bundle object:
-# cm=PreAssembly::Media.new(:csv_filename=>@content_md_creation[:media_manifest],:bundle_dir=>@bundle_dir,:verbose=>false)
+# or in the context of a batch object:
+# cm=PreAssembly::Media.new(csv_filename: @content_md_creation[:media_manifest],bundle_dir: @bundle_dir, verbose: false)
 # cm.generate_cm('oo000oo0001')
 
 module PreAssembly
@@ -71,7 +71,8 @@ module PreAssembly
       current_seq = ''
       resources = {}
 
-      # bundle the files into resources based on the sequence # defined in the manifest, a new sequence number triggers a new resource
+      # group the files into resources based on the sequence number defined in the manifest
+      #  a new sequence number triggers a new resource
       files.each do |file|
         seq = file[:sequence]
         label = file[:label] || ''

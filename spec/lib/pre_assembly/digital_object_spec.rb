@@ -2,7 +2,7 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.bundle, object_files: [], stager: stager)
+    described_class.new(bc.batch, object_files: [], stager: stager)
   end
 
   let(:dru) { 'gn330dv6119' }
@@ -174,7 +174,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'bundled by filename, simple book content metadata without file attributes' do
+    describe 'grouped by filename, simple book content metadata without file attributes' do
       let(:exp_xml) do
         noko_doc <<-END
         <contentMetadata type="book" objectId="gn330dv6119">
