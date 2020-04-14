@@ -40,7 +40,7 @@ bundle install
 
 #### Redis/Resque
 
-The pre-assembly app uses Resque backed by Redis for job queing.  In order to run the tests or run the
+The pre-assembly app uses Resque backed by Redis for job queueing.  In order to run the tests or run the
 webapp locally, you will need to have Redis running.  On MacOSX, use `homebrew` to install:
 
 ```bash
