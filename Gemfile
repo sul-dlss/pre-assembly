@@ -30,9 +30,13 @@ gem 'dor-workflow-client'
 gem 'druid-tools'
 
 group :test do
+  gem 'capybara'
   gem 'coveralls', require: false
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
+  gem 'rails-controller-testing'
+  gem 'random-word'
+  gem 'rspec-rails', '~> 4.0'
   gem 'shoulda-matchers', '~> 4.1'
 end
 
@@ -50,10 +54,8 @@ end
 
 group :development, :test do
   gem 'pry-byebug'
-  gem 'rspec-rails', '~> 4.0.0.rc1'
-  gem 'rails-controller-testing'
   gem 'rubocop', '~> 0.76.0'
   gem 'rubocop-rspec'
-  gem 'ruby-prof'
+  # gem 'ruby-prof'
   gem 'sqlite3'
 end
