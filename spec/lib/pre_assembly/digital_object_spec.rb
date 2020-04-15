@@ -31,6 +31,7 @@ RSpec.describe PreAssembly::DigitalObject do
   describe '#pre_assemble' do
     before do
       allow(object).to receive(:pid).and_return(pid)
+      allow(StartAccession).to receive(:run)
     end
 
     it 'calls all methods needed to accession' do
@@ -38,8 +39,8 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
-      expect(object).to receive(:start_accession)
       object.pre_assemble
+      expect(StartAccession).to have_received(:run)
     end
 
     context 'when the object is not openable' do
@@ -330,48 +331,6 @@ RSpec.describe PreAssembly::DigitalObject do
     it 'checks the current object version' do
       expect(dor_services_client_object_version).to receive(:current)
       object.send(:current_object_version)
-    end
-  end
-
-  describe '#start_accession' do
-    subject(:start_accession) { object.send(:start_accession) }
-
-    before do
-      allow(Dor::Services::Client).to receive(:object).and_return(object_client)
-      allow(object).to receive(:druid).and_return(druid)
-    end
-
-    let(:version_params) do
-      {
-        significance: 'major',
-        description: 'pre-assembly re-accession',
-        opening_user_name: bc.user.sunet_id
-      }
-    end
-    let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '5') }
-    let(:accession_object) { instance_double(Dor::Services::Client::Accession, start: true) }
-    let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client, accession: accession_object) }
-    let(:service_url) { Settings.dor_services_url }
-
-    context 'when api client is successful' do
-      before do
-        allow(object_client.accession).to receive(:start).and_return(true)
-      end
-
-      it 'starts accession' do
-        start_accession
-        expect(object_client.accession).to have_received(:start).with(version_params)
-      end
-    end
-
-    context 'when the api client raises' do
-      before do
-        allow(object_client).to receive(:accession).and_raise(StandardError)
-      end
-
-      it 'raises an exception' do
-        expect { start_accession }.to raise_error(StandardError)
-      end
     end
   end
 end
