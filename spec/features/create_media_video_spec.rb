@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-require 'fileutils'
-require 'random_word'
-
 RSpec.describe 'Create Media Video object', type: :feature do
-  include ActiveJob::TestHelper # have background jobs run synchronously
-
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "media-video-objects-#{RandomWord.nouns.next}" }
@@ -75,6 +70,7 @@ RSpec.describe 'Create Media Video object', type: :feature do
   end
 
   # have background jobs run synchronously
+  include ActiveJob::TestHelper
   around do |example|
     perform_enqueued_jobs do
       example.run
