@@ -59,7 +59,7 @@ RSpec/MessageSpies:
 RSpec/MultipleExpectations:
   Max: 5
   Exclude:
-    - 'spec/features/create_media_audio_spec.rb'
+    - 'spec/features/*'
 
 RSpec/NestedGroups:
   Max: 4 # default: 3
