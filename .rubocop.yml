@@ -24,8 +24,13 @@ Layout/SpaceBeforeBlockBraces:
     - 'spec/**/*_spec.rb'
 
 Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*_spec.rb'
+  ExcludedMethods:
+    - SimpleForm.setup
+    - FactoryBot.define
+    - factory
+    - describe
+    - context
+    - it
 
 # Configuration parameters: AllowURI, URISchemes.
 Metrics/LineLength:
