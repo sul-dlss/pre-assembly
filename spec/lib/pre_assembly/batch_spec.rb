@@ -58,31 +58,39 @@ RSpec.describe PreAssembly::Batch do
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       end
 
+      let(:yaml) { YAML.load_file(batch.progress_log_file) }
+
       it 'logs an error' do
         batch.process_digital_objects
-        yaml = YAML.load_file(batch.progress_log_file)
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
     end
 
     context 'when there are objects that do not complete pre_assemble' do
-      it 'logs incomplete_status error' do
+      before do
         allow(batch.digital_objects[0]).to receive(:pre_assemble)
         allow(batch.digital_objects[1]).to receive(:pre_assemble)
+      end
+
+      let(:yaml) { YAML.load_file(batch.progress_log_file) }
+
+      it 'logs incomplete_status error' do
         batch.process_digital_objects
-        yaml = YAML.load_file(batch.progress_log_file)
         expect(yaml[:status]).to eq batch.send(:incomplete_status)[:status]
         expect(yaml[:message]).to eq batch.send(:incomplete_status)[:message]
       end
     end
 
     context 'when there are dark objects' do
-      it 'calls digital_object.pre_assemble with true for the dark objects' do
-        allow(batch).to receive(:dark?).with(batch.digital_objects[0].pid).and_return(true)
-        allow(batch).to receive(:dark?).with(batch.digital_objects[1].pid).and_return(false)
+      before do
+        allow(batch.digital_objects[0]).to receive(:dark?).and_return(true)
+        allow(batch.digital_objects[1]).to receive(:dark?).and_return(false)
         allow(batch.digital_objects[0]).to receive(:pre_assemble)
         allow(batch.digital_objects[1]).to receive(:pre_assemble)
+      end
+
+      it 'calls digital_object.pre_assemble with true for the dark objects' do
         batch.process_digital_objects
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
@@ -90,10 +98,13 @@ RSpec.describe PreAssembly::Batch do
     end
 
     context 'when batch_context.all_files_public? is true' do
-      it 'calls digital_object.pre_assemble with true for all objects' do
+      before do
         allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
         allow(batch.digital_objects[0]).to receive(:pre_assemble)
         allow(batch.digital_objects[1]).to receive(:pre_assemble)
+      end
+
+      it 'calls digital_object.pre_assemble with true for all objects' do
         batch.process_digital_objects
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)

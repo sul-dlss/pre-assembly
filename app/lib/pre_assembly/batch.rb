@@ -75,7 +75,7 @@ module PreAssembly
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         stageable_items = discover_items_via_crawl(c)
         row = manifest_rows[i]
-        dark = dark?(row[:druid]) # TODO: Put dark in DigitalObject so we don't call it 2x as many times as necessary
+        dark = dark?(row[:druid])
         DigitalObject.new(self,
                           container: c,
                           stageable_items: stageable_items,
@@ -83,7 +83,8 @@ module PreAssembly
                           label: row.fetch('label', ''),
                           source_id: row['sourceid'],
                           pid: row[:druid],
-                          stager: stager)
+                          stager: stager,
+                          dark: dark)
       end
     end
 
@@ -111,7 +112,7 @@ module PreAssembly
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.empty?
         progress = { dobj: dobj }
-        file_attributes_supplied = batch_context.all_files_public? || dark?(dobj.pid)
+        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         begin
           # Try to pre_assemble the digital object.
           load_checksums(dobj)
@@ -129,6 +130,7 @@ module PreAssembly
       log "#{total_obj || 0} objects pre-assembled"
     end
 
+    # @return [Array<DigitalObject>]
     def objects_to_process
       @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
     end

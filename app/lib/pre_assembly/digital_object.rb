@@ -22,9 +22,10 @@ module PreAssembly
     # @param [String] pid The identifier for the item
     # @param [String] source_id The source identifier
     # @param [Object] stager the implementation of how to stage an object
+    # @param [Bool] dark does this object have "dark" access
     # rubocop:disable Metrics/ParameterLists
     def initialize(batch, container: nil, stageable_items: nil, object_files: nil,
-                   label: nil, pid: nil, source_id: nil, stager:)
+                   label: nil, pid: nil, source_id: nil, stager:, dark:)
       @batch = batch
       @container = container
       @stageable_items = stageable_items
@@ -33,6 +34,7 @@ module PreAssembly
       @pid = pid
       @source_id = source_id
       @stager = stager
+      @dark = dark
     end
     # rubocop:enable Metrics/ParameterLists
 
@@ -75,6 +77,10 @@ module PreAssembly
     # @return [DruidTools::Druid]
     def druid
       @druid ||= DruidTools::Druid.new(pid)
+    end
+
+    def dark?
+      @dark
     end
 
     private
