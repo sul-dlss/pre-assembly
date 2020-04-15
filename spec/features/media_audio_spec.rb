@@ -76,12 +76,9 @@ RSpec.describe 'Create Media Audio object', type: :feature do
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     expect(page).to have_content exp_str
 
-    # go to job details page, download result when finished
+    # go to job details page, wait for preassembly to finish
     first('td  > a').click
     expect(page).to have_content project_name
-    # p project_name # useful for debugging
-
-    # wait for preassembly to finish
     expect(page).to have_link('Download')
 
     result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
