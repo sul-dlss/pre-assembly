@@ -98,13 +98,13 @@ module PreAssembly
     ####
     def process_digital_objects
       num_no_file_warnings = 0
-      o2p = objects_to_process # Get the non-skipped objects to process
-      total_obj = o2p.size
+      # Get the non-skipped objects to process
+      total_obj = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log "#{total_obj} objects to pre-assemble"
       log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
 
-      o2p.each_with_index do |dobj, n|
+      objects_to_process.each_with_index do |dobj, n|
         log "#{total_obj - n} remaining in run | #{total_obj} running"
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
