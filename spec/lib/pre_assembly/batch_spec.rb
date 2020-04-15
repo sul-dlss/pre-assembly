@@ -247,74 +247,6 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#discover_object_files' do
-    let(:fs) do
-      %w[
-        gn330dv6119/image1.jp2
-        gn330dv6119/image1.tif
-        gn330dv6119/image2.jp2
-        gn330dv6119/image2.tif
-        jy812bp9403/00/image1.tif
-        jy812bp9403/00/image2.tif
-        jy812bp9403/05/image1.jp2
-        tz250tk7584/00/image1.tif
-        tz250tk7584/00/image2.tif
-      ]
-    end
-    let(:files) { fs.map { |f| images_jp2_tif.bundle_dir_with_path f } }
-    let(:dirs) { %w[gn330dv6119 jy812bp9403 tz250tk7584].map { |d| images_jp2_tif.bundle_dir_with_path d } }
-
-    it 'finds expected files with correct relative paths from files' do
-      ofiles = images_jp2_tif.send(:discover_object_files, files, 'oo000oo0000')
-      expect(ofiles.map(&:path)).to eq(files)
-      expect(ofiles.map(&:relative_path)).to eq(fs.map { |f| File.basename f })
-    end
-    it 'finds expected files with correct relative paths from dirs' do
-      ofiles = images_jp2_tif.send(:discover_object_files, dirs, 'oo000oo0000')
-      expect(ofiles.map(&:path)).to eq(files)
-      expect(ofiles.map(&:relative_path)).to eq(fs)
-    end
-  end
-
-  describe '#new_object_file' do
-    it 'returns an ObjectFile with expected path values' do
-      tests = [
-        # Stageable is a file:
-        # - immediately in bundle dir.
-        { stageable: 'BUNDLE/x.tif',
-          file_path: 'BUNDLE/x.tif',
-          exp_rel_path: 'x.tif' },
-        # - within subdir of bundle dir.
-        { stageable: 'BUNDLE/a/b/x.tif',
-          file_path: 'BUNDLE/a/b/x.tif',
-          exp_rel_path: 'x.tif' },
-        # Stageable is a directory:
-        # - immediately in bundle dir
-        { stageable: 'BUNDLE/a',
-          file_path: 'BUNDLE/a/x.tif',
-          exp_rel_path: 'a/x.tif' },
-        # - immediately in bundle dir, with file deeper
-        { stageable: 'BUNDLE/a',
-          file_path: 'BUNDLE/a/b/x.tif',
-          exp_rel_path: 'a/b/x.tif' },
-        # - within a subdir of bundle dir
-        { stageable: 'BUNDLE/a/b',
-          file_path: 'BUNDLE/a/b/x.tif',
-          exp_rel_path: 'b/x.tif' },
-        # - within a subdir of bundle dir, with file deeper
-        { stageable: 'BUNDLE/a/b',
-          file_path: 'BUNDLE/a/b/c/d/x.tif',
-          exp_rel_path: 'b/c/d/x.tif' }
-      ]
-      tests.each do |t|
-        ofile = flat_dir_images.send(:new_object_file, t[:stageable], t[:file_path], false)
-        expect(ofile).to be_a(PreAssembly::ObjectFile)
-        expect(ofile.path).to eq(t[:file_path])
-        expect(ofile.relative_path).to eq(t[:exp_rel_path])
-      end
-    end
-  end
-
   describe '#exclude_from_content' do
     it 'behaves correctly' do
       skip 'web app does not need to support exclude_from_content'
@@ -329,18 +261,6 @@ RSpec.describe PreAssembly::Batch do
       fake_dobjs = fake_files.map { |fs| instance_double(PreAssembly::DigitalObject, object_files: fs) }
       flat_dir_images.digital_objects = fake_dobjs
       expect(flat_dir_images.send(:all_object_files)).to eq(fake_files.flatten)
-    end
-  end
-
-  describe '#get_base_dir' do
-    it 'returns expected value' do
-      expect(flat_dir_images.send(:get_base_dir, 'foo/bar/fubb.txt')).to eq('foo/bar')
-    end
-    it 'raises error if given bogus arguments' do
-      exp_msg = /^Bad arg to get_base_dir/
-      expect { flat_dir_images.send(:get_base_dir, 'foo.txt')     }.to raise_error(ArgumentError, exp_msg)
-      expect { flat_dir_images.send(:get_base_dir, '')            }.to raise_error(ArgumentError, exp_msg)
-      expect { flat_dir_images.send(:get_base_dir, 'x\y\foo.txt') }.to raise_error(ArgumentError, exp_msg)
     end
   end
 
@@ -360,35 +280,6 @@ RSpec.describe PreAssembly::Batch do
     end
     it '#relative_path returns expected value' do
       expect(flat_dir_images.send(:relative_path, flat_dir_images.bundle_dir, full)).to eq(relative)
-    end
-
-    it '#find_files_recursively returns expected information' do
-      {
-        flat_dir_images: [
-          'checksums.txt',
-          'image1.tif',
-          'image2.tif',
-          'image3.tif',
-          'manifest.csv',
-          'manifest_badsourceid_column.csv'
-        ],
-        images_jp2_tif: [
-          'gn330dv6119/image1.jp2',
-          'gn330dv6119/image1.tif',
-          'gn330dv6119/image2.jp2',
-          'gn330dv6119/image2.tif',
-          'jy812bp9403/00/image1.tif',
-          'jy812bp9403/00/image2.tif',
-          'jy812bp9403/05/image1.jp2',
-          'manifest.csv',
-          'tz250tk7584/00/image1.tif',
-          'tz250tk7584/00/image2.tif'
-        ]
-      }.each do |proj, files|
-        b = described_class.new(batch_context_from_hash(proj))
-        exp_files = files.map { |f| b.bundle_dir_with_path f }
-        expect(b.send(:find_files_recursively, b.bundle_dir).sort).to eq(exp_files)
-      end
     end
   end
 end

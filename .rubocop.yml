@@ -45,7 +45,7 @@ RSpec/EmptyLineAfterExample:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 25
+  Enabled: false
 
 RSpec/ImplicitSubject: # we use this for `define_enum_for`, `validate_presence_of`, etc.
   Enabled: false
