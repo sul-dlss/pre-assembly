@@ -58,7 +58,7 @@ RSpec.describe PreAssembly::Media do
   # some helper methods for these tests
   def setup_dobj(druid, media_manifest)
     allow(bc.batch).to receive(:media_manifest).and_return(media_manifest)
-    PreAssembly::DigitalObject.new(bc.batch, container: druid, stager: PreAssembly::CopyStager).tap do |dobj|
+    PreAssembly::DigitalObject.new(bc.batch, container: druid, stager: PreAssembly::CopyStager, dark: false).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
       allow(dobj).to receive(:object_type).and_return(Cocina::Models::Vocab.media)
