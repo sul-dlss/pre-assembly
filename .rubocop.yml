@@ -58,6 +58,8 @@ RSpec/MessageSpies:
 
 RSpec/MultipleExpectations:
   Max: 5
+  Exclude:
+    - 'spec/features/*'
 
 RSpec/NestedGroups:
   Max: 4 # default: 3
