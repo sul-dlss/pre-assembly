@@ -15,6 +15,7 @@ RSpec.describe PreassemblyJob, type: :job do
       expect { job.perform }.to raise_error(ArgumentError)
       expect { job.perform(job_run) }.not_to raise_error
     end
+
     it 'calls run_pre_assembly and saves job_run.output_location' do
       expect(job_run.batch_context.batch).to receive(:run_pre_assembly)
       job.perform(job_run)

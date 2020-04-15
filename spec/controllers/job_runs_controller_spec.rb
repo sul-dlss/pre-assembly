@@ -14,6 +14,7 @@ RSpec.describe JobRunsController, type: :controller do
         expect(flash[:success]).to start_with('Success! Your job is queued.')
         expect(bc.job_runs.reload.first.job_type).to eq('discovery_report') # the default
       end
+
       it 'creates JobRun with correct job_type' do
         post :create, params: { job_run: { batch_context_id: bc.id, job_type: 'preassembly' } }
         expect(bc.job_runs.reload.first.job_type).to eq('preassembly')
@@ -26,6 +27,7 @@ RSpec.describe JobRunsController, type: :controller do
           .to raise_error(ActionController::ParameterMissing)
         expect { post :create, params: { job_run: {} } }.to raise_error(ActionController::ParameterMissing)
       end
+
       it 'redirects to index with error flash' do
         post :create, params: { job_run: { batch_context_id: 999 } }
         expect(response).to redirect_to(job_runs_path)
@@ -65,6 +67,7 @@ RSpec.describe JobRunsController, type: :controller do
       get :download, params: { id: 123 }
       expect(flash[:warning]).to eq('Job is not complete. Please check back later.')
     end
+
     it 'when job is complete, returns file attachment' do
       job_run_double = instance_double(JobRun, output_location: 'spec/test_data/input/mock_progress_log.yaml')
       allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
@@ -74,6 +77,7 @@ RSpec.describe JobRunsController, type: :controller do
       expect(response.header['Content-Disposition']).to start_with 'attachment; filename="mock_progress_log.yaml"'
       expect(flash[:warning]).to be_nil
     end
+
     it 'requires ID param' do
       expect { get :download }.to raise_error(ActionController::UrlGenerationError)
     end

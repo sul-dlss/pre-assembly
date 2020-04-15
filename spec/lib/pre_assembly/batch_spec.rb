@@ -278,6 +278,7 @@ RSpec.describe PreAssembly::Batch do
     it '#bundle_dir_with_path returns expected value' do
       expect(flat_dir_images.bundle_dir_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
     end
+
     it '#relative_path returns expected value' do
       expect(flat_dir_images.send(:relative_path, flat_dir_images.bundle_dir, full)).to eq(relative)
     end

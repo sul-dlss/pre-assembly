@@ -10,6 +10,7 @@ RSpec.describe JobRun, type: :model do
       expect(DiscoveryReportJob).not_to receive(:perform_later)
       job_run.enqueue!
     end
+
     it 'calls the correct job for job_type' do
       allow(job_run).to receive(:persisted?).and_return(true)
       expect(DiscoveryReportJob).to receive(:perform_later).with(job_run)
@@ -30,12 +31,14 @@ RSpec.describe JobRun, type: :model do
       expect(job_run).not_to receive(:send_notification)
       job_run.save
     end
+
     it 'does not send a notification email if output_location is changed but is nil' do
       expect(job_run).to receive(:send_notification).and_call_original
       expect(JobMailer).not_to receive(:with)
       job_run.output_location = nil
       job_run.save
     end
+
     it 'sends a notification email if output_location is saved with a changed non-nil value' do
       expect(job_run).to receive(:send_notification).and_call_original
       expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
@@ -53,6 +56,7 @@ RSpec.describe JobRun, type: :model do
         'preassembly' => 1
       )
     end
+
     it 'defaults to correct value' do
       expect(described_class.new.job_type).to eq('discovery_report')
     end
@@ -62,6 +66,7 @@ RSpec.describe JobRun, type: :model do
     it 'is not valid without all required fields' do
       expect(described_class.new).not_to be_valid
     end
+
     it 'is valid with just batch_context' do
       expect(described_class.new(batch_context: build(:batch_context))).to be_valid
     end

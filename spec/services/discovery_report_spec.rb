@@ -10,6 +10,7 @@ RSpec.describe DiscoveryReport do
       expect { described_class.new }.to raise_error(ArgumentError)
       expect { described_class.new({}) }.to raise_error(ArgumentError)
     end
+
     it 'accepts PreAssembly::Batch' do
       expect { described_class.new(batch) }.not_to raise_error
     end
@@ -23,6 +24,7 @@ RSpec.describe DiscoveryReport do
     it 'returns an Enumerable of Hashes' do
       expect(report.each_row).to be_an(Enumerable)
     end
+
     it 'yields per objects_to_process, building an aggregate summary' do
       expect(report).to receive(:process_dobj).with(1).and_return(validator1)
       expect(report).to receive(:process_dobj).with(2).and_return(validator2)
@@ -41,9 +43,11 @@ RSpec.describe DiscoveryReport do
     it 'starts with output_dir' do
       expect(report.output_path).to start_with(report.batch.batch_context.output_dir)
     end
+
     it 'ends with discovery_report[...].json' do
       expect(report.output_path).to match(/discovery_report_.*\.json$/)
     end
+
     it 'gives unique string each invocation' do
       expect(report.output_path).not_to eq(report.output_path)
     end

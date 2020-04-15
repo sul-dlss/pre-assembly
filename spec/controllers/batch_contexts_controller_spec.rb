@@ -57,6 +57,7 @@ RSpec.describe BatchContextsController, type: :controller do
           expect(response).to redirect_to(job_runs_path)
           expect(flash[:success]).to start_with('Success! Your job is queued.')
         end
+
         it 'has the correct attributes' do
           post :create, params: params
           bc = assigns(:batch_context)
@@ -65,6 +66,7 @@ RSpec.describe BatchContextsController, type: :controller do
           expect(bc.content_metadata_creation).to eq 'default'
           expect(bc.bundle_dir).to eq 'spec/test_data/multimedia'
         end
+
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
           expect { post :create, params: params }.not_to change(BatchContext, :count)

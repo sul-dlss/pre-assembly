@@ -15,12 +15,15 @@ RSpec.describe BatchContext, type: :model do
       expect(described_class.new).not_to be_valid
       expect(bc).to be_valid
     end
+
     it 'is not valid without a User' do
       expect { bc.user = nil }.to change(bc, :valid?).to(false)
     end
+
     it 'is not valid unless bundle_dir exists on filesystem' do
       expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
     end
+
     it { is_expected.to validate_presence_of(:content_structure) }
     it { is_expected.to validate_presence_of(:bundle_dir) }
     it { is_expected.to validate_presence_of(:content_metadata_creation) }
@@ -34,6 +37,7 @@ RSpec.describe BatchContext, type: :model do
         bc.project_name = 'quotes"'
         expect(bc.valid?).to eq false
       end
+
       it 'is valid with alphanum, hyphen and underscore chars' do
         valid_chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-'
         expect { bc.project_name = valid_chars }.not_to change(bc, :valid?).from(true)
@@ -61,6 +65,7 @@ RSpec.describe BatchContext, type: :model do
       '3d' => 5
     )
   end
+
   it do
     is_expected.to define_enum_for(:content_metadata_creation).with_values(
       'default' => 0,
@@ -85,6 +90,7 @@ RSpec.describe BatchContext, type: :model do
     it 'returns a PreAssembly::Batch' do
       expect(bc.batch).to be_a(PreAssembly::Batch)
     end
+
     it 'caches the Batch' do
       expect(bc.batch).to be(bc.batch) # same instance
     end
@@ -153,12 +159,14 @@ RSpec.describe BatchContext, type: :model do
       it 'creates directory' do
         expect { bc.send(:output_dir_no_exists!) }.to change { Dir.exist?(bc.output_dir) }.from(false).to(true)
       end
+
       it 'adds error if directory already exists' do
         FileUtils.mkdir_p(bc.output_dir) unless Dir.exist?(bc.output_dir)
         expect(bc).to receive(:throw)
         bc.send(:output_dir_no_exists!)
         expect(bc.errors).not_to be_empty
       end
+
       it "adds error if directory can't be created" do
         allow(bc).to receive(:output_dir).and_return('/bootx/foo')
         expect { bc.send(:output_dir_no_exists!) }.to raise_error(SystemCallError, / @ dir_s_mkdir - \/bootx/)
@@ -184,11 +192,13 @@ RSpec.describe BatchContext, type: :model do
       expect(File).not_to receive(:directory?)
       expect { bc.send(:verify_bundle_directory) }.not_to change(bc, :errors)
     end
+
     it 'adds error if missing manifest.csv' do
       allow(File).to receive(:exist?).with('spec/test_data/images_jp2_tif/manifest.csv').and_return(false)
       bc.send(:verify_bundle_directory)
       expect(bc.errors.to_h).to include(bundle_dir: /missing manifest/)
     end
+
     it 'adds error if media object is missing media_manifest.csv' do
       allow(bc).to receive(:media_cm_style?).and_return(true)
       bc.send(:verify_bundle_directory)
