@@ -63,7 +63,7 @@ module PreAssembly
       stage_files
       generate_content_metadata(file_attributes_supplied)
       generate_media_project_technical_metadata if content_md_creation == 'media_cm_style'
-      start_accession
+      StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
       log "    - pre_assemble(#{pid}) finished"
       { status: 'success' }
     end
@@ -150,16 +150,6 @@ module PreAssembly
 
     def current_object_version
       @current_object_version ||= version_client.current.to_i
-    end
-
-    def start_accession
-      version_params =
-        {
-          significance: 'major',
-          description: 'pre-assembly re-accession',
-          opening_user_name: batch.batch_context.user.sunet_id
-        }
-      object_client.accession.start(version_params)
     end
   end
 end

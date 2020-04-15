@@ -37,7 +37,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#process_digital_objects' do
     before do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:start_accession)
+      allow(StartAccession).to receive(:run)
     end
 
     it 'runs cleanly for new objects' do
