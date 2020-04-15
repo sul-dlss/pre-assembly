@@ -90,12 +90,8 @@ RSpec.describe 'Create Media Audio object', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 12
 
-    metadata_dir = File.join(object_staging_dir, 'metadata')
-    expect(Dir.children(metadata_dir).size).to eq 2
-
-    content_md_xml = File.open(File.join(metadata_dir, 'contentMetadata.xml')).read
+    content_md_path = File.join(object_staging_dir, 'metadata', 'contentMetadata.xml')
+    content_md_xml = File.open(content_md_path).read
     expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
-
-    # note that technicalMetadata.xml is created, but we don't care about it anymore due to new technical-metadata-service
   end
 end
