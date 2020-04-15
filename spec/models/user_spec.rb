@@ -19,6 +19,7 @@ RSpec.describe User, type: :model do
       it 'at model level' do
         expect { described_class.create!(sunet_id: user.sunet_id) }.to raise_error(ActiveRecord::RecordInvalid)
       end
+
       it 'at db level' do
         expect { user.dup.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
       end

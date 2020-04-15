@@ -14,6 +14,7 @@ RSpec.describe CsvImporter do
       expect(manifest).to all(include(*headers))
       expect(manifest.pluck(:description)).to eq([nil, '', 'yo, this is a description'])
     end
+
     context 'windows manifest.csv' do
       let(:manifest) do
         described_class.parse_to_hash("#{Rails.root}/spec/test_data/windows_manifest/manifest.csv")

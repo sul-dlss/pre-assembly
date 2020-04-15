@@ -18,6 +18,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
       expect { job.perform }.to raise_error(ArgumentError)
       expect { job.perform(job_run) }.not_to raise_error
     end
+
     it 'writes JSON file and saves job_run.output_location' do
       expect { job.perform(job_run) }.to change { File.exist?(outfile) }.to(true)
       expect(job_run.reload.output_location).to eq(outfile)
