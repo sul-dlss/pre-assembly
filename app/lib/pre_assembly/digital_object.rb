@@ -64,7 +64,6 @@ module PreAssembly
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata(file_attributes_supplied)
-      generate_media_project_technical_metadata if content_md_creation == 'media_cm_style'
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
       log "    - pre_assemble(#{pid}) finished"
       { status: 'success' }
@@ -108,17 +107,6 @@ module PreAssembly
         log "      - staging(#{si_path}, #{destination})", :debug
         stager.stage si_path, destination
       end
-    end
-
-    # generate technical metadata for media projects
-    def generate_media_project_technical_metadata
-      technical_md_xml = MediaProjectTechnicalMetadataCreator.new(pid: pid,
-                                                                  bundle_dir: bundle_dir,
-                                                                  container: container).create
-      return if technical_md_xml.blank?
-      file_name = assembly_directory.technical_metadata_file
-      log "    - write_technical_metadata_xml(#{file_name})"
-      File.open(file_name, 'w') { |fh| fh.puts technical_md_xml }
     end
 
     # Write contentMetadata.xml file
