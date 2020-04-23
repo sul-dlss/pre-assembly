@@ -62,7 +62,8 @@ RSpec.describe BatchContext, type: :model do
       'book_as_image' => 2,
       'file' => 3,
       'media' => 4,
-      '3d' => 5
+      '3d' => 5,
+      'document' => 6
     )
   end
 

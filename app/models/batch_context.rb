@@ -22,7 +22,8 @@ class BatchContext < ApplicationRecord
     'book_as_image' => 2, # Deprecated
     'file' => 3,
     'media' => 4,
-    '3d' => 5
+    '3d' => 5,
+    'document' => 6
   }
 
   enum content_metadata_creation: {
