@@ -9,3 +9,5 @@ DOR_SERVICES:
   TOKEN: 'secret-token'
 
 expected_worker_count: 5 # for okcomputer endpoint
+
+mailer_host: 'localhost'
