@@ -33,7 +33,7 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory
   config.active_storage.service = :test
 
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 } # needed by url_for() in mail templates
+  config.action_mailer.default_url_options = { host: Settings.mailer_host, port: 3000 } # needed by url_for() in mail templates
   config.action_mailer.perform_caching = false
 
   # Tell Action Mailer not to deliver emails to the real world.
