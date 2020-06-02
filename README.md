@@ -196,3 +196,33 @@ Using a manifest:
 2.  Create a new project config YAML file referencing the new manifest and
     write to a new progress log file.
 3.  Run pre-assembly.
+
+## Preparing maps content
+
+Used to stage content from Rumsey or other similar format to folder structure ready for accessioning.
+This script is only known to be used by the Maps Accessioning team (Rumsey Map Center)
+Full documentation of how it is used is here (which needs to be updated if this script moves):
+https://consul.stanford.edu/pages/viewpage.action?pageId=146704638
+
+Iterate through each row in the supplied CSV manifest, find files, generate contentMetadata and symlink to new location.
+Note: filenames must match exactly (no leading 0s) but can be in any sub-folder
+
+Run with:
+```
+RAILS_ENV=production bin/prepare_content INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+```
+
+e.g.:
+```
+RAILS_ENV=production bin/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
+```
+
+The first parameter is the input CSV (with columns labeled "Object", "Image", and "Label" (image is the filename, object is the object identifier which can be turned into a folder)
+second parameter is the full path to the content folder that will be searched (i.e. the base content folder)
+      Note: files will be searched iteratively through all sub-folders of the base content folder
+third parameter is optional and is the full path to a folder to stage (i.e. symlink) content to - if not provided, will use same path as csv file, and append "staging"
+
+if you set the --report switch, it will only produce the output report, it will not symlink any files
+if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
+if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
+note that file extensions do not matter when matching
