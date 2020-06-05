@@ -45,7 +45,7 @@ group :deployment do
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'capistrano-resque-pool'
-  gem 'dlss-capistrano', '~> 3.1'
+  gem 'dlss-capistrano', '~> 3.8'
 end
 
 group :development do
