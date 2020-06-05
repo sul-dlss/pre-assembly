@@ -21,7 +21,6 @@ cap prod deploy
 
 See the `Capfile` for more info.
 
-
 ## Setting up code for local development
 
 Clone project.
