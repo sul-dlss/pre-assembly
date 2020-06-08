@@ -8,8 +8,7 @@ RSpec.describe PreAssembly::Batch do
   let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
-  let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
-  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: item) }
+  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
 
   before do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
@@ -177,7 +176,7 @@ RSpec.describe PreAssembly::Batch do
       let(:batch) { described_class.new(batch_context) }
       let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
       let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_dark_access) }
-      let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version, find: dark_item) }
+      let(:dsc_object) { instance_double(Dor::Services::Client::Object, find: dark_item) }
 
       before do
         allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)

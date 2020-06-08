@@ -69,7 +69,7 @@ RSpec.describe DiscoveryReport do
     let(:dobj) { report.batch.objects_to_process.first }
     let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
     let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
-    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, close: true) }
+    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true) }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 
     before do
