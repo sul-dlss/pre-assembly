@@ -45,3 +45,6 @@ before 'deploy:restart', 'shared_configs:update'
 after 'deploy:restart', 'resque:pool:hot_swap'
 
 set :honeybadger_env, fetch(:stage)
+
+# Bundler 2 options
+set :bundler2_config_use_hook, true # this is how to opt-in to bundler 2-style config. it's false by default

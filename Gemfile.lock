@@ -477,7 +477,7 @@ DEPENDENCIES
   coveralls
   devise
   devise-remote-user
-  dlss-capistrano (~> 3.1)
+  dlss-capistrano (~> 3.8)
   dor-services-client (~> 6.0)
   dor-workflow-client
   druid-tools
