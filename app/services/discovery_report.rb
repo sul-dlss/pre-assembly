@@ -25,11 +25,21 @@ class DiscoveryReport
       summary[:total_size] += row.counts[:total_size]
       summary[:objects_with_error] += 1 unless row.errors.empty?
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
+      # log the output to a running progress file
+      File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }
       yield row
     end
   end
 
-  # @return [String] a different string each time
+  # return [Hash] progress info that will be logged as json in a running log file
+  def log_progress_info(dobj)
+    {
+      pid: dobj.pid,
+      timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
+    }
+  end
+
+  # @return [String] output_path to store report results, generate a different string each time
   def output_path
     Dir::Tmpname.create([self.class.name.underscore + '_', '.json'], batch.batch_context.output_dir) { |path| path }
   end
