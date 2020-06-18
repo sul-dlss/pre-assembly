@@ -20,22 +20,36 @@ RSpec.describe DiscoveryReport do
     let(:validator1) { instance_double(ObjectFileValidator, counts: { total_size: 1, mimetypes: { a: 1, b: 2 } }, errors: {}) }
     let(:validator2) { instance_double(ObjectFileValidator, counts: { total_size: 2, mimetypes: { b: 3, q: 4 } }, errors: {}) }
     let(:validator3) { instance_double(ObjectFileValidator, counts: { total_size: 3, mimetypes: { q: 9 } }, errors: { foo: true }) }
+    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, pid: 'druid:1') }
+    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, pid: 'druid:2') }
+    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, pid: 'druid:3') }
 
     it 'returns an Enumerable of Hashes' do
       expect(report.each_row).to be_an(Enumerable)
     end
 
     it 'yields per objects_to_process, building an aggregate summary' do
-      expect(report).to receive(:process_dobj).with(1).and_return(validator1)
-      expect(report).to receive(:process_dobj).with(2).and_return(validator2)
-      expect(report).to receive(:process_dobj).with(3).and_return(validator3)
-      expect(batch).to receive(:objects_to_process).and_return([1, 2, 3])
+      # make sure that for this particular test
+      # (a) the tmp job output dir exists for the progress log file to be written to
+      # (b) we get a new clean progress log file for the tests each time we run them
+      # In the actual application, `batch_context.output_dir_no_exists!` would get run and thus we would always have a unique folder created for each job
+      FileUtils.mkdir_p(batch.batch_context.output_dir)
+      FileUtils.rm_f(batch.batch_context.progress_log_file)
+      expect(report).to receive(:process_dobj).with(dig_obj1).and_return(validator1)
+      expect(report).to receive(:process_dobj).with(dig_obj2).and_return(validator2)
+      expect(report).to receive(:process_dobj).with(dig_obj3).and_return(validator3)
+      expect(batch).to receive(:objects_to_process).and_return([dig_obj1, dig_obj2, dig_obj3])
       report.each_row { |_r| } # no-op
       expect(report.summary).to match a_hash_including(
         total_size: 6,
         objects_with_error: 1,
         mimetypes: { a: 1, b: 5, q: 13 }
       )
+      expect(File).to exist(batch.batch_context.progress_log_file)
+      docs = YAML.load_stream(IO.read(batch.batch_context.progress_log_file))
+      expect(docs.size).to eq(3)
+      expect(docs[0][:pid]).to eq 'druid:1'
+      expect(docs[0][:timestamp].to_date).to eq Date.today
     end
   end
 
