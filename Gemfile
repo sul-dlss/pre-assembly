@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'autoprefixer-rails', '~> 9.8'
-
 gem 'bootstrap', '~> 4.3', '>= 4.3.1'
 gem 'config'
 gem 'devise'
