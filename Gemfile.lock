@@ -102,9 +102,6 @@ GEM
     capistrano-rails (1.6.1)
       capistrano (~> 3.1)
       capistrano-bundler (>= 1.1, < 3)
-    capistrano-resque-pool (0.2.0)
-      capistrano
-      resque-pool
     capistrano-shared_configs (0.2.2)
     capybara (3.33.0)
       addressable
@@ -148,7 +145,7 @@ GEM
     devise-remote-user (1.0.0)
       devise
     diff-lcs (1.4.4)
-    dlss-capistrano (3.9.0)
+    dlss-capistrano (3.10.1)
       capistrano (~> 3.0)
       capistrano-bundle_audit (>= 0.3.0)
       capistrano-one_time_key
@@ -472,13 +469,12 @@ DEPENDENCIES
   capistrano-bundler
   capistrano-passenger
   capistrano-rails
-  capistrano-resque-pool
   capybara
   config
   coveralls
   devise
   devise-remote-user
-  dlss-capistrano (~> 3.8)
+  dlss-capistrano (~> 3.10)
   dor-services-client (~> 6.13)
   dor-workflow-client
   druid-tools

@@ -27,7 +27,7 @@ set :deploy_to, '/opt/app/preassembly/pre-assembly'
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, 'config/master.key', 'config/honeybadger.yml', 'config/database.yml'
+append :linked_files, 'config/master.key', 'config/honeybadger.yml', 'config/database.yml', 'tmp/resque-pool.lock'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bundle'
@@ -40,9 +40,6 @@ append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bu
 
 # update shared_configs before restarting app
 before 'deploy:restart', 'shared_configs:update'
-
-# Resque pool
-after 'deploy:restart', 'resque:pool:hot_swap'
 
 set :honeybadger_env, fetch(:stage)
 
