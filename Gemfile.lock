@@ -111,7 +111,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (~> 1.5)
       xpath (~> 3.2)
-    cocina-models (0.43.0)
+    cocina-models (0.44.0)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -151,9 +151,9 @@ GEM
       capistrano-one_time_key
       capistrano-shared_configs
     docile (1.3.2)
-    dor-services-client (6.15.0)
+    dor-services-client (6.16.0)
       activesupport (>= 4.2, < 7)
-      cocina-models (~> 0.43.0)
+      cocina-models (~> 0.44.0)
       deprecation
       faraday (>= 0.15, < 2)
       moab-versioning (~> 4.0)
@@ -475,7 +475,7 @@ DEPENDENCIES
   devise
   devise-remote-user
   dlss-capistrano (~> 3.10)
-  dor-services-client (~> 6.15)
+  dor-services-client (~> 6.16)
   dor-workflow-client
   druid-tools
   equivalent-xml
