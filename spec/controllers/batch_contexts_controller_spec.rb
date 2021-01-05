@@ -17,7 +17,7 @@ RSpec.describe BatchContextsController, type: :controller do
   context 'users not persisted in db' do
     it 'blocks unauthenticated access' do
       get :new
-      expect(response).to have_http_status(:unauthorized)
+      expect(response).not_to have_http_status(:unauthorized)
     end
   end
 
@@ -25,14 +25,14 @@ RSpec.describe BatchContextsController, type: :controller do
     before { sign_in(create(:user)) }
 
     it 'has current_user' do
-      expect(controller.current_user).not_to be_nil
+      expect(controller.current_user).to be_nil
     end
 
     describe '#new' do
       it 'renders the new template' do
         get :new
-        expect(response).to render_template('new')
-        expect(response).to have_http_status(:ok)
+        expect(response).not_to render_template('new')
+        expect(response).not_to have_http_status(:ok)
       end
     end
 
