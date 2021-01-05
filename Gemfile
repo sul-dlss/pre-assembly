@@ -12,7 +12,7 @@ gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'pry-rails' # useful for rails console
-gem 'rails', '~> 6.0'
+gem 'rails', '~> 6.1.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-lock'

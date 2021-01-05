@@ -464,6 +464,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_64-darwin-18
   x86_64-linux
 
 DEPENDENCIES
@@ -494,7 +495,7 @@ DEPENDENCIES
   pg
   pry-byebug
   pry-rails
-  rails (~> 6.0)
+  rails (~> 6.1.0)
   rails-controller-testing
   rake
   random-word
