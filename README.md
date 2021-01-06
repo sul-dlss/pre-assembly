@@ -1,6 +1,6 @@
 # Pre-Assembly
-[![Build Status](https://travis-ci.com/sul-dlss/pre-assembly.svg?branch=master)](https://travis-ci.com/sul-dlss/pre-assembly)
-[![Coverage Status](https://coveralls.io/repos/github/sul-dlss/pre-assembly/badge.svg?branch=master)](https://coveralls.io/github/sul-dlss/pre-assembly?branch=master)
+[![Build Status](https://travis-ci.com/sul-dlss/pre-assembly.svg?branch=main)](https://travis-ci.com/sul-dlss/pre-assembly)
+[![Coverage Status](https://coveralls.io/repos/github/sul-dlss/pre-assembly/badge.svg?branch=main)](https://coveralls.io/github/sul-dlss/pre-assembly?branch=main)
 [![GitHub version](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly.svg)](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly)
 
 This is a Ruby implementation of services needed to prepare objects to be
