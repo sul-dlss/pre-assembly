@@ -8,7 +8,7 @@ set :ssh_options,
     forward_agent: true,
     auth_methods: %w[publickey password]
 
-# Default branch is :master
+# Default branch is :main
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
 # Default deploy_to directory is /var/www/my_app
