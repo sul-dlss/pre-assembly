@@ -76,7 +76,7 @@ GEM
       mini_exiftool
       nokogiri
     ast (2.4.2)
-    autoprefixer-rails (10.2.0.0)
+    autoprefixer-rails (10.2.4.0)
       execjs
     bcrypt (3.1.16)
     bootstrap (4.6.0)
@@ -185,7 +185,7 @@ GEM
     dry-logic (1.1.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.5, >= 0.5)
-    dry-schema (1.6.0)
+    dry-schema (1.6.1)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.8, >= 0.8.3)
       dry-core (~> 0.5, >= 0.5)
@@ -229,7 +229,7 @@ GEM
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     honeybadger (4.7.2)
-    i18n (1.8.7)
+    i18n (1.8.8)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jaro_winkler (1.5.4)
@@ -284,7 +284,7 @@ GEM
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
     net-ssh (6.1.0)
-    nio4r (2.5.4)
+    nio4r (2.5.5)
     nokogiri (1.11.1)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
@@ -292,7 +292,7 @@ GEM
       racc (~> 1.4)
     nokogiri-happymapper (0.8.1)
       nokogiri (~> 1.5)
-    okcomputer (1.18.2)
+    okcomputer (1.18.4)
     openapi3_parser (0.8.2)
       commonmarker (~> 0.17)
       psych (~> 3.1)
@@ -356,7 +356,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redis (4.2.5)
-    redis-namespace (1.8.0)
+    redis-namespace (1.8.1)
       redis (>= 3.0.4)
     regexp_parser (2.0.3)
     responders (3.0.1)
@@ -513,4 +513,4 @@ DEPENDENCIES
   uglifier
 
 BUNDLED WITH
-   2.2.7
+   2.2.8
