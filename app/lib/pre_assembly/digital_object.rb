@@ -47,6 +47,7 @@ module PreAssembly
         Cocina::Models::Vocab.object => :file,
         Cocina::Models::Vocab.book => :simple_book,
         Cocina::Models::Vocab.manuscript => :simple_book,
+        Cocina::Models::Vocab.document => :document,
         Cocina::Models::Vocab.map => :map,
         Cocina::Models::Vocab.three_dimensional => :'3d'
       }.fetch(object_type, content_structure.to_sym)

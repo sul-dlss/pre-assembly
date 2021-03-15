@@ -10,7 +10,7 @@ RSpec.describe 'Create Dark File object', type: :feature do
   let(:bare_druid) { 'tx666tx9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'tx', '666', 'tx', '9999', bare_druid) }
   let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.media, access: cocina_model_dark_access) }
+  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.object, access: cocina_model_dark_access) }
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
   let(:exp_content_md) do

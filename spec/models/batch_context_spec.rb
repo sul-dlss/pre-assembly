@@ -63,7 +63,8 @@ RSpec.describe BatchContext, type: :model do
       'file' => 3,
       'media' => 4,
       '3d' => 5,
-      'document' => 6
+      'document' => 6,
+      'maps' => 7
     )
   end
 
