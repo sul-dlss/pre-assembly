@@ -24,7 +24,8 @@ class BatchContext < ApplicationRecord
     'media' => 4,
     '3d' => 5,
     'document' => 6,
-    'maps' => 7
+    'maps' => 7,
+    'webarchive_seed' => 8
   }
 
   enum content_metadata_creation: {
