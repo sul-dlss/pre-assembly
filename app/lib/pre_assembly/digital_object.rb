@@ -42,13 +42,20 @@ module PreAssembly
     # @return [Symbol]
     def content_md_creation_style
       # map the object type to content metadata creation styles supported by the assembly-objectfile gem
+
+      # special case: content_structure of 'simple_book_rtl' always maps to simple_book
+      #  with the reading order set separately when creating content metadata
+      return :simple_book if content_structure == 'simple_book_rtl'
+
       {
         Cocina::Models::Vocab.image => :simple_image,
         Cocina::Models::Vocab.object => :file,
         Cocina::Models::Vocab.book => :simple_book,
         Cocina::Models::Vocab.manuscript => :simple_book,
+        Cocina::Models::Vocab.document => :document,
         Cocina::Models::Vocab.map => :map,
-        Cocina::Models::Vocab.three_dimensional => :'3d'
+        Cocina::Models::Vocab.three_dimensional => :'3d',
+        Cocina::Models::Vocab.webarchive_seed => :'webarchive-seed'
       }.fetch(object_type, content_structure.to_sym)
     end
 
@@ -115,6 +122,16 @@ module PreAssembly
       File.open(assembly_directory.content_metadata_file, 'w') { |fh| fh.puts create_content_metadata(file_attributes_supplied) }
     end
 
+    # The reading order for books is determined by the content structure set, defaulting to 'ltr'
+    # This is passed to the content metadata creator, which uses it if the content structure is book
+    def reading_order
+      if content_structure == 'simple_book_rtl'
+        'rtl'
+      else
+        'ltr'
+      end
+    end
+
     # Invoke the contentMetadata creation method used by the project
     # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
     def create_content_metadata(file_attributes_supplied)
@@ -123,6 +140,7 @@ module PreAssembly
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
                                  media_manifest: media_manifest,
+                                 reading_order: reading_order,
                                  add_file_attributes: file_attributes_supplied).create
     end
 

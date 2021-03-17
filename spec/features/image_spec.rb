@@ -8,7 +8,7 @@ RSpec.describe 'Create Image object', type: :feature do
   let(:bare_druid) { 'pr666rr9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.media, access: cocina_model_world_access) }
+  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
   let(:exp_content_md) do
@@ -47,7 +47,7 @@ RSpec.describe 'Create Image object', type: :feature do
 
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
-    select 'Simple Image', from: 'Content structure'
+    select 'Image', from: 'Content structure'
     fill_in 'Bundle dir', with: bundle_dir
 
     click_button 'Submit'

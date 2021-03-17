@@ -7,6 +7,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
                         object_files: object_files,
                         content_md_creation_style: content_md_creation_style,
                         media_manifest: media_manifest,
+                        reading_order: reading_order,
                         add_file_attributes: add_file_attributes)
   end
 
@@ -14,6 +15,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
   let(:content_md_creation) { 'bar' }
   let(:content_md_creation_style) { 'baz' }
   let(:add_file_attributes) { false }
+  let(:reading_order) { 'ltr' }
   let(:media_manifest) { 'quix' }
 
   describe '#content_object_files' do
@@ -55,7 +57,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
         creator.create
         expect(Assembly::ContentMetadata).to have_received(:create_content_metadata)
           .with(druid: druid_id, objects: object_files, add_exif: false,
-                bundle: :bar, style: content_md_creation_style, add_file_attributes: false)
+                bundle: :bar, style: content_md_creation_style, reading_order: reading_order, add_file_attributes: false)
       end
     end
 
@@ -66,7 +68,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
         creator.create
         expect(Assembly::ContentMetadata).to have_received(:create_content_metadata)
           .with(druid: druid_id, objects: object_files, add_exif: false,
-                bundle: :bar, style: content_md_creation_style, add_file_attributes: true)
+                bundle: :bar, style: content_md_creation_style, reading_order: reading_order, add_file_attributes: true)
       end
     end
   end
