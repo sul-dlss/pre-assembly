@@ -65,7 +65,8 @@ RSpec.describe BatchContext, type: :model do
       '3d' => 5,
       'document' => 6,
       'maps' => 7,
-      'webarchive_seed' => 8
+      'webarchive_seed' => 8,
+      'simple_book_rtl' => 9
     )
   end
 
