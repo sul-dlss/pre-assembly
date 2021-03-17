@@ -23,7 +23,8 @@ class BatchContext < ApplicationRecord
     'file' => 3,
     'media' => 4,
     '3d' => 5,
-    'document' => 6
+    'document' => 6,
+    'simple_book_rtl' => 7
   }
 
   enum content_metadata_creation: {

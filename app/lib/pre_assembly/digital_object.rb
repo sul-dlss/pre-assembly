@@ -118,11 +118,17 @@ module PreAssembly
     # Invoke the contentMetadata creation method used by the project
     # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
     def create_content_metadata(file_attributes_supplied)
+      reading_order = if content_structure == :simple_book_rtl
+                        'rtl'
+                      else
+                        'ltr'
+                      end
       ContentMetadataCreator.new(druid_id: druid.id,
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
                                  media_manifest: media_manifest,
+                                 reading_order: reading_order,
                                  add_file_attributes: file_attributes_supplied).create
     end
 
