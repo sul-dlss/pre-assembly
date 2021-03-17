@@ -110,7 +110,7 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe '#create_content_metadata' do
-    describe 'default content metadata' do
+    describe 'default content metadata (image)' do
       let(:exp_xml) do
         noko_doc <<-XML
           <contentMetadata type="image" objectId="gn330dv6119">
@@ -227,6 +227,112 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
+    describe 'book (ltr) content metadata' do
+      let(:exp_xml) do
+        noko_doc <<-XML
+          <contentMetadata type="book" objectId="gn330dv6119">
+            <bookData readingOrder="ltr"/>
+            <resource type="page" id="gn330dv6119_1" sequence="1">
+              <label>Page 1</label>
+              <file id="image1.jp2">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="page" id="gn330dv6119_2" sequence="2">
+              <label>Page 2</label>
+              <file id="image2.jp2">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
+
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(object).to receive(:object_type).and_return('')
+        allow(bc).to receive(:content_structure).and_return('simple_book')
+        add_object_files('jp2')
+        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+      end
+
+      around do |example|
+        RSpec::Mocks.with_temporary_scope do
+          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
+            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+            example.run
+          end
+        end
+      end
+
+      it 'generates the expected xml text' do
+        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
+      end
+
+      it 'is able to write the content_metadata XML to a file' do
+        assembly_directory.create_object_directories
+        file_name = object.send(:assembly_directory).content_metadata_file
+        expect(File.exist?(file_name)).to eq(false)
+        object.send(:generate_content_metadata, false)
+        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      end
+    end
+
+    describe 'book (rtl) content metadata' do
+      let(:exp_xml) do
+        noko_doc <<-XML
+          <contentMetadata type="book" objectId="gn330dv6119">
+            <bookData readingOrder="rtl"/>
+            <resource type="page" id="gn330dv6119_1" sequence="1">
+              <label>Page 1</label>
+              <file id="image1.jp2">
+                <checksum type="md5">1111</checksum>
+              </file>
+            </resource>
+            <resource type="page" id="gn330dv6119_2" sequence="2">
+              <label>Page 2</label>
+              <file id="image2.jp2">
+                <checksum type="md5">2222</checksum>
+              </file>
+            </resource>
+          </contentMetadata>
+        XML
+      end
+
+      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
+
+      before do
+        allow(object).to receive(:druid).and_return(druid)
+        allow(object).to receive(:object_type).and_return('')
+        allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
+        add_object_files('jp2')
+        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+      end
+
+      around do |example|
+        RSpec::Mocks.with_temporary_scope do
+          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
+            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+            example.run
+          end
+        end
+      end
+
+      it 'generates the expected xml text' do
+        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
+      end
+
+      it 'is able to write the content_metadata XML to a file' do
+        assembly_directory.create_object_directories
+        file_name = object.send(:assembly_directory).content_metadata_file
+        expect(File.exist?(file_name)).to eq(false)
+        object.send(:generate_content_metadata, false)
+        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      end
+    end
+
     describe 'webarchive-seed content metadata' do
       let(:exp_xml) do
         noko_doc <<-XML
@@ -283,6 +389,7 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:exp_xml) do
         noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
+          <bookData readingOrder="ltr"/>
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
             <file id="image1.jp2">
@@ -323,6 +430,7 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:exp_xml) do
         noko_doc <<-XML
         <contentMetadata type="book" objectId="gn330dv6119">
+          <bookData readingOrder="ltr"/>
           <resource type="page" sequence="1" id="gn330dv6119_1">
             <label>Page 1</label>
             <file id="image1.jp2" preserve="yes" shelve="yes" publish="yes">

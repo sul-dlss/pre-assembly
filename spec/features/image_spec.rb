@@ -47,7 +47,7 @@ RSpec.describe 'Create Image object', type: :feature do
 
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
-    select 'Simple Image', from: 'Content structure'
+    select 'Image', from: 'Content structure'
     fill_in 'Bundle dir', with: bundle_dir
 
     click_button 'Submit'
