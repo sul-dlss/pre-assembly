@@ -34,6 +34,14 @@
   </dd>
   <dt class="col-sm-3">Content Metadata Creation</dt>
   <dd class="col-sm-9"><%= batch_context.content_metadata_creation %></dd>
+  <dt class="col-sm-3">Using File Manifest?</dt>
+  <dd class="col-sm-9">
+    <% if batch_context.using_file_manifest %>
+      <i class="fas fa-check"></i>
+    <% else %>
+      <i class="far fa-times-circle"></i>
+    <% end %>
+  </dd>
   <dt class="col-sm-3">Created At</dt>
   <dd class="col-sm-9"><%= batch_context.created_at %></dd>
 </dl>

@@ -24,6 +24,7 @@ def batch_context_from_hash(proj)
     content_structure: hash['project_style']['content_structure'],
     bundle_dir: hash['bundle_dir'],
     content_metadata_creation: cmc,
+    using_file_manifest: hash['using_file_manifest'],
     user: build(:user, sunet_id: 'Jdoe')
   )
 end

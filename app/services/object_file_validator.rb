@@ -21,10 +21,10 @@ class ObjectFileValidator
     empty_files = object.object_files.count { |obj| obj.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
 
-    if using_media_manifest? # if we are using a media manifest, let's add how many files were found
+    if using_file_manifest? # if we are using a file manifest, let's add how many files were found
       batch_id = File.basename(object.container)
-      if batch_id && media.manifest[batch_id]
-        cm_files = media.manifest[batch_id].fetch(:files, [])
+      if batch_id && file_manifest.manifest[batch_id]
+        cm_files = file_manifest.manifest[batch_id].fetch(:files, [])
         counts[:files_in_manifest] = cm_files.count
         relative_paths = object.object_files.map(&:relative_path)
         counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
@@ -76,15 +76,14 @@ class ObjectFileValidator
     @object_client ||= Dor::Services::Client.object(druid.druid)
   end
 
-  # @return [PreAssembly::Media]
-  def media
-    @media ||= PreAssembly::Media.new(csv_filename: batch.batch_context.media_manifest,
-                                      bundle_dir: batch.bundle_dir)
+  # @return [PreAssembly::FileManifest]
+  def file_manifest
+    @file_manifest ||= PreAssembly::FileManifest.new(csv_filename: batch.batch_context.file_manifest,
+                                                     bundle_dir: batch.bundle_dir)
   end
 
   # @return [Boolean]
-  def using_media_manifest?
-    batch.content_md_creation == 'media_cm_style' &&
-      File.exist?(File.join(batch.bundle_dir, batch.batch_context.media_manifest))
+  def using_file_manifest?
+    batch.using_file_manifest && File.exist?(File.join(batch.bundle_dir, batch.batch_context.file_manifest))
   end
 end

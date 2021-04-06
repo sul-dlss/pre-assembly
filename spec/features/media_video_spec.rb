@@ -54,7 +54,7 @@ RSpec.describe 'Create Media Video object', type: :feature do
         </resource>
         <resource sequence="5" id="vd000bj0000_5" type="file">
           <label>Disc log file</label>
-          <file id="vd000bj0000_video_log.txt" preserve="yes" publish="no" shelve="no">
+          <file id="vd000bj0000_video_log.txt" preserve="yes" publish="no" shelve="no" role="transcription">
             <checksum type="md5">b659a852e4f0faa2f1d83973446a4ee9</checksum>
           </file>
         </resource>
@@ -79,7 +79,7 @@ RSpec.describe 'Create Media Video object', type: :feature do
     end
   end
 
-  it do
+  it 'works with a video object with a valid role in contentMetadata' do
     visit '/'
     expect(page).to have_selector('h3', text: 'Complete the form below')
 
@@ -87,7 +87,8 @@ RSpec.describe 'Create Media Video object', type: :feature do
     select 'Pre Assembly Run', from: 'Job type'
     select 'Media', from: 'Content structure'
     fill_in 'Bundle dir', with: bundle_dir
-    select 'Media', from: 'Content metadata creation'
+    select 'Default', from: 'Content metadata creation'
+    check 'batch_context_using_file_manifest'
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

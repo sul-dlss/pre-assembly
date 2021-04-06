@@ -11,7 +11,8 @@ module PreAssembly
              :content_md_creation,
              :content_structure,
              :project_name,
-             :media_manifest,
+             :file_manifest,
+             :using_file_manifest,
              to: :batch
 
     # @param [PreAssembly::Batch] batch
@@ -139,8 +140,9 @@ module PreAssembly
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
-                                 media_manifest: media_manifest,
+                                 file_manifest: file_manifest,
                                  reading_order: reading_order,
+                                 using_file_manifest: using_file_manifest,
                                  add_file_attributes: file_attributes_supplied).create
     end
 

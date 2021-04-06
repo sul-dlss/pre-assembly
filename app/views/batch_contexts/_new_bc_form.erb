@@ -32,10 +32,11 @@
     <%= form.input :content_metadata_creation, collection:
         [
             ["Default", "default"],
-            ["Filename", "filename"],
-            ["Media", "media_cm_style"]
+            ["Filename", "filename"]
         ]
     %>
+
+    <p><%= form.check_box :using_file_manifest%> I have a file manifest</p>
 
     <%= form.input :all_files_public,
                    as: :radio_buttons,

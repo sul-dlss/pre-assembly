@@ -9,7 +9,7 @@ class BatchContext < ApplicationRecord
   validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
-  validates :staging_style_symlink, inclusion: { in: [true, false] }
+  validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
 
   validate :verify_bundle_directory
   validate :verify_bundle_dir_path
@@ -32,7 +32,7 @@ class BatchContext < ApplicationRecord
   enum content_metadata_creation: {
     'default' => 0,
     'filename' => 1,
-    'media_cm_style' => 2
+    'media_cm_style' => 2 # Deprecated
   }
 
   accepts_nested_attributes_for :job_runs
@@ -64,8 +64,8 @@ class BatchContext < ApplicationRecord
     {}
   end
 
-  def media_manifest
-    'media_manifest.csv'
+  def file_manifest
+    'file_manifest.csv'
   end
 
   def manifest
@@ -120,8 +120,7 @@ class BatchContext < ApplicationRecord
     return if errors.key?(:bundle_dir)
     return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
     errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
-    return unless media_cm_style? # only media objects require media_manifest.csv
-    errors.add(:bundle_dir, "missing Media manifest: #{bundle_dir}/#{media_manifest}") unless File.exist?(File.join(bundle_dir, media_manifest))
+    errors.add(:bundle_dir, "missing file manifest: #{bundle_dir}/#{file_manifest}") if using_file_manifest && !File.exist?(File.join(bundle_dir, file_manifest))
   end
 
   def verify_bundle_dir_path

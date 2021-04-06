@@ -5,7 +5,8 @@ class BatchContextsController < ApplicationController
     @batch_context = BatchContext.new(
       job_runs: [JobRun.new],
       content_structure: 'simple_image',
-      content_metadata_creation: 'default'
+      content_metadata_creation: 'default',
+      using_file_manifest: false
     )
   end
 
@@ -33,7 +34,7 @@ class BatchContextsController < ApplicationController
     params.require(:batch_context)
           .permit(:project_name, :content_structure, :staging_style_symlink,
                   :content_metadata_creation, :bundle_dir, :all_files_public,
-                  job_runs_attributes: [:job_type])
+                  :using_file_manifest, job_runs_attributes: [:job_type])
           .merge(user: current_user)
   end
 end
