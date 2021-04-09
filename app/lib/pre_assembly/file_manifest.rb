@@ -7,11 +7,11 @@
 
 # Test with
 # cm=PreAssembly::FileManifest.new(bundle_dir: File.join(Rails.root,'spec/test_data/media_audio_test'), csv_filename: 'file_manifest.csv', verbose: true)
-# puts cm.generate_cm('sn000dd0000')
+# puts cm.generate_cm('sn000dd0000', :media)
 
 # or in the context of a batch object:
 # cm=PreAssembly::FileManifest.new(csv_filename: @content_md_creation[:file_manifest],bundle_dir: @bundle_dir, verbose: false)
-# puts cm.generate_cm('oo000oo0001')
+# puts cm.generate_cm('oo000oo0001', :file)
 
 module PreAssembly
   class FileManifest
@@ -56,7 +56,7 @@ module PreAssembly
 
     # actually generate content metadata for a specific druid in the manifest
     # @return [String] XML
-    def generate_cm(druid)
+    def generate_cm(druid, content_md_creation_style)
       return '' unless manifest[druid]
       current_directory = Dir.pwd
       files = manifest[druid][:files]
@@ -69,7 +69,7 @@ module PreAssembly
         seq = file[:sequence]
         label = file[:label] || ''
         resource_type = file[:resource_type]
-        if !seq.nil? && seq != '' && seq != current_seq # this is a new resource if we have a non-blank different sequence number
+        if seq.present? && seq != current_seq # this is a new resource if we have a non-blank different sequence number
           resources[seq.to_i] = { label: label, sequence: seq, resource_type: resource_type, files: [] }
           current_seq = seq
         end
@@ -80,7 +80,7 @@ module PreAssembly
       # generate the base of the XML file for this new druid
       # generate content metadata
       builder = Nokogiri::XML::Builder.new do |xml|
-        xml.contentMetadata(objectId: druid, type: 'media') do
+        xml.contentMetadata(objectId: druid, type: content_type(content_md_creation_style)) do
           resources.keys.sort.each do |seq|
             resource = resources[seq]
             resource_attributes = { sequence: seq.to_s, id: "#{druid}_#{seq}", type: resource[:resource_type] }
@@ -118,6 +118,16 @@ module PreAssembly
       s = IO.read(md5_file)
       checksums = s.scan(/[0-9a-fA-F]{32}/)
       checksums.first ? checksums.first.strip : ''
+    end
+
+    # this uses the assembly-objectfile gem to map the content_md_creation_style to the content type string in contentMetadata
+    #  i.e. https://github.com/sul-dlss/pre-assembly/blob/main/app/lib/pre_assembly/digital_object.rb#L43
+    #  to   https://github.com/sul-dlss/assembly-objectfile/blob/main/lib/assembly-objectfile/content_metadata.rb#L29
+    # Note: "media" is not supported in the gem, but is available for custom generation with file manifests here
+    def content_type(content_md_creation_style)
+      return 'media' if content_md_creation_style == :media
+
+      Assembly::ContentMetadata.object_level_type(content_md_creation_style)
     end
   end
 end

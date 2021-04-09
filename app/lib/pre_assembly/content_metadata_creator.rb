@@ -18,7 +18,8 @@ module PreAssembly
 
     # Invoke the contentMetadata creation method used by the project
     def create
-      return file_manifest.generate_cm(druid_id) if using_file_manifest
+      # use the file manifest class to generate custom content metadata if that option is selected
+      return file_manifest.generate_cm(druid_id, content_md_creation_style) if using_file_manifest
 
       # otherwise use the content metadata generation gem (assembly-objectfile)
       Assembly::ContentMetadata.create_content_metadata(druid: druid_id,
