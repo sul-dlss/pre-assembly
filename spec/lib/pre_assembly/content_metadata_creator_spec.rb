@@ -3,6 +3,7 @@
 RSpec.describe PreAssembly::ContentMetadataCreator do
   subject(:creator) do
     described_class.new(druid_id: druid_id,
+                        object: druid_id,
                         content_md_creation: content_md_creation,
                         object_files: object_files,
                         content_md_creation_style: content_md_creation_style,

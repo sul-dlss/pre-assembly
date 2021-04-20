@@ -3,9 +3,10 @@
 module PreAssembly
   class ContentMetadataCreator
     # rubocop:disable Metrics/ParameterLists
-    def initialize(druid_id:, content_md_creation:, object_files:, using_file_manifest:,
+    def initialize(druid_id:, object:, content_md_creation:, object_files:, using_file_manifest:,
                    content_md_creation_style:, file_manifest:, reading_order:, add_file_attributes:)
       @druid_id = druid_id
+      @object = object
       @content_md_creation = content_md_creation
       @object_files = object_files
       @content_md_creation_style = content_md_creation_style
@@ -19,7 +20,7 @@ module PreAssembly
     # Invoke the contentMetadata creation method used by the project
     def create
       # use the file manifest class to generate custom content metadata if that option is selected
-      return file_manifest.generate_cm(druid_id, content_md_creation_style) if using_file_manifest
+      return file_manifest.generate_cm(druid: druid_id, object: object, content_md_creation_style: content_md_creation_style) if using_file_manifest
 
       # otherwise use the content metadata generation gem (assembly-objectfile)
       Assembly::ContentMetadata.create_content_metadata(druid: druid_id,
@@ -33,7 +34,7 @@ module PreAssembly
 
     private
 
-    attr_reader :druid_id, :content_md_creation, :object_files, :using_file_manifest,
+    attr_reader :druid_id, :content_md_creation, :object_files, :using_file_manifest, :object,
                 :content_md_creation_style, :file_manifest, :reading_order, :add_file_attributes
 
     # Object files that should be included in content metadata.

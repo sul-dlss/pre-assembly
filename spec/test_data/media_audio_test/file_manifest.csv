@@ -1,4 +1,4 @@
-druid,filename,label,sequence,publish,preserve,shelve,resource_type
+object,filename,label,sequence,publish,preserve,shelve,resource_type
 sn000dd0000,sn000dd0000_audio_a_m4a.m4a,Audio file 1,1,no,yes,no,audio
 sn000dd0000,sn000dd0000_audio_a_mp3.mp3,Audio file 1,1,yes,yes,yes,audio
 sn000dd0000,sn000dd0000_audio_a_wav.wav,Audio file 1,1,no,yes,no,audio

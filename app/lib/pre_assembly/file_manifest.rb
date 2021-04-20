@@ -7,11 +7,11 @@
 
 # Test with
 # cm=PreAssembly::FileManifest.new(bundle_dir: File.join(Rails.root,'spec/test_data/media_audio_test'), csv_filename: 'file_manifest.csv', verbose: true)
-# puts cm.generate_cm('sn000dd0000', :media)
+# puts cm.generate_cm(druid: 'sn000dd0000', object: 'oo000oo0001', content_md_creation_style: :media)
 
 # or in the context of a batch object:
 # cm=PreAssembly::FileManifest.new(csv_filename: @content_md_creation[:file_manifest],bundle_dir: @bundle_dir, verbose: false)
-# puts cm.generate_cm('oo000oo0001', :file)
+# puts cm.generate_cm(druid: 'oo000oo0001', object: 'oo000oo0001', content_md_creation_style: :file)
 
 module PreAssembly
   class FileManifest
@@ -33,7 +33,7 @@ module PreAssembly
       # load file into @rows and then build up @manifest
       @rows = CsvImporter.parse_to_hash(@csv_filename)
       @rows.each do |row|
-        druid = row[:druid]
+        object = row[:object]
         file_extension = File.extname(row[:filename])
         resource_type = row[:resource_type]
 
@@ -48,18 +48,18 @@ module PreAssembly
         shelve   = row[:shelve]
         preserve = row[:preserve]
 
-        manifest[druid] ||= { files: [] }
+        manifest[object] ||= { files: [] }
         files_hash = { file_extention: file_extension, filename: row[:filename], label: row[:label], sequence: row[:sequence] }
-        manifest[druid][:files] << files_hash.merge(role: role, thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type)
+        manifest[object][:files] << files_hash.merge(role: role, thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type)
       end
     end
 
-    # actually generate content metadata for a specific druid in the manifest
+    # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
-    def generate_cm(druid, content_md_creation_style)
-      return '' unless manifest[druid]
+    def generate_cm(druid:, object:, content_md_creation_style:)
+      return '' unless manifest[object]
       current_directory = Dir.pwd
-      files = manifest[druid][:files]
+      files = manifest[object][:files]
       current_seq = ''
       resources = {}
 
@@ -96,14 +96,14 @@ module PreAssembly
 
                 # look for a checksum file named the same as this file
                 checksum = nil
-                FileUtils.cd(File.join(bundle_dir, druid))
+                FileUtils.cd(File.join(bundle_dir, object))
                 md_files = Dir.glob('**/' + filename + '.md5')
-                checksum = get_checksum(File.join(bundle_dir, druid, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
+                checksum = get_checksum(File.join(bundle_dir, object, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
                 file_hash = { id: filename, preserve: preserve, publish: publish, shelve: shelve }
                 file_hash[:role] = file[:role] if file[:role]
 
                 xml.file(file_hash) do
-                  xml.checksum(checksum, type: 'md5') if checksum && checksum != ''
+                  xml.checksum(checksum, type: 'md5') if checksum.present?
                 end
               end
             end
