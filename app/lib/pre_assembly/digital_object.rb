@@ -137,7 +137,7 @@ module PreAssembly
     # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
     def create_content_metadata(file_attributes_supplied)
       ContentMetadataCreator.new(druid_id: druid.id,
-                                 object: Pathname(container).basename.to_s,
+                                 object: File.basename(container),
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,

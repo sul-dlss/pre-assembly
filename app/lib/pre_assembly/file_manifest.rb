@@ -22,7 +22,7 @@ module PreAssembly
 
     def initialize(params)
       @bundle_dir = params[:bundle_dir]
-      csv_file = params[:csv_filename] || 'file_manifest.csv'
+      csv_file = params[:csv_filename] || BatchContext.new.file_manifest
       @csv_filename = File.join(@bundle_dir, csv_file)
       @manifest = {}
       # read CSV

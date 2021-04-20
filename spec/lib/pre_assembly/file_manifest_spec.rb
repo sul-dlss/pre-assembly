@@ -17,8 +17,8 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
-        let(:dobj1) { setup_dobj('aa111aa1111', file_manifest) }
-        let(:dobj2) { setup_dobj('bb222bb2222', file_manifest) }
+        let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
+        let(:dobj2) { setup_dobj('bb222bb2222', 'object2', file_manifest) }
         let(:file_manifest) do
           described_class.new(csv_filename: 'file_manifest.csv', bundle_dir: bundle_dir)
         end
@@ -32,8 +32,8 @@ RSpec.describe PreAssembly::FileManifest do
       context 'with thumb declaration' do
         it 'generates content metadata of type media from a file manifest with a thumb column set to yes' do
           file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb.csv', bundle_dir: bundle_dir)
-          dobj1 = setup_dobj('aa111aa1111', file_manifest)
-          dobj2 = setup_dobj('bb222bb2222', file_manifest)
+          dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
+          dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
           expect(noko_doc(dobj1.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
           expect(noko_doc(dobj2.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
@@ -41,8 +41,8 @@ RSpec.describe PreAssembly::FileManifest do
 
         it 'generates content metadata of type media from a file manifest with a thumb column set to true' do
           file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
-          dobj1 = setup_dobj('aa111aa1111', file_manifest)
-          dobj2 = setup_dobj('bb222bb2222', file_manifest)
+          dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
+          dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
           expect(noko_doc(dobj1.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111_with_thumb)
           expect(noko_doc(dobj2.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
@@ -50,8 +50,8 @@ RSpec.describe PreAssembly::FileManifest do
 
         it 'generates content metadata of type media from a file manifest with no thumbs when the thumb column is set to no' do
           file_manifest = described_class.new(csv_filename: 'file_manifest_thumb_no.csv', bundle_dir: bundle_dir)
-          dobj1 = setup_dobj('aa111aa1111', file_manifest)
-          dobj2 = setup_dobj('bb222bb2222', file_manifest)
+          dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
+          dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
           expect(noko_doc(dobj1.send(:create_content_metadata, true))).to be_equivalent_to noko_doc(exp_xml_object_aa111aa1111)
           expect(noko_doc(dobj2.send(:create_content_metadata, false))).to be_equivalent_to noko_doc(exp_xml_object_bb222bb2222)
@@ -72,8 +72,8 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
-        let(:dobj1) { setup_dobj('aa111aa1111', file_manifest) }
-        let(:dobj2) { setup_dobj('bb222bb2222', file_manifest) }
+        let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
+        let(:dobj2) { setup_dobj('bb222bb2222', 'object2', file_manifest) }
         let(:file_manifest) do
           described_class.new(csv_filename: 'file_manifest.csv', bundle_dir: bundle_dir)
         end
@@ -87,9 +87,9 @@ RSpec.describe PreAssembly::FileManifest do
   end
 
   # some helper methods for these tests
-  def setup_dobj(druid, file_manifest)
+  def setup_dobj(druid, object, file_manifest)
     allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
-    PreAssembly::DigitalObject.new(bc.batch, container: druid, stager: PreAssembly::CopyStager, dark: false).tap do |dobj|
+    PreAssembly::DigitalObject.new(bc.batch, container: object, stager: PreAssembly::CopyStager, dark: false).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
       allow(dobj).to receive(:using_file_manifest).and_return(true)
