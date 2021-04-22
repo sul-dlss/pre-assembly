@@ -72,7 +72,8 @@ RSpec.describe 'Create Media Audio object', type: :feature do
     select 'Pre Assembly Run', from: 'Job type'
     select 'Media', from: 'Content structure'
     fill_in 'Bundle dir', with: bundle_dir
-    select 'Media', from: 'Content metadata creation'
+    select 'Default', from: 'Content metadata creation'
+    check 'batch_context_using_file_manifest'
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

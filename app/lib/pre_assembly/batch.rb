@@ -8,7 +8,7 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :user_params,
                   :skippables,
-                  :media_manifest
+                  :file_manifest
 
     delegate :apo_druid_id,
              :apply_tag,
@@ -23,11 +23,12 @@ module PreAssembly
              :set_druid_id,
              :stageable_discovery,
              :staging_style_symlink,
+             :using_file_manifest,
              to: :batch_context
 
     def initialize(batch_context)
       @batch_context = batch_context
-      self.media_manifest = PreAssembly::Media.new(csv_filename: batch_context.media_manifest, bundle_dir: bundle_dir) if batch_context.media_cm_style?
+      self.file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
       self.skippables = {}
       load_skippables
     end

@@ -100,9 +100,9 @@ RSpec.describe BatchContext, type: :model do
     end
   end
 
-  describe '#media_manifest' do
+  describe '#file_manifest' do
     it 'returns the file name' do
-      expect(described_class.new.media_manifest).to eq 'media_manifest.csv'
+      expect(described_class.new.file_manifest).to eq 'file_manifest.csv'
     end
   end
 
@@ -203,10 +203,10 @@ RSpec.describe BatchContext, type: :model do
       expect(bc.errors.to_h).to include(bundle_dir: /missing manifest/)
     end
 
-    it 'adds error if media object is missing media_manifest.csv' do
-      allow(bc).to receive(:media_cm_style?).and_return(true)
+    it 'adds error if object selected for use with file manifest is missing file_manifest.csv' do
+      allow(bc).to receive(:using_file_manifest).and_return(true)
       bc.send(:verify_bundle_directory)
-      expect(bc.errors.to_h).to include(bundle_dir: /missing Media manifest/)
+      expect(bc.errors.to_h).to include(bundle_dir: /missing file manifest/)
     end
   end
 end

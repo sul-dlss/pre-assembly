@@ -11,11 +11,12 @@ module PreAssembly
              :content_md_creation,
              :content_structure,
              :project_name,
-             :media_manifest,
+             :file_manifest,
+             :using_file_manifest,
              to: :batch
 
     # @param [PreAssembly::Batch] batch
-    # @param [String] container the identifier (non-namespaced)
+    # @param [String] container the identifier (non-namespaced); i.e. the full path to the folder containing the object files
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
     # @param [String] label The label for this object
@@ -24,7 +25,7 @@ module PreAssembly
     # @param [Object] stager the implementation of how to stage an object
     # @param [Bool] dark does this object have "dark" access
     # rubocop:disable Metrics/ParameterLists
-    def initialize(batch, container: nil, stageable_items: nil, object_files: nil,
+    def initialize(batch, container: '', stageable_items: nil, object_files: nil,
                    label: nil, pid: nil, source_id: nil, stager:, dark:)
       @batch = batch
       @container = container
@@ -136,11 +137,13 @@ module PreAssembly
     # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
     def create_content_metadata(file_attributes_supplied)
       ContentMetadataCreator.new(druid_id: druid.id,
+                                 object: File.basename(container),
                                  content_md_creation: content_md_creation,
                                  object_files: object_files,
                                  content_md_creation_style: content_md_creation_style,
-                                 media_manifest: media_manifest,
+                                 file_manifest: file_manifest,
                                  reading_order: reading_order,
+                                 using_file_manifest: using_file_manifest,
                                  add_file_attributes: file_attributes_supplied).create
     end
 

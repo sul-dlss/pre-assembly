@@ -3,11 +3,13 @@
 RSpec.describe PreAssembly::ContentMetadataCreator do
   subject(:creator) do
     described_class.new(druid_id: druid_id,
+                        object: druid_id,
                         content_md_creation: content_md_creation,
                         object_files: object_files,
                         content_md_creation_style: content_md_creation_style,
-                        media_manifest: media_manifest,
+                        file_manifest: file_manifest,
                         reading_order: reading_order,
+                        using_file_manifest: false,
                         add_file_attributes: add_file_attributes)
   end
 
@@ -16,7 +18,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
   let(:content_md_creation_style) { 'baz' }
   let(:add_file_attributes) { false }
   let(:reading_order) { 'ltr' }
-  let(:media_manifest) { 'quix' }
+  let(:file_manifest) { 'quix' }
 
   describe '#content_object_files' do
     let(:files) { %w[file5.tif file4.tif file3.tif file2.tif file1.tif file0.tif] }

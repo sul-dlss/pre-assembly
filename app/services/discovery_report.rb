@@ -5,7 +5,7 @@
 class DiscoveryReport
   attr_reader :batch, :start_time, :summary
 
-  delegate :bundle_dir, :content_md_creation, :manifest, :project_style, to: :batch
+  delegate :bundle_dir, :content_md_creation, :manifest, :project_style, :using_file_manifest, to: :batch
   delegate :object_filenames_unique?, to: :batch
 
   # @param [PreAssembly::Batch] batch
@@ -51,13 +51,13 @@ class DiscoveryReport
   end
 
   # @return [Boolean]
-  def using_media_manifest?
-    content_md_creation == 'media_cm_style' && File.exist?(File.join(bundle_dir, batch.batch_context.media_manifest))
+  def using_file_manifest?
+    using_file_manifest && File.exist?(File.join(bundle_dir, batch.batch_context.file_manifest))
   end
 
-  # @return [PreAssembly::Media]
-  def media
-    @media ||= PreAssembly::Media.new(csv_filename: batch.batch_context.media_manifest, bundle_dir: bundle_dir)
+  # @return [PreAssembly::FileManifest]
+  def file_manifest
+    @file_manifest ||= PreAssembly::FileManifest.new(csv_filename: batch.batch_context.file_manifest, bundle_dir: bundle_dir)
   end
 
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)

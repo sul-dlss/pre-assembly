@@ -8,8 +8,10 @@ bundle_dir:           'spec/test_data/multimedia'
 staging_style:        'copy'
 
 content_md_creation:
-  style:              'media'
-  media_manifest:     'media_manifest.csv'
+  style:             'media'
+  file_manifest:     'file_manifest.csv'
+
+using_file_manifest:  true
 
 stageable_discovery:
   glob:               '**/*'

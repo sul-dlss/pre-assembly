@@ -1,0 +1,19 @@
+object,filename,label,sequence,publish,preserve,shelve,resource_type,thumb,role
+aa111aa1111,aa111aa1111_001_a_pm.wav,"Tape 1, Side A",1,no,yes,no,media,,
+aa111aa1111,aa111aa1111_001_a_sh.wav,,,no,yes,no,,,
+aa111aa1111,aa111aa1111_001_a_sl.mp3,,,yes,yes,yes,,,
+aa111aa1111,aa111aa1111_001_img_1.jpg,,,yes,yes,yes,,no,bogus
+aa111aa1111,aa111aa1111_001_b_pm.wav,"Tape 1, Side B",2,yes,yes,yes,file,,
+aa111aa1111,aa111aa1111_001_b_sh.wav,,,no,no,no,,,
+aa111aa1111,aa111aa1111_001_b_sl.mp3,,,yes,yes,yes,,,
+aa111aa1111,aa111aa1111_001_img_2.jpg,,,yes,yes,yes,,,
+aa111aa1111,aa111aa1111.pdf,Transcript,3,yes,yes,yes,text,,
+object2,bb222bb2222_002_a_pm.wav,"Tape 1, Side A",1,no,yes,no,media,,
+object2,bb222bb2222_002_a_sh.wav,,,no,yes,no,,,
+object2,bb222bb2222_002_a_sl.mp3,,,yes,yes,yes,,,
+object2,bb222bb2222_002_img_1.jpg,,,yes,yes,yes,,,
+object2,bb222bb2222_002_b_pm.wav,"Tape 1, Side B",2,no,yes,no,media,,
+object2,bb222bb2222_002_b_sh.wav,,,no,no,no,,,
+object2,bb222bb2222_002_b_sl.mp3,,,yes,yes,yes,,,
+object2,bb222bb2222_002_img_2.jpg,,,yes,yes,yes,,,
+object2,bb222bb2222.pdf,Transcript,3,yes,yes,yes,text,,transcription
