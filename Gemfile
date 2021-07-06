@@ -25,7 +25,7 @@ gem 'uglifier' # compressor for JavaScript assets
 # Stanford gems
 gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.10', '>= 1.10.2' # webarchive-seed and reading order is supported in 1.10.2 and better
-gem 'dor-services-client', '~> 6.30'
+gem 'dor-services-client', '~> 7.0'
 gem 'dor-workflow-client'
 gem 'druid-tools'
 
