@@ -42,6 +42,3 @@ append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bu
 before 'deploy:restart', 'shared_configs:update'
 
 set :honeybadger_env, fetch(:stage)
-
-# Bundler 2 options
-set :bundler2_config_use_hook, true # this is how to opt-in to bundler 2-style config. it's false by default
