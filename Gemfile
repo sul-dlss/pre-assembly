@@ -54,6 +54,7 @@ end
 group :development, :test do
   gem 'pry-byebug'
   gem 'rubocop'
+  gem 'rubocop-rails'
   gem 'rubocop-rspec'
   # gem 'ruby-prof'
   gem 'sqlite3'

@@ -3,6 +3,7 @@
 class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy
+  after_initialize :normalize_bundle_dir, :default_enums
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
 
@@ -13,8 +14,6 @@ class BatchContext < ApplicationRecord
 
   validate :verify_bundle_directory
   validate :verify_bundle_dir_path
-
-  after_initialize :normalize_bundle_dir, :default_enums
 
   enum content_structure: {
     'simple_image' => 0,
