@@ -72,7 +72,7 @@ RSpec.describe 'Create Public object (shelved and published)', type: :feature do
     metadata_dir = File.join(object_staging_dir, 'metadata')
     expect(Dir.children(metadata_dir).size).to eq 1
 
-    content_md_xml = File.open(File.join(metadata_dir, 'contentMetadata.xml')).read
+    content_md_xml = File.read(File.join(metadata_dir, 'contentMetadata.xml'))
     expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
   end
 end

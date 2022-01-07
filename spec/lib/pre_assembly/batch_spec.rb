@@ -40,20 +40,20 @@ RSpec.describe PreAssembly::Batch do
     end
 
     it 'runs cleanly for new objects' do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
       expect { batch.process_digital_objects }.not_to raise_error
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(true)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       expect { batch.process_digital_objects }.not_to raise_error
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
       before do
-        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:'openable?').and_return(false)
+        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       end
 
@@ -275,7 +275,7 @@ RSpec.describe PreAssembly::Batch do
   end
 
   describe '#dir_glob' do
-    it ' returns expected information' do
+    it 'returns expected information' do
       exp = [1, 2, 3].map { |n| flat_dir_images.bundle_dir_with_path "image#{n}.tif" }
       expect(flat_dir_images.send(:dir_glob, flat_dir_images.bundle_dir_with_path('*.tif'))).to eq(exp)
     end

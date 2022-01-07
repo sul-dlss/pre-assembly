@@ -35,7 +35,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'calls all methods needed to accession' do
-      allow(object).to receive(:'openable?').and_return(false)
+      allow(object).to receive(:openable?).and_return(false)
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:generate_content_metadata)
@@ -45,7 +45,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the object is not openable' do
       before do
-        allow(object).to receive(:'openable?').and_return(false)
+        allow(object).to receive(:openable?).and_return(false)
         allow(object).to receive(:current_object_version).and_return(2)
       end
 
@@ -527,7 +527,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks if the object is openable' do
       object.send(:openable?)
-      expect(dor_services_client_object_version).to have_received(:'openable?')
+      expect(dor_services_client_object_version).to have_received(:openable?)
     end
   end
 

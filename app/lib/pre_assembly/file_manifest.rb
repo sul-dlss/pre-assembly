@@ -41,7 +41,7 @@ module PreAssembly
         role = row[:role] if VALID_ROLES.include?(row[:role])
 
         # set the thumb attribute for this resource - if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
-        thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase) ? true : false
+        thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
 
         # set the publish/preserve/shelve
         publish  = row[:publish]
@@ -97,7 +97,7 @@ module PreAssembly
                 # look for a checksum file named the same as this file
                 checksum = nil
                 FileUtils.cd(File.join(bundle_dir, object))
-                md_files = Dir.glob('**/' + filename + '.md5')
+                md_files = Dir.glob("**/#{filename}.md5")
                 checksum = get_checksum(File.join(bundle_dir, object, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
                 file_hash = { id: filename, preserve: preserve, publish: publish, shelve: shelve }
                 file_hash[:role] = file[:role] if file[:role]
@@ -115,7 +115,7 @@ module PreAssembly
     end
 
     def get_checksum(md5_file)
-      s = IO.read(md5_file)
+      s = File.read(md5_file)
       checksums = s.scan(/[0-9a-fA-F]{32}/)
       checksums.first ? checksums.first.strip : ''
     end

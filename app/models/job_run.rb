@@ -3,9 +3,9 @@
 class JobRun < ApplicationRecord
   belongs_to :batch_context
   validates :job_type, presence: true
+  after_initialize :default_enums
   after_create :enqueue!
   after_update :send_notification, if: -> { saved_change_to_output_location? }
-  after_initialize :default_enums
 
   enum job_type: {
     'discovery_report' => 0,

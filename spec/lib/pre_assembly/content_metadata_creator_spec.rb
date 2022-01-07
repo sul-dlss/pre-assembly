@@ -38,7 +38,7 @@ RSpec.describe PreAssembly::ContentMetadataCreator do
       ofiles = creator.send(:content_object_files)
       expect(ofiles.size).to eq(m)
       # Also check their ordering.
-      expect(ofiles.map(&:relative_path)).to eq(files[m..-1].sort)
+      expect(ofiles.map(&:relative_path)).to eq(files[m..].sort)
     end
   end
 

@@ -41,7 +41,7 @@ class DiscoveryReport
 
   # @return [String] output_path to store report results, generate a different string each time
   def output_path
-    Dir::Tmpname.create([self.class.name.underscore + '_', '.json'], batch.batch_context.output_dir) { |path| path }
+    Dir::Tmpname.create(["#{self.class.name.underscore}_", '.json'], batch.batch_context.output_dir) { |path| path }
   end
 
   # @param [PreAssembly::DigitalObject]
