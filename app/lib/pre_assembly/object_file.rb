@@ -4,6 +4,7 @@ module PreAssembly
   class ObjectFile < Assembly::ObjectFile
     include ActiveModel::AttributeMethods
     attr_accessor :exclude_from_content
+
     alias_attribute :checksum, :provider_md5
 
     # @param [String] path full path

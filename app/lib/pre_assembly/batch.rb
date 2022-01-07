@@ -35,7 +35,7 @@ module PreAssembly
 
     def load_skippables
       return unless File.readable?(progress_log_file)
-      docs = YAML.load_stream(IO.read(progress_log_file))
+      docs = YAML.load_stream(File.read(progress_log_file))
       docs = docs.documents if docs.respond_to? :documents
       docs.each do |yd|
         skippables[yd[:container]] = true if yd[:pre_assem_finished]

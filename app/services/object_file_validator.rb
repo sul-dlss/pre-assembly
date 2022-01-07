@@ -49,6 +49,7 @@ class ObjectFileValidator
   private
 
   attr_reader :object, :batch
+
   delegate :druid, to: :object
 
   # Checks filesystem for expected files

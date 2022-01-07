@@ -46,7 +46,7 @@ RSpec.describe DiscoveryReport do
         mimetypes: { a: 1, b: 5, q: 13 }
       )
       expect(File).to exist(batch.batch_context.progress_log_file)
-      docs = YAML.load_stream(IO.read(batch.batch_context.progress_log_file))
+      docs = YAML.load_stream(File.read(batch.batch_context.progress_log_file))
       expect(docs.size).to eq(3)
       expect(docs[0][:pid]).to eq 'druid:1'
       expect(docs[0][:timestamp].to_date).to eq Date.today
