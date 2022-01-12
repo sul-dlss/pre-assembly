@@ -31,14 +31,6 @@ gem 'druid-tools'
 
 group :test do
   gem 'capybara'
-  gem 'simplecov'
-  gem 'equivalent-xml'
-  gem 'factory_bot_rails'
-  gem 'rails-controller-testing'
-  gem 'random-word'
-  gem 'rspec-rails', '~> 5'
-  gem 'rspec_junit_formatter'
-  gem 'shoulda-matchers', '~> 4.1'
 end
 
 group :deployment do
@@ -53,11 +45,19 @@ group :development do
 end
 
 group :development, :test do
-  gem 'puma', '~> 5.0'
+  # gem 'ruby-prof'
+  gem 'equivalent-xml'
+  gem 'factory_bot_rails'
   gem 'pry-byebug'
+  gem 'puma', '~> 5.0'
+  gem 'rails-controller-testing'
+  gem 'random-word'
+  gem 'rspec-rails', '~> 5'
+  gem 'rspec_junit_formatter'
   gem 'rubocop'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-  # gem 'ruby-prof'
+  gem 'shoulda-matchers', '~> 4.1'
+  gem 'simplecov'
   gem 'sqlite3'
 end
