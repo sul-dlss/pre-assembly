@@ -3,6 +3,8 @@ parameters:
   ruby-version:
     type: string
     default: "3.0.3"
+# NOTE: Jan 2022 TravisCI had this package installed, but tests pass in CircleCI without explicitly adding:
+#    - libimage-exiftool-perl
 jobs:
   test:
     docker:

@@ -31,7 +31,6 @@ gem 'druid-tools'
 
 group :test do
   gem 'capybara'
-  gem 'coveralls', require: false
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
