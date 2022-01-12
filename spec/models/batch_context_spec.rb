@@ -200,13 +200,13 @@ RSpec.describe BatchContext, type: :model do
     it 'adds error if missing manifest.csv' do
       allow(File).to receive(:exist?).with('spec/test_data/images_jp2_tif/manifest.csv').and_return(false)
       bc.send(:verify_bundle_directory)
-      expect(bc.errors.to_h).to include(bundle_dir: /missing manifest/)
+      expect(bc.errors.map(&:type)).to include('missing manifest: spec/test_data/images_jp2_tif/manifest.csv')
     end
 
     it 'adds error if object selected for use with file manifest is missing file_manifest.csv' do
       allow(bc).to receive(:using_file_manifest).and_return(true)
       bc.send(:verify_bundle_directory)
-      expect(bc.errors.to_h).to include(bundle_dir: /missing file manifest/)
+      expect(bc.errors.map(&:type)).to include('missing file manifest: spec/test_data/images_jp2_tif/file_manifest.csv')
     end
   end
 end

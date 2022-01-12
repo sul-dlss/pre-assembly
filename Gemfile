@@ -12,7 +12,7 @@ gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'pry-rails' # useful for rails console
-gem 'rails', '~> 6.0'
+gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-lock'
@@ -36,7 +36,7 @@ group :test do
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'random-word'
-  gem 'rspec-rails', '~> 4.0'
+  gem 'rspec-rails', '~> 5'
   gem 'rspec_junit_formatter'
   gem 'shoulda-matchers', '~> 4.1'
 end
@@ -53,6 +53,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'puma', '~> 5.0'
   gem 'pry-byebug'
   gem 'rubocop'
   gem 'rubocop-rails'

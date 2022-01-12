@@ -2,7 +2,7 @@
 
 RSpec.describe 'shared/_header.erb' do
   context 'should have the right links on the header' do
-    before { render }
+    before { render template: 'shared/_header' }
 
     it 'Usage Instructions' do
       expect(rendered).to include("<a class=\"nav-link\" href=\"https://github.com/sul-dlss/pre-assembly/wiki\">Usage Instructions</a>\n")
