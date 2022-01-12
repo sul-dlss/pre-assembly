@@ -9,14 +9,18 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
-require 'coveralls'
-Coveralls.wear!('rails')
 # auto-require all ruby files in the support directory
 Dir[Rails.root.join('spec', 'support', '*.rb')].each { |f| require f }
 
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
+
+require 'simplecov'
+SimpleCov.start :rails do
+  add_filter '/spec/'
+  add_filter '/vendor/'
+end
 
 RSpec.configure do |config|
   config.include ActiveSupport::Testing::Assertions
