@@ -37,6 +37,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'random-word'
   gem 'rspec-rails', '~> 4.0'
+  gem 'rspec_junit_formatter'
   gem 'shoulda-matchers', '~> 4.1'
 end
 
