@@ -16,12 +16,6 @@ Dir[Rails.root.join('spec', 'support', '*.rb')].each { |f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
-require 'simplecov'
-SimpleCov.start :rails do
-  add_filter '/spec/'
-  add_filter '/vendor/'
-end
-
 RSpec.configure do |config|
   config.include ActiveSupport::Testing::Assertions
   config.include FactoryBot::Syntax::Methods
