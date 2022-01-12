@@ -23,7 +23,8 @@ See the `Capfile` for more info.
 
 ## Setting up code for local development
 
-Clone project.
+Clone project:
+
 ```bash
 git clone git@github.com:sul-dlss/pre-assembly.git
 cd pre-assembly
