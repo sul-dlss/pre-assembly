@@ -31,6 +31,7 @@ gem 'druid-tools'
 
 group :test do
   gem 'capybara'
+  gem 'simplecov'
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
