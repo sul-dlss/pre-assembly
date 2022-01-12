@@ -1,0 +1,46 @@
+version: 2.1
+parameters:
+  ruby-version:
+    type: string
+    default: "3.0.3"
+jobs:
+  test:
+    docker:
+    - image: 'cimg/ruby:<< pipeline.parameters.ruby-version >>-node'
+      environment:
+        BUNDLE_JOBS: 3
+        BUNDLE_RETRY: 3
+        BUNDLE_PATH: vendor/bundle
+        RAILS_ENV: test
+        NOKOGIRI_USE_SYSTEM_LIBRARIES: true
+    steps:
+    - checkout
+    - run:
+        name: Install/Upgrade Bundler
+        command: gem install bundler
+    - run:
+        name: Which bundler?
+        command: bundle -v
+    - restore_cache:
+        keys:
+        - preassembly-bundle-v1-{{ checksum "Gemfile.lock" }}
+        - preassembly-bundle-v1-
+    - run:
+        name: Bundle Install
+        command: bundle check || bundle install
+    - save_cache:
+        key: preassembly-bundle-v1-{{ checksum "Gemfile.lock" }}
+        paths:
+        - vendor/bundle
+    - run:
+        name: Check styles using rubocop
+        command: bundle exec rubocop
+    - run:
+        name: Run rspec
+        command: bundle exec rspec
+
+workflows:
+  version: 2
+  test:
+    jobs:
+    - test
