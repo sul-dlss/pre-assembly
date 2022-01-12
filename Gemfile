@@ -31,8 +31,7 @@ gem 'druid-tools'
 
 group :test do
   gem 'capybara'
-  gem 'simplecov', '~> 0.17.0' # versions greater than 0.17 cause problems when reporting in this app (as of Jan 2022)
-                               # see https://github.com/codeclimate/test-reporter/issues/418
+  gem 'simplecov'
   gem 'equivalent-xml'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
