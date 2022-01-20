@@ -59,7 +59,7 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
+  config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "pre_assembly_production"
 
   config.action_mailer.default_url_options = { host: Settings.mailer_host, protocol: 'https' } # needed by url_for() in mail templates
