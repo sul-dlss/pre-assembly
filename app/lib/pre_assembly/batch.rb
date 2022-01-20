@@ -142,7 +142,7 @@ module PreAssembly
         container: info[:dobj].container,
         pid: info[:dobj].pid,
         pre_assem_finished: info[:pre_assem_finished],
-        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
+        timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S')
       }.merge(status)
     end
 

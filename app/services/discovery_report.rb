@@ -35,7 +35,7 @@ class DiscoveryReport
   def log_progress_info(dobj)
     {
       pid: dobj.pid,
-      timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S')
+      timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S')
     }
   end
 

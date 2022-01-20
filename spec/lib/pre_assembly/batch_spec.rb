@@ -226,7 +226,7 @@ RSpec.describe PreAssembly::Batch do
         container: progress[:dobj].container,
         pid: progress[:dobj].pid,
         pre_assem_finished: nil,
-        timestamp: Time.now.strftime('%Y-%m-%d %H:%I:%S'),
+        timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S'),
         status: 'success'
       )
     }
