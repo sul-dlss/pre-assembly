@@ -45,7 +45,7 @@ group :deployment do
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
-  gem 'dlss-capistrano', '~> 3.10'
+  gem 'dlss-capistrano', require: false
 end
 
 group :development do
