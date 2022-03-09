@@ -49,15 +49,15 @@ module PreAssembly
       return :simple_book if content_structure == 'simple_book_rtl'
 
       {
-        Cocina::Models::Vocab.image => :simple_image,
-        Cocina::Models::Vocab.object => :file,
-        Cocina::Models::Vocab.book => :simple_book,
-        Cocina::Models::Vocab.manuscript => :simple_book,
-        Cocina::Models::Vocab.document => :document,
-        Cocina::Models::Vocab.map => :map,
-        Cocina::Models::Vocab.three_dimensional => :'3d',
-        Cocina::Models::Vocab.webarchive_seed => :'webarchive-seed',
-        Cocina::Models::Vocab.agreement => :file
+        Cocina::Models::ObjectType.image => :simple_image,
+        Cocina::Models::ObjectType.object => :file,
+        Cocina::Models::ObjectType.book => :simple_book,
+        Cocina::Models::ObjectType.manuscript => :simple_book,
+        Cocina::Models::ObjectType.document => :document,
+        Cocina::Models::ObjectType.map => :map,
+        Cocina::Models::ObjectType.three_dimensional => :'3d',
+        Cocina::Models::ObjectType.webarchive_seed => :'webarchive-seed',
+        Cocina::Models::ObjectType.agreement => :file
       }.fetch(object_type, content_structure.to_sym)
     end
 

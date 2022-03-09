@@ -81,7 +81,7 @@ RSpec.describe DiscoveryReport do
     let(:batch_context) { BatchContext.new(bc_params) }
     let(:batch) { PreAssembly::Batch.new(batch_context) }
     let(:dobj) { report.batch.objects_to_process.first }
-    let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
+    let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
     let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
     let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true) }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
