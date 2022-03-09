@@ -9,8 +9,8 @@ RSpec.describe 'Create Media Video object', type: :feature do
   let(:bundle_dir) { Rails.root.join('spec/test_data/media_video_test') }
   let(:bare_druid) { 'vd000bj0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'vd', '000', 'bj', '0000', bare_druid) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.media, access: cocina_model_world_access) }
+  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
+  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.media, access: cocina_model_world_access) }
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
   let(:exp_content_md) do

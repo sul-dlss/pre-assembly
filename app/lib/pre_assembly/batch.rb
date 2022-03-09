@@ -196,7 +196,7 @@ module PreAssembly
     # @return [Boolean] - true if object access is dark, false otherwise
     def dark?(druid)
       dobj = object_client(druid).find
-      dobj.access.access == 'dark'
+      dobj.access.view == 'dark'
     rescue Dor::Services::Client::NotFoundResponse
       { item_not_registered: true }
     rescue RuntimeError # HTTP timeout, network error, whatever

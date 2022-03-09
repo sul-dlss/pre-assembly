@@ -504,7 +504,7 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(object).to receive(:druid).and_return(druid)
         allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
-        allow(object).to receive(:object_type).and_return(Cocina::Models::Vocab.object) # this is what the object tag says, so we should get the file type out
+        allow(object).to receive(:object_type).and_return(Cocina::Models::ObjectType.object) # this is what the object tag says, so we should get the file type out
         add_object_files('tif')
         add_object_files('jp2')
       end

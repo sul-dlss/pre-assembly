@@ -6,8 +6,8 @@ RSpec.describe PreAssembly::Batch do
   let(:images_jp2_tif) { batch_setup(:images_jp2_tif) }
   let(:multimedia) { batch_setup(:multimedia) }
   let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, access: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_world_access) }
+  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
+  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_world_access) }
   let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
 
   before do
@@ -174,8 +174,8 @@ RSpec.describe PreAssembly::Batch do
         build(:batch_context, :folder_manifest)
       end
       let(:batch) { described_class.new(batch_context) }
-      let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, access: 'dark') }
-      let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::Vocab.image, access: cocina_model_dark_access) }
+      let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, view: 'dark') }
+      let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_dark_access) }
       let(:dsc_object) { instance_double(Dor::Services::Client::Object, find: dark_item) }
 
       before do

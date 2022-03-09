@@ -93,7 +93,7 @@ RSpec.describe PreAssembly::FileManifest do
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
       allow(dobj).to receive(:using_file_manifest).and_return(true)
-      allow(dobj).to receive(:object_type).and_return(Cocina::Models::Vocab.media)
+      allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
     end
   end
 

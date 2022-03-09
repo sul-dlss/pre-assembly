@@ -122,7 +122,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
-    cocina-models (0.67.1)
+    cocina-models (0.68.0)
       activesupport
       dry-struct (~> 1.0)
       dry-types (~> 1.1)
@@ -156,9 +156,9 @@ GEM
       capistrano-one_time_key
       capistrano-shared_configs
     docile (1.4.0)
-    dor-services-client (8.1.1)
+    dor-services-client (8.2.0)
       activesupport (>= 4.2, < 8)
-      cocina-models (~> 0.67.1)
+      cocina-models (~> 0.68.0)
       deprecation
       faraday (~> 2.0)
       faraday-retry

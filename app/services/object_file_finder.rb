@@ -4,8 +4,8 @@
 class ObjectFileFinder
   # @param [Array] stageable_items
   # @param [String] druid
-  # @param [Bool] does the user indicate that these batch should preserve/publish/shelve all files
-  # @param [Bool] does this druid have 'dark' access?
+  # @param [Bool] all_files_public does the user indicate that these batch should preserve/publish/shelve all files
+  # @param [Bool] dark does this druid have 'dark' access?
   def self.run(stageable_items:, druid:, dark:, all_files_public:)
     new(stageable_items: stageable_items, druid: druid, dark: dark, all_files_public: all_files_public).run
   end
