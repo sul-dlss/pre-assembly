@@ -33,9 +33,9 @@ RSpec.describe BatchContext, type: :model do
       it 'is not valid with chars other than alphanum, hyphen and underscore' do
         expect { bc.project_name = 's p a c e s' }.to change(bc, :valid?).to(false)
         bc.project_name = "apostrophe's"
-        expect(bc.valid?).to eq false
+        expect(bc.valid?).to be false
         bc.project_name = 'quotes"'
-        expect(bc.valid?).to eq false
+        expect(bc.valid?).to be false
       end
 
       it 'is valid with alphanum, hyphen and underscore chars' do

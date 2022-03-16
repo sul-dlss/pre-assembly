@@ -248,3 +248,10 @@ Rails/WhereExists: # new in 2.7
   Enabled: true
 Rails/WhereNot: # new in 2.8
   Enabled: true
+
+Style/NestedFileDirname: # new in 1.26
+  Enabled: true
+RSpec/BeEq: # new in 2.9.0
+  Enabled: true
+RSpec/BeNil: # new in 2.9.0
+  Enabled: true
