@@ -161,7 +161,12 @@ module PreAssembly
     # manifest columns. The column name to use is configured by the
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
-      manifest_rows.each_with_index { |r, i| raise "Missing 'object' in row #{i}: #{r}" unless r[:object] }
+      manifest_rows.each_with_index do |r, i|
+        unless r[:object]
+          raise 'Missing header row in manifest.csv' if i == 0
+          raise "Missing 'object' in row #{i}: #{r}"
+        end
+      end
       manifest_rows.map { |r| bundle_dir_with_path r[:object] }
     end
 
