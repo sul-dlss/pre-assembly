@@ -24,6 +24,7 @@ class DirectoryExistsCheck < OkComputer::Check
     self.directory = directory
   end
 
+  # rubocop:disable Metrics/MethodLength
   def check
     stat = File.stat(directory) if File.exist?(directory)
     if stat
@@ -38,6 +39,7 @@ class DirectoryExistsCheck < OkComputer::Check
       mark_failure
     end
   end
+  # rubocop:enable Metrics/MethodLength
 end
 
 # Confirm job_output_parent_dir exists (or else jobs cannot output)

@@ -95,9 +95,11 @@ RSpec.describe BatchContext, type: :model do
       expect(bc.batch).to be_a(PreAssembly::Batch)
     end
 
+    # rubocop:disable RSpec/IdenticalEqualityAssertion
     it 'caches the Batch' do
       expect(bc.batch).to be(bc.batch) # same instance
     end
+    # rubocop:enable RSpec/IdenticalEqualityAssertion
   end
 
   describe '#file_manifest' do

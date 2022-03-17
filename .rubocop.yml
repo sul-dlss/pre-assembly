@@ -20,9 +20,6 @@ AllCops:
     - 'db/**/*'
     - 'vendor/**/*'
 
-Layout/EmptyLineAfterGuardClause: # overkill
-  Enabled: false
-
 # rspec expect{...} is conventional
 Layout/SpaceBeforeBlockBraces:
   Exclude:
@@ -65,6 +62,9 @@ RSpec/MultipleExpectations:
   Max: 5
   Exclude:
     - 'spec/**/*_spec.rb'
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
 
 RSpec/NestedGroups:
   Max: 4 # default: 3

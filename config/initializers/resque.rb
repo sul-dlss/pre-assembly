@@ -3,7 +3,7 @@
 require 'resque/failure/redis_multi_queue'
 
 # load environment specific configuration
-config_file = Rails.root.join('config', 'resque.yml')
+config_file = Rails.root.join('config/resque.yml')
 resque_config = YAML.safe_load(ERB.new(File.read(config_file)).result)
 Resque.redis = resque_config[Rails.env.to_s]
 

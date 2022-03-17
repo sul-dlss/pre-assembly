@@ -16,6 +16,7 @@ class JobRun < ApplicationRecord
   # @return [ApplicationJob, nil] nil if unpersisted
   def enqueue!
     return nil unless persisted?
+
     "#{job_type.camelize}Job".constantize.perform_later(self)
   end
 
@@ -26,6 +27,7 @@ class JobRun < ApplicationRecord
 
   def send_notification
     return unless output_location
+
     JobMailer.with(job_run: self).completion_email.deliver_later
   end
 

@@ -10,6 +10,10 @@ class ObjectFileValidator
 
   attr_reader :errors, :counts
 
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/MethodLength
   def validate
     errors[:filename_no_extension] = filename_no_extension unless filename_no_extension.empty?
     @counts = {
@@ -41,6 +45,10 @@ class ObjectFileValidator
     errors.merge!(registration_check)
     self
   end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/MethodLength
 
   def as_json(*)
     { druid: druid.druid, errors: errors.compact, counts: counts }
@@ -55,6 +63,7 @@ class ObjectFileValidator
   # Checks filesystem for expected files
   def object_files_exist?
     return false if object.object_files.empty?
+
     object.object_files.map(&:path).all? { |path| File.readable?(path) }
   end
 

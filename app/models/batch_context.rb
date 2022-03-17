@@ -98,11 +98,13 @@ class BatchContext < ApplicationRecord
 
   def bundle_dir_path
     return unless bundle_dir
+
     Pathname.new(bundle_dir).expand_path
   end
 
   def output_dir_exists!
     return if Dir.exist?(output_dir)
+
     errors.add(:bundle_dir, "Output directory (#{output_dir}) should already exist, but doesn't")
     throw(:abort)
   end
@@ -115,23 +117,29 @@ class BatchContext < ApplicationRecord
     FileUtils.mkdir_p(output_dir)
   end
 
+  # rubocop:disable Metrics/AbcSize
   def verify_bundle_directory
     return if errors.key?(:bundle_dir)
     return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
+
     errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
     errors.add(:bundle_dir, "missing file manifest: #{bundle_dir}/#{file_manifest}") if using_file_manifest && !File.exist?(File.join(bundle_dir, file_manifest))
   end
+  # rubocop:enable Metrics/AbcSize
 
   def verify_bundle_dir_path
     return if errors.key?(:bundle_dir)
+
     match_flag = nil
     bundle_dir_path&.ascend do |sub_path|
       next unless ::ALLOWABLE_BUNDLE_DIRS.include?(sub_path.to_s)
+
       match_flag = sub_path
       break
     end
     # match_flag = nil means we are not in the sub path, match_flag == bundle_dir_path means the user only entered the root path.
     return unless match_flag.nil? || match_flag == bundle_dir_path
+
     errors.add(:bundle_dir, 'not a sub directory of allowed parent directories.')
   end
 end
