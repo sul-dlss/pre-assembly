@@ -12,7 +12,7 @@ class DiscoveryReport
   def initialize(batch)
     raise ArgumentError unless batch.is_a?(PreAssembly::Batch)
 
-    @start_time = Time.now
+    @start_time = Time.now.utc
     @batch = batch
     @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: start_time.to_s, total_size: 0 }
   end
@@ -39,7 +39,7 @@ class DiscoveryReport
   def log_progress_info(dobj)
     {
       pid: dobj.pid,
-      timestamp: Time.now.strftime('%Y-%m-%d %H:%M:%S')
+      timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
     }
   end
 
