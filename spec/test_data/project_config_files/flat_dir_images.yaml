@@ -9,7 +9,3 @@ bundle_dir:           'spec/test_data/flat_dir_images'
 
 content_md_creation:
   style:              'default'
-
-# stageable_discovery:
-#   glob:               ~
-#   regex:              ~

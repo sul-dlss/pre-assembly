@@ -251,8 +251,8 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#discover_items_via_crawl' do
     it 'returns expected information' do
-      items = %w[abc.txt def.txt ghi.txt 123.tif 456.tif 456.TIF].map { |i| flat_dir_images.bundle_dir_with_path i }
-      allow(flat_dir_images).to receive(:dir_glob).and_return(items)
+      # these are the actual files in the spec/test_data/flat_dir_images bundle directory
+      items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.bundle_dir_with_path i }
       expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.bundle_dir)).to eq(items.sort)
     end
   end
@@ -266,23 +266,12 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#dir_glob' do
-    it 'returns expected information' do
-      exp = [1, 2, 3].map { |n| flat_dir_images.bundle_dir_with_path "image#{n}.tif" }
-      expect(flat_dir_images.send(:dir_glob, flat_dir_images.bundle_dir_with_path('*.tif'))).to eq(exp)
-    end
-  end
-
   describe 'file and directory utilities' do
     let(:relative) { 'abc/def.jpg' }
     let(:full) { flat_dir_images.bundle_dir_with_path(relative) }
 
     it '#bundle_dir_with_path returns expected value' do
       expect(flat_dir_images.bundle_dir_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
-    end
-
-    it '#relative_path returns expected value' do
-      expect(flat_dir_images.send(:relative_path, flat_dir_images.bundle_dir, full)).to eq(relative)
     end
   end
 end

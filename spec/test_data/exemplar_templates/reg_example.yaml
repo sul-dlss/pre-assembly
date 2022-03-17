@@ -5,10 +5,6 @@ project_style:
 
 bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
 
-stageable_discovery:
-  glob:  '00/*'
-  regex: ~
-
 manifest:   ~
 
 project_name:      'Gould'
