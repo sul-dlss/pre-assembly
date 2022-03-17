@@ -3,6 +3,7 @@
 class JobRunsController < ApplicationController
   def create
     raise ActionController::ParameterMissing, :batch_context_id unless job_run_params[:batch_context_id]
+
     @job_run = JobRun.new(job_run_params)
     if @job_run.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

@@ -35,6 +35,7 @@ module PreAssembly
 
     def load_skippables
       return unless File.readable?(progress_log_file)
+
       docs = YAML.load_stream(File.read(progress_log_file))
       docs = docs.documents if docs.respond_to? :documents
       docs.each do |yd|
@@ -66,12 +67,11 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
-    ####
-    # Discovery of object containers and stageable items.
-    #
     # Discovers the digital object containers and the stageable items within them.
     # For each container, creates a new Digitalobject.
     # @return [Array<DigitalObject>]
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def digital_objects
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         stageable_items = discover_items_via_crawl(c)
@@ -88,6 +88,8 @@ module PreAssembly
                           dark: dark)
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
     # @param [DigitalObject] dobj
@@ -96,9 +98,8 @@ module PreAssembly
       dobj.object_files.each { |file| file.provider_md5 = file.md5 }
     end
 
-    ####
-    # Digital object processing.
-    ####
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def process_digital_objects
       num_no_file_warnings = 0
       # Get the non-skipped objects to process
@@ -130,6 +131,8 @@ module PreAssembly
       log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
       log "#{total_obj || 0} objects pre-assembled"
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     # @return [Array<DigitalObject>]
     def objects_to_process
@@ -162,10 +165,10 @@ module PreAssembly
     # user invoking the pre-assembly script.
     def discover_containers_via_manifest
       manifest_rows.each_with_index do |r, i|
-        unless r[:object]
-          raise 'Missing header row in manifest.csv' if i == 0
-          raise "Missing 'object' in row #{i}: #{r}"
-        end
+        next if r[:object]
+        raise 'Missing header row in manifest.csv' if i == 0
+
+        raise "Missing 'object' in row #{i}: #{r}"
       end
       manifest_rows.map { |r| bundle_dir_with_path r[:object] }
     end
@@ -179,6 +182,8 @@ module PreAssembly
     # the remnants are vestiges of v3-legacy branch that we didn't have time to properly disposition.
     # behavior should either be fully removed, or properly reimplemented and tested.
     # see: #274, https://github.com/sul-dlss/pre-assembly/blob/v3-legacy/config/projects/TEMPLATE.yaml
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
     def discover_items_via_crawl(root)
       glob  = stageable_discovery[:glob] || '**/*' # default value
       regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]
@@ -187,10 +192,13 @@ module PreAssembly
         rel_path = relative_path(root, item)
         next if regex && rel_path !~ regex
         next if stageable_discovery[:files_only] && File.directory?(item)
+
         items.push(item)
       end
       items.sort
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     # A convenience method to return all ObjectFiles for all digital objects.
     # Also used for stubbing during testing.
@@ -231,7 +239,7 @@ module PreAssembly
     end
 
     def dir_glob(pattern)
-      Dir.glob(pattern).sort
+      Dir.glob(pattern)
     end
   end
 end

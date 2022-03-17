@@ -51,6 +51,7 @@ class ObjectFileFinder
   def base_dir(path)
     bd = File.dirname(path)
     return bd unless bd == '.'
+
     raise ArgumentError, "Bad arg to get_base_dir(#{path.inspect})"
   end
 

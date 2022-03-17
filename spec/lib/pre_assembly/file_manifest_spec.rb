@@ -87,6 +87,7 @@ RSpec.describe PreAssembly::FileManifest do
   end
 
   # some helper methods for these tests
+  # rubocop:disable Metrics/AbcSize
   def setup_dobj(druid, object, file_manifest)
     allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
     PreAssembly::DigitalObject.new(bc.batch, container: object, stager: PreAssembly::CopyStager, dark: false).tap do |dobj|
@@ -96,6 +97,7 @@ RSpec.describe PreAssembly::FileManifest do
       allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   def exp_xml_object_aa111aa1111
     <<-XML

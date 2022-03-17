@@ -11,6 +11,7 @@ class DiscoveryReport
   # @param [PreAssembly::Batch] batch
   def initialize(batch)
     raise ArgumentError unless batch.is_a?(PreAssembly::Batch)
+
     @start_time = Time.now
     @batch = batch
     @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: start_time.to_s, total_size: 0 }
@@ -18,8 +19,10 @@ class DiscoveryReport
 
   # @return [Enumerable<Hash<Symbol => Object>>]
   # @yield [Hash<Symbol => Object>] data structure about a DigitalObject
+  # rubocop:disable Metrics/AbcSize
   def each_row
     return enum_for(:each_row) unless block_given?
+
     batch.objects_to_process.each do |dobj|
       row = process_dobj(dobj)
       summary[:total_size] += row.counts[:total_size]
@@ -30,6 +33,7 @@ class DiscoveryReport
       yield row
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   # return [Hash] progress info that will be logged as json in a running log file
   def log_progress_info(dobj)

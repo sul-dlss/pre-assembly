@@ -13,8 +13,8 @@ module PreAssembly
     LOG_FORMAT    = "%-6s -- %s -- %s\n"
     TIME_FORMAT   = '%Y-%m-%d %H:%M:%S'
 
-    @@log       ||= Logger.new(File.join(Rails.root, 'log', "#{Rails.env}.log"))
-    @@log.level   = LEVELS[:info]
+    @@log ||= Logger.new(Rails.root.join('log', "#{Rails.env}.log"))
+    @@log.level = LEVELS[:info]
 
     @@log.formatter = proc do |severity, datetime, _progname, msg|
       format(LOG_FORMAT, severity, datetime.strftime(TIME_FORMAT), msg)

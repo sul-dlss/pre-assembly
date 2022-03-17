@@ -41,6 +41,7 @@ module PreAssembly
 
     # set this object's content_md_creation_style
     # @return [Symbol]
+    # rubocop:disable Metrics/MethodLength
     def content_md_creation_style
       # map the object type to content metadata creation styles supported by the assembly-objectfile gem
 
@@ -60,6 +61,7 @@ module PreAssembly
         Cocina::Models::ObjectType.agreement => :file
       }.fetch(object_type, content_structure.to_sym)
     end
+    # rubocop:enable Metrics/MethodLength
 
     ####
     # The main process.
@@ -67,9 +69,11 @@ module PreAssembly
 
     # @param [Boolean] file_attributes_supplied - set to true if publish/preserve/shelve attribs are supplied
     # @return [Hash] the status of the attempt and an optional message
+    # rubocop:disable Metrics/AbcSize
     def pre_assemble(file_attributes_supplied = false)
       log "  - pre_assemble(#{source_id}) started"
       return { status: 'error', message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" } if !openable? && current_object_version > 1
+
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata(file_attributes_supplied)
@@ -77,6 +81,7 @@ module PreAssembly
       log "    - pre_assemble(#{pid}) finished"
       { status: 'success' }
     end
+    # rubocop:enable Metrics/AbcSize
 
     ####
     # Determining the druid.

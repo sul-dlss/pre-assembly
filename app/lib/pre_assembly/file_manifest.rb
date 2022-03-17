@@ -29,6 +29,8 @@ module PreAssembly
       load_manifest # this will cache the entire manifest in @rows and @manifest
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def load_manifest
       # load file into @rows and then build up @manifest
       @rows = CsvImporter.parse_to_hash(@csv_filename)
@@ -53,11 +55,18 @@ module PreAssembly
         manifest[object][:files] << files_hash.merge(role: role, thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type)
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/MethodLength
     def generate_cm(druid:, object:, content_md_creation_style:)
       return '' unless manifest[object]
+
       current_directory = Dir.pwd
       files = manifest[object][:files]
       current_seq = ''
@@ -113,6 +122,10 @@ module PreAssembly
       FileUtils.cd(current_directory)
       builder.to_xml
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Metrics/MethodLength
 
     def get_checksum(md5_file)
       s = File.read(md5_file)
