@@ -3,7 +3,6 @@
 module PreAssembly
   class ObjectFile < Assembly::ObjectFile
     include ActiveModel::AttributeMethods
-    attr_accessor :exclude_from_content
 
     alias_attribute :checksum, :provider_md5
 
@@ -13,7 +12,6 @@ module PreAssembly
     def initialize(path, params = {})
       super
       @provider_md5 ||= params[:checksum]
-      @exclude_from_content = params[:exclude_from_content] || false
     end
 
     # This is a bit of a lie.  ObjectFiles with the same relative_path but different checksums
