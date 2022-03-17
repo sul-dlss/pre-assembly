@@ -156,7 +156,7 @@ module PreAssembly
       { status: 'error', message: 'pre_assemble did not complete' }
     end
 
-    # Discover object containers from the manifest file suppled in the bundle_dir.
+    # Discover object containers from the object manifest file suppled in the bundle_dir.
     def discover_containers_via_manifest
       manifest_rows.each_with_index do |r, i|
         next if r[:object]
@@ -168,7 +168,7 @@ module PreAssembly
     end
 
     # A method to discover stageable items (i.e. files) with a given object folder.
-    # Takes a root path of the object folder (as supplied in the manifest).
+    # Takes a root path of the object folder (as supplied in the object manifest).
     # It then finds all files within with an eager glob pattern.
     def discover_items_via_crawl(root)
       Dir.glob("#{root}/**/*")
