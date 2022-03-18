@@ -257,14 +257,6 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#exclude_from_content' do
-    it 'behaves correctly' do
-      skip 'web app does not need to support exclude_from_content'
-      expect(multimedia.send(:exclude_from_content, multimedia.bundle_dir_with_path('image1.tif'))).to be_falsey
-      expect(multimedia.send(:exclude_from_content, multimedia.bundle_dir_with_path('descMetadata.xml'))).to be_truthy
-    end
-  end
-
   describe '#all_object_files' do
     it 'returns Array of object_files from all DigitalObjects' do
       fake_files = [[1, 2], [3, 4], [5, 6]]

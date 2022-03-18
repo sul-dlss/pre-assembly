@@ -24,7 +24,7 @@ module PreAssembly
 
       # otherwise use the content metadata generation gem (assembly-objectfile)
       Assembly::ContentMetadata.create_content_metadata(druid: druid_id,
-                                                        objects: content_object_files,
+                                                        objects: object_files.sort,
                                                         add_exif: false,
                                                         bundle: content_md_creation.to_sym,
                                                         style: content_md_creation_style,
@@ -36,10 +36,5 @@ module PreAssembly
 
     attr_reader :druid_id, :content_md_creation, :object_files, :using_file_manifest, :object,
                 :content_md_creation_style, :file_manifest, :reading_order, :add_file_attributes
-
-    # Object files that should be included in content metadata.
-    def content_object_files
-      object_files.reject(&:exclude_from_content).sort
-    end
   end
 end
