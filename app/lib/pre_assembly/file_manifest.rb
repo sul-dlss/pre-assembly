@@ -60,17 +60,25 @@ module PreAssembly
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
-    # rubocop:disable Metrics/MethodLength
     def generate_cm(druid:, object:, content_md_creation_style:)
       return '' unless manifest[object]
 
-      current_directory = Dir.pwd
+      current_directory = Dir.pwd # this must be done before resources_hash is built
+      resources = resources_hash(object: object)
+      builder = content_md_xml_builder(druid: druid, resources: resources, object: object, content_md_creation_style: content_md_creation_style)
+
+      # write the contentMetadata.xml file
+      FileUtils.cd(current_directory)
+      builder.to_xml
+    end
+
+    # return hash containing resource info to be used in generating content_metadata
+    # rubocop:disable Metrics/AbcSize
+    def resources_hash(object:)
+      resources = {}
+
       files = manifest[object][:files]
       current_seq = ''
-      resources = {}
 
       # group the files into resources based on the sequence number defined in the manifest
       #  a new sequence number triggers a new resource
@@ -86,46 +94,60 @@ module PreAssembly
         resources[current_seq.to_i][:thumb] = file[:thumb] if file[:thumb] # any true/yes thumb attribute for any file in that resource triggers the whole resource as thumb=true
       end
 
-      # generate the base of the XML file for this new druid
-      # generate content metadata
-      builder = Nokogiri::XML::Builder.new do |xml|
+      resources
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    # generate the base of the contentMetadata XML file for this new druid
+    # generate content metadata
+    def content_md_xml_builder(druid:, resources:, object:, content_md_creation_style:)
+      Nokogiri::XML::Builder.new do |xml|
         xml.contentMetadata(objectId: druid, type: content_type(content_md_creation_style)) do
           resources.keys.sort.each do |seq|
             resource = resources[seq]
             resource_attributes = { sequence: seq.to_s, id: "#{druid}_#{seq}", type: resource[:resource_type] }
-            resource_attributes[:thumb] = 'yes' if resource[:thumb] # add the thumb=yes attribute to the resource if it was marked that way in the manifest
-            xml.resource(resource_attributes) do
-              xml.label resource[:label]
+            # add the thumb=yes attribute to the resource if it was marked that way in the manifest
+            resource_attributes[:thumb] = 'yes' if resource[:thumb]
 
-              resource[:files].each do |file|
-                filename = file[:filename] || ''
-                publish  = file[:publish]  || 'true'
-                preserve = file[:preserve] || 'true'
-                shelve   = file[:shelve]   || 'true'
-
-                # look for a checksum file named the same as this file
-                checksum = nil
-                FileUtils.cd(File.join(bundle_dir, object))
-                md_files = Dir.glob("**/#{filename}.md5")
-                checksum = get_checksum(File.join(bundle_dir, object, md_files[0])) if md_files.size == 1 # we found a corresponding md5 file, read it
-                file_hash = { id: filename, preserve: preserve, publish: publish, shelve: shelve }
-                file_hash[:role] = file[:role] if file[:role]
-
-                xml.file(file_hash) do
-                  xml.checksum(checksum, type: 'md5') if checksum.present?
-                end
-              end
-            end
+            resource_xml_builder(resource: resource, resource_attributes: resource_attributes, object: object, xml: xml)
           end
         end
       end
-      FileUtils.cd(current_directory)
-      builder.to_xml
+    end
+
+    def resource_xml_builder(resource:, resource_attributes:, object:, xml:)
+      xml.resource(resource_attributes) do
+        xml.label resource[:label]
+
+        resource[:files].each do |file|
+          file_xml_builder(file: file, object: object, xml: xml)
+        end
+      end
+    end
+
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity
+    def file_xml_builder(file:, object:, xml:)
+      filename = file[:filename] || ''
+      publish  = file[:publish]  || 'true'
+      preserve = file[:preserve] || 'true'
+      shelve   = file[:shelve]   || 'true'
+
+      # look for a checksum file named the same as this file
+      checksum = nil
+      FileUtils.cd(File.join(bundle_dir, object))
+      md5_files = Dir.glob("**/#{filename}.md5")
+      # if we find a corresponding md5 file, read it
+      checksum = get_checksum(File.join(bundle_dir, object, md5_files[0])) if md5_files.size == 1
+      file_hash = { id: filename, preserve: preserve, publish: publish, shelve: shelve }
+      file_hash[:role] = file[:role] if file[:role]
+
+      xml.file(file_hash) do
+        xml.checksum(checksum, type: 'md5') if checksum.present?
+      end
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
-    # rubocop:enable Metrics/MethodLength
 
     def get_checksum(md5_file)
       s = File.read(md5_file)
