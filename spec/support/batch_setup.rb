@@ -14,7 +14,6 @@ def noko_doc(text_xml)
   Nokogiri.XML(text_xml) { |conf| conf.default_xml.noblanks }
 end
 
-# rubocop:disable Metrics/MethodLength
 def batch_context_from_hash(proj)
   hash = hash_from_proj(proj)
   cmc = hash['content_md_creation']['style']
@@ -29,4 +28,3 @@ def batch_context_from_hash(proj)
     user: build(:user, sunet_id: 'Jdoe')
   )
 end
-# rubocop:enable Metrics/MethodLength

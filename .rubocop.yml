@@ -25,6 +25,12 @@ Layout/SpaceBeforeBlockBraces:
   Exclude:
     - 'spec/**/*_spec.rb'
 
+# Configuration parameters: AllowURI, URISchemes.
+Layout/LineLength:
+  Max: 200
+  Exclude:
+    - 'config/initializers/**/*.rb' # generated files
+
 Metrics/BlockLength:
   IgnoredMethods:
     - SimpleForm.setup
@@ -34,11 +40,8 @@ Metrics/BlockLength:
     - context
     - it
 
-# Configuration parameters: AllowURI, URISchemes.
-Layout/LineLength:
-  Max: 200
-  Exclude:
-    - 'config/initializers/**/*.rb' # generated files
+Metrics/MethodLength:
+  Max: 15
 
 RSpec/ContextWording:
   Enabled: false # too dogmatic

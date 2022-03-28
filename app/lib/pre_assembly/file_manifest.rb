@@ -30,7 +30,6 @@ module PreAssembly
     end
 
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
     def load_manifest
       # load file into @rows and then build up @manifest
       @rows = CsvImporter.parse_to_hash(@csv_filename)
@@ -56,7 +55,6 @@ module PreAssembly
       end
     end
     # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML

@@ -41,7 +41,6 @@ module PreAssembly
 
     # set this object's content_md_creation_style
     # @return [Symbol]
-    # rubocop:disable Metrics/MethodLength
     def content_md_creation_style
       # map the object type to content metadata creation styles supported by the assembly-objectfile gem
 
@@ -61,7 +60,6 @@ module PreAssembly
         Cocina::Models::ObjectType.agreement => :file
       }.fetch(object_type, content_structure.to_sym)
     end
-    # rubocop:enable Metrics/MethodLength
 
     ####
     # The main process.
