@@ -71,7 +71,6 @@ module PreAssembly
     # For each container, creates a new Digitalobject.
     # @return [Array<DigitalObject>]
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
     def digital_objects
       @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
         stageable_items = discover_items_via_crawl(c)
@@ -89,7 +88,6 @@ module PreAssembly
       end
     end
     # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
 
     # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
     # @param [DigitalObject] dobj
