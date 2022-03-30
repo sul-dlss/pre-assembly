@@ -53,7 +53,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'puma', '~> 5.0'
+  gem 'puma', '~> 5.6'
   gem 'pry-byebug'
   gem 'rubocop'
   gem 'rubocop-rails'
