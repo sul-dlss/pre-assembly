@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v2#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto-v2.0.xsd">
+<Description>
+<MeasurementUnit>pixel</MeasurementUnit>
+<OCRProcessing ID="IdOcr"><ocrProcessingStep><processingDateTime>2016-08-04</processingDateTime><processingSoftware><softwareCreator>ABBYY</softwareCreator><softwareName>ABBYY Recognition Server</softwareName><softwareVersion>4.0</softwareVersion></processingSoftware></ocrProcessingStep></OCRProcessing>
+</Description>
+<Styles>
+<ParagraphStyle ID="StyleId-FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF-" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0"/>
+<ParagraphStyle ID="StyleId-05C53020-50BA-4464-B6C0-4BCF6E42D5E7-" ALIGN="Center" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="30"/>
+</Styles>
+<Layout>
+<Page ID="Page1" PHYSICAL_IMG_NR="1">
+<PrintSpace HEIGHT="2038" WIDTH="1230" VPOS="0" HPOS="0">
+<TextBlock ID="BlockId-86E0960C-BB53-47D0-A34C-87CBED078152-" HEIGHT="225" WIDTH="603" VPOS="118" HPOS="532" STYLEREFS="StyleId-05C53020-50BA-4464-B6C0-4BCF6E42D5E7-">
+<TextLine HEIGHT="87" WIDTH="591" VPOS="124" HPOS="538"><String CONTENT="George" HEIGHT="79" WIDTH="245" VPOS="132" HPOS="538"/><SP WIDTH="49" VPOS="129" HPOS="784"/><String CONTENT="Stirling’s" HEIGHT="83" WIDTH="295" VPOS="124" HPOS="834"/></TextLine>
+<TextLine HEIGHT="83" WIDTH="288" VPOS="254" HPOS="689"><String CONTENT="Heritage" HEIGHT="83" WIDTH="288" VPOS="254" HPOS="689"/></TextLine>
+</TextBlock>
+</PrintSpace>
+</Page>
+</Layout>
+</alto>

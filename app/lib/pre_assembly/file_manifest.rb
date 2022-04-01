@@ -58,12 +58,12 @@ module PreAssembly
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
-    def generate_cm(druid:, object:, content_md_creation_style:)
+    def generate_cm(druid:, object:, content_md_creation_style:, reading_order: 'ltr')
       return '' unless manifest[object]
 
       current_directory = Dir.pwd # this must be done before resources_hash is built
       resources = resources_hash(object: object)
-      builder = content_md_xml_builder(druid: druid, resources: resources, object: object, content_md_creation_style: content_md_creation_style)
+      builder = content_md_xml_builder(druid: druid, resources: resources, object: object, content_md_creation_style: content_md_creation_style, reading_order: reading_order)
 
       # write the contentMetadata.xml file
       FileUtils.cd(current_directory)
@@ -98,9 +98,10 @@ module PreAssembly
 
     # generate the base of the contentMetadata XML file for this new druid
     # generate content metadata
-    def content_md_xml_builder(druid:, resources:, object:, content_md_creation_style:)
+    def content_md_xml_builder(druid:, resources:, object:, content_md_creation_style:, reading_order: 'ltr')
       Nokogiri::XML::Builder.new do |xml|
         xml.contentMetadata(objectId: druid, type: content_type(content_md_creation_style)) do
+          xml.bookData(readingOrder: reading_order) if content_md_creation_style == :simple_book
           resources.keys.sort.each do |seq|
             resource = resources[seq]
             resource_attributes = { sequence: seq.to_s, id: "#{druid}_#{seq}", type: resource[:resource_type] }

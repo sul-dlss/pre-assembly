@@ -1,0 +1,10 @@
+object,filename,label,sequence,publish,preserve,shelve,resource_type,role
+content,page_0001.jpg,page 1,1,no,yes,no,page,
+content,page_0001.pdf,page 1,1,yes,yes,yes,page,
+content,page_0001.xml,page 1,1,yes,yes,yes,page,transcription
+content,page_0002.jpg,page 2,2,no,yes,no,page,
+content,page_0002.pdf,page 2,2,yes,yes,yes,page,
+content,page_0002.xml,page 2,2,yes,yes,yes,page,transcription
+content,page_0003.jpg,page 3,3,no,yes,no,page,
+content,page_0003.pdf,page 3,3,yes,yes,yes,page,
+content,page_0003.xml,page 3,3,yes,yes,yes,page,transcription
