@@ -9,7 +9,3 @@ bundle_dir:           'spec/test_data/obj_dirs_images'
 
 content_md_creation:
   style:              'none'
-
-# stageable_discovery:
-#   glob:               ~
-#   regex:              ~

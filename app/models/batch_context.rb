@@ -57,12 +57,6 @@ class BatchContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
-  # TODO: See #274. Possibly need to keep for Media style projects (if they don't use manifest?)
-  # @deprecated - since it's not currently configurable, and non-default usage isn't tested anyway
-  def stageable_discovery
-    {}
-  end
-
   def file_manifest
     'file_manifest.csv'
   end

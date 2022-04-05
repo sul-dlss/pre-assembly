@@ -9,8 +9,3 @@ bundle_dir:           'spec/test_data/images_jp2_tif'
 
 content_md_creation:
   style:              'default'
-
-# stageable_discovery:
-#   use_container:      false
-#   glob:               '**/*'
-#   regex:              '(?ix) \. (tif|jp2) $'

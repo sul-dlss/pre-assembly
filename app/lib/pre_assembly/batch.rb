@@ -21,7 +21,6 @@ module PreAssembly
              :progress_log_file,
              :project_name,
              :set_druid_id,
-             :stageable_discovery,
              :staging_style_symlink,
              :using_file_manifest,
              to: :batch_context
@@ -157,10 +156,7 @@ module PreAssembly
       { status: 'error', message: 'pre_assemble did not complete' }
     end
 
-    # Discover object containers from a manifest.
-    # The relative path to the container is supplied in one of the
-    # manifest columns. The column name to use is configured by the
-    # user invoking the pre-assembly script.
+    # Discover object containers from the object manifest file suppled in the bundle_dir.
     def discover_containers_via_manifest
       manifest_rows.each_with_index do |r, i|
         next if r[:object]
@@ -171,32 +167,12 @@ module PreAssembly
       manifest_rows.map { |r| bundle_dir_with_path r[:object] }
     end
 
-    # A method to discover object containers or stageable items.
-    # Takes a root path (e.g, bundle_dir) and a discovery data structure.
-    # The latter drives the two-stage discovery process:
-    #   - A glob pattern to obtain a list of dirs and/or files.
-    #   - A regex to filter that list.
-    # FIXME: configuration of aforementioned stageable_discovery data structure is currently unsupported.
-    # the remnants are vestiges of v3-legacy branch that we didn't have time to properly disposition.
-    # behavior should either be fully removed, or properly reimplemented and tested.
-    # see: #274, https://github.com/sul-dlss/pre-assembly/blob/v3-legacy/config/projects/TEMPLATE.yaml
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
+    # A method to discover stageable items (i.e. files) with a given object folder.
+    # Takes a root path of the object folder (as supplied in the object manifest).
+    # It then finds all files within with an eager glob pattern.
     def discover_items_via_crawl(root)
-      glob  = stageable_discovery[:glob] || '**/*' # default value
-      regex = Regexp.new(stageable_discovery[:regex]) if stageable_discovery[:regex]
-      items = []
-      dir_glob(File.join(root, glob)).each do |item|
-        rel_path = relative_path(root, item)
-        next if regex && rel_path !~ regex
-        next if stageable_discovery[:files_only] && File.directory?(item)
-
-        items.push(item)
-      end
-      items.sort
+      Dir.glob("#{root}/**/*")
     end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
 
     # A convenience method to return all ObjectFiles for all digital objects.
     # Also used for stubbing during testing.
@@ -218,26 +194,6 @@ module PreAssembly
       d = druid
       d = "druid:#{d}" unless d.start_with?('druid:')
       @object_client ||= Dor::Services::Client.object(d)
-    end
-
-    ####
-    # File and directory utilities.
-    ####
-
-    # @return [String] base
-    # @return [String] path
-    # @return [String] portion of the path after the base, without trailing slashes (if directory)
-    # @example Usage
-    #   b.relative_path('BLAH/BLAH', 'BLAH/BLAH/foo/bar.txt'
-    #   => 'foo/bar.txt'
-    #   b.relative_path('BLAH/BLAH', 'BLAH/BLAH/foo///'
-    #   => 'foo'
-    def relative_path(base, path)
-      Pathname.new(path).relative_path_from(Pathname.new(base)).cleanpath.to_s
-    end
-
-    def dir_glob(pattern)
-      Dir.glob(pattern)
     end
   end
 end

@@ -14,13 +14,3 @@ content_md_creation:
   file_manifest:     'file_manifest.csv'
 
 using_file_manifest:  true
-
-object_discovery:
-  use_manifest:       true
-  glob:               '*'
-  regex:              '^[a-z][a-z]\d\d\d[a-z][a-z]\d\d\d\d$'
-
-stageable_discovery:
-  use_container:      false
-  glob:               '**/*/*'
-  regex:              '^((?!.md5).)*$'
