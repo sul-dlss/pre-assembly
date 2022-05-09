@@ -22,7 +22,7 @@ module PreAssembly
     # @param [String] label The label for this object
     # @param [String] pid The identifier for the item
     # @param [String] source_id The source identifier
-    # @param [Object] stager the implementation of how to stage an object
+    # @param [PreAssembly::CopyStager or PreAssembly::LinkStager] stager the implementation of how to stage an object
     # @param [Bool] dark does this object have "dark" access
     # rubocop:disable Metrics/ParameterLists
     def initialize(batch, container: '', stageable_items: nil, object_files: nil,
@@ -114,7 +114,6 @@ module PreAssembly
     def stage_files
       log "    - staging(druid_tree_dir = #{assembly_directory.druid_tree_dir.inspect})"
       stageable_items.each do |si_path|
-        # determine destination of staged file by looking to see if it is a known datastream XML file or not
         destination = assembly_directory.path_for(si_path)
         log "      - staging(#{si_path}, #{destination})", :debug
         stager.stage si_path, destination
