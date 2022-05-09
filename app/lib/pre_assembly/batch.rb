@@ -56,7 +56,7 @@ module PreAssembly
         project_name: project_name,
         bundle_dir: bundle_dir,
         assembly_staging_dir: Settings.assembly_staging_dir,
-        environment: ENV['RAILS_ENV']
+        environment: ENV.fetch('RAILS_ENV')
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
