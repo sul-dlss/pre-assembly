@@ -6,7 +6,7 @@ DeviseRemoteUser.configure do |config|
   config.env_key = lambda do |env|
     if env['REMOTE_USER']
       env['REMOTE_USER']
-    elsif Rails.env.development? && ENV.fetch('REMOTE_USER')
+    elsif Rails.env.development? && ENV.fetch('REMOTE_USER', nil)
       ENV['REMOTE_USER']
     end
   end
