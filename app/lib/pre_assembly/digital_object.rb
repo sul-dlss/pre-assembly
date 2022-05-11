@@ -22,7 +22,7 @@ module PreAssembly
     # @param [String] label The label for this object
     # @param [String] pid The identifier for the item
     # @param [String] source_id The source identifier
-    # @param [PreAssembly::CopyStager or PreAssembly::LinkStager] stager the implementation of how to stage an object
+    # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
     # @param [Bool] dark does this object have "dark" access
     # rubocop:disable Metrics/ParameterLists
     def initialize(batch, container: '', stageable_items: nil, object_files: nil,
