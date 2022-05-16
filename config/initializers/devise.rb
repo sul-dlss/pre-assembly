@@ -7,7 +7,7 @@ DeviseRemoteUser.configure do |config|
     if env['REMOTE_USER']
       env['REMOTE_USER']
     elsif Rails.env.development? && ENV.fetch('REMOTE_USER', nil)
-      ENV['REMOTE_USER']
+      ENV.fetch('REMOTE_USER')
     end
   end
   config.auto_create = true
