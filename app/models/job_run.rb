@@ -12,7 +12,7 @@ class JobRun < ApplicationRecord
     'preassembly' => 1
   }
 
-  # throw to asynchronous processing via correct Job class for job_type
+  # send to asynchronous processing via correct Job class for job_type
   # @return [ApplicationJob, nil] nil if unpersisted
   def enqueue!
     return nil unless persisted?

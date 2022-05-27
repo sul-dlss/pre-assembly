@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-# Previously a single untested 200-line method from ./lib/pre_assembly/reporting.rb
 # Takes a Batch, enumerates report data via #each_row
+# To use:
+#   report = DiscoveryReport.new(batch_context.batch)
+#   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :start_time, :summary
 
@@ -17,6 +19,7 @@ class DiscoveryReport
     @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: start_time.to_s, total_size: 0 }
   end
 
+  # this is where we do the work -- by calling process_dobj on each object in the batch
   # @return [Enumerable<Hash<Symbol => Object>>]
   # @yield [Hash<Symbol => Object>] data structure about a DigitalObject
   # rubocop:disable Metrics/AbcSize
@@ -65,7 +68,7 @@ class DiscoveryReport
   end
 
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
-  # @return [Jbuilder] call obj.to_builder.target! for the JSON string
+  # @return [Jbuilder] (caller needs obj.to_builder.target! for the JSON string)
   def to_builder
     Jbuilder.new do |json|
       json.rows { json.array!(each_row) }
