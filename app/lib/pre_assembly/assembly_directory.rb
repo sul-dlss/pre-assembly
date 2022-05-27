@@ -18,7 +18,7 @@ module PreAssembly
     end
 
     def path_for(item_path)
-      # these are the names of special datastream files that will be staged in the 'metadata' folder instead of the 'content' folder
+      # these are the names of files that will be staged in the 'metadata' folder instead of the 'content' folder
       metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
 
       metadata_files.include?(File.basename(item_path).downcase) ? metadata_dir : content_dir
