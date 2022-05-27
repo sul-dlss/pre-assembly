@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# used by DiscoveryReport, this class validates an individual object's files
 class ObjectFileValidator
   def initialize(object:, batch:)
     @object = object

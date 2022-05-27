@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# This class generates custom contentMetadata from a file manifest, used if the user opts for this when starting a job
+# This class generates custom contentMetadata from a file manifest (file_manifest.csv), used if the user opts for this when starting a job
 # Documentation: https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-complex-content
 
 # It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
@@ -26,7 +26,7 @@ module PreAssembly
       @csv_filename = File.join(@bundle_dir, csv_file)
       @manifest = {}
       # read CSV
-      load_manifest # this will cache the entire manifest in @rows and @manifest
+      load_manifest # this will cache the entire file manifest csv in @rows and @manifest
     end
 
     # rubocop:disable Metrics/AbcSize
