@@ -93,7 +93,7 @@ its sessions. To override that behavior and specify an alternate user, you can m
 environment variable at startup, like so:
 
 ```bash
-REMOTE_USER="ima_user" bundle exec rails server
+REMOTE_USER=ima_user bin/rails server
 ```
 
 Because the application looks for user info in an environment variable, and because local dev environments don't have
