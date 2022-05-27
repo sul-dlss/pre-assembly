@@ -376,7 +376,6 @@ GEM
       multi_json (~> 1.0)
       redis-namespace (~> 1.6)
       sinatra (>= 0.9.2)
-    resque-lock (1.1.0)
     resque-pool (0.7.1)
       rake (>= 10.0, < 14.0)
       resque (>= 1.22, < 3)
@@ -517,7 +516,6 @@ DEPENDENCIES
   rake
   random-word
   resque (~> 2.0)
-  resque-lock
   resque-pool
   rspec-rails (~> 5)
   rspec_junit_formatter

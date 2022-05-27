@@ -15,7 +15,6 @@ gem 'pry-rails' # useful for rails console
 gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
-gem 'resque-lock'
 gem 'resque-pool'
 gem 'sassc', '~> 2.0.1' # Pinning to 2.0 because 2.1 requires GLIBC 2.14 on deploy
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
