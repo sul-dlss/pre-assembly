@@ -1,12 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'bootstrap', '~> 4.3', '>= 4.3.1'
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
 gem 'honeybadger', '~> 4.5'
 gem 'jbuilder'
-gem 'jquery-rails'
 gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
@@ -16,10 +14,8 @@ gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-pool'
-gem 'sassc', '~> 2.0.1' # Pinning to 2.0 because 2.1 requires GLIBC 2.14 on deploy
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
-gem 'turbolinks' # improves speed of following links in web application
-gem 'uglifier' # compressor for JavaScript assets
+gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 
 # Stanford gems
 gem 'assembly-image', '~> 1.7'

@@ -11,7 +11,6 @@
  * It is generally better to create a new file per style scope.
  *
  */
-@import "bootstrap";
 
 .btn-sul-dlss {
   background-color: #8c1515;
@@ -20,4 +19,4 @@
 
 abbr[title], abbr[data-original-title] { // Removes underline in the asterisk which marks a required field
   text-decoration: none;
-} 
+}
