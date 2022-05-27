@@ -6,17 +6,6 @@ OkComputer.check_in_parallel = true
 
 OkComputer::Registry.register 'ruby_version', OkComputer::RubyVersionCheck.new
 
-# check whether resque workers are working
-OkComputer::Registry.register 'feature-resque-down', OkComputer::ResqueDownCheck.new
-
-# check for backed up resque queues: this is a low volume app, so the threshold is low
-# 2020-02-20:  Mary Ellen asked for a bigger queue so she could submit a bunch of reports at once.
-if Rails.env.production?
-  Resque.queues.each do |queue|
-    OkComputer::Registry.register "feature-#{queue}-queue-depth", OkComputer::ResqueBackedUpCheck.new(queue, 40)
-  end
-end
-
 class DirectoryExistsCheck < OkComputer::Check
   attr_accessor :directory
 
@@ -70,25 +59,3 @@ class TablesHaveDataCheck < OkComputer::Check
 end
 
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
-
-# check for the right number of workers
-class WorkerCountCheck < OkComputer::Check
-  def check
-    expected_count = Settings.expected_worker_count
-    actual_count = Resque.workers.count
-    message = "#{actual_count} out of #{expected_count} expected workers are up."
-    if actual_count >= expected_count
-      # this branch is for both == and >, as it is normal for > to happen in 2 cases:
-      # 1. very briefly right after a deploy, as hot_swap gracefully shuts down existing workers when they are done
-      # 2. when there is a long running job (e.g. production has been known to have them run for 2 days) that hot_swap lets complete
-      mark_message message
-    else
-      mark_failure
-      mark_message "only #{message}"
-    end
-  end
-  OkComputer::Registry.register 'feature-worker-count', WorkerCountCheck.new
-end
-
-# To make checks optional:
-# OkComputer.make_optional %w[feature-resque-down]

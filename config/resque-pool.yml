@@ -1,3 +1,0 @@
-# These are queue names (like would be passed as QUEUES=... rake resque:work)
-# and the count of workers that should be spun up to service them.
-'*': 5
