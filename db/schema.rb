@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_07_162118) do
-
+ActiveRecord::Schema[7.0].define(version: 2021_04_07_162118) do
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
@@ -19,8 +18,8 @@ ActiveRecord::Schema.define(version: 2021_04_07_162118) do
     t.boolean "staging_style_symlink", default: false, null: false
     t.integer "content_metadata_creation", null: false
     t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "all_files_public", default: false, null: false
     t.boolean "using_file_manifest", default: false, null: false
     t.index ["user_id", "project_name"], name: "index_batch_contexts_on_user_id_and_project_name", unique: true
@@ -31,15 +30,15 @@ ActiveRecord::Schema.define(version: 2021_04_07_162118) do
     t.string "output_location"
     t.integer "job_type", null: false
     t.integer "batch_context_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["batch_context_id"], name: "index_job_runs_on_batch_context_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "sunet_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["sunet_id"], name: "index_users_on_sunet_id", unique: true
   end
 
