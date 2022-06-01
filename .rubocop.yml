@@ -290,3 +290,10 @@ Style/RedundantInitialize: # new in 1.27
   Enabled: true
 RSpec/VerifiedDoubleReference: # new in 2.10.0
   Enabled: true
+
+Gemspec/DeprecatedAttributeAssignment: # new in 1.30
+  Enabled: true
+Style/MapCompactWithConditionalBlock: # new in 1.30
+  Enabled: true
+RSpec/ChangeByZero: # new in 2.11.0
+  Enabled: true
