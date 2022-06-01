@@ -113,13 +113,13 @@ module PreAssembly
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.empty?
-        progress = { dobj: dobj }
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         load_checksums(dobj)
         progress = dobj.pre_assemble(file_attributes_supplied)
+        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
         num_failures += 1 if progress[:status] == 'error'
         log "Completed #{dobj.druid}"
-        File.open(progress_log_file, 'a') { |f| f.puts progress.merge(timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')).to_yaml }
+        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
       log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
       log "**WARNING**: #{num_failures} objects had errors during pre-assembly" if num_failures > 0
