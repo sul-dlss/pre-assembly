@@ -6,7 +6,6 @@ class JobRun < ApplicationRecord
   validates :state, presence: true
   after_initialize :default_enums
   after_create :enqueue!
-  after_update :send_notification, if: -> { saved_change_to_output_location? }
 
   enum job_type: {
     'discovery_report' => 0,
@@ -24,6 +23,10 @@ class JobRun < ApplicationRecord
 
     event :completed do
       transition running: :complete
+    end
+
+    after_transition do |job_run, transition|
+      job_run.send_notification if transition.from_name == :running
     end
   end
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'job_runs/show.html.erb', type: :view do
-  let(:job_run) { create(:job_run) }
+  let(:job_run) { create(:job_run, :discovery_report) }
 
   before { assign(:job_run, job_run) }
 

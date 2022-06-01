@@ -25,27 +25,32 @@ RSpec.describe JobRun, type: :model do
     let(:mock_mailer) { instance_double JobMailer }
     let(:mock_delivery) { instance_double ActionMailer::MessageDelivery }
 
-    before { job_run.save }
+    before { job_run.started }
 
-    it 'does not send an email if output_location is unchanged' do
+    it 'does not send an email when job is started' do
       expect(job_run).not_to receive(:send_notification)
-      job_run.save
     end
 
-    it 'does not send a notification email if output_location is changed but is nil' do
-      expect(job_run).to receive(:send_notification).and_call_original
-      expect(JobMailer).not_to receive(:with)
+    it 'guards against sending a notification email when there is no log file available' do
       job_run.output_location = nil
-      job_run.save
+      job_run.send_notification
+      expect(JobMailer).not_to receive(:with)
     end
 
-    it 'sends a notification email if output_location is saved with a changed non-nil value' do
+    it 'sends a notification email when job_run completes' do
       expect(job_run).to receive(:send_notification).and_call_original
       expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
-      job_run.output_location += '/tmp'
-      job_run.save
+      job_run.completed
+    end
+
+    it 'sends a notification email when job_run errors' do
+      expect(job_run).to receive(:send_notification).and_call_original
+      expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
+      expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
+      expect(mock_delivery).to receive(:deliver_later)
+      job_run.errored
     end
   end
 

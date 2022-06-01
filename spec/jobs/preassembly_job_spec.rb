@@ -2,7 +2,7 @@
 
 RSpec.describe PreassemblyJob, type: :job do
   let(:job) { described_class.new }
-  let(:job_run) { create(:job_run) }
+  let(:job_run) { create(:job_run, :preassembly) }
   let(:outfile) { 'tmp/foobar_progress.yaml' }
 
   before { allow(job_run.batch_context).to receive(:progress_log_file).and_return(outfile) }
@@ -16,10 +16,24 @@ RSpec.describe PreassemblyJob, type: :job do
       expect { job.perform(job_run) }.not_to raise_error
     end
 
-    it 'calls run_pre_assembly and saves job_run.output_location' do
-      expect(job_run.batch_context.batch).to receive(:run_pre_assembly)
-      job.perform(job_run)
-      expect(job_run.reload.output_location).to eq(outfile)
+    context 'when success' do
+      before { allow(job_run.batch_context.batch).to receive(:run_pre_assembly).and_return(true) }
+
+      it 'calls run_pre_assembly, saves job_run.output_location, and ends in an complete state' do
+        job.perform(job_run)
+        expect(job_run.reload.output_location).to eq(outfile)
+        expect(job_run).to be_complete
+      end
+    end
+
+    context 'when errors' do
+      before { allow(job_run.batch_context.batch).to receive(:run_pre_assembly).and_return(false) }
+
+      it 'calls run_pre_assembly, saves job_run.output_location, and ends in an error state' do
+        job.perform(job_run)
+        expect(job_run.reload.output_location).to eq(outfile)
+        expect(job_run).to be_error
+      end
     end
   end
 end

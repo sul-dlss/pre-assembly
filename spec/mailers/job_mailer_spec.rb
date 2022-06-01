@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe JobMailer, type: :mailer do
-  let(:job_run) { create(:job_run) }
+  let(:job_run) { create(:job_run, :discovery_report) }
   let(:job_notification) { described_class.with(job_run: job_run).completion_email }
 
   it 'renders the headers' do

@@ -2,7 +2,7 @@
 
 RSpec.describe DiscoveryReportJob, type: :job do
   let(:job) { described_class.new }
-  let(:job_run) { create(:job_run) }
+  let(:job_run) { create(:job_run, :discovery_report) }
   let(:outfile) { 'tmp/foo.out' }
 
   before { allow(job_run.to_discovery_report).to receive(:output_path).and_return(outfile) }
@@ -22,6 +22,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
     it 'writes JSON file and saves job_run.output_location' do
       expect { job.perform(job_run) }.to change { File.exist?(outfile) }.to(true)
       expect(job_run.reload.output_location).to eq(outfile)
+      expect(job_run).to be_complete
     end
   end
 end
