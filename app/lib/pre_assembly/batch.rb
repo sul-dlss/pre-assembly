@@ -43,11 +43,12 @@ module PreAssembly
     end
 
     # Runs the pre-assembly process
-    # @return [void]
+    # @return [boolean] true if all objects succeeded, false if any errors
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
-      process_digital_objects
+      result = process_digital_objects
       log "\nfinishing run_pre_assembly(#{run_log_msg})"
+      result
     end
 
     def run_log_msg
@@ -97,8 +98,10 @@ module PreAssembly
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
+    # @return [boolean] true if all objects succeeded, false if any errors
     def process_digital_objects
       num_no_file_warnings = 0
+      num_failures = 0
       # Get the non-skipped objects to process
       total_obj = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
@@ -114,12 +117,15 @@ module PreAssembly
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         load_checksums(dobj)
         progress = dobj.pre_assemble(file_attributes_supplied)
+        num_failures += 1 if progress[:status] == 'error'
         log "Completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.merge(timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')).to_yaml }
       end
-    ensure
       log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      log "#{total_obj || 0} objects pre-assembled"
+      log "**WARNING**: #{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      log "#{total_obj} objects pre-assembled"
+
+      num_failures == 0 # if no failures in any objects, return true, else false
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
