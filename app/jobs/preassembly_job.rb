@@ -5,9 +5,11 @@ class PreassemblyJob < ApplicationJob
 
   # @param [JobRun] job_run
   def perform(job_run)
+    job_run.started
     bc = job_run.batch_context
     bc.batch.run_pre_assembly
     job_run.output_location = bc.progress_log_file
     job_run.save!
+    job_run.completed
   end
 end

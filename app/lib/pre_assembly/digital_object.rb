@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
@@ -70,14 +71,20 @@ module PreAssembly
     # rubocop:disable Metrics/AbcSize
     def pre_assemble(file_attributes_supplied = false)
       log "  - pre_assemble(#{source_id}) started"
-      return { status: 'error', message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" } if !openable? && current_object_version > 1
+      if !openable? && current_object_version > 1
+        return { pre_assem_finished: false, status: 'error',
+                 message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
+      end
 
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
       generate_content_metadata(file_attributes_supplied)
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
       log "    - pre_assemble(#{pid}) finished"
-      { status: 'success' }
+      { pre_assem_finished: true, status: 'success' }
+    rescue StandardError => e
+      log "    - pre_assemble(#{pid}) error occurred: #{e.message}"
+      { pre_assem_finished: false, status: 'error', message: e.message }
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -171,3 +178,4 @@ module PreAssembly
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

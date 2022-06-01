@@ -68,16 +68,16 @@ RSpec.describe PreAssembly::Batch do
 
     context 'when there are objects that do not complete pre_assemble' do
       before do
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: false, status: 'error', message: 'oops' })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
       end
 
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 
-      it 'logs incomplete_status error' do
+      it 'logs error' do
         batch.process_digital_objects
-        expect(yaml[:status]).to eq batch.send(:incomplete_status)[:status]
-        expect(yaml[:message]).to eq batch.send(:incomplete_status)[:message]
+        expect(yaml[:status]).to eq 'error'
+        expect(yaml[:message]).to eq 'oops'
       end
     end
 
@@ -85,8 +85,8 @@ RSpec.describe PreAssembly::Batch do
       before do
         allow(batch.digital_objects[0]).to receive(:dark?).and_return(true)
         allow(batch.digital_objects[1]).to receive(:dark?).and_return(false)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true })
       end
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
@@ -99,8 +99,8 @@ RSpec.describe PreAssembly::Batch do
     context 'when batch_context.all_files_public? is true' do
       before do
         allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true })
       end
 
       it 'calls digital_object.pre_assemble with true for all objects' do
@@ -212,30 +212,6 @@ RSpec.describe PreAssembly::Batch do
       o2p = flat_dir_images.objects_to_process
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
-    end
-  end
-
-  describe '#log_progress_info' do
-    subject { flat_dir_images.log_progress_info(progress, status: 'success') }
-
-    let(:dobj) { flat_dir_images.digital_objects[0] }
-    let(:progress) { { dobj: dobj } }
-
-    it {
-      is_expected.to eq(
-        container: progress[:dobj].container,
-        pid: progress[:dobj].pid,
-        pre_assem_finished: nil,
-        timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'),
-        status: 'success'
-      )
-    }
-
-    it 'uses incomplete_status if no status is passed' do
-      expect { flat_dir_images.log_progress_info(progress, nil) }.not_to raise_error(TypeError)
-      result = flat_dir_images.log_progress_info(progress, nil)
-      expect(result[:status]).to eq batch.send(:incomplete_status)[:status]
-      expect(result[:message]).to eq batch.send(:incomplete_status)[:message]
     end
   end
 

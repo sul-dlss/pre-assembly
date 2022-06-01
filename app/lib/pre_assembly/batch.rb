@@ -112,17 +112,10 @@ module PreAssembly
         num_no_file_warnings += 1 if dobj.object_files.empty?
         progress = { dobj: dobj }
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
-        begin
-          # Try to pre_assemble the digital object.
-          load_checksums(dobj)
-          status = dobj.pre_assemble(file_attributes_supplied)
-          # Indicate that we finished.
-          progress[:pre_assem_finished] = true
-          log "Completed #{dobj.druid}"
-        ensure
-          # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || incomplete_status).to_yaml }
-        end
+        load_checksums(dobj)
+        progress = dobj.pre_assemble(file_attributes_supplied)
+        log "Completed #{dobj.druid}"
+        File.open(progress_log_file, 'a') { |f| f.puts progress.merge(timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')).to_yaml }
       end
     ensure
       log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
@@ -134,16 +127,6 @@ module PreAssembly
     # @return [Array<DigitalObject>]
     def objects_to_process
       @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
-    end
-
-    def log_progress_info(info, status)
-      status = incomplete_status unless status&.any?
-      {
-        container: info[:dobj].container,
-        pid: info[:dobj].pid,
-        pre_assem_finished: info[:pre_assem_finished],
-        timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
-      }.merge(status)
     end
 
     private
