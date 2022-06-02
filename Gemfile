@@ -6,6 +6,7 @@ gem 'devise-remote-user'
 gem 'honeybadger', '~> 4.5'
 gem 'jbuilder'
 gem 'kaminari' # pagination
+gem 'newrelic_rpm'
 gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
