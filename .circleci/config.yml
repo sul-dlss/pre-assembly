@@ -10,4 +10,7 @@ workflows:
           name: lint
       - ruby-rails/test-rails:
           name: test
-          api-only: true # note: this leaves off checking the yarn.lock file, which pre-assembly doesn't have
+          before-test:
+            - run:
+                name: compile assets
+                command: bundle exec rails test:prepare

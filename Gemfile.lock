@@ -136,6 +136,8 @@ GEM
       deep_merge (~> 1.2, >= 1.2.1)
       dry-validation (~> 1.0, >= 1.0.0)
     crass (1.0.6)
+    cssbundling-rails (1.1.0)
+      railties (>= 6.0.0)
     deep_merge (1.2.2)
     deprecation (1.1.0)
       activesupport
@@ -230,6 +232,8 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    jsbundling-rails (1.0.2)
+      railties (>= 6.0.0)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -463,6 +467,7 @@ DEPENDENCIES
   capistrano-rails
   capybara
   config
+  cssbundling-rails
   devise
   devise-remote-user
   dlss-capistrano
@@ -473,6 +478,7 @@ DEPENDENCIES
   factory_bot_rails
   honeybadger (~> 4.5)
   jbuilder
+  jsbundling-rails
   kaminari
   listen
   nokogiri

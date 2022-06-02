@@ -1,10 +1,12 @@
 source 'https://rubygems.org'
 
+gem 'cssbundling-rails'
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
 gem 'honeybadger', '~> 4.5'
 gem 'jbuilder'
+gem 'jsbundling-rails'
 gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
