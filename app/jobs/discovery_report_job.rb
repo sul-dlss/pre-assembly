@@ -11,7 +11,5 @@ class DiscoveryReportJob < ApplicationJob
     job_run.output_location = file.path # don't call report.output_path again
     job_run.save!
     job_run.completed
-  rescue StandardError
-    job_run.errored
   end
 end

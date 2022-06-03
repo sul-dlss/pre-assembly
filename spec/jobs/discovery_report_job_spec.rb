@@ -26,14 +26,5 @@ RSpec.describe DiscoveryReportJob, type: :job do
         expect(job_run).to be_complete
       end
     end
-
-    context 'when errors' do
-      before { allow(job_run.to_discovery_report).to receive(:to_builder).and_return(StandardError) }
-
-      it 'starts report and ends in an error state' do
-        job.perform(job_run)
-        expect(job_run).to be_error
-      end
-    end
   end
 end
