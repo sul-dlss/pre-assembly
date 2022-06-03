@@ -8,8 +8,6 @@ class PreassemblyJob < ApplicationJob
     job_run.started
     bc = job_run.batch_context
     result = bc.batch.run_pre_assembly
-    job_run.output_location = bc.progress_log_file
-    job_run.save!
     result ? job_run.completed : job_run.errored
   end
 end
