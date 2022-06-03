@@ -97,7 +97,6 @@ module PreAssembly
     def discover_containers_via_manifest
       manifest_rows.each_with_index do |r, i|
         next if r[:object]
-        raise 'Missing header row in manifest.csv' if i == 0
 
         raise "Missing 'object' in row #{i}: #{r}"
       end
