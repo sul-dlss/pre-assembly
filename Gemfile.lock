@@ -409,6 +409,7 @@ GEM
       rubocop (>= 1.7.0, < 2.0)
     rubocop-rspec (2.11.1)
       rubocop (~> 1.19)
+    ruby-prof (1.4.3)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     shoulda-matchers (4.5.1)
@@ -493,6 +494,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails
   rubocop-rspec
+  ruby-prof
   shoulda-matchers (~> 4.1)
   simple_form
   simplecov

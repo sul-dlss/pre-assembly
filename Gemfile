@@ -15,6 +15,7 @@ gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'resque', '~> 2.0' # needs to match redis on VM
 gem 'resque-pool'
+gem 'ruby-prof'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
 gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 
