@@ -26,9 +26,12 @@ RSpec.describe DiscoveryReport do
   end
 
   describe '#each_row' do
-    let(:validator1) { instance_double(ObjectFileValidator, counts: { total_size: 1, mimetypes: { a: 1, b: 2 } }, errors: {}) }
-    let(:validator2) { instance_double(ObjectFileValidator, counts: { total_size: 2, mimetypes: { b: 3, q: 4 } }, errors: {}) }
-    let(:validator3) { instance_double(ObjectFileValidator, counts: { total_size: 3, mimetypes: { q: 9 } }, errors: { foo: true }) }
+    let(:h1) { { druid: 'druid:1', errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
+    let(:h2) { { druid: 'druid:2', errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
+    let(:h3) { { druid: 'druid:2', errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
+    let(:validator1) { instance_double(ObjectFileValidator, counts: h1[:counts], errors: h1[:errors], to_h: h1) }
+    let(:validator2) { instance_double(ObjectFileValidator, counts: h2[:counts], errors: h2[:errors], to_h: h2) }
+    let(:validator3) { instance_double(ObjectFileValidator, counts: h3[:counts], errors: h3[:errors], to_h: h3) }
     let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, pid: 'druid:1') }
     let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, pid: 'druid:2') }
     let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, pid: 'druid:3') }
@@ -41,7 +44,7 @@ RSpec.describe DiscoveryReport do
       expect(report).to receive(:process_dobj).with(dig_obj1).and_return(validator1)
       expect(report).to receive(:process_dobj).with(dig_obj2).and_return(validator2)
       expect(report).to receive(:process_dobj).with(dig_obj3).and_return(validator3)
-      expect(batch).to receive(:un_pre_assembled_objects).and_return([dig_obj1, dig_obj2, dig_obj3])
+      expect(batch).to receive(:un_pre_assembled_objects).and_return([dig_obj1, dig_obj2, dig_obj3].to_enum)
       report.each_row { |_r| } # no-op
       expect(report.summary).to match a_hash_including(
         total_size: 6,

@@ -38,7 +38,7 @@ class DiscoveryReport
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
       # log the output to a running progress file
       File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
-      yield row
+      yield row.to_h
     end
   end
   # rubocop:enable Metrics/AbcSize
