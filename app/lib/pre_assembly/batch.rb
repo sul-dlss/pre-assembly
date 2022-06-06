@@ -46,9 +46,9 @@ module PreAssembly
     # @return [boolean] true if all objects succeeded, false if any errors
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
-      result = process_digital_objects
+      had_errors = process_digital_objects
       log "\nfinishing run_pre_assembly(#{run_log_msg})"
-      result
+      had_errors
     end
 
     def run_log_msg

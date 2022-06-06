@@ -72,7 +72,8 @@ module PreAssembly
     def pre_assemble(file_attributes_supplied = false)
       log "  - pre_assemble(#{source_id}) started"
       if !openable? && current_object_version > 1
-        return { pre_assem_finished: false, status: 'error',
+        return { pre_assem_finished: false,
+                 status: 'error',
                  message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
       end
 
