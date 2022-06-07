@@ -18,7 +18,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#run_pre_assembly' do
     before do
-      allow(batch).to receive(:process_digital_objects).and_return(true) # stub expensive call
+      allow(batch).to receive(:process_digital_objects) # stub expensive call
       allow(batch).to receive(:log) # log statements we don't care about here
     end
 
@@ -28,9 +28,9 @@ RSpec.describe PreAssembly::Batch do
       batch.run_pre_assembly
     end
 
-    it 'calls process_digital_objects and returns result' do
+    it 'calls process_digital_objects' do
       expect(batch).to receive(:process_digital_objects)
-      expect(batch.run_pre_assembly).to be true
+      batch.run_pre_assembly
     end
   end
 
@@ -43,12 +43,14 @@ RSpec.describe PreAssembly::Batch do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
       expect(batch.process_digital_objects).to be true
+      expect(batch.had_errors).to be false
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       expect(batch.process_digital_objects).to be true
+      expect(batch.had_errors).to be false
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
@@ -59,8 +61,10 @@ RSpec.describe PreAssembly::Batch do
 
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 
-      it 'logs an error and returns false' do
-        expect(batch.process_digital_objects).to be false
+      it 'indicates errors occured, then logs the error and sets the error message' do
+        batch.process_digital_objects
+        expect(batch.had_errors).to be true
+        expect(batch.error_message).to eq '2 objects had errors during pre-assembly'
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
@@ -74,8 +78,10 @@ RSpec.describe PreAssembly::Batch do
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
-      it 'logs an error and returns false' do
-        expect(batch.process_digital_objects).to be false
+      it 'indicates errors occured, then logs the error and sets the error message' do
+        batch.process_digital_objects
+        expect(batch.had_errors).to be true
+        expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
         expect(yaml[0]).to include(status: 'error', message: 'oops', pre_assem_finished: false)
         # second object is a success
@@ -93,6 +99,7 @@ RSpec.describe PreAssembly::Batch do
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
         expect(batch.process_digital_objects).to be true
+        expect(batch.had_errors).to be false
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
       end
@@ -108,8 +115,10 @@ RSpec.describe PreAssembly::Batch do
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
-      it 'rescues the exception and proceeds, logging the error and returning false' do
-        expect(batch.process_digital_objects).to be false
+      it 'rescues the exception and proceeds, logs the error, indicates errors occurred, and sets the error message' do
+        batch.process_digital_objects
+        expect(batch.had_errors).to be true
+        expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
         expect(yaml[0]).to include(status: 'error', message: 'Read-only file system - Read-only file system @ rb_sysopen - /destination', pre_assem_finished: false)
         # second object is a success

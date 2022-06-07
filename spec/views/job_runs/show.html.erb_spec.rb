@@ -30,6 +30,12 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
       render template: 'job_runs/show'
       expect(rendered).to include(job_run.batch_context.user.email)
     end
+
+    it 'displays an error message if present' do
+      job_run.error_message = 'Oops, that was bad.'
+      render template: 'job_runs/show'
+      expect(rendered).to include('Oops, that was bad.')
+    end
   end
 
   context 'preassembly job' do
@@ -53,6 +59,12 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
       expect(rendered).to include('Job is not yet complete')
       expect(rendered).not_to include("<a href=\"/job_runs/#{job_run.id}/download_log\">Download</a>")
       expect(rendered).not_to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")
+    end
+
+    it 'displays an error message if present' do
+      job_run.error_message = 'Oops, that was bad.'
+      render template: 'job_runs/show'
+      expect(rendered).to include('Oops, that was bad.')
     end
   end
 end

@@ -8,7 +8,9 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :user_params,
                   :skippables,
-                  :file_manifest
+                  :file_manifest,
+                  :error_message,
+                  :had_errors
 
     delegate :apo_druid_id,
              :apply_tag,
@@ -43,12 +45,11 @@ module PreAssembly
     end
 
     # Runs the pre-assembly process
-    # @return [boolean] true if all objects succeeded, false if any errors
+    # @return [void]
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
-      had_errors = process_digital_objects
+      process_digital_objects
       log "\nfinishing run_pre_assembly(#{run_log_msg})"
-      had_errors
     end
 
     def run_log_msg
@@ -98,10 +99,11 @@ module PreAssembly
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    # @return [boolean] true if all objects succeeded, false if any errors
+    # rubocop:disable Metrics/CyclomaticComplexity
     def process_digital_objects
       num_no_file_warnings = 0
       num_failures = 0
+      errors = []
       # Get the non-skipped objects to process
       total_obj = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
@@ -121,14 +123,17 @@ module PreAssembly
         log "Completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
-      log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      log "**WARNING**: #{num_failures} objects had errors during pre-assembly" if num_failures > 0
-      log "#{total_obj} objects pre-assembled"
+      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      errors.each { |error| log "**WARNING**: #{error}" }
+      @had_errors = !errors.size.zero? # indicate if we had any errors
+      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
 
-      num_failures == 0 # if no failures in any objects, return true, else false
+      log "#{total_obj} objects pre-assembled"
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     # @return [Array<DigitalObject>]
     def objects_to_process
