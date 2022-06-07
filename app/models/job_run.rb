@@ -3,14 +3,32 @@
 class JobRun < ApplicationRecord
   belongs_to :batch_context
   validates :job_type, presence: true
+  validates :state, presence: true
   after_initialize :default_enums
   after_create :enqueue!
-  after_update :send_notification, if: -> { saved_change_to_output_location? }
 
   enum job_type: {
     'discovery_report' => 0,
     'preassembly' => 1
   }
+
+  state_machine initial: :waiting do
+    event :started do
+      transition waiting: :running
+    end
+
+    event :errored do
+      transition running: :error
+    end
+
+    event :completed do
+      transition running: :complete
+    end
+
+    after_transition do |job_run, transition|
+      job_run.send_notification if transition.from_name == :running
+    end
+  end
 
   # send to asynchronous processing via correct Job class for job_type
   # @return [ApplicationJob, nil] nil if unpersisted

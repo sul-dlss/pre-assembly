@@ -18,7 +18,7 @@
 
 <div class="container">
   <dl class="row">
-    <% ['job_type', 'created_at', 'updated_at'].each do |attribute| %>
+    <% ['job_type', 'created_at', 'updated_at', 'state'].each do |attribute| %>
       <dt class="col-sm-2"><%= attribute.humanize %></dt>
       <dd class="col-sm-10"><%= @job_run.attributes[attribute].to_s %></dd>
     <% end %>

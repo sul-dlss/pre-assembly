@@ -18,7 +18,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#run_pre_assembly' do
     before do
-      allow(batch).to receive(:process_digital_objects) # stub expensive call
+      allow(batch).to receive(:process_digital_objects).and_return(true) # stub expensive call
       allow(batch).to receive(:log) # log statements we don't care about here
     end
 
@@ -28,9 +28,9 @@ RSpec.describe PreAssembly::Batch do
       batch.run_pre_assembly
     end
 
-    it 'calls process_digital_objects' do
+    it 'calls process_digital_objects and returns result' do
       expect(batch).to receive(:process_digital_objects)
-      batch.run_pre_assembly
+      expect(batch.run_pre_assembly).to be true
     end
   end
 
@@ -42,13 +42,13 @@ RSpec.describe PreAssembly::Batch do
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect { batch.process_digital_objects }.not_to raise_error
+      expect(batch.process_digital_objects).to be true
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      expect { batch.process_digital_objects }.not_to raise_error
+      expect(batch.process_digital_objects).to be true
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
@@ -59,8 +59,8 @@ RSpec.describe PreAssembly::Batch do
 
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 
-      it 'logs an error' do
-        batch.process_digital_objects
+      it 'logs an error and returns false' do
+        expect(batch.process_digital_objects).to be false
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
@@ -68,16 +68,18 @@ RSpec.describe PreAssembly::Batch do
 
     context 'when there are objects that do not complete pre_assemble' do
       before do
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: false, status: 'error', message: 'oops' })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
       end
 
-      let(:yaml) { YAML.load_file(batch.progress_log_file) }
+      let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
-      it 'logs incomplete_status error' do
-        batch.process_digital_objects
-        expect(yaml[:status]).to eq batch.send(:incomplete_status)[:status]
-        expect(yaml[:message]).to eq batch.send(:incomplete_status)[:message]
+      it 'logs an error and returns false' do
+        expect(batch.process_digital_objects).to be false
+        # first object logs an error
+        expect(yaml[0]).to include(status: 'error', message: 'oops', pre_assem_finished: false)
+        # second object is a success
+        expect(yaml[1]).to include(status: 'success', pre_assem_finished: true)
       end
     end
 
@@ -85,26 +87,45 @@ RSpec.describe PreAssembly::Batch do
       before do
         allow(batch.digital_objects[0]).to receive(:dark?).and_return(true)
         allow(batch.digital_objects[1]).to receive(:dark?).and_return(false)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
       end
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
-        batch.process_digital_objects
+        expect(batch.process_digital_objects).to be true
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
+      end
+    end
+
+    context 'when an exception occurs during #pre_assemble' do
+      before do
+        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
+        # simulate an exception occurring during pre-assembly of the first object
+        allow(batch.digital_objects[0]).to receive(:stage_files).and_raise Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+      end
+
+      let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
+
+      it 'rescues the exception and proceeds, logging the error and returning false' do
+        expect(batch.process_digital_objects).to be false
+        # first object logs an error
+        expect(yaml[0]).to include(status: 'error', message: 'Read-only file system - Read-only file system @ rb_sysopen - /destination', pre_assem_finished: false)
+        # second object is a success
+        expect(yaml[1]).to include(status: 'success', pre_assem_finished: true)
       end
     end
 
     context 'when batch_context.all_files_public? is true' do
       before do
         allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble)
-        allow(batch.digital_objects[1]).to receive(:pre_assemble)
+        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
       end
 
       it 'calls digital_object.pre_assemble with true for all objects' do
-        batch.process_digital_objects
+        expect(batch.process_digital_objects).to be true
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end
@@ -212,30 +233,6 @@ RSpec.describe PreAssembly::Batch do
       o2p = flat_dir_images.objects_to_process
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
-    end
-  end
-
-  describe '#log_progress_info' do
-    subject { flat_dir_images.log_progress_info(progress, status: 'success') }
-
-    let(:dobj) { flat_dir_images.digital_objects[0] }
-    let(:progress) { { dobj: dobj } }
-
-    it {
-      is_expected.to eq(
-        container: progress[:dobj].container,
-        pid: progress[:dobj].pid,
-        pre_assem_finished: nil,
-        timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'),
-        status: 'success'
-      )
-    }
-
-    it 'uses incomplete_status if no status is passed' do
-      expect { flat_dir_images.log_progress_info(progress, nil) }.not_to raise_error(TypeError)
-      result = flat_dir_images.log_progress_info(progress, nil)
-      expect(result[:status]).to eq batch.send(:incomplete_status)[:status]
-      expect(result[:message]).to eq batch.send(:incomplete_status)[:message]
     end
   end
 

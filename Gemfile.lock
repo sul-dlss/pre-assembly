@@ -431,6 +431,13 @@ GEM
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    state_machines (0.5.0)
+    state_machines-activemodel (0.8.0)
+      activemodel (>= 5.1)
+      state_machines (>= 0.5.0)
+    state_machines-activerecord (0.8.0)
+      activerecord (>= 5.1)
+      state_machines-activemodel (>= 0.8.0)
     strscan (3.0.3)
     super_diff (0.9.0)
       attr_extras (>= 6.2.4)
@@ -497,6 +504,7 @@ DEPENDENCIES
   simple_form
   simplecov
   sqlite3
+  state_machines-activerecord
 
 BUNDLED WITH
    2.3.9

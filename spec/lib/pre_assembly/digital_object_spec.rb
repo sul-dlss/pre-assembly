@@ -53,7 +53,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       it 'logs an error for existing non-openable objects' do
         expect(object).not_to receive(:stage_files)
-        expect(status).to eq(status: 'error',
+        expect(status).to eq(status: 'error', pre_assem_finished: false,
                              message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened")
       end
     end

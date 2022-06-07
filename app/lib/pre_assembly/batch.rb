@@ -43,11 +43,12 @@ module PreAssembly
     end
 
     # Runs the pre-assembly process
-    # @return [void]
+    # @return [boolean] true if all objects succeeded, false if any errors
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{run_log_msg})"
-      process_digital_objects
+      had_errors = process_digital_objects
       log "\nfinishing run_pre_assembly(#{run_log_msg})"
+      had_errors
     end
 
     def run_log_msg
@@ -97,8 +98,10 @@ module PreAssembly
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
+    # @return [boolean] true if all objects succeeded, false if any errors
     def process_digital_objects
       num_no_file_warnings = 0
+      num_failures = 0
       # Get the non-skipped objects to process
       total_obj = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
@@ -110,23 +113,19 @@ module PreAssembly
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
         num_no_file_warnings += 1 if dobj.object_files.empty?
-        progress = { dobj: dobj }
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
-        begin
-          # Try to pre_assemble the digital object.
-          load_checksums(dobj)
-          status = dobj.pre_assemble(file_attributes_supplied)
-          # Indicate that we finished.
-          progress[:pre_assem_finished] = true
-          log "Completed #{dobj.druid}"
-        ensure
-          # Log the outcome no matter what.
-          File.open(progress_log_file, 'a') { |f| f.puts log_progress_info(progress, status || incomplete_status).to_yaml }
-        end
+        load_checksums(dobj)
+        progress = dobj.pre_assemble(file_attributes_supplied)
+        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
+        num_failures += 1 if progress[:status] == 'error'
+        log "Completed #{dobj.druid}"
+        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
-    ensure
       log "**WARNING**: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      log "#{total_obj || 0} objects pre-assembled"
+      log "**WARNING**: #{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      log "#{total_obj} objects pre-assembled"
+
+      num_failures == 0 # if no failures in any objects, return true, else false
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
@@ -134,16 +133,6 @@ module PreAssembly
     # @return [Array<DigitalObject>]
     def objects_to_process
       @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
-    end
-
-    def log_progress_info(info, status)
-      status = incomplete_status unless status&.any?
-      {
-        container: info[:dobj].container,
-        pid: info[:dobj].pid,
-        pre_assem_finished: info[:pre_assem_finished],
-        timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
-      }.merge(status)
     end
 
     private
