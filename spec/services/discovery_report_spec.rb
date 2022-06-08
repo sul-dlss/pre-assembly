@@ -28,7 +28,7 @@ RSpec.describe DiscoveryReport do
       expect(report.each_row).to be_an(Enumerable)
     end
 
-    it 'yields per objects_to_process, building an aggregate summary' do
+    it 'yields per objects_to_process, building an aggregate summary and logging status per druid' do
       # make sure that for this particular test
       # (a) the tmp job output dir exists for the progress log file to be written to
       # (b) we get a new clean progress log file for the tests each time we run them
@@ -48,8 +48,10 @@ RSpec.describe DiscoveryReport do
       expect(File).to exist(batch.batch_context.progress_log_file)
       docs = YAML.load_stream(File.read(batch.batch_context.progress_log_file))
       expect(docs.size).to eq(3)
-      expect(docs[0][:pid]).to eq 'druid:1'
+      expect(docs[0]).to include(pid: 'druid:1', status: 'success')
       expect(docs[0][:timestamp].to_date).to eq Date.today
+      expect(docs[1]).to include(pid: 'druid:2', status: 'success')
+      expect(docs[2]).to include(pid: 'druid:3', status: 'error')
     end
   end
 
