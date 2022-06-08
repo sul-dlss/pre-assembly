@@ -15,15 +15,7 @@
       </tr>
     </thead>
     <tbody>
-    <% @job_runs.each do |job_run| %>
-      <tr>
-        <td><%=link_to "Job ##{job_run.id}",job_run%></td>
-        <td><%=job_run.job_type%></td>
-        <td><%=job_run.batch_context.user.sunet_id%></td>
-        <td><%=job_run.human_state_name %></td>
-        <td><%=job_run.created_at.in_time_zone('Pacific Time (US & Canada)').to_formatted_s(:long)%></td>
-      </tr>
-    <% end %>
+      <%= render partial: 'job_runs' %>
    </tbody>
   </table>
 
