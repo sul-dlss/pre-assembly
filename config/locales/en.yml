@@ -31,6 +31,15 @@
 
 en:
   activerecord:
+    state_machines:
+      job_run:
+        state:
+          states:
+            running: 'Running'
+            complete: 'Completed'
+            failed: 'Failed'
+            waiting: 'Queued'
+            complete_with_errors: 'Completed (with errors)'
     attributes:
       batch_context:
         all_files_public: "Preserve, Shelve, Publish Settings"
