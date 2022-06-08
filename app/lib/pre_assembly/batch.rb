@@ -141,10 +141,6 @@ module PreAssembly
       staging_style_symlink ? LinkStager : CopyStager
     end
 
-    def incomplete_status
-      { status: 'error', message: 'pre_assemble did not complete' }
-    end
-
     # Discover object containers from the object manifest file suppled in the bundle_dir.
     def discover_containers_via_manifest
       manifest_rows.each_with_index do |r, i|
