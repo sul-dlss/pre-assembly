@@ -29,18 +29,24 @@ class DiscoveryReport
     batch.objects_to_process.each do |dobj|
       row = process_dobj(dobj)
       summary[:total_size] += row.counts[:total_size]
-      summary[:objects_with_error] += 1 unless row.errors.empty?
+      if row.errors.empty?
+        status = 'success'
+      else
+        summary[:objects_with_error] += 1
+        status = 'error'
+      end
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
       # log the output to a running progress file
-      File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj).to_yaml }
+      File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
       yield row
     end
   end
   # rubocop:enable Metrics/AbcSize
 
   # return [Hash] progress info that will be logged as json in a running log file
-  def log_progress_info(dobj)
+  def log_progress_info(dobj, status)
     {
+      status: status,
       pid: dobj.pid,
       timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
     }
