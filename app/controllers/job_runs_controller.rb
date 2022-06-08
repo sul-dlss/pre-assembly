@@ -21,7 +21,17 @@ class JobRunsController < ApplicationController
     @job_run = JobRun.find(params[:id])
   end
 
-  def download
+  def download_log
+    @job_run = JobRun.find(params[:id])
+    if @job_run.progress_log_file && File.exist?(@job_run.progress_log_file)
+      send_file @job_run.progress_log_file
+    else
+      flash[:warning] = 'Progress log file not available.'
+      render 'show'
+    end
+  end
+
+  def download_report
     @job_run = JobRun.find(params[:id])
     if @job_run.output_location
       send_file @job_run.output_location

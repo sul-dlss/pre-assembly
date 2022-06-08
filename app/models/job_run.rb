@@ -7,6 +7,8 @@ class JobRun < ApplicationRecord
   after_initialize :default_enums
   after_create :enqueue!
 
+  delegate :progress_log_file, to: :batch_context
+
   enum job_type: {
     'discovery_report' => 0,
     'preassembly' => 1

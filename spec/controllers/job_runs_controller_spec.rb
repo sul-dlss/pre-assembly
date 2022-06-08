@@ -61,17 +61,17 @@ RSpec.describe JobRunsController, type: :controller do
     end
   end
 
-  describe '#download' do
-    it 'before job is complete, renders page with flash' do
-      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, output_location: nil))
-      get :download, params: { id: 123 }
-      expect(flash[:warning]).to eq('Job is not complete. Please check back later.')
+  describe '#download_log' do
+    it 'before job is started, renders page with flash' do
+      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, progress_log_file: nil))
+      get :download_log, params: { id: 123 }
+      expect(flash[:warning]).to eq('Progress log file not available.')
     end
 
-    it 'when job is complete, returns file attachment' do
-      job_run_double = instance_double(JobRun, output_location: 'spec/test_data/input/mock_progress_log.yaml')
+    it 'returns file attachment' do
+      job_run_double = instance_double(JobRun, progress_log_file: 'spec/test_data/input/mock_progress_log.yaml')
       allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
-      get :download, params: { id: 123 }
+      get :download_log, params: { id: 123 }
       expect(response).to have_http_status(:success)
       expect(response.header['Content-Type']).to eq 'application/x-yaml'
       expect(response.header['Content-Disposition']).to start_with 'attachment; filename="mock_progress_log.yaml"'
@@ -79,7 +79,29 @@ RSpec.describe JobRunsController, type: :controller do
     end
 
     it 'requires ID param' do
-      expect { get :download }.to raise_error(ActionController::UrlGenerationError)
+      expect { get :download_log }.to raise_error(ActionController::UrlGenerationError)
+    end
+  end
+
+  describe '#download_report' do
+    it 'before job is complete, renders page with flash' do
+      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun, output_location: nil))
+      get :download_report, params: { id: 123 }
+      expect(flash[:warning]).to eq('Job is not complete. Please check back later.')
+    end
+
+    it 'when job is complete, returns file attachment' do
+      job_run_double = instance_double(JobRun, output_location: 'spec/test_data/input/mock_discovery_report.json')
+      allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
+      get :download_report, params: { id: 123 }
+      expect(response).to have_http_status(:success)
+      expect(response.header['Content-Type']).to eq 'application/json'
+      expect(response.header['Content-Disposition']).to start_with 'attachment; filename="mock_discovery_report.json"'
+      expect(flash[:warning]).to be_nil
+    end
+
+    it 'requires ID param' do
+      expect { get :download_report }.to raise_error(ActionController::UrlGenerationError)
     end
   end
 end
