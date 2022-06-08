@@ -43,7 +43,12 @@ RSpec.describe DiscoveryReportJob, type: :job do
     context 'when errors' do
       let(:error_message) { 'something bad happened' }
 
-      xit 'calls to_discovery_report and ends in a completed with error state, and saves error message to the database' do
+      before do
+        allow(job_run.to_discovery_report).to receive(:had_errors).and_return(true)
+        allow(job_run.to_discovery_report).to receive(:error_message).and_return(error_message)
+      end
+
+      it 'calls to_discovery_report and ends in a completed with error state, and saves error message to the database' do
         job.perform(job_run)
         expect(job_run).to be_complete_with_errors
         expect(job_run.error_message).to eq error_message

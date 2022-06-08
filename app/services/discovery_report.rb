@@ -77,12 +77,12 @@ class DiscoveryReport
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
   # @return [Jbuilder] (caller needs obj.to_builder.target! for the JSON string)
   def to_builder
-    Jbuilder.new do |json|
+    json_report = Jbuilder.new do |json|
       json.rows { json.array!(each_row) }
       json.summary summary
     end
-
     @had_errors = (@summary[:objects_with_error] > 0) # indicate if any objects generated errors
-    @error_error_message = "#{@summary[:objects_with_error]} objects had errors in the discovery report" if @had_errors
+    @error_message = "#{@summary[:objects_with_error]} objects had errors in the discovery report" if @had_errors
+    json_report
   end
 end

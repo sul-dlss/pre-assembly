@@ -7,17 +7,15 @@ class PreassemblyJob < ApplicationJob
   def perform(job_run)
     job_run.started
     batch = job_run.batch_context.batch
-    begin
-      batch.run_pre_assembly
-      if batch.had_errors
-        job_run.error_message = batch.error_message
-        job_run.completed_with_errors
-      else
-        job_run.completed
-      end
-    rescue StandardError => e
-      job_run.error_message = e.message
-      job_run.failed
+    batch.run_pre_assembly
+    if batch.had_errors
+      job_run.error_message = batch.error_message
+      job_run.completed_with_errors
+    else
+      job_run.completed
     end
+  rescue StandardError => e
+    job_run.error_message = e.message
+    job_run.failed
   end
 end
