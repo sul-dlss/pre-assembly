@@ -8,6 +8,6 @@ class PreassemblyJob < ApplicationJob
     job_run.started
     bc = job_run.batch_context
     result = bc.batch.run_pre_assembly
-    result ? job_run.completed : job_run.errored
+    result ? job_run.completed : job_run.completed_with_errors
   end
 end

@@ -28,9 +28,9 @@ RSpec.describe PreassemblyJob, type: :job do
     context 'when errors' do
       before { allow(job_run.batch_context.batch).to receive(:run_pre_assembly).and_return(false) }
 
-      it 'calls run_pre_assembly and ends in an error state' do
+      it 'calls run_pre_assembly and ends in a completed with error state' do
         job.perform(job_run)
-        expect(job_run).to be_error
+        expect(job_run).to be_complete_with_errors
       end
     end
   end
