@@ -19,8 +19,14 @@ class JobRun < ApplicationRecord
       transition waiting: :running
     end
 
-    event :errored do
-      transition running: :error
+    # signifies the entire job could not be run (e.g. bad manifest supplied)
+    event :failed do
+      transition running: :failed
+    end
+
+    # signifies the job ran through, but at least one object had an error of some kind (e.g. network blip)
+    event :completed_with_errors do
+      transition running: :complete_with_errors
     end
 
     event :completed do

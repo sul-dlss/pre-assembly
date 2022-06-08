@@ -18,10 +18,12 @@
 
 <div class="container">
   <dl class="row">
-    <% ['job_type', 'created_at', 'updated_at', 'state'].each do |attribute| %>
+    <% ['job_type', 'created_at', 'updated_at'].each do |attribute| %>
       <dt class="col-sm-2"><%= attribute.humanize %></dt>
       <dd class="col-sm-10"><%= @job_run.attributes[attribute].to_s %></dd>
     <% end %>
+    <dt class="col-sm-2">State</dt>
+    <dd class="col-sm-10"><%= @job_run.human_state_name %></dd>
     <dt class="col-sm-2">Job Output Log</dt>
     <dd class="col-sm-10">
     <% if @job_run.complete? %>
