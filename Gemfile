@@ -57,3 +57,5 @@ group :development, :test do
   # gem 'ruby-prof'
   gem 'sqlite3'
 end
+
+gem "turbo-rails", "~> 1.1"

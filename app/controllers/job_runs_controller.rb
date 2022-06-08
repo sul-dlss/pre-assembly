@@ -15,6 +15,7 @@ class JobRunsController < ApplicationController
 
   def index
     @job_runs = JobRun.order('created_at desc').page params[:page]
+    return render 'recent_history' if request.headers['Turbo-Frame']
   end
 
   def show

@@ -53,12 +53,6 @@ RSpec.describe JobRunsController, type: :controller do
       get :index
       expect(response).to have_http_status(:success)
     end
-
-    it 'successfully returns json' do
-      get :index, format: 'json'
-      expect(response).to have_http_status(:success)
-      expect(response.header['Content-Type']).to eq 'application/json; charset=utf-8'
-    end
   end
 
   describe '#download' do
