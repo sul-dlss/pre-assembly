@@ -81,8 +81,8 @@ class DiscoveryReport
       json.rows { json.array!(each_row) }
       json.summary summary
     end
-    @objects_had_errors = (@summary[:objects_with_error] > 0) # indicate if any objects generated errors
-    @error_message = "#{@summary[:objects_with_error]} objects had errors in the discovery report" if @objects_had_errors
+    @objects_had_errors = (summary[:objects_with_error] > 0) # indicate if any objects generated errors
+    @error_message = "#{summary[:objects_with_error]} objects had errors in the discovery report" if objects_had_errors
     json_report
   end
 end

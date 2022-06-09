@@ -46,4 +46,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
   end
 
   add_foreign_key "batch_contexts", "users"
+  add_foreign_key "job_runs", "batch_contexts"
 end
