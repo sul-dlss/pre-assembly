@@ -27,8 +27,7 @@
 }
 
 .brand {
-  background-color: #8c1515;
-  color: white;
+  background-color: var(--cardinal-red);
   font-family: serif;
 }
 
