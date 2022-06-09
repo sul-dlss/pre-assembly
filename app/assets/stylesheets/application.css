@@ -17,6 +17,12 @@
   color: white;
 }
 
+.brand {
+  background-color: #8c1515;
+  color: white;
+  font-family: serif;
+}
+
 /* Removes underline in the asterisk which marks a required field */
 abbr[title], abbr[data-original-title] {
   text-decoration: none;
