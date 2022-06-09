@@ -11,10 +11,19 @@
  * It is generally better to create a new file per style scope.
  *
  */
+ :root {
+   --cardinal-red: #8c1515;  /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+   --bs-btn-color: #fff;
+ }
 
 .btn-sul-dlss {
-  background-color: #8c1515; /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
-  color: white;
+  background-color: var(--cardinal-red);
+  color: var(--bs-btn-color);
+}
+
+.btn-sul-dlss:hover {
+  filter: brightness(85%);
+  color: var(--bs-btn-color);
 }
 
 /* Removes underline in the asterisk which marks a required field */
