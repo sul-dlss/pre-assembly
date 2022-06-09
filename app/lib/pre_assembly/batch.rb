@@ -29,8 +29,8 @@ module PreAssembly
 
     def initialize(batch_context)
       @batch_context = batch_context
-      self.file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
-      self.skippables = {}
+      @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
+      @skippables = {}
       load_skippables
     end
 
