@@ -10,7 +10,7 @@ module PreAssembly
                   :skippables,
                   :file_manifest,
                   :error_message,
-                  :had_errors
+                  :objects_had_errors
 
     delegate :apo_druid_id,
              :apply_tag,
@@ -126,7 +126,7 @@ module PreAssembly
       errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
       errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
       errors.each { |error| log "**WARNING**: #{error}" }
-      @had_errors = !errors.size.zero? # indicate if we had any errors
+      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
       @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
 
       log "#{total_obj} objects pre-assembled"

@@ -6,7 +6,7 @@
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :start_time, :summary
-  attr_accessor :had_errors, :error_message
+  attr_accessor :objects_had_errors, :error_message
 
   delegate :bundle_dir, :content_md_creation, :manifest, :project_style, :using_file_manifest, to: :batch
   delegate :object_filenames_unique?, to: :batch
@@ -81,8 +81,8 @@ class DiscoveryReport
       json.rows { json.array!(each_row) }
       json.summary summary
     end
-    @had_errors = (@summary[:objects_with_error] > 0) # indicate if any objects generated errors
-    @error_message = "#{@summary[:objects_with_error]} objects had errors in the discovery report" if @had_errors
+    @objects_had_errors = (@summary[:objects_with_error] > 0) # indicate if any objects generated errors
+    @error_message = "#{@summary[:objects_with_error]} objects had errors in the discovery report" if @objects_had_errors
     json_report
   end
 end

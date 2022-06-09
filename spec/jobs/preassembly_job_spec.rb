@@ -21,7 +21,7 @@ RSpec.describe PreassemblyJob, type: :job do
     end
 
     context 'when success' do
-      before { allow(batch).to receive(:had_errors).and_return(false) }
+      before { allow(batch).to receive(:objects_had_errors).and_return(false) }
 
       it 'calls run_pre_assembly and ends in an complete state' do
         expect(batch).to receive(:run_pre_assembly)
@@ -48,7 +48,7 @@ RSpec.describe PreassemblyJob, type: :job do
       let(:error_message) { 'something bad happened' }
 
       before do
-        allow(batch).to receive(:had_errors).and_return(true)
+        allow(batch).to receive(:objects_had_errors).and_return(true)
         allow(batch).to receive(:error_message).and_return(error_message)
       end
 

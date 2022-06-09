@@ -114,7 +114,7 @@ RSpec.describe DiscoveryReport do
     it 'produces the json, indicates if errors occurs and records the error message' do
       json = JSON.parse(report.to_builder.target!)
       expect(json['rows'].size).to eq 3
-      expect(report.had_errors).to be true
+      expect(report.objects_had_errors).to be true
       expect(report.error_message).to eq '2 objects had errors in the discovery report'
       expect(report.summary).to include(objects_with_error: 2, total_size: 636_563)
     end

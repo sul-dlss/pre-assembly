@@ -44,7 +44,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
       let(:error_message) { 'something bad happened' }
 
       before do
-        allow(job_run.to_discovery_report).to receive(:had_errors).and_return(true)
+        allow(job_run.to_discovery_report).to receive(:objects_had_errors).and_return(true)
         allow(job_run.to_discovery_report).to receive(:error_message).and_return(error_message)
       end
 
