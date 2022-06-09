@@ -11,9 +11,12 @@
  * It is generally better to create a new file per style scope.
  *
  */
+ :root {
+   --cardinal-red: #8c1515;  /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+ }
 
 .btn-sul-dlss {
-  background-color: #8c1515; /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+  background-color: var(--cardinal-red);
   color: white;
 }
 
