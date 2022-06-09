@@ -31,8 +31,8 @@ RSpec.describe JobRun, type: :model do
       expect(job_run).not_to receive(:send_notification)
     end
 
-    it 'guards against sending a notification email when there is no log file available' do
-      job_run.output_location = nil
+    it 'guards against sending a notification email when the job is not done yet' do
+      job_run.state = 'running'
       job_run.send_notification
       expect(JobMailer).not_to receive(:with)
     end

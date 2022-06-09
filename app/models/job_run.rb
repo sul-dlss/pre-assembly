@@ -51,8 +51,13 @@ class JobRun < ApplicationRecord
     "[#{batch_context.project_name}] Your #{job_type.humanize} job completed"
   end
 
+  # the states that indicate this job is either not staretd or is currently running
+  def in_progress?
+    (waiting? || running?)
+  end
+
   def send_notification
-    return unless output_location
+    return if in_progress?
 
     JobMailer.with(job_run: self).completion_email.deliver_later
   end
