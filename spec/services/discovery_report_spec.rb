@@ -49,7 +49,7 @@ RSpec.describe DiscoveryReport do
       docs = YAML.load_stream(File.read(batch.batch_context.progress_log_file))
       expect(docs.size).to eq(3)
       expect(docs[0]).to include(pid: 'druid:1', status: 'success')
-      expect(docs[0][:timestamp].to_date).to eq Date.today
+      expect(docs[0][:timestamp].to_date).to eq Time.now.utc.to_date
       expect(docs[1]).to include(pid: 'druid:2', status: 'success')
       expect(docs[2]).to include(pid: 'druid:3', status: 'error')
     end
