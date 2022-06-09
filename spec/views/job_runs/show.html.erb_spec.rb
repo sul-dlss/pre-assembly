@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe 'job_runs/show.html.erb', type: :view do
-  before { assign(:job_run, job_run) }
+  before do
+    assign(:job_run, job_run)
+    allow(job_run).to receive(:progress_log_file).and_return(Rails.root.join('spec/test_data/input/mock_progress_log.yaml')) # this file exists
+  end
+
+  let(:job_run) { create(:job_run, :discovery_report) }
 
   context 'discovery_report job' do
-    let(:job_run) { create(:job_run, :discovery_report) }
-
     it 'displays a job_run' do
       render template: 'job_runs/show'
       expect(rendered).to include("Discovery report \##{job_run.id}")
@@ -65,6 +68,18 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
       job_run.error_message = 'Oops, that was bad.'
       render template: 'job_runs/show'
       expect(rendered).to include('Oops, that was bad.')
+    end
+  end
+
+  context 'with missing log file' do
+    before { allow(job_run).to receive(:progress_log_file).and_return('') } # no file available
+
+    it 'with a failed job, it does not link to the log file which does not exist' do
+      job_run.started
+      job_run.failed
+      render template: 'job_runs/show'
+      expect(rendered).to include('No progress log file is available.')
+      expect(rendered).not_to include("<a href=\"/job_runs/#{job_run.id}/download_log\">Download</a>")
     end
   end
 end

@@ -32,8 +32,10 @@
     <dd class="col-sm-10">
     <% if @job_run.in_progress? %>
       Job is not yet complete.  Please check back later.
-    <% else %>
+    <% elsif File.exist? @job_run.progress_log_file %>
       <%= link_to 'Download', download_log_path(@job_run) %>
+    <% else %>
+      No progress log file is available.
     <% end %>
     </dd>
     <% if @job_run.complete? && @job_run.job_type == 'discovery_report' %>
