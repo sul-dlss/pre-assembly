@@ -501,7 +501,7 @@ DEPENDENCIES
   resque-pool
   rspec-rails (~> 5)
   rspec_junit_formatter
-  rubocop
+  rubocop (~> 1.25)
   rubocop-rails
   rubocop-rspec
   shoulda-matchers (~> 4.1)
@@ -512,4 +512,4 @@ DEPENDENCIES
   turbo-rails (~> 1.1)
 
 BUNDLED WITH
-   2.3.9
+   2.3.8
