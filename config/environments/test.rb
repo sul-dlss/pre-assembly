@@ -22,6 +22,10 @@ Rails.application.configure do
     "Cache-Control" => "public, max-age=#{1.hour.to_i}"
   }
 
+  # To deal with running tests with SQLite and ActiveJob, which can sometimes cause concurrency locking issues
+  # see https://github.com/rails/rails/issues/30937
+  config.active_job.queue_adapter = :inline
+
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
