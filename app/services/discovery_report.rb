@@ -6,6 +6,7 @@
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :start_time, :summary
+  attr_accessor :error_message, :objects_had_errors
 
   delegate :bundle_dir, :content_md_creation, :manifest, :project_style, :using_file_manifest, to: :batch
   delegate :object_filenames_unique?, to: :batch
@@ -76,9 +77,12 @@ class DiscoveryReport
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
   # @return [Jbuilder] (caller needs obj.to_builder.target! for the JSON string)
   def to_builder
-    Jbuilder.new do |json|
+    json_report = Jbuilder.new do |json|
       json.rows { json.array!(each_row) }
       json.summary summary
     end
+    @objects_had_errors = (summary[:objects_with_error] > 0) # indicate if any objects generated errors
+    @error_message = "#{summary[:objects_with_error]} objects had errors in the discovery report" if objects_had_errors
+    json_report
   end
 end

@@ -5,6 +5,15 @@ RSpec.describe DiscoveryReport do
 
   let(:batch) { batch_setup(:flat_dir_images) }
 
+  before do
+    # make sure that for these tests
+    # (a) the tmp job output dir exists for the progress log file to be written to
+    # (b) we get a new clean progress log file for the tests each time we run them
+    # In the actual application, `batch_context.output_dir_no_exists!` would get run and thus we would always have a unique folder created for each job
+    FileUtils.mkdir_p(batch.batch_context.output_dir)
+    FileUtils.rm_f(batch.batch_context.progress_log_file)
+  end
+
   describe '#initialize' do
     it 'raises if PreAssembly::Batch not received' do
       expect { described_class.new }.to raise_error(ArgumentError)
@@ -29,12 +38,6 @@ RSpec.describe DiscoveryReport do
     end
 
     it 'yields per objects_to_process, building an aggregate summary and logging status per druid' do
-      # make sure that for this particular test
-      # (a) the tmp job output dir exists for the progress log file to be written to
-      # (b) we get a new clean progress log file for the tests each time we run them
-      # In the actual application, `batch_context.output_dir_no_exists!` would get run and thus we would always have a unique folder created for each job
-      FileUtils.mkdir_p(batch.batch_context.output_dir)
-      FileUtils.rm_f(batch.batch_context.progress_log_file)
       expect(report).to receive(:process_dobj).with(dig_obj1).and_return(validator1)
       expect(report).to receive(:process_dobj).with(dig_obj2).and_return(validator2)
       expect(report).to receive(:process_dobj).with(dig_obj3).and_return(validator3)
@@ -106,6 +109,14 @@ RSpec.describe DiscoveryReport do
       expect(report.summary).to include(
         objects_with_error: 0, mimetypes: {}, total_size: 0
       )
+    end
+
+    it 'produces the json, indicates if errors occurs and records the error message' do
+      json = JSON.parse(report.to_builder.target!)
+      expect(json['rows'].size).to eq 3
+      expect(report.objects_had_errors).to be true
+      expect(report.error_message).to eq '2 objects had errors in the discovery report'
+      expect(report.summary).to include(objects_with_error: 2, total_size: 636_563)
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_31_215736) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_31_215736) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "state", default: "waiting", null: false
+    t.text "error_message"
     t.index ["batch_context_id"], name: "index_job_runs_on_batch_context_id"
     t.index ["state"], name: "index_job_runs_on_state"
   end
@@ -45,4 +46,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_31_215736) do
   end
 
   add_foreign_key "batch_contexts", "users"
+  add_foreign_key "job_runs", "batch_contexts"
 end
