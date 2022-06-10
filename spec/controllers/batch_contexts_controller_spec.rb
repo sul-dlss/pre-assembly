@@ -53,7 +53,7 @@ RSpec.describe BatchContextsController, type: :controller do
         it 'passes newly created object' do
           post :create, params: params
           expect(assigns(:batch_context)).to be_a(BatchContext).and be_persisted
-          expect(response).to have_http_status(:found) # HTTP code for found
+          expect(response).to have_http_status(:see_other) # HTTP code for redirect
           expect(response).to redirect_to(job_runs_path)
           expect(flash[:success]).to start_with('Success! Your job is queued.')
         end

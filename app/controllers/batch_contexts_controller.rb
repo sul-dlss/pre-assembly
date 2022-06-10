@@ -14,9 +14,9 @@ class BatchContextsController < ApplicationController
     @batch_context = BatchContext.new(batch_contexts_params)
     if @batch_context.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-      redirect_to controller: 'job_runs'
+      redirect_to controller: 'job_runs', status: :see_other
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
