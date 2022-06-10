@@ -23,8 +23,8 @@ RSpec.describe PreAssembly::Batch do
     end
 
     it 'logs the start and finish of the run' do
-      expect(batch).to receive(:log).with("\nstarting run_pre_assembly(#{batch.run_log_msg})")
-      expect(batch).to receive(:log).with("\nfinishing run_pre_assembly(#{batch.run_log_msg})")
+      expect(batch).to receive(:log).with("\nstarting run_pre_assembly(#{batch.send(:info_for_log)})")
+      expect(batch).to receive(:log).with("\nfinishing run_pre_assembly(#{batch.send(:info_for_log)})")
       batch.run_pre_assembly
     end
 
@@ -148,17 +148,14 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#run_log_msg' do
-    it 'returns a string' do
-      expect(flat_dir_images.run_log_msg).to be_a(String)
-    end
-
+  describe '#info_for_log' do
     it 'returns a string with the expected values' do
-      expect(flat_dir_images.run_log_msg).to match(/content_structure="#{flat_dir_images.content_structure}"/)
-      expect(flat_dir_images.run_log_msg).to match(/project_name="#{flat_dir_images.project_name}"/)
-      expect(flat_dir_images.run_log_msg).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
-      expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
-      expect(flat_dir_images.run_log_msg).to match(/environment="test"/)
+      info_for_log = flat_dir_images.send(:info_for_log)
+      expect(info_for_log).to match(/content_structure="#{flat_dir_images.content_structure}"/)
+      expect(info_for_log).to match(/project_name="#{flat_dir_images.project_name}"/)
+      expect(info_for_log).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
+      expect(info_for_log).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
+      expect(info_for_log).to match(/environment="test"/)
     end
   end
 

@@ -29,20 +29,9 @@ module PreAssembly
     # Runs the pre-assembly process
     # @return [void]
     def run_pre_assembly
-      log "\nstarting run_pre_assembly(#{run_log_msg})"
+      log "\nstarting run_pre_assembly(#{info_for_log})"
       process_digital_objects
-      log "\nfinishing run_pre_assembly(#{run_log_msg})"
-    end
-
-    def run_log_msg
-      log_params = {
-        content_structure: content_structure,
-        project_name: project_name,
-        bundle_dir: bundle_dir,
-        assembly_staging_dir: Settings.assembly_staging_dir,
-        environment: Rails.env
-      }
-      log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
+      log "\nfinishing run_pre_assembly(#{info_for_log})"
     end
 
     # used by discovery report
@@ -180,6 +169,17 @@ module PreAssembly
     def load_checksums(dobj)
       log '  - load_checksums()'
       dobj.object_files.each { |file| file.provider_md5 = file.md5 }
+    end
+
+    def info_for_log
+      log_params = {
+        content_structure: content_structure,
+        project_name: project_name,
+        bundle_dir: bundle_dir,
+        assembly_staging_dir: Settings.assembly_staging_dir,
+        environment: Rails.env
+      }
+      log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
 
     def object_client(druid)
