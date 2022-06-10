@@ -9,7 +9,7 @@ RSpec.describe PreassemblyJob, type: :job do
 
   before do
     allow(batch_context).to receive(:progress_log_file).and_return(outfile)
-    allow(batch).to receive(:process_digital_objects)
+    allow(batch).to receive(:pre_assemble_objects)
   end
 
   after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
@@ -35,7 +35,7 @@ RSpec.describe PreassemblyJob, type: :job do
       let(:error_message) { 'something really unexpected happened' }
       # simulate an uncaught exception while running the job
 
-      before { allow(batch).to receive(:process_digital_objects).and_raise(StandardError, error_message) }
+      before { allow(batch).to receive(:pre_assemble_objects).and_raise(StandardError, error_message) }
 
       it 'ends in a failed state with an uncaught exception, and saves error message to the database' do
         job.perform(job_run)

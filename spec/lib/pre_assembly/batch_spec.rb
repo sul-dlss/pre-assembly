@@ -18,7 +18,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#run_pre_assembly' do
     before do
-      allow(batch).to receive(:process_digital_objects) # stub expensive call
+      allow(batch).to receive(:pre_assemble_objects) # stub expensive call
       allow(batch).to receive(:log) # log statements we don't care about here
     end
 
@@ -28,13 +28,13 @@ RSpec.describe PreAssembly::Batch do
       batch.run_pre_assembly
     end
 
-    it 'calls process_digital_objects' do
-      expect(batch).to receive(:process_digital_objects)
+    it 'calls pre_assemble_objects' do
+      expect(batch).to receive(:pre_assemble_objects)
       batch.run_pre_assembly
     end
   end
 
-  describe '#process_digital_objects' do
+  describe '#pre_assemble_objects' do
     before do
       allow(StartAccession).to receive(:run)
     end
@@ -42,14 +42,14 @@ RSpec.describe PreAssembly::Batch do
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect(batch.process_digital_objects).to be true
+      expect(batch.send(:pre_assemble_objects)).to be true
       expect(batch.objects_had_errors).to be false
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      expect(batch.process_digital_objects).to be true
+      expect(batch.send(:pre_assemble_objects)).to be true
       expect(batch.objects_had_errors).to be false
     end
 
@@ -62,7 +62,7 @@ RSpec.describe PreAssembly::Batch do
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 
       it 'indicates errors occured, then logs the error and sets the error message' do
-        batch.process_digital_objects
+        batch.send(:pre_assemble_objects)
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '2 objects had errors during pre-assembly'
         expect(yaml[:status]).to eq 'error'
@@ -79,7 +79,7 @@ RSpec.describe PreAssembly::Batch do
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       it 'indicates errors occured, then logs the error and sets the error message' do
-        batch.process_digital_objects
+        batch.send(:pre_assemble_objects)
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
@@ -98,7 +98,7 @@ RSpec.describe PreAssembly::Batch do
       end
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
-        expect(batch.process_digital_objects).to be true
+        expect(batch.send(:pre_assemble_objects)).to be true
         expect(batch.objects_had_errors).to be false
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
@@ -111,12 +111,12 @@ RSpec.describe PreAssembly::Batch do
         # simulate an exception occurring during pre-assembly of the first object
         allow(batch.digital_objects[0]).to receive(:stage_files).and_raise Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'
         allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        batch.send(:pre_assemble_objects)
       end
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       it 'rescues the exception and proceeds, logs the error, indicates errors occurred, and sets the error message' do
-        batch.process_digital_objects
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
@@ -134,7 +134,7 @@ RSpec.describe PreAssembly::Batch do
       end
 
       it 'calls digital_object.pre_assemble with true for all objects' do
-        expect(batch.process_digital_objects).to be true
+        expect(batch.send(:pre_assemble_objects)).to be true
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end

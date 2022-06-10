@@ -30,7 +30,7 @@ module PreAssembly
     # @return [void]
     def run_pre_assembly
       log "\nstarting run_pre_assembly(#{info_for_log})"
-      process_digital_objects
+      pre_assemble_objects
       log "\nfinishing run_pre_assembly(#{info_for_log})"
     end
 
@@ -61,46 +61,6 @@ module PreAssembly
       end
     end
     # rubocop:enable Metrics/AbcSize
-
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
-    def process_digital_objects
-      num_no_file_warnings = 0
-      num_failures = 0
-      errors = []
-      # Get the non-skipped objects to process
-      total_obj = objects_to_process.size
-      log "process_digital_objects(#{total_obj} objects)"
-      log "#{total_obj} objects to pre-assemble"
-      log "#{digital_objects.size} total objects found, #{skippables&.size} already completed objects skipped"
-
-      objects_to_process.each_with_index do |dobj, n|
-        log "#{total_obj - n} remaining in run | #{total_obj} running"
-        log "  - Processing object: #{dobj.container}"
-        log "  - N object files: #{dobj.object_files.size}"
-        num_no_file_warnings += 1 if dobj.object_files.empty?
-        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
-        load_checksums(dobj)
-        progress = dobj.pre_assemble(file_attributes_supplied)
-        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
-        num_failures += 1 if progress[:status] == 'error'
-        log "Completed #{dobj.druid}"
-        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
-      end
-      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
-      errors.each { |error| log "**WARNING**: #{error}" }
-      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
-      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
-
-      log "#{total_obj} objects pre-assembled"
-    end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
 
     # used by discovery report
     # @return [Array<DigitalObject>]
@@ -153,6 +113,46 @@ module PreAssembly
     def all_object_files
       digital_objects.map(&:object_files).flatten
     end
+
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
+    def pre_assemble_objects
+      num_no_file_warnings = 0
+      num_failures = 0
+      errors = []
+      # Get the non-skipped objects to process
+      total_obj = objects_to_process.size
+      log "pre_assemble_objects(#{total_obj} objects)"
+      log "#{total_obj} objects to pre-assemble"
+      log "#{digital_objects.size} total objects found, #{skippables&.size} already completed objects skipped"
+
+      objects_to_process.each_with_index do |dobj, n|
+        log "#{total_obj - n} remaining in run | #{total_obj} running"
+        log "  - Processing object: #{dobj.container}"
+        log "  - N object files: #{dobj.object_files.size}"
+        num_no_file_warnings += 1 if dobj.object_files.empty?
+        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
+        load_checksums(dobj)
+        progress = dobj.pre_assemble(file_attributes_supplied)
+        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
+        num_failures += 1 if progress[:status] == 'error'
+        log "Completed #{dobj.druid}"
+        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
+      end
+      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      errors.each { |error| log "**WARNING**: #{error}" }
+      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
+      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
+
+      log "#{total_obj} objects pre-assembled"
+    end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     # @return [Boolean] - true if object access is dark, false otherwise
     def dark?(druid)
