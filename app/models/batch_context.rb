@@ -5,6 +5,7 @@
 #  The user creates a new BatchContext by filling in the main form in the pre-assembly UI, indicating parameters common to both
 #   pre-assembly and discovery report jobs.  They can then run either type of job using these common paramters by clicking a button:
 #   this creates a new JobRun, which belongs_to the associated BatchContext.
+# rubocop:disable Metrics/ClassLength
 class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy
@@ -62,10 +63,12 @@ class BatchContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
+  # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
   def file_manifest
     'file_manifest.csv'
   end
 
+  # the manifest specifying objects and associated folders on disk: required to run any job
   def manifest
     'manifest.csv'
   end
@@ -77,7 +80,21 @@ class BatchContext < ApplicationRecord
   # On first call, loads the manifest data, caches results
   # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
   def manifest_rows
-    @manifest_rows ||= CsvImporter.parse_to_hash(bundle_dir_with_path(manifest))
+    @manifest_rows ||= load_manifest
+  end
+
+  # load the manifest.csv file and verify there is at least one object and the correct header is present
+  def load_manifest
+    manifest_path = bundle_dir_with_path(manifest)
+    raise 'manifest file missing or empty' if !File.exist?(manifest_path) || File.zero?(manifest_path)
+
+    manifest_rows = CsvImporter.parse_to_hash(manifest_path)
+    raise 'no rows in manifest or missing header' if manifest_rows.empty?
+
+    columns = manifest_rows.first.keys
+    raise 'manifest must have "druid" and "object" columns' unless (%w[druid object] - columns).empty?
+
+    manifest_rows
   end
 
   private
@@ -142,3 +159,4 @@ class BatchContext < ApplicationRecord
     errors.add(:bundle_dir, 'not a sub directory of allowed parent directories.')
   end
 end
+# rubocop:enable Metrics/ClassLength
