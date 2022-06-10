@@ -7,7 +7,7 @@ end
 
 def hash_from_proj(proj)
   filename = "spec/test_data/project_config_files/#{proj}.yaml"
-  YAML.safe_load(File.read(filename)).merge('config_filename' => filename)
+  YAML.safe_load(File.read(filename))
 end
 
 def noko_doc(text_xml)

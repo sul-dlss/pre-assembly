@@ -18,23 +18,23 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#run_pre_assembly' do
     before do
-      allow(batch).to receive(:process_digital_objects) # stub expensive call
+      allow(batch).to receive(:pre_assemble_objects) # stub expensive call
       allow(batch).to receive(:log) # log statements we don't care about here
     end
 
     it 'logs the start and finish of the run' do
-      expect(batch).to receive(:log).with("\nstarting run_pre_assembly(#{batch.run_log_msg})")
-      expect(batch).to receive(:log).with("\nfinishing run_pre_assembly(#{batch.run_log_msg})")
+      expect(batch).to receive(:log).with("\nstarting run_pre_assembly(#{batch.send(:info_for_log)})")
+      expect(batch).to receive(:log).with("\nfinishing run_pre_assembly(#{batch.send(:info_for_log)})")
       batch.run_pre_assembly
     end
 
-    it 'calls process_digital_objects' do
-      expect(batch).to receive(:process_digital_objects)
+    it 'calls pre_assemble_objects' do
+      expect(batch).to receive(:pre_assemble_objects)
       batch.run_pre_assembly
     end
   end
 
-  describe '#process_digital_objects' do
+  describe '#pre_assemble_objects' do
     before do
       allow(StartAccession).to receive(:run)
     end
@@ -42,14 +42,14 @@ RSpec.describe PreAssembly::Batch do
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect(batch.process_digital_objects).to be true
+      expect(batch.send(:pre_assemble_objects)).to be true
       expect(batch.objects_had_errors).to be false
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
-      expect(batch.process_digital_objects).to be true
+      expect(batch.send(:pre_assemble_objects)).to be true
       expect(batch.objects_had_errors).to be false
     end
 
@@ -62,7 +62,7 @@ RSpec.describe PreAssembly::Batch do
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 
       it 'indicates errors occured, then logs the error and sets the error message' do
-        batch.process_digital_objects
+        batch.send(:pre_assemble_objects)
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '2 objects had errors during pre-assembly'
         expect(yaml[:status]).to eq 'error'
@@ -79,7 +79,7 @@ RSpec.describe PreAssembly::Batch do
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       it 'indicates errors occured, then logs the error and sets the error message' do
-        batch.process_digital_objects
+        batch.send(:pre_assemble_objects)
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
@@ -98,7 +98,7 @@ RSpec.describe PreAssembly::Batch do
       end
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
-        expect(batch.process_digital_objects).to be true
+        expect(batch.send(:pre_assemble_objects)).to be true
         expect(batch.objects_had_errors).to be false
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
@@ -111,12 +111,12 @@ RSpec.describe PreAssembly::Batch do
         # simulate an exception occurring during pre-assembly of the first object
         allow(batch.digital_objects[0]).to receive(:stage_files).and_raise Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'
         allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        batch.send(:pre_assemble_objects)
       end
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       it 'rescues the exception and proceeds, logs the error, indicates errors occurred, and sets the error message' do
-        batch.process_digital_objects
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
@@ -134,33 +134,28 @@ RSpec.describe PreAssembly::Batch do
       end
 
       it 'calls digital_object.pre_assemble with true for all objects' do
-        expect(batch.process_digital_objects).to be true
+        expect(batch.send(:pre_assemble_objects)).to be true
         expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
         expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end
     end
   end
 
-  describe '#load_skippables' do
+  describe '#skippables' do
     it 'returns expected hash of skippable items' do
       allow(multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
-      expect(multimedia.skippables).to eq({})
-      multimedia.load_skippables
-      expect(multimedia.skippables).to eq('aa' => true, 'bb' => true)
+      expect(multimedia.send(:skippables)).to eq('aa' => true, 'bb' => true)
     end
   end
 
-  describe '#run_log_msg' do
-    it 'returns a string' do
-      expect(flat_dir_images.run_log_msg).to be_a(String)
-    end
-
+  describe '#info_for_log' do
     it 'returns a string with the expected values' do
-      expect(flat_dir_images.run_log_msg).to match(/content_structure="#{flat_dir_images.content_structure}"/)
-      expect(flat_dir_images.run_log_msg).to match(/project_name="#{flat_dir_images.project_name}"/)
-      expect(flat_dir_images.run_log_msg).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
-      expect(flat_dir_images.run_log_msg).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
-      expect(flat_dir_images.run_log_msg).to match(/environment="test"/)
+      info_for_log = flat_dir_images.send(:info_for_log)
+      expect(info_for_log).to match(/content_structure="#{flat_dir_images.content_structure}"/)
+      expect(info_for_log).to match(/project_name="#{flat_dir_images.project_name}"/)
+      expect(info_for_log).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
+      expect(info_for_log).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
+      expect(info_for_log).to match(/environment="test"/)
     end
   end
 
@@ -225,20 +220,18 @@ RSpec.describe PreAssembly::Batch do
   describe '#load_checksums' do
     it 'loads checksums and attach them to the ObjectFiles' do
       multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
-      multimedia.digital_objects.each { |dobj| multimedia.load_checksums(dobj) }
+      multimedia.digital_objects.each { |dobj| multimedia.send(:load_checksums, dobj) }
       multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end
 
   describe '#objects_to_process' do
     it 'returns all objects if there are no skippables' do
-      flat_dir_images.skippables = {}
       expect(flat_dir_images.objects_to_process).to eq(flat_dir_images.digital_objects)
     end
 
     it 'returns a filtered list of digital objects' do
-      flat_dir_images.skippables = {}
-      flat_dir_images.skippables[flat_dir_images.digital_objects.last.container] = true
+      allow(flat_dir_images).to receive(:skippables).and_return({ flat_dir_images.digital_objects.last.container => true })
       o2p = flat_dir_images.objects_to_process
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])

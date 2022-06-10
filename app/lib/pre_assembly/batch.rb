@@ -11,61 +11,33 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :error_message,
                   :file_manifest,
-                  :objects_had_errors,
-                  :skippables,
-                  :user_params
+                  :objects_had_errors
 
-    delegate :apo_druid_id,
-             :apply_tag,
-             :bundle_dir,
-             :config_filename,
+    delegate :bundle_dir,
              :content_md_creation,
              :content_structure,
              :manifest_rows,
              :bundle_dir_with_path,
              :progress_log_file,
              :project_name,
-             :set_druid_id,
              :staging_style_symlink,
              :using_file_manifest,
              to: :batch_context
 
     def initialize(batch_context)
       @batch_context = batch_context
-      self.file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
-      self.skippables = {}
-      load_skippables
-    end
-
-    def load_skippables
-      return unless File.readable?(progress_log_file)
-
-      docs = YAML.load_stream(File.read(progress_log_file))
-      docs = docs.documents if docs.respond_to? :documents
-      docs.each do |yd|
-        skippables[yd[:container]] = true if yd[:pre_assem_finished]
-      end
+      @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
     end
 
     # Runs the pre-assembly process
     # @return [void]
     def run_pre_assembly
-      log "\nstarting run_pre_assembly(#{run_log_msg})"
-      process_digital_objects
-      log "\nfinishing run_pre_assembly(#{run_log_msg})"
+      log "\nstarting run_pre_assembly(#{info_for_log})"
+      pre_assemble_objects
+      log "\nfinishing run_pre_assembly(#{info_for_log})"
     end
 
-    def run_log_msg
-      log_params = {
-        content_structure: content_structure,
-        project_name: project_name,
-        bundle_dir: bundle_dir,
-        assembly_staging_dir: Settings.assembly_staging_dir,
-        environment: Rails.env
-      }
-      log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
-    end
-
+    # used by discovery report
     def object_filenames_unique?(dobj)
       filenames = dobj.object_files.map { |objfile| File.basename(objfile.path) }
       filenames.count == filenames.uniq.count
@@ -93,60 +65,32 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
 
-    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
-    # @param [DigitalObject] dobj
-    def load_checksums(dobj)
-      log '  - load_checksums()'
-      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
-    end
-
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/CyclomaticComplexity
-    def process_digital_objects
-      num_no_file_warnings = 0
-      num_failures = 0
-      errors = []
-      # Get the non-skipped objects to process
-      total_obj = objects_to_process.size
-      log "process_digital_objects(#{total_obj} objects)"
-      log "#{total_obj} objects to pre-assemble"
-      log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
-
-      objects_to_process.each_with_index do |dobj, n|
-        log "#{total_obj - n} remaining in run | #{total_obj} running"
-        log "  - Processing object: #{dobj.container}"
-        log "  - N object files: #{dobj.object_files.size}"
-        num_no_file_warnings += 1 if dobj.object_files.empty?
-        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
-        load_checksums(dobj)
-        progress = dobj.pre_assemble(file_attributes_supplied)
-        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
-        num_failures += 1 if progress[:status] == 'error'
-        log "Completed #{dobj.druid}"
-        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
-      end
-      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
-      errors.each { |error| log "**WARNING**: #{error}" }
-      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
-      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
-
-      log "#{total_obj} objects pre-assembled"
-    end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/CyclomaticComplexity
-
+    # used by discovery report
     # @return [Array<DigitalObject>]
     def objects_to_process
-      @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
+      @objects_to_process ||= digital_objects.reject { |dobj| skippables&.key?(dobj.container) }
     end
 
     private
 
     def stager
       staging_style_symlink ? LinkStager : CopyStager
+    end
+
+    # object containers that should be skipped
+    def skippables
+      @skippables ||= begin
+        skippables = {}
+
+        if File.readable?(progress_log_file)
+          docs = YAML.load_stream(File.read(progress_log_file))
+          docs = docs.documents if docs.respond_to? :documents
+          docs.each do |yd|
+            skippables[yd[:container]] = true if yd[:pre_assem_finished]
+          end
+          skippables
+        end
+      end
     end
 
     # Discover object containers from the object manifest file suppled in the bundle_dir.
@@ -173,6 +117,46 @@ module PreAssembly
       digital_objects.map(&:object_files).flatten
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
+    def pre_assemble_objects
+      num_no_file_warnings = 0
+      num_failures = 0
+      errors = []
+      # Get the non-skipped objects to process
+      total_obj = objects_to_process.size
+      log "pre_assemble_objects(#{total_obj} objects)"
+      log "#{total_obj} objects to pre-assemble"
+      log "#{digital_objects.size} total objects found, #{skippables&.size} already completed objects skipped"
+
+      objects_to_process.each_with_index do |dobj, n|
+        log "#{total_obj - n} remaining in run | #{total_obj} running"
+        log "  - Processing object: #{dobj.container}"
+        log "  - N object files: #{dobj.object_files.size}"
+        num_no_file_warnings += 1 if dobj.object_files.empty?
+        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
+        load_checksums(dobj)
+        progress = dobj.pre_assemble(file_attributes_supplied)
+        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
+        num_failures += 1 if progress[:status] == 'error'
+        log "Completed #{dobj.druid}"
+        File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
+      end
+      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      errors.each { |error| log "**WARNING**: #{error}" }
+      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
+      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
+
+      log "#{total_obj} objects pre-assembled"
+    end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
+
     # @return [Boolean] - true if object access is dark, false otherwise
     def dark?(druid)
       dobj = object_client(druid).find
@@ -181,6 +165,24 @@ module PreAssembly
       { item_not_registered: true }
     rescue RuntimeError # HTTP timeout, network error, whatever
       { dor_connection_error: true }
+    end
+
+    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
+    # @param [DigitalObject] dobj
+    def load_checksums(dobj)
+      log '  - load_checksums()'
+      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
+    end
+
+    def info_for_log
+      log_params = {
+        content_structure: content_structure,
+        project_name: project_name,
+        bundle_dir: bundle_dir,
+        assembly_staging_dir: Settings.assembly_staging_dir,
+        environment: Rails.env
+      }
+      log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
 
     def object_client(druid)
