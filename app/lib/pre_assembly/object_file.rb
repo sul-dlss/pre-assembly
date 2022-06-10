@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module PreAssembly
+  # an individual file within a digital object; extends class from assembly-objectfile gem
   class ObjectFile < Assembly::ObjectFile
     include ActiveModel::AttributeMethods
 
