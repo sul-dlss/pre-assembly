@@ -12,7 +12,7 @@ FactoryBot.define do
     # some tests require BCs with clean output_dir
     factory :batch_context_with_deleted_output_dir do
       after(:build) do |bc|
-        Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir)
+        FileUtils.remove_dir(bc.output_dir) if Dir.exist?(bc.output_dir)
       end
     end
 

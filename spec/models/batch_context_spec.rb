@@ -157,7 +157,7 @@ RSpec.describe BatchContext, type: :model do
   describe '#output_dir_no_exists!' do
     before { FileUtils.mkdir_p(Settings.job_output_parent_dir) }
 
-    after { Dir.delete(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
+    after { FileUtils.remove_dir(bc.output_dir) if Dir.exist?(bc.output_dir) } # cleanup
 
     context 'when batch_context is new' do
       before { allow(bc).to receive(:persisted?).and_return(false) }
