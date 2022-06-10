@@ -46,8 +46,8 @@ module PreAssembly
     end
 
     # Discovers the digital object containers and the stageable items within them.
-    # For each container, creates a new Digitalobject.
-    # @return [Array<DigitalObject>]
+    # For each container, creates a new PreAssembly::Digitalobject.
+    # @return [Array<PreAssembly::DigitalObject>]
     # rubocop:disable Metrics/AbcSize
     def digital_objects
       @digital_objects ||= containers_via_manifest.each_with_index.map do |c, i|
@@ -67,7 +67,8 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
 
-    # @return [Array<DigitalObject>]
+    # used by discovery report
+    # @return [Array<PreAssembly::DigitalObject>]
     def un_pre_assembled_objects
       @un_pre_assembled_objects ||= digital_objects.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }
     end
@@ -173,7 +174,7 @@ module PreAssembly
     end
 
     # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
-    # @param [DigitalObject] dobj
+    # @param [PreAssembly::DigitalObject] dobj
     def load_checksums(dobj)
       log '  - load_checksums()'
       dobj.object_files.each { |file| file.provider_md5 = file.md5 }
