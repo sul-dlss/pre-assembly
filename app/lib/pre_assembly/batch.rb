@@ -6,11 +6,11 @@ module PreAssembly
 
     attr_reader :batch_context
     attr_writer :digital_objects
-    attr_accessor :user_params,
-                  :skippables,
+    attr_accessor :error_message,
                   :file_manifest,
-                  :error_message,
-                  :objects_had_errors
+                  :objects_had_errors,
+                  :skippables,
+                  :user_params
 
     delegate :apo_druid_id,
              :apply_tag,

@@ -6,7 +6,7 @@
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :start_time, :summary
-  attr_accessor :objects_had_errors, :error_message
+  attr_accessor :error_message, :objects_had_errors
 
   delegate :bundle_dir, :content_md_creation, :manifest, :project_style, :using_file_manifest, to: :batch
   delegate :object_filenames_unique?, to: :batch
