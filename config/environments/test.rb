@@ -24,7 +24,12 @@ Rails.application.configure do
 
   # To deal with running tests with SQLite and ActiveJob, which can sometimes cause concurrency locking issues
   # see https://github.com/rails/rails/issues/30937
-  config.active_job.queue_adapter = :inline
+  # see also https://api.rubyonrails.org/classes/ActiveJob/QueueAdapters/AsyncAdapter.html
+  # per the GH issue, "default is :async to help tests catch code that's inadvertently assuming synchronous execution".
+  # switching to :inline slows tests down and loses that benefit, but limiting to exactly 1 thread prevents SQLite
+  # write contention while still testing with async job execution.
+  config.active_job.queue_adapter = ActiveJob::QueueAdapters::AsyncAdapter.new(min_threads: 1, max_threads: 1)
+
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
