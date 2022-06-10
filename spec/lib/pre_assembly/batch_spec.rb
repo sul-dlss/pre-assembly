@@ -223,7 +223,7 @@ RSpec.describe PreAssembly::Batch do
   describe '#load_checksums' do
     it 'loads checksums and attach them to the ObjectFiles' do
       multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
-      multimedia.digital_objects.each { |dobj| multimedia.load_checksums(dobj) }
+      multimedia.digital_objects.each { |dobj| multimedia.send(:load_checksums, dobj) }
       multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
     end
   end

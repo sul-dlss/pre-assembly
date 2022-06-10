@@ -72,13 +72,6 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
 
-    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
-    # @param [DigitalObject] dobj
-    def load_checksums(dobj)
-      log '  - load_checksums()'
-      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
-    end
-
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/CyclomaticComplexity
@@ -178,6 +171,13 @@ module PreAssembly
       { item_not_registered: true }
     rescue RuntimeError # HTTP timeout, network error, whatever
       { dor_connection_error: true }
+    end
+
+    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
+    # @param [DigitalObject] dobj
+    def load_checksums(dobj)
+      log '  - load_checksums()'
+      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
     end
 
     def object_client(druid)
