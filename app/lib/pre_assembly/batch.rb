@@ -8,21 +8,15 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :error_message,
                   :file_manifest,
-                  :objects_had_errors,
-                  :skippables,
-                  :user_params
+                  :objects_had_errors
 
-    delegate :apo_druid_id,
-             :apply_tag,
-             :bundle_dir,
-             :config_filename,
+    delegate :bundle_dir,
              :content_md_creation,
              :content_structure,
              :manifest_rows,
              :bundle_dir_with_path,
              :progress_log_file,
              :project_name,
-             :set_druid_id,
              :staging_style_symlink,
              :using_file_manifest,
              to: :batch_context
@@ -30,18 +24,6 @@ module PreAssembly
     def initialize(batch_context)
       @batch_context = batch_context
       @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
-      @skippables = {}
-      load_skippables
-    end
-
-    def load_skippables
-      return unless File.readable?(progress_log_file)
-
-      docs = YAML.load_stream(File.read(progress_log_file))
-      docs = docs.documents if docs.respond_to? :documents
-      docs.each do |yd|
-        skippables[yd[:container]] = true if yd[:pre_assem_finished]
-      end
     end
 
     # Runs the pre-assembly process
@@ -100,6 +82,7 @@ module PreAssembly
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     def process_digital_objects
       num_no_file_warnings = 0
       num_failures = 0
@@ -108,7 +91,7 @@ module PreAssembly
       total_obj = objects_to_process.size
       log "process_digital_objects(#{total_obj} objects)"
       log "#{total_obj} objects to pre-assemble"
-      log "#{digital_objects.size} total objects found, #{skippables.size} already completed objects skipped"
+      log "#{digital_objects.size} total objects found, #{skippables&.size} already completed objects skipped"
 
       objects_to_process.each_with_index do |dobj, n|
         log "#{total_obj - n} remaining in run | #{total_obj} running"
@@ -134,16 +117,33 @@ module PreAssembly
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
 
     # @return [Array<DigitalObject>]
     def objects_to_process
-      @objects_to_process ||= digital_objects.reject { |dobj| skippables.key?(dobj.container) }
+      @objects_to_process ||= digital_objects.reject { |dobj| skippables&.key?(dobj.container) }
     end
 
     private
 
     def stager
       staging_style_symlink ? LinkStager : CopyStager
+    end
+
+    # object containers that should be skipped
+    def skippables
+      @skippables ||= begin
+        skippables = {}
+
+        if File.readable?(progress_log_file)
+          docs = YAML.load_stream(File.read(progress_log_file))
+          docs = docs.documents if docs.respond_to? :documents
+          docs.each do |yd|
+            skippables[yd[:container]] = true if yd[:pre_assem_finished]
+          end
+          skippables
+        end
+      end
     end
 
     # Discover object containers from the object manifest file suppled in the bundle_dir.

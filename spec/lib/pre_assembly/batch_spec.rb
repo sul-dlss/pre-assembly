@@ -141,12 +141,10 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#load_skippables' do
+  describe '#skippables' do
     it 'returns expected hash of skippable items' do
       allow(multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
-      expect(multimedia.skippables).to eq({})
-      multimedia.load_skippables
-      expect(multimedia.skippables).to eq('aa' => true, 'bb' => true)
+      expect(multimedia.send(:skippables)).to eq('aa' => true, 'bb' => true)
     end
   end
 
@@ -232,13 +230,11 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#objects_to_process' do
     it 'returns all objects if there are no skippables' do
-      flat_dir_images.skippables = {}
       expect(flat_dir_images.objects_to_process).to eq(flat_dir_images.digital_objects)
     end
 
     it 'returns a filtered list of digital objects' do
-      flat_dir_images.skippables = {}
-      flat_dir_images.skippables[flat_dir_images.digital_objects.last.container] = true
+      allow(flat_dir_images).to receive(:skippables).and_return({ flat_dir_images.digital_objects.last.container => true })
       o2p = flat_dir_images.objects_to_process
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
