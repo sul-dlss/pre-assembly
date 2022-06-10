@@ -2,6 +2,9 @@
 
 # Model class for the database table batch_context;
 #  contains information needed to run jobs, be they discovery reports or pre_assemble runs
+#  The user creates a new BatchContext by filling in the main form in the pre-assembly UI, indicating parameters common to both
+#   pre-assembly and discovery report jobs.  They can then run either type of job using these common paramters by clicking a button:
+#   this creates a new JobRun, which belongs_to the associated BatchContext.
 class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy

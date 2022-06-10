@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Model class for the database table job_runs;
+#  contains information about a specific pre-assembly or discovery report run; parameters used for that run are in the associated BatchContext
+#  the user is able to instantiate multiple jobs (the same and/or different types) using the same BatchContext and each will get its own JobRun
 class JobRun < ApplicationRecord
   belongs_to :batch_context
   validates :job_type, presence: true
