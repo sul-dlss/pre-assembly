@@ -12,7 +12,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
-  before(:all) { FileUtils.rm_rf('log/test_jobs') }
+  before(:all) { FileUtils.remove_dir('log/test_jobs') }
 
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)

@@ -4,13 +4,14 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
   before do
     assign(:job_run, job_run)
     allow(job_run).to receive(:progress_log_file).and_return(actual_file)
-    allow(job_run).to receive(:output_location).and_return(actual_file)
   end
 
   let(:job_run) { create(:job_run, :discovery_report) }
   let(:actual_file) { Rails.root.join('spec/test_data/input/mock_progress_log.yaml') } # an existing file we can use for tests
 
   context 'discovery_report job' do
+    before { allow(job_run).to receive(:output_location).and_return(actual_file) }
+
     it 'displays a job_run' do
       render template: 'job_runs/show'
       expect(rendered).to include("Discovery report \##{job_run.id}")
@@ -19,6 +20,14 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
     it 'with a completed job, presents a download link to the report and the log file' do
       job_run.started
       job_run.completed
+      render template: 'job_runs/show'
+      expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_log\">Download</a>")
+      expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")
+    end
+
+    it 'with a completed with errors job, presents a download link to the report and the log file' do
+      job_run.started
+      job_run.completed_with_errors
       render template: 'job_runs/show'
       expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_log\">Download</a>")
       expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")

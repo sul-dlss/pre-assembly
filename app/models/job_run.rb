@@ -59,9 +59,9 @@ class JobRun < ApplicationRecord
     (waiting? || running?)
   end
 
-  # the states that indicate a job is completed
-  def finished?
-    !in_progress?
+  # indicates if the discovery report job is ready for display and is avaiable (some jobs may fail, leaving no report)
+  def report_ready?
+    job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
   end
 
   def send_notification
