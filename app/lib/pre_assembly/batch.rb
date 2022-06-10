@@ -11,6 +11,8 @@ module PreAssembly
     attr_writer :digital_objects
     attr_accessor :error_message,
                   :file_manifest,
+                  :num_failures,
+                  :num_no_file_warnings,
                   :objects_had_errors
 
     delegate :bundle_dir,
@@ -48,7 +50,7 @@ module PreAssembly
     # @return [Array<DigitalObject>]
     # rubocop:disable Metrics/AbcSize
     def digital_objects
-      @digital_objects ||= discover_containers_via_manifest.each_with_index.map do |c, i|
+      @digital_objects ||= containers_via_manifest.each_with_index.map do |c, i|
         stageable_items = discover_items_via_crawl(c)
         row = manifest_rows[i]
         dark = dark?(row[:druid])
@@ -65,10 +67,9 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
 
-    # used by discovery report
     # @return [Array<DigitalObject>]
-    def objects_to_process
-      @objects_to_process ||= digital_objects.reject { |dobj| skippables&.key?(dobj.container) }
+    def un_pre_assembled_objects
+      @un_pre_assembled_objects ||= digital_objects.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }
     end
 
     private
@@ -77,24 +78,23 @@ module PreAssembly
       staging_style_symlink ? LinkStager : CopyStager
     end
 
-    # object containers that should be skipped
-    def skippables
-      @skippables ||= begin
-        skippables = {}
+    def pre_assembled_object_containers
+      @pre_assembled_object_containers ||= begin
+        pre_assembled_object_containers = {}
 
         if File.readable?(progress_log_file)
           docs = YAML.load_stream(File.read(progress_log_file))
           docs = docs.documents if docs.respond_to? :documents
           docs.each do |yd|
-            skippables[yd[:container]] = true if yd[:pre_assem_finished]
+            pre_assembled_object_containers[yd[:container]] = true if yd[:pre_assem_finished]
           end
-          skippables
+          pre_assembled_object_containers
         end
       end
     end
 
     # Discover object containers from the object manifest file suppled in the bundle_dir.
-    def discover_containers_via_manifest
+    def containers_via_manifest
       manifest_rows.each_with_index do |r, i|
         next if r[:object]
         raise 'Missing header row in manifest.csv' if i == 0
@@ -117,45 +117,50 @@ module PreAssembly
       digital_objects.map(&:object_files).flatten
     end
 
+    # ignores objects already pre-assembled as part of re-runnability of preassembly job
     # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
     def pre_assemble_objects
-      num_no_file_warnings = 0
-      num_failures = 0
+      @num_failures = 0
+      @num_no_file_warnings = 0
       errors = []
-      # Get the non-skipped objects to process
-      total_obj = objects_to_process.size
-      log "pre_assemble_objects(#{total_obj} objects)"
-      log "#{total_obj} objects to pre-assemble"
-      log "#{digital_objects.size} total objects found, #{skippables&.size} already completed objects skipped"
+      log "pre_assemble_objects(#{num_to_pre_assemble} objects)"
+      log "#{num_to_pre_assemble} objects to pre-assemble"
+      log "#{digital_objects.size} total objects found, #{pre_assembled_object_containers&.size} already completed objects skipped"
 
-      objects_to_process.each_with_index do |dobj, n|
-        log "#{total_obj - n} remaining in run | #{total_obj} running"
+      pre_assemble_each_object # ignores objects already pre-assembled
+
+      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
+      errors.each { |error| log "**WARNING**: #{error}" }
+      @objects_had_errors = !errors.size.zero?
+      @error_message = errors.join(', ') # error message will be saved in the job_run
+
+      log "#{num_to_pre_assemble} objects pre-assembled"
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    # pre-assemble each object that hasn't been pre-assembled already
+    # rubocop:disable Metrics/AbcSize
+    def pre_assemble_each_object
+      un_pre_assembled_objects.each_with_index do |dobj, n|
+        log "#{num_to_pre_assemble - n} remaining in run | #{num_to_pre_assemble} running"
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
-        num_no_file_warnings += 1 if dobj.object_files.empty?
+        @num_no_file_warnings += 1 if dobj.object_files.empty?
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         load_checksums(dobj)
         progress = dobj.pre_assemble(file_attributes_supplied)
         progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
-        num_failures += 1 if progress[:status] == 'error'
+        @num_failures += 1 if progress[:status] == 'error'
         log "Completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
-      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
-      errors.each { |error| log "**WARNING**: #{error}" }
-      @objects_had_errors = !errors.size.zero? # indicate if we had any errors
-      @error_message = errors.join(', ') # set the error message so they can be saved in the job_run
-
-      log "#{total_obj} objects pre-assembled"
     end
     # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
+
+    def num_to_pre_assemble
+      @num_to_pre_assemble ||= un_pre_assembled_objects.size
+    end
 
     # @return [Boolean] - true if object access is dark, false otherwise
     def dark?(druid)

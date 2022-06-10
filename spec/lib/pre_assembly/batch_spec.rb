@@ -141,10 +141,10 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#skippables' do
+  describe '#pre_assembled_object_containers' do
     it 'returns expected hash of skippable items' do
       allow(multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
-      expect(multimedia.send(:skippables)).to eq('aa' => true, 'bb' => true)
+      expect(multimedia.send(:pre_assembled_object_containers)).to eq('aa' => true, 'bb' => true)
     end
   end
 
@@ -225,14 +225,14 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#objects_to_process' do
-    it 'returns all objects if there are no skippables' do
-      expect(flat_dir_images.objects_to_process).to eq(flat_dir_images.digital_objects)
+  describe '#un_pre_assembled_objects' do
+    it 'returns all objects if there are no pre_assembled_object_containers' do
+      expect(flat_dir_images.un_pre_assembled_objects).to eq(flat_dir_images.digital_objects)
     end
 
     it 'returns a filtered list of digital objects' do
-      allow(flat_dir_images).to receive(:skippables).and_return({ flat_dir_images.digital_objects.last.container => true })
-      o2p = flat_dir_images.objects_to_process
+      allow(flat_dir_images).to receive(:pre_assembled_object_containers).and_return({ flat_dir_images.digital_objects.last.container => true })
+      o2p = flat_dir_images.un_pre_assembled_objects
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
       expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
     end
@@ -240,11 +240,11 @@ RSpec.describe PreAssembly::Batch do
 
   ### Private methods
 
-  describe '#discover_containers_via_manifest' do
+  describe '#containers_via_manifest' do
     it 'returns expected information' do
       vals = %w[123.tif 456.tif 789.tif]
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
-      expect(flat_dir_images.send(:discover_containers_via_manifest)).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
+      expect(flat_dir_images.send(:containers_via_manifest)).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
     end
   end
 

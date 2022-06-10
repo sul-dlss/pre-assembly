@@ -27,7 +27,7 @@ class DiscoveryReport
   def each_row
     return enum_for(:each_row) unless block_given?
 
-    batch.objects_to_process.each do |dobj|
+    batch.un_pre_assembled_objects.each do |dobj|
       row = process_dobj(dobj)
       summary[:total_size] += row.counts[:total_size]
       if row.errors.empty?
