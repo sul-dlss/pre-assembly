@@ -45,6 +45,7 @@ module PreAssembly
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
 
+    # used by discovery report
     def object_filenames_unique?(dobj)
       filenames = dobj.object_files.map { |objfile| File.basename(objfile.path) }
       filenames.count == filenames.uniq.count
@@ -112,6 +113,7 @@ module PreAssembly
     # rubocop:enable Metrics/CyclomaticComplexity
     # rubocop:enable Metrics/PerceivedComplexity
 
+    # used by discovery report
     # @return [Array<DigitalObject>]
     def objects_to_process
       @objects_to_process ||= digital_objects.reject { |dobj| skippables&.key?(dobj.container) }
