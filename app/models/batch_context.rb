@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Model class for the database table batch_context;
+#  contains information needed to run jobs, be they discovery reports or pre_assemble runs
 class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module PreAssembly
+  # theoretically contains code common to both discovery reports and pre-assemble runs
+  #   both job types need to process the digital objects determined from the batch_context and
+  #   indicated either by a file_manifest.csv, or by walking the directory with the object data to be used.
   class Batch
     include PreAssembly::Logging
 
