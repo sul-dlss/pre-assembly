@@ -1,2 +1,2 @@
-Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> completed.
+Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> finished with status '<%= @job_run.human_state_name %>'.
 You can view the job details and log file at: <%= job_run_url(@job_run); %>

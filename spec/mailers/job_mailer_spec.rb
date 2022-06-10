@@ -11,15 +11,19 @@ RSpec.describe JobMailer, type: :mailer do
   end
 
   describe 'subject' do
-    before { job_run.job_type = 1 }
+    before { job_run.job_type = 1 } # switch job type to verify the subject line changes
 
     it 'adapts depending on job_type' do
       expect(job_notification.subject).to eq('[Test_Project] Your Preassembly job completed')
     end
   end
 
-  it 'renders the body' do
-    expect(job_notification.body.encoded).to include("Your Discovery report job \##{job_run.id} completed")
-      .and include("http://localhost:3000/job_runs/#{job_run.id}")
+  describe 'body' do
+    before { job_run.state = 'complete' }
+
+    it 'renders the body' do
+      expect(job_notification.body.encoded).to include("Your Discovery report job \##{job_run.id} finished with status 'Completed'")
+        .and include("http://localhost:3000/job_runs/#{job_run.id}")
+    end
   end
 end
