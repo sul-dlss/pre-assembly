@@ -37,11 +37,11 @@ RSpec.describe DiscoveryReport do
       expect(report.each_row).to be_an(Enumerable)
     end
 
-    it 'yields per objects_to_process, building an aggregate summary and logging status per druid' do
+    it 'yields per un_pre_assembled_objects, building an aggregate summary and logging status per druid' do
       expect(report).to receive(:process_dobj).with(dig_obj1).and_return(validator1)
       expect(report).to receive(:process_dobj).with(dig_obj2).and_return(validator2)
       expect(report).to receive(:process_dobj).with(dig_obj3).and_return(validator3)
-      expect(batch).to receive(:objects_to_process).and_return([dig_obj1, dig_obj2, dig_obj3])
+      expect(batch).to receive(:un_pre_assembled_objects).and_return([dig_obj1, dig_obj2, dig_obj3])
       report.each_row { |_r| } # no-op
       expect(report.summary).to match a_hash_including(
         total_size: 6,
@@ -85,7 +85,7 @@ RSpec.describe DiscoveryReport do
     end
     let(:batch_context) { BatchContext.new(bc_params) }
     let(:batch) { PreAssembly::Batch.new(batch_context) }
-    let(:dobj) { report.batch.objects_to_process.first }
+    let(:dobj) { report.batch.un_pre_assembled_objects.first }
     let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
     let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
     let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true) }

@@ -14,7 +14,7 @@ RSpec.describe ObjectFileValidator do
   describe '#validate' do
     subject(:json) { validator.validate.as_json }
 
-    let(:object) { batch.objects_to_process.first }
+    let(:object) { batch.un_pre_assembled_objects.first }
 
     before do
       allow(object).to receive(:pid).and_return('kk203bw3276')
