@@ -51,9 +51,14 @@ class JobRun < ApplicationRecord
     "[#{batch_context.project_name}] Your #{job_type.humanize} job completed"
   end
 
-  # the states that indicate this job is either not staretd or is currently running
+  # the states that indicate this job is either not started or is currently running
   def in_progress?
     (waiting? || running?)
+  end
+
+  # the states that indicate a job is completed
+  def finished?
+    !in_progress?
   end
 
   def send_notification

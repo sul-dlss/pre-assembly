@@ -3,10 +3,12 @@
 RSpec.describe 'job_runs/show.html.erb', type: :view do
   before do
     assign(:job_run, job_run)
-    allow(job_run).to receive(:progress_log_file).and_return(Rails.root.join('spec/test_data/input/mock_progress_log.yaml')) # this file exists
+    allow(job_run).to receive(:progress_log_file).and_return(actual_file)
+    allow(job_run).to receive(:output_location).and_return(actual_file)
   end
 
   let(:job_run) { create(:job_run, :discovery_report) }
+  let(:actual_file) { Rails.root.join('spec/test_data/input/mock_progress_log.yaml') } # an existing file we can use for tests
 
   context 'discovery_report job' do
     it 'displays a job_run' do
