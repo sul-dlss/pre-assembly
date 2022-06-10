@@ -73,7 +73,7 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
       allow(object).to receive(:assembly_directory).and_return(assembly_directory)
       object.stageable_items.each { |si| FileUtils.touch si }
-      assembly_directory.create_object_directories
+      assembly_directory.send(:create_object_directories)
     end
 
     after { FileUtils.remove_entry tmp_area }
@@ -84,7 +84,7 @@ RSpec.describe PreAssembly::DigitalObject do
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.content_dir, f)
+          cpy = File.join(assembly_directory.send(:content_dir), f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(false)
@@ -100,7 +100,7 @@ RSpec.describe PreAssembly::DigitalObject do
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.content_dir, f)
+          cpy = File.join(assembly_directory.send(:content_dir), f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(true)
@@ -167,8 +167,8 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.create_object_directories
-        file_name = object.send(:assembly_directory).content_metadata_file
+        assembly_directory.send(:create_object_directories)
+        file_name = object.send(:assembly_directory).content_metadata_xml_file
         expect(File.exist?(file_name)).to be(false)
         object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
@@ -219,8 +219,8 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.create_object_directories
-        file_name = object.send(:assembly_directory).content_metadata_file
+        assembly_directory.send(:create_object_directories)
+        file_name = object.send(:assembly_directory).content_metadata_xml_file
         expect(File.exist?(file_name)).to be(false)
         object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
@@ -272,8 +272,8 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.create_object_directories
-        file_name = object.send(:assembly_directory).content_metadata_file
+        assembly_directory.send(:create_object_directories)
+        file_name = object.send(:assembly_directory).content_metadata_xml_file
         expect(File.exist?(file_name)).to be(false)
         object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
@@ -325,8 +325,8 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.create_object_directories
-        file_name = object.send(:assembly_directory).content_metadata_file
+        assembly_directory.send(:create_object_directories)
+        file_name = object.send(:assembly_directory).content_metadata_xml_file
         expect(File.exist?(file_name)).to be(false)
         object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
@@ -377,8 +377,8 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.create_object_directories
-        file_name = object.send(:assembly_directory).content_metadata_file
+        assembly_directory.send(:create_object_directories)
+        file_name = object.send(:assembly_directory).content_metadata_xml_file
         expect(File.exist?(file_name)).to be(false)
         object.send(:generate_content_metadata, false)
         expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml

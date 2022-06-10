@@ -27,7 +27,7 @@
 # note that file extensions do not matter when matching
 
 require 'optparse'
-content_metadata_filename = 'contentMetadata.xml'
+content_metadata_xml_filename = 'contentMetadata.xml'
 report = false # if set to true, will only show output and produce report, won't actually symlink files or create anything, can be overriden with --report switch
 no_object_folders = false # if false, then each new object will be in a separately created folder, with symlinks contained inside it; if true, you will get a flat list
 

@@ -131,7 +131,7 @@ module PreAssembly
     # Write contentMetadata.xml file
     # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
     def generate_content_metadata(file_attributes_supplied)
-      File.open(assembly_directory.content_metadata_file, 'w') { |fh| fh.puts create_content_metadata(file_attributes_supplied) }
+      File.open(assembly_directory.content_metadata_xml_file, 'w') { |fh| fh.puts create_content_metadata(file_attributes_supplied) }
     end
 
     # The reading order for books is determined by the content structure set, defaulting to 'ltr'
