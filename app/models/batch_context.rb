@@ -63,10 +63,12 @@ class BatchContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
+  # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
   def file_manifest
     'file_manifest.csv'
   end
 
+  # the manifest specifying objects and associated folders on disk: required to run any job
   def manifest
     'manifest.csv'
   end
@@ -81,7 +83,7 @@ class BatchContext < ApplicationRecord
     @manifest_rows ||= load_manifest
   end
 
-  # load the manifest of objects and verify there is at least one object and the correct header is present
+  # load the manifest.csv file and verify there is at least one object and the correct header is present
   def load_manifest
     manifest_path = bundle_dir_with_path(manifest)
     raise 'manifest file missing or empty' if !File.exist?(manifest_path) || File.zero?(manifest_path)
