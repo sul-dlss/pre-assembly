@@ -2,7 +2,7 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.batch, object_files: [], stager: stager, dark: false)
+    described_class.new(bc.batch, object_files: [], stager: stager)
   end
 
   let(:dru) { 'gn330dv6119' }
@@ -38,7 +38,7 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:openable?).and_return(false)
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
-      expect(object).to receive(:generate_content_metadata)
+      expect(object).to receive(:update_structural_metadata)
       object.pre_assemble
       expect(StartAccession).to have_received(:run)
     end
@@ -109,48 +109,86 @@ RSpec.describe PreAssembly::DigitalObject do
     end
   end
 
-  describe '#create_content_metadata' do
-    describe 'default content metadata (image)' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="image" objectId="gn330dv6119">
-            <resource type="image" id="gn330dv6119_1" sequence="1">
-              <label>Image 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="image" id="gn330dv6119_2" sequence="2">
-              <label>Image 2</label>
-              <file id="image1.tif">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="image" id="gn330dv6119_3" sequence="3">
-              <label>Image 3</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-            <resource type="image" id="gn330dv6119_4" sequence="4">
-              <label>Image 4</label>
-              <file id="image2.tif">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
+  describe '#build_structural' do
+    let(:dro) do
+      Cocina::RSpec::Factories.build(:dro, type: cocina_type).new(access: { view: 'world' })
+    end
+
+    let(:object_client) do
+      instance_double(Dor::Services::Client::Object, find: dro)
+    end
+
+    before do
+      allow(Dor::Services::Client).to receive(:object).and_return(object_client)
+    end
+
+    describe 'default structural metadata (image)' do
+      let(:cocina_type) { Cocina::Models::ObjectType.image }
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image1.tif',
+                                                  filename: 'image1.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_3',
+                       label: 'Image 3',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_4',
+                       label: 'Image 4',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/4',
+                                                  label: 'image2.tif',
+                                                  filename: 'image2.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } }],
+          hasMemberOrders: [],
+          isMemberOf: [] }
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
 
       before do
         allow(object).to receive(:druid).and_return(druid)
-        allow(object).to receive(:object_type).and_return('')
-        allow(bc).to receive(:content_structure).and_return('simple_image')
         add_object_files('tif')
         add_object_files('jp2')
         allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
       around do |example|
@@ -162,37 +200,43 @@ RSpec.describe PreAssembly::DigitalObject do
         end
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
-      end
-
-      it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.send(:create_object_directories)
-        file_name = object.send(:assembly_directory).content_metadata_xml_file
-        expect(File.exist?(file_name)).to be(false)
-        object.send(:generate_content_metadata, false)
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
 
-    describe 'map content metadata' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="map" objectId="gn330dv6119">
-            <resource type="image" id="gn330dv6119_1" sequence="1">
-              <label>Image 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="image" id="gn330dv6119_2" sequence="2">
-              <label>Image 2</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
+    describe 'map structural metadata' do
+      let(:cocina_type) { Cocina::Models::ObjectType.map }
+
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+          hasMemberOrders: [],
+          isMemberOf: [] }
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -203,6 +247,7 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('map')
         add_object_files('jp2')
         allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       around do |example|
@@ -214,38 +259,43 @@ RSpec.describe PreAssembly::DigitalObject do
         end
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
-      end
-
-      it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.send(:create_object_directories)
-        file_name = object.send(:assembly_directory).content_metadata_xml_file
-        expect(File.exist?(file_name)).to be(false)
-        object.send(:generate_content_metadata, false)
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
 
-    describe 'book (ltr) content metadata' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="book" objectId="gn330dv6119">
-            <bookData readingOrder="ltr"/>
-            <resource type="page" id="gn330dv6119_1" sequence="1">
-              <label>Page 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="page" id="gn330dv6119_2" sequence="2">
-              <label>Page 2</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
+    describe 'book (ltr) structural metadata' do
+      let(:cocina_type) { Cocina::Models::ObjectType.book }
+
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Page 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Page 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+          hasMemberOrders: [{ members: [], viewingDirection: 'left-to-right' }],
+          isMemberOf: [] }
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -256,6 +306,7 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files('jp2')
         allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       around do |example|
@@ -267,38 +318,43 @@ RSpec.describe PreAssembly::DigitalObject do
         end
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
-      end
-
-      it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.send(:create_object_directories)
-        file_name = object.send(:assembly_directory).content_metadata_xml_file
-        expect(File.exist?(file_name)).to be(false)
-        object.send(:generate_content_metadata, false)
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
 
-    describe 'book (rtl) content metadata' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="book" objectId="gn330dv6119">
-            <bookData readingOrder="rtl"/>
-            <resource type="page" id="gn330dv6119_1" sequence="1">
-              <label>Page 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="page" id="gn330dv6119_2" sequence="2">
-              <label>Page 2</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
+    describe 'book (rtl) structural metadata' do
+      let(:cocina_type) { Cocina::Models::ObjectType.book }
+
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Page 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Page 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+          hasMemberOrders: [{ members: [], viewingDirection: 'right-to-left' }],
+          isMemberOf: [] }
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -309,6 +365,7 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
         add_object_files('jp2')
         allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       around do |example|
@@ -320,37 +377,43 @@ RSpec.describe PreAssembly::DigitalObject do
         end
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
-      end
-
-      it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.send(:create_object_directories)
-        file_name = object.send(:assembly_directory).content_metadata_xml_file
-        expect(File.exist?(file_name)).to be(false)
-        object.send(:generate_content_metadata, false)
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
 
-    describe 'webarchive-seed content metadata' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="webarchive-seed" objectId="gn330dv6119">
-            <resource type="image" id="gn330dv6119_1" sequence="1">
-              <label>Image 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="image" id="gn330dv6119_2" sequence="2">
-              <label>Image 2</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
+    describe 'webarchive-seed structural metadata' do
+      let(:cocina_type) { Cocina::Models::ObjectType.webarchive_seed }
+
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+          hasMemberOrders: [],
+          isMemberOf: [] }
       end
 
       let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
@@ -361,6 +424,7 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files('jp2')
         allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       around do |example|
@@ -372,44 +436,61 @@ RSpec.describe PreAssembly::DigitalObject do
         end
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to exp_xml
-      end
-
-      it 'is able to write the content_metadata XML to a file' do
-        assembly_directory.send(:create_object_directories)
-        file_name = object.send(:assembly_directory).content_metadata_xml_file
-        expect(File.exist?(file_name)).to be(false)
-        object.send(:generate_content_metadata, false)
-        expect(noko_doc(File.read(file_name))).to be_equivalent_to exp_xml
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
 
-    describe 'grouped by filename, simple book content metadata without file attributes' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-        <contentMetadata type="book" objectId="gn330dv6119">
-          <bookData readingOrder="ltr"/>
-          <resource type="page" sequence="1" id="gn330dv6119_1">
-            <label>Page 1</label>
-            <file id="image1.jp2">
-              <checksum type="md5">1111</checksum>
-            </file>
-            <file id="image1.tif">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="page" sequence="2" id="gn330dv6119_2">
-            <label>Page 2</label>
-            <file id="image2.jp2">
-              <checksum type="md5">2222</checksum>
-            </file>
-            <file id="image2.tif">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-        </contentMetadata>
-        XML
+    describe 'grouped by filename, simple book structural metadata without file attributes' do
+      let(:cocina_type) { Cocina::Models::ObjectType.book }
+
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Page 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } },
+                                                { type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image1.tif',
+                                                  filename: 'image1.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/page',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Page 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
+                                                  label: 'image2.jp2',
+                                                  filename: 'image2.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } },
+                                                { type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/4',
+                                                  label: 'image2.tif',
+                                                  filename: 'image2.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } }],
+          hasMemberOrders: [{ members: [], viewingDirection: 'left-to-right' }],
+          isMemberOf: [] }
       end
 
       before do
@@ -419,100 +500,22 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_md_creation).and_return('filename')
         add_object_files('tif')
         add_object_files('jp2')
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
-      it 'generates the expected xml text' do
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to(exp_xml)
-      end
-    end
-
-    describe 'with file attributes' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-        <contentMetadata type="book" objectId="gn330dv6119">
-          <bookData readingOrder="ltr"/>
-          <resource type="page" sequence="1" id="gn330dv6119_1">
-            <label>Page 1</label>
-            <file id="image1.jp2" preserve="yes" shelve="yes" publish="yes">
-              <checksum type="md5">1111</checksum>
-            </file>
-            <file id="image1.tif" preserve="yes" shelve="yes" publish="yes">
-              <checksum type="md5">1111</checksum>
-            </file>
-          </resource>
-          <resource type="page" sequence="2" id="gn330dv6119_2">
-            <label>Page 2</label>
-            <file id="image2.jp2" preserve="yes" shelve="yes" publish="yes">
-              <checksum type="md5">2222</checksum>
-            </file>
-            <file id="image2.tif" preserve="yes" shelve="yes" publish="yes">
-              <checksum type="md5">2222</checksum>
-            </file>
-          </resource>
-        </contentMetadata>
-        XML
-      end
-
-      let(:bc) { create(:batch_context, :public_files, staging_location: 'spec/test_data/images_jp2_tif') }
-
-      before do
-        allow(object).to receive(:druid).and_return(druid)
-        allow(object).to receive(:object_type).and_return('')
-        allow(bc).to receive(:content_structure).and_return('simple_book')
-        allow(bc).to receive(:content_md_creation).and_return('filename')
-        add_object_files('tif', all_files_public: true)
-        add_object_files('jp2', all_files_public: true)
-      end
-
-      it 'generates the expected xml text' do
-        expect(object.send(:create_content_metadata, true)).to be_equivalent_to(exp_xml)
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
       end
     end
+  end
 
-    describe 'content metadata generated from object tag in DOR if present and overriding is allowed' do
-      let(:exp_xml) do
-        noko_doc <<-XML
-          <contentMetadata type="file" objectId="gn330dv6119">
-            <resource type="file" id="gn330dv6119_1" sequence="1">
-              <label>File 1</label>
-              <file id="image1.jp2">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="file" id="gn330dv6119_2" sequence="2">
-              <label>File 2</label>
-              <file id="image1.tif">
-                <checksum type="md5">1111</checksum>
-              </file>
-            </resource>
-            <resource type="file" id="gn330dv6119_3" sequence="3">
-              <label>File 3</label>
-              <file id="image2.jp2">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-            <resource type="file" id="gn330dv6119_4" sequence="4">
-              <label>File 4</label>
-              <file id="image2.tif">
-                <checksum type="md5">2222</checksum>
-              </file>
-            </resource>
-          </contentMetadata>
-        XML
-      end
+  describe '#content_md_creation_style' do
+    before do
+      allow(object).to receive(:object_type).and_return(Cocina::Models::ObjectType.object)
+    end
 
-      before do
-        allow(object).to receive(:druid).and_return(druid)
-        allow(bc).to receive(:content_structure).and_return('simple_image') # this is the default
-        allow(object).to receive(:object_type).and_return(Cocina::Models::ObjectType.object) # this is what the object tag says, so we should get the file type out
-        add_object_files('tif')
-        add_object_files('jp2')
-      end
-
-      it 'generates the expected xml text' do
-        expect(object.content_md_creation_style).to eq(:file)
-        expect(noko_doc(object.send(:create_content_metadata, false))).to be_equivalent_to(exp_xml)
-      end
+    it 'generates the expected xml text' do
+      expect(object.content_md_creation_style).to eq(:file)
     end
   end
 

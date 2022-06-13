@@ -25,10 +25,6 @@ module PreAssembly
       @druid_tree_dir ||= DruidTools::Druid.new(druid_id, assembly_staging_dir).path
     end
 
-    def content_metadata_xml_file
-      @content_metadata_xml_file ||= File.join(metadata_dir, 'contentMetadata.xml')
-    end
-
     private
 
     attr_reader :druid_id

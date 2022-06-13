@@ -58,16 +58,20 @@ module PreAssembly
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
-    def generate_cm(druid:, object:, content_md_creation_style:, reading_order: 'ltr')
-      return '' unless manifest[object]
+    def generate_structure(cocina_dro:, object:, content_md_creation_style:, reading_order: 'left-to-right')
+      raise "no structure found in mainifest for `#{object}'" unless manifest[object]
 
       current_directory = Dir.pwd # this must be done before resources_hash is built
       resources = resources_hash(object: object)
-      builder = content_md_xml_builder(druid: druid, resources: resources, object: object, content_md_creation_style: content_md_creation_style, reading_order: reading_order)
+      structure = FromFileManifest::StructuralBuilder.build(cocina_dro: cocina_dro,
+                                                            resources: resources,
+                                                            object: object, staging_location: staging_location,
+                                                            content_md_creation_style: content_md_creation_style,
+                                                            reading_order: reading_order)
 
       # write the contentMetadata.xml file
       FileUtils.cd(current_directory)
-      builder.to_xml
+      structure
     end
 
     # return hash containing resource info to be used in generating content_metadata
@@ -95,73 +99,5 @@ module PreAssembly
       resources
     end
     # rubocop:enable Metrics/AbcSize
-
-    # generate the base of the contentMetadata XML file for this new druid
-    # generate content metadata
-    def content_md_xml_builder(druid:, resources:, object:, content_md_creation_style:, reading_order: 'ltr')
-      Nokogiri::XML::Builder.new do |xml|
-        xml.contentMetadata(objectId: druid, type: content_type(content_md_creation_style)) do
-          xml.bookData(readingOrder: reading_order) if content_md_creation_style == :simple_book
-          resources.keys.sort.each do |seq|
-            resource = resources[seq]
-            resource_attributes = { sequence: seq.to_s, id: "#{druid}_#{seq}", type: resource[:resource_type] }
-            # add the thumb=yes attribute to the resource if it was marked that way in the manifest
-            resource_attributes[:thumb] = 'yes' if resource[:thumb]
-
-            resource_xml_builder(resource: resource, resource_attributes: resource_attributes, object: object, xml: xml)
-          end
-        end
-      end
-    end
-
-    def resource_xml_builder(resource:, resource_attributes:, object:, xml:)
-      xml.resource(resource_attributes) do
-        xml.label resource[:label]
-
-        resource[:files].each do |file|
-          file_xml_builder(file: file, object: object, xml: xml)
-        end
-      end
-    end
-
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/CyclomaticComplexity
-    def file_xml_builder(file:, object:, xml:)
-      filename = file[:filename] || ''
-      publish  = file[:publish]  || 'true'
-      preserve = file[:preserve] || 'true'
-      shelve   = file[:shelve]   || 'true'
-
-      # look for a checksum file named the same as this file
-      checksum = nil
-      FileUtils.cd(File.join(staging_location, object))
-      md5_files = Dir.glob("**/#{filename}.md5")
-      # if we find a corresponding md5 file, read it
-      checksum = get_checksum(File.join(staging_location, object, md5_files[0])) if md5_files.size == 1
-      file_hash = { id: filename, preserve: preserve, publish: publish, shelve: shelve }
-      file_hash[:role] = file[:role] if file[:role]
-
-      xml.file(file_hash) do
-        xml.checksum(checksum, type: 'md5') if checksum.present?
-      end
-    end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/CyclomaticComplexity
-
-    def get_checksum(md5_file)
-      s = File.read(md5_file)
-      checksums = s.scan(/[0-9a-fA-F]{32}/)
-      checksums.first ? checksums.first.strip : ''
-    end
-
-    # this uses the assembly-objectfile gem to map the content_md_creation_style to the content type string in contentMetadata
-    #  i.e. https://github.com/sul-dlss/pre-assembly/blob/main/app/lib/pre_assembly/digital_object.rb#L43
-    #  to   https://github.com/sul-dlss/assembly-objectfile/blob/main/lib/assembly-objectfile/content_metadata.rb#L29
-    # Note: "media" is not supported in the gem, but is available for custom generation with file manifests here
-    def content_type(content_md_creation_style)
-      return 'media' if content_md_creation_style == :media
-
-      Assembly::ContentMetadata.object_level_type(content_md_creation_style)
-    end
   end
 end

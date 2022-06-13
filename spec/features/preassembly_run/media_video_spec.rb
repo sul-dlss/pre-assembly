@@ -11,58 +11,12 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
   let(:staging_location) { Rails.root.join('spec/test_data/media_video_test') }
   let(:bare_druid) { 'vd000bj0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'vd', '000', 'bj', '0000', bare_druid) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.media, access: cocina_model_world_access) }
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
-  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
-  let(:exp_content_md) do
-    <<~XML
-      <contentMetadata objectId="vd000bj0000" type="media">
-        <resource sequence="1" id="vd000bj0000_1" type="video">
-          <label>Video file 1</label>
-          <file id="vd000bj0000_video_1.mp4" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">ee4e90be549c5614ac6282a5b80a506b</checksum>
-          </file>
-          <file id="vd000bj0000_video_1.mpeg" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">bed85c6ffc2f8070599a7fb682852f30</checksum>
-          </file>
-          <file id="vd000bj0000_video_1_thumb.jp2" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">4b0e92aec76da9ac98567b8e6848e922</checksum>
-          </file>
-        </resource>
-        <resource sequence="2" id="vd000bj0000_2" type="video">
-          <label>Video file 2</label>
-          <file id="vd000bj0000_video_2.mp4" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">ee4e90be549c5614ac6282a5b80a506b</checksum>
-          </file>
-          <file id="vd000bj0000_video_2.mpeg" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">bed85c6ffc2f8070599a7fb682852f30</checksum>
-          </file>
-          <file id="vd000bj0000_video_2_thumb.jp2" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">4b0e92aec76da9ac98567b8e6848e922</checksum>
-          </file>
-        </resource>
-        <resource sequence="3" id="vd000bj0000_3" type="image">
-          <label>Image of media (1 of 2)</label>
-          <file id="vd000bj0000_video_img_1.tif" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">4fe3ad7bf975326ff1c1271e8f743ceb</checksum>
-          </file>
-        </resource>
-        <resource sequence="4" id="vd000bj0000_4" type="image">
-          <label>Image of media (2 of 2)</label>
-          <file id="vd000bj0000_video_img_2.tif" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">4fe3ad7bf975326ff1c1271e8f743ceb</checksum>
-          </file>
-        </resource>
-        <resource sequence="5" id="vd000bj0000_5" type="file">
-          <label>Disc log file</label>
-          <file id="vd000bj0000_video_log.txt" preserve="yes" publish="no" shelve="no" role="transcription">
-            <checksum type="md5">b659a852e4f0faa2f1d83973446a4ee9</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-    XML
+  let(:dro_access) { { view: 'world' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.media).new(access: dro_access)
   end
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
     FileUtils.rm_rf(object_staging_dir)
@@ -71,6 +25,7 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
 
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
+    allow(PreAssembly::FromFileManifest::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
   # have background jobs run synchronously
@@ -108,8 +63,13 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 18
 
-    content_md_path = File.join(object_staging_dir, 'metadata', 'contentMetadata.xml')
-    content_md_xml = File.read(content_md_path)
-    expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
+    expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
+      .with(cocina_dro: item,
+            resources: Hash,
+            object: bare_druid,
+            staging_location: staging_location.to_s,
+            reading_order: 'left-to-right',
+            content_md_creation_style: :media)
+    expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

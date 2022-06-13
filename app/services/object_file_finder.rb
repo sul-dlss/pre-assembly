@@ -4,17 +4,13 @@
 class ObjectFileFinder
   # @param [Array] stageable_items
   # @param [String] druid
-  # @param [Bool] all_files_public does the user indicate that these batch should preserve/publish/shelve all files
-  # @param [Bool] dark does this druid have 'dark' access?
-  def self.run(stageable_items:, druid:, dark:, all_files_public:)
-    new(stageable_items: stageable_items, druid: druid, dark: dark, all_files_public: all_files_public).run
+  def self.run(stageable_items:, druid:)
+    new(stageable_items: stageable_items, druid: druid).run
   end
 
-  def initialize(stageable_items:, druid:, dark:, all_files_public:)
+  def initialize(stageable_items:, druid:)
     @stageable_items = stageable_items
     @druid = druid
-    @dark_obj = dark
-    @all_files_public = all_files_public
   end
 
   # Returns a list of the ObjectFiles for a digital object.
@@ -31,16 +27,9 @@ class ObjectFileFinder
 
   # @param [String] stageable the object directory
   # @param [String] file_path the path to the file in the object directory
-  # @param [Boolean] dark_obj - true if object access is dark, false otherwise
   # @return [PreAssembly::ObjectFile]
   def new_object_file(stageable, file_path)
-    options = { relative_path: relative_path(base_dir(stageable), file_path) }
-    if @dark_obj
-      options[:file_attributes] = { preserve: 'yes', shelve: 'no', publish: 'no' }
-    elsif @all_files_public
-      options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' }
-    end
-    PreAssembly::ObjectFile.new(file_path, options)
+    PreAssembly::ObjectFile.new(file_path, { relative_path: relative_path(base_dir(stageable), file_path) })
   end
 
   # @return [String] path

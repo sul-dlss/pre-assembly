@@ -9,22 +9,12 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
   let(:staging_location) { Rails.root.join('spec/test_data/text_file') }
   let(:bare_druid) { 'tx666tx9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'tx', '666', 'tx', '9999', bare_druid) }
-  let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, view: 'dark') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.object, access: cocina_model_dark_access) }
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
-  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
-  let(:exp_content_md) do
-    <<~XML
-      <contentMetadata objectId="tx666tx9999" type="file">
-        <resource id="tx666tx9999_1" sequence="1" type="file">
-          <label>File 1</label>
-          <file id="text_file.txt" preserve="yes" shelve="no" publish="no">
-            <checksum type="md5">d03fd97600532ef84ddc1e578ea843e9</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-    XML
+  let(:dro_access) { { view: 'dark' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.object).new(access: dro_access)
   end
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
     FileUtils.rm_rf(object_staging_dir)
@@ -33,6 +23,7 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
 
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
+    allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
   # have background jobs run synchronously
@@ -68,10 +59,13 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 1
 
-    metadata_dir = File.join(object_staging_dir, 'metadata')
-    expect(Dir.children(metadata_dir).size).to eq 1
-
-    content_md_xml = File.read(File.join(metadata_dir, 'contentMetadata.xml'))
-    expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
+    expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
+      .with(cocina_dro: item,
+            filesets: Array,
+            common_path: "#{staging_location}/content/",
+            all_files_public: false,
+            reading_order: 'left-to-right',
+            content_md_creation_style: :file)
+    expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

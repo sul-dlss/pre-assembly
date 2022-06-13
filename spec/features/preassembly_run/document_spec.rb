@@ -7,22 +7,12 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
   let(:staging_location) { Rails.root.join('spec/test_data/pdf_document') }
   let(:bare_druid) { 'pr666rr9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.document, access: cocina_model_world_access) }
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
-  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
-  let(:exp_content_md) do
-    <<~XML
-      <contentMetadata objectId="pr666rr9999" type="document">
-        <resource id="pr666rr9999_1" sequence="1" type="document">
-          <label>Document 1</label>
-          <file id="document.pdf">
-            <checksum type="md5">9325fcdfa482fe6b09bb95bdf4c6e52b</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-    XML
+  let(:dro_access) { { view: 'world' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.document).new(access: dro_access)
   end
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
     FileUtils.rm_rf(object_staging_dir)
@@ -31,6 +21,7 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
 
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
+    allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
   # have background jobs run synchronously
@@ -66,10 +57,13 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 1
 
-    metadata_dir = File.join(object_staging_dir, 'metadata')
-    expect(Dir.children(metadata_dir).size).to eq 1
-
-    content_md_xml = File.read(File.join(metadata_dir, 'contentMetadata.xml'))
-    expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
+    expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
+      .with(cocina_dro: item,
+            filesets: Array,
+            common_path: "#{staging_location}/content/",
+            all_files_public: false,
+            reading_order: 'left-to-right',
+            content_md_creation_style: :document)
+    expect(dsc_object).to have_received(:update).with(params: item)
   end
 end
