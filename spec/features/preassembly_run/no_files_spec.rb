@@ -35,8 +35,7 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
     end
   end
 
-  # FIXME: job status doesn't match progress log!
-  it 'has status Completed (with errors) and creates log file showing "success"' do
+  it 'has status "Completed" and creates log file showing "success"' do
     visit '/'
     expect(page).to have_selector('h3', text: 'Complete the form below')
 
@@ -52,13 +51,12 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
     expect(page).to have_content project_name
-    expect(page).to have_content 'Completed (with errors)' # FIXME: this doesn't match progress log!
-    expect(page).to have_content '1 objects had no files'
+    expect(page).to have_content 'Completed'
     expect(page).to have_link('Download').once
 
     result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
     yaml = YAML.load_file(result_file)
-    expect(yaml[:status]).to eq 'success' # FIXME: this doesn't match job status!
+    expect(yaml[:status]).to eq 'success'
 
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 0
