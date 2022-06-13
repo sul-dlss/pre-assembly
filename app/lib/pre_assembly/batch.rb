@@ -29,6 +29,7 @@ module PreAssembly
     def initialize(batch_context)
       @batch_context = batch_context
       @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
+      @objects_had_errors = false # will be set to true if we discover any errors when running pre-assembly
     end
 
     # Runs the pre-assembly process
@@ -67,7 +68,7 @@ module PreAssembly
     end
     # rubocop:enable Metrics/AbcSize
 
-    # used by discovery report
+    # any objects that have not yet been run successfully through a pre-assembly job (used by both pre-assembly and discovery reports)
     # @return [Array<PreAssembly::DigitalObject>]
     def un_pre_assembled_objects
       @un_pre_assembled_objects ||= digital_objects.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }
@@ -79,6 +80,7 @@ module PreAssembly
       staging_style_symlink ? LinkStager : CopyStager
     end
 
+    # any objects that have already been run successfully through a pre-assembly job
     def pre_assembled_object_containers
       @pre_assembled_object_containers ||= begin
         pre_assembled_object_containers = {}
@@ -122,19 +124,18 @@ module PreAssembly
     def pre_assemble_objects
       @num_failures = 0
       @num_no_file_warnings = 0
-      errors = []
       log "pre_assemble_objects(#{num_to_pre_assemble} objects)"
       log "#{num_to_pre_assemble} objects to pre-assemble"
       log "#{digital_objects.size} total objects found, #{pre_assembled_object_containers&.size} already completed objects skipped"
 
       pre_assemble_each_object # ignores objects already pre-assembled
 
-      errors << "#{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      errors << "#{num_failures} objects had errors during pre-assembly" if num_failures > 0
-      errors.each { |error| log "**WARNING**: #{error}" }
-      @objects_had_errors = !errors.size.zero?
-      @error_message = errors.join(', ') # error message will be saved in the job_run
-
+      log "**WARNING: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
+      if num_failures > 0
+        @objects_had_errors = true
+        @error_message = "#{num_failures} objects had errors during pre-assembly" # error message that will be saved in the job run
+        log "**WARNING**: #{@error_message}"
+      end
       log "#{num_to_pre_assemble} objects pre-assembled"
     end
     # rubocop:enable Metrics/AbcSize
