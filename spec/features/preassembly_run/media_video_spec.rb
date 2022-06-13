@@ -4,7 +4,7 @@
 # Note further that there must be (and are) associated md5 files present for every file in the media_manifest.csv
 #
 # this test uses file_manifest.csv approach
-RSpec.describe 'Create Media Video object', type: :feature do
+RSpec.describe 'Pre-assemble Media Video object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "media-video-objects-#{RandomWord.nouns.next}" }
