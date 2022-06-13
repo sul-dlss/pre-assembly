@@ -48,6 +48,7 @@ class DiscoveryReport
   def log_progress_info(dobj, status)
     {
       status: status,
+      discovery_finished: true,
       pid: dobj.pid,
       timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
     }

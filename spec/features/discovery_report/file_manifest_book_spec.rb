@@ -58,7 +58,7 @@ RSpec.describe 'Discovery Report creation using file_manifest.csv', type: :featu
     # rubocop:disable Security/YAMLLoad
     log_hash = YAML.load(File.read(log_path))
     # rubocop:enable Security/YAMLLoad
-    expect(log_hash[:status]).to eq 'success'
-    expect(log_hash.keys.size).to eq 3
+    expect(log_hash).to include(status: 'success', pid: bare_druid, discovery_finished: true)
+    expect(log_hash.keys.size).to eq 4
   end
 end
