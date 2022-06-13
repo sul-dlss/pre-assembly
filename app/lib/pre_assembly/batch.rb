@@ -96,12 +96,12 @@ module PreAssembly
 
     # Discover object containers from the object manifest file suppled in the bundle_dir.
     def containers_via_manifest
-      manifest_rows.each_with_index do |r, i|
-        next if r[:object]
+      manifest_rows.each_with_index do |manifest_row, i|
+        next if manifest_row[:object]
 
-        raise "Missing 'object' in row #{i}: #{r}"
+        raise "Missing 'object' in row #{i}: #{manifest_row}"
       end
-      manifest_rows.map { |r| bundle_dir_with_path r[:object] }
+      manifest_rows.map { |manifest_row| bundle_dir_with_path manifest_row[:object] }
     end
 
     # A method to discover stageable items (i.e. files) with a given object folder.
@@ -142,8 +142,8 @@ module PreAssembly
     # pre-assemble each object that hasn't been pre-assembled already
     # rubocop:disable Metrics/AbcSize
     def pre_assemble_each_object
-      un_pre_assembled_objects.each_with_index do |dobj, n|
-        log "#{num_to_pre_assemble - n} remaining in run | #{num_to_pre_assemble} running"
+      un_pre_assembled_objects.each_with_index do |dobj, i|
+        log "#{num_to_pre_assemble - i} remaining in run | #{num_to_pre_assemble} running"
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
         @num_no_file_warnings += 1 if dobj.object_files.empty?
