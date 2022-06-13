@@ -32,7 +32,7 @@ RSpec.describe 'Discovery Report fails', type: :feature do
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     expect(page).to have_content exp_str
 
-    # go to job details page, wait for preassembly to finish
+    # go to job details page
     first('td  > a').click
     expect(page).to have_content project_name
     expect(page).to have_content 'Failed'
