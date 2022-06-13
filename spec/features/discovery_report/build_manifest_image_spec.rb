@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Discovery Report creation using build manifest', type: :feature do
+RSpec.describe 'Discovery Report from (build) manifest', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-image-#{RandomWord.nouns.next}" }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Create Image object', type: :feature do
+RSpec.describe 'Pre-assemble Image object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "image-#{RandomWord.nouns.next}" }
