@@ -5,7 +5,7 @@
 #   report = DiscoveryReport.new(batch_context.batch)
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
-  attr_reader :batch, :start_time, :summary
+  attr_reader :batch, :summary
   attr_accessor :error_message, :objects_had_errors
 
   delegate :bundle_dir, :content_md_creation, :manifest, :project_style, :using_file_manifest, to: :batch
@@ -15,9 +15,8 @@ class DiscoveryReport
   def initialize(batch)
     raise ArgumentError unless batch.is_a?(PreAssembly::Batch)
 
-    @start_time = Time.now.utc
     @batch = batch
-    @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: start_time.to_s, total_size: 0 }
+    @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: Time.now.utc.to_s, total_size: 0 }
   end
 
   # this is where we do the work -- by calling process_dobj on each object in the batch
@@ -48,6 +47,7 @@ class DiscoveryReport
   def log_progress_info(dobj, status)
     {
       status: status,
+      discovery_finished: true,
       pid: dobj.pid,
       timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
     }
@@ -79,7 +79,7 @@ class DiscoveryReport
   def to_builder
     json_report = Jbuilder.new do |json|
       json.rows { json.array!(each_row) }
-      json.summary summary
+      json.summary summary.merge(end_time: Time.now.utc.to_s)
     end
     @objects_had_errors = (summary[:objects_with_error] > 0) # indicate if any objects generated errors
     @error_message = "#{summary[:objects_with_error]} objects had errors in the discovery report" if objects_had_errors

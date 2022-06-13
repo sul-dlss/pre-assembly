@@ -48,12 +48,15 @@ RSpec.describe 'Discovery Report from (build) manifest', type: :feature do
     expect(discovery_report_json['summary']['objects_with_error']).to eq 0
     expect(discovery_report_json['rows'].first['druid']).to eq "druid:#{bare_druid}"
     expect(discovery_report_json['summary']['mimetypes']['image/jpeg']).to eq 1
+    # verify the timestamps in the summary are for today
+    expect(discovery_report_json['summary']['start_time'].to_date).to eq Time.now.utc.to_date
+    expect(discovery_report_json['summary']['end_time'].to_date).to eq Time.now.utc.to_date
 
     log_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
     # rubocop:disable Security/YAMLLoad
     log_hash = YAML.load(File.read(log_path))
     # rubocop:enable Security/YAMLLoad
-    expect(log_hash[:status]).to eq 'success'
-    expect(log_hash.keys.size).to eq 3
+    expect(log_hash).to include(status: 'success', pid: bare_druid, discovery_finished: true)
+    expect(log_hash.keys.size).to eq 4
   end
 end
