@@ -9,7 +9,7 @@ module PreAssembly
 
     # @param [String] path full path
     # @param [Hash<Symbol => Object>] params
-    # @see Assembly::ObjectFile, Assembly::ObjectFileable
+    # @see Assembly::ObjectFile
     def initialize(path, params = {})
       super
       @provider_md5 ||= params[:checksum]
