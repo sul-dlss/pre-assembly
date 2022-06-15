@@ -37,7 +37,7 @@ RSpec.describe DiscoveryReport do
     let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, pid: 'druid:3') }
 
     it 'returns an Enumerable of Hashes' do
-      expect(report.each_row).to be_an(Enumerable)
+      expect(report.send(:each_row)).to be_an(Enumerable)
     end
 
     it 'yields per un_pre_assembled_objects, building an aggregate summary and logging status per druid' do
@@ -45,7 +45,7 @@ RSpec.describe DiscoveryReport do
       expect(report).to receive(:process_dobj).with(dig_obj2).and_return(validator2)
       expect(report).to receive(:process_dobj).with(dig_obj3).and_return(validator3)
       expect(batch).to receive(:un_pre_assembled_objects).and_return([dig_obj1, dig_obj2, dig_obj3].to_enum)
-      report.each_row { |_r| } # no-op
+      report.send(:each_row) { |r| expect(r).to be_a Hash } # iterate through the Enumerable that generates the report
       expect(report.summary).to match a_hash_including(
         total_size: 6,
         objects_with_error: 1,
@@ -100,7 +100,7 @@ RSpec.describe DiscoveryReport do
 
     it 'process_dobj gives expected output for one dobj' do
       allow(dobj).to receive(:pid).and_return('kk203bw3276')
-      expect(report.process_dobj(dobj).as_json).to eq(
+      expect(report.send(:process_dobj, dobj).as_json).to eq(
         druid: 'druid:kk203bw3276',
         errors: { dupes: true },
         counts: {
