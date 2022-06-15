@@ -52,6 +52,10 @@ class ObjectFileValidator
   # rubocop:enable Metrics/MethodLength
 
   def as_json(*)
+    to_h
+  end
+
+  def to_h
     { druid: druid.druid, errors: errors.compact, counts: counts }
   end
 

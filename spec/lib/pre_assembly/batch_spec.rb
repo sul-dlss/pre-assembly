@@ -71,12 +71,22 @@ RSpec.describe PreAssembly::Batch do
     end
 
     context 'when there are objects that do not complete pre_assemble' do
-      before do
-        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: false, status: 'error', message: 'oops' })
-        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+      let(:pre_assemble_results) do
+        [
+          { pre_assem_finished: false, status: 'error', message: 'oops' },
+          { pre_assem_finished: true, status: 'success' }
+        ].each
       end
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
+
+      before do
+        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
+          m.call(*args).tap do |dobj|
+            allow(dobj).to receive(:pre_assemble).and_return(pre_assemble_results.next)
+          end
+        end
+      end
 
       it 'indicates errors occured, then logs the error and sets the error message' do
         batch.send(:pre_assemble_objects)
@@ -90,31 +100,52 @@ RSpec.describe PreAssembly::Batch do
     end
 
     context 'when there are dark objects' do
+      let(:dark_results) { [true, false].each }
+      let(:pre_assemble_results) { [{ pre_assem_finished: true, status: 'success' }, { pre_assem_finished: true, status: 'success' }].each }
+
       before do
-        allow(batch.digital_objects[0]).to receive(:dark?).and_return(true)
-        allow(batch.digital_objects[1]).to receive(:dark?).and_return(false)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
-        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
+          m.call(*args).tap do |dobj|
+            dark_result = dark_results.next
+            allow(dobj).to receive(:dark?).and_return(dark_result)
+            # rubocop:disable RSpec/ExpectInHook
+            # rubocop:disable RSpec/StubbedMock
+            # it is much easier to expect here, because use of Enumerator makes it hard to get a handle elsewhere on the specific dobj instance
+            # that was used by batch.process_digital_objects, unless we mock its exact instantiation.  this reaches into the tested code a bit less.
+            # and we still need to stub a return value for pre_assemble because the result of process_digital_objects depends on it.
+            expect(dobj).to receive(:pre_assemble).with(dark_result).and_return(pre_assemble_results.next)
+            # rubocop:enable RSpec/StubbedMock
+            # rubocop:enable RSpec/ExpectInHook
+          end
+        end
       end
 
       it 'calls digital_object.pre_assemble with true for the dark objects' do
         expect(batch.send(:pre_assemble_objects)).to be true
         expect(batch.objects_had_errors).to be false
-        expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
-        expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(false)
       end
     end
 
     context 'when an exception occurs during #pre_assemble' do
+      # simulate an exception occurring during pre-assembly of the first object
+      let(:stage_files_exceptions) { [[Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'], nil].each }
+      let(:pre_assemble_results) { [nil, { pre_assem_finished: true, status: 'success' }].each }
+
+      let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
+
       before do
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
         # simulate an exception occurring during pre-assembly of the first object
-        allow(batch.digital_objects[0]).to receive(:stage_files).and_raise Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'
-        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
+          m.call(*args).tap do |dobj|
+            stage_files_exception = stage_files_exceptions.next
+            pre_assemble_result = pre_assemble_results.next
+            allow(dobj).to receive(:stage_files).and_raise(*stage_files_exception) if stage_files_exception
+            allow(dobj).to receive(:pre_assemble).and_return(pre_assemble_result) if pre_assemble_result
+          end
+        end
         batch.send(:pre_assemble_objects)
       end
-
-      let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       it 'rescues the exception and proceeds, logs the error, indicates errors occurred, and sets the error message' do
         expect(batch.objects_had_errors).to be true
@@ -129,14 +160,22 @@ RSpec.describe PreAssembly::Batch do
     context 'when batch_context.all_files_public? is true' do
       before do
         allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
-        allow(batch.digital_objects[0]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
-        allow(batch.digital_objects[1]).to receive(:pre_assemble).and_return({ pre_assem_finished: true, status: 'success' })
+        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
+          m.call(*args).tap do |dobj|
+            # rubocop:disable RSpec/ExpectInHook
+            # rubocop:disable RSpec/StubbedMock
+            # it is much easier to expect here, because use of Enumerator makes it hard to get a handle elsewhere on the specific dobj instance
+            # that was used by batch.process_digital_objects, unless we mock its exact instantiation.  this reaches into the tested code a bit less.
+            # and we still need to stub a return value for pre_assemble because the result of process_digital_objects depends on it.
+            expect(dobj).to receive(:pre_assemble).with(true).and_return({ pre_assem_finished: true, status: 'success' })
+            # rubocop:enable RSpec/StubbedMock
+            # rubocop:enable RSpec/ExpectInHook
+          end
+        end
       end
 
       it 'calls digital_object.pre_assemble with true for all objects' do
         expect(batch.send(:pre_assemble_objects)).to be true
-        expect(batch.digital_objects[0]).to have_received(:pre_assemble).with(true)
-        expect(batch.digital_objects[1]).to have_received(:pre_assemble).with(true)
       end
     end
   end
@@ -161,6 +200,11 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#digital_objects' do
     let(:batch) { batch_setup(:folder_manifest) }
+
+    it 'calculates size correctly' do
+      # #size on the Enumerator object is calculated in a way that avoids iterating over the whole thing
+      expect(flat_dir_images.digital_objects.size).to eq(flat_dir_images.digital_objects.to_a.size)
+    end
 
     it 'finds the correct number of objects' do
       expect(batch.digital_objects.size).to eq(3)
@@ -218,33 +262,60 @@ RSpec.describe PreAssembly::Batch do
   end
 
   describe '#load_checksums' do
-    it 'loads checksums and attach them to the ObjectFiles' do
-      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to be_nil }
-      multimedia.digital_objects.each { |dobj| multimedia.send(:load_checksums, dobj) }
-      multimedia.send(:all_object_files).each { |f| expect(f.checksum).to match(md5_regex) }
+    it 'loads checksums and attaches them to the ObjectFiles' do
+      multimedia.digital_objects.each do |dobj|
+        dobj.object_files.each { |f| expect(f.checksum).to be_nil }
+        batch.send(:load_checksums, dobj)
+        dobj.object_files.each { |f| expect(f.checksum).to match(md5_regex) }
+      end
     end
   end
 
   describe '#un_pre_assembled_objects' do
     it 'returns all objects if there are no pre_assembled_object_containers' do
-      expect(flat_dir_images.un_pre_assembled_objects).to eq(flat_dir_images.digital_objects)
+      all_dobj_array = flat_dir_images.digital_objects.to_a
+      un_preassembled_dobj_array = flat_dir_images.un_pre_assembled_objects.to_a
+      un_preassembled_dobj_array.each_with_index do |dobj, i|
+        # Each time it's called, #to_a iterates over the Enumerable and re-instantiates the yeilded
+        # objects anew.  DigitalObject doesn't have an == method, so compare the relevant fields here
+        # since default == will just check whether the two are the same instance.
+        %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
+          expect(dobj.send(field_name)).to eq(all_dobj_array[i].send(field_name))
+        end
+        expect(all_dobj_array.size).to eq(un_preassembled_dobj_array.size)
+      end
+    end
+
+    it 'calculates size correctly' do
+      # #size on the Enumerator object is calculated in a way that avoids iterating over the whole thing
+      expect(flat_dir_images.un_pre_assembled_objects.size).to eq(flat_dir_images.un_pre_assembled_objects.to_a.size)
     end
 
     it 'returns a filtered list of digital objects' do
-      allow(flat_dir_images).to receive(:pre_assembled_object_containers).and_return({ flat_dir_images.digital_objects.last.container => true })
-      o2p = flat_dir_images.un_pre_assembled_objects
+      allow(flat_dir_images).to receive(:pre_assembled_object_containers).and_return({ flat_dir_images.digital_objects.to_a.last.container => true })
+      o2p = flat_dir_images.un_pre_assembled_objects.to_a
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
-      expect(o2p).to eq(flat_dir_images.digital_objects[0..-2])
+      truncated_dobj_array = flat_dir_images.digital_objects.to_a[0..-2]
+      o2p.each_with_index do |dobj, i|
+        %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
+          expect(dobj.send(field_name)).to eq(truncated_dobj_array[i].send(field_name))
+        end
+      end
     end
   end
 
   ### Private methods
 
   describe '#containers_via_manifest' do
+    it 'calculates size correctly' do
+      # #size on the Enumerator object is calculated in a way that avoids iterating over the whole thing
+      expect(flat_dir_images.send(:containers_via_manifest).size).to eq(flat_dir_images.send(:containers_via_manifest).to_a.size)
+    end
+
     it 'returns expected information' do
       vals = %w[123.tif 456.tif 789.tif]
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
-      expect(flat_dir_images.send(:containers_via_manifest)).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
+      expect(flat_dir_images.send(:containers_via_manifest).to_a).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
     end
   end
 
@@ -253,15 +324,6 @@ RSpec.describe PreAssembly::Batch do
       # these are the actual files in the spec/test_data/flat_dir_images bundle directory
       items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.bundle_dir_with_path i }
       expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.bundle_dir)).to eq(items.sort)
-    end
-  end
-
-  describe '#all_object_files' do
-    it 'returns Array of object_files from all DigitalObjects' do
-      fake_files = [[1, 2], [3, 4], [5, 6]]
-      fake_dobjs = fake_files.map { |fs| instance_double(PreAssembly::DigitalObject, object_files: fs) }
-      flat_dir_images.digital_objects = fake_dobjs
-      expect(flat_dir_images.send(:all_object_files)).to eq(fake_files.flatten)
     end
   end
 

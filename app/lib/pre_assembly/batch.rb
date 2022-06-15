@@ -8,7 +8,6 @@ module PreAssembly
     include PreAssembly::Logging
 
     attr_reader :batch_context
-    attr_writer :digital_objects
     attr_accessor :error_message,
                   :file_manifest,
                   :num_failures,
@@ -48,30 +47,36 @@ module PreAssembly
 
     # Discovers the digital object containers and the stageable items within them.
     # For each container, creates a new PreAssembly::Digitalobject.
-    # @return [Array<PreAssembly::DigitalObject>]
+    # @return [Enumerable<PreAssembly::DigitalObject>]
+    # @yield [PreAssembly::DigitalObject]
     # rubocop:disable Metrics/AbcSize
-    def digital_objects
-      @digital_objects ||= containers_via_manifest.each_with_index.map do |c, i|
-        stageable_items = discover_items_via_crawl(c)
+    def digital_objects(&_block)
+      return enum_for(:digital_objects) { containers_via_manifest.size } unless block_given?
+
+      containers_via_manifest.each_with_index.map do |container, i|
+        stageable_items = discover_items_via_crawl(container)
         row = manifest_rows[i]
         dark = dark?(row[:druid])
-        DigitalObject.new(self,
-                          container: c,
-                          stageable_items: stageable_items,
-                          object_files: ObjectFileFinder.run(stageable_items: stageable_items, druid: row[:druid], dark: dark, all_files_public: batch_context.all_files_public?),
-                          label: row.fetch('label', ''),
-                          source_id: row['sourceid'],
-                          pid: row[:druid],
-                          stager: stager,
-                          dark: dark)
+        yield DigitalObject.new(self,
+                                container: container,
+                                stageable_items: stageable_items,
+                                object_files: ObjectFileFinder.run(stageable_items: stageable_items, druid: row[:druid], dark: dark, all_files_public: batch_context.all_files_public?),
+                                label: row.fetch('label', ''),
+                                source_id: row['sourceid'],
+                                pid: row[:druid],
+                                stager: stager,
+                                dark: dark)
       end
     end
     # rubocop:enable Metrics/AbcSize
 
     # any objects that have not yet been run successfully through a pre-assembly job (used by both pre-assembly and discovery reports)
-    # @return [Array<PreAssembly::DigitalObject>]
-    def un_pre_assembled_objects
-      @un_pre_assembled_objects ||= digital_objects.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }
+    # @return [Enumerable<PreAssembly::DigitalObject>]
+    # @yield [PreAssembly::DigitalObject]
+    def un_pre_assembled_objects(&block)
+      return enum_for(:un_pre_assembled_objects) { digital_objects.size } unless block_given?
+
+      digital_objects.lazy.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }.each { |dobj| block.call(dobj) }
     end
 
     private
@@ -97,13 +102,18 @@ module PreAssembly
     end
 
     # Discover object containers from the object manifest file suppled in the bundle_dir.
-    def containers_via_manifest
+    # @return [Enumerable<String>]
+    # @yield [String]
+    def containers_via_manifest(&block)
+      return enum_for(:containers_via_manifest) { manifest_rows.size } unless block_given?
+
       manifest_rows.each_with_index do |manifest_row, i|
         next if manifest_row[:object]
 
         raise "Missing 'object' in row #{i}: #{manifest_row}"
       end
-      manifest_rows.map { |manifest_row| bundle_dir_with_path manifest_row[:object] }
+
+      manifest_rows.map { |manifest_row| bundle_dir_with_path manifest_row[:object] }.each { |manifest_row| block.call(manifest_row) }
     end
 
     # A method to discover stageable items (i.e. files) with a given object folder.
@@ -111,12 +121,6 @@ module PreAssembly
     # It then finds all files within with an eager glob pattern.
     def discover_items_via_crawl(root)
       Dir.glob("#{root}/**/*")
-    end
-
-    # A convenience method to return all ObjectFiles for all digital objects.
-    # Also used for stubbing during testing.
-    def all_object_files
-      digital_objects.map(&:object_files).flatten
     end
 
     # ignores objects already pre-assembled as part of re-runnability of preassembly job
@@ -151,6 +155,7 @@ module PreAssembly
         file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         load_checksums(dobj)
         progress = dobj.pre_assemble(file_attributes_supplied)
+        log "  - pre_assemble result: #{progress}"
         progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
         @num_failures += 1 if progress[:status] == 'error'
         log "Completed #{dobj.druid}"
