@@ -261,16 +261,6 @@ RSpec.describe PreAssembly::Batch do
     end
   end
 
-  describe '#load_checksums' do
-    it 'loads checksums and attaches them to the ObjectFiles' do
-      multimedia.digital_objects.each do |dobj|
-        dobj.object_files.each { |f| expect(f.checksum).to be_nil }
-        batch.send(:load_checksums, dobj)
-        dobj.object_files.each { |f| expect(f.checksum).to match(md5_regex) }
-      end
-    end
-  end
-
   describe '#un_pre_assembled_objects' do
     it 'returns all objects if there are no pre_assembled_object_containers' do
       all_dobj_array = flat_dir_images.digital_objects.to_a
@@ -324,6 +314,16 @@ RSpec.describe PreAssembly::Batch do
       # these are the actual files in the spec/test_data/flat_dir_images bundle directory
       items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.bundle_dir_with_path i }
       expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.bundle_dir)).to eq(items.sort)
+    end
+  end
+
+  describe '#load_checksums' do
+    it 'loads checksums and attaches them to the ObjectFiles' do
+      multimedia.digital_objects.each do |dobj|
+        dobj.object_files.each { |f| expect(f.checksum).to be_nil }
+        batch.send(:load_checksums, dobj)
+        dobj.object_files.each { |f| expect(f.checksum).to match(md5_regex) }
+      end
     end
   end
 
