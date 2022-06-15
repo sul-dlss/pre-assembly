@@ -40,6 +40,12 @@ module PreAssembly
     end
     # rubocop:enable Metrics/ParameterLists
 
+    def ==(other)
+      %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
+        send(field_name) == other.send(field_name)
+      end
+    end
+
     # set this object's content_md_creation_style
     # @return [Symbol]
     def content_md_creation_style
