@@ -19,7 +19,6 @@ gem 'simple_form' # rails form that handles errors internally and easily integra
 gem 'state_machines-activerecord'
 
 # Stanford gems
-gem 'assembly-image', '~> 1.7'
 gem 'assembly-objectfile', '~> 1.10', '>= 1.10.3' # webarchive-seed and reading order is supported in 1.10.2 and better
 gem 'dor-services-client', '~> 12.0'
 gem 'dor-workflow-client', '~> 4.0'

@@ -70,9 +70,6 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
-    assembly-image (1.8.0)
-      assembly-objectfile (>= 1.6.4)
-      mini_exiftool (>= 1.6, < 3)
     assembly-objectfile (1.12.0)
       activesupport (>= 5.2.0)
       deprecation
@@ -467,7 +464,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  assembly-image (~> 1.7)
   assembly-objectfile (~> 1.10, >= 1.10.3)
   capistrano-bundler
   capistrano-passenger
