@@ -53,8 +53,6 @@ group :development, :test do
   gem 'rubocop', '~> 1.25'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-  # gem 'ruby-prof'
-  gem 'sqlite3'
 end
 
 gem "turbo-rails", "~> 1.1"
