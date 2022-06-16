@@ -11,13 +11,16 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
     t.string "bundle_dir", null: false
     t.boolean "staging_style_symlink", default: false, null: false
     t.integer "content_metadata_creation", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "all_files_public", default: false, null: false
@@ -29,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
   create_table "job_runs", force: :cascade do |t|
     t.string "output_location"
     t.integer "job_type", null: false
-    t.integer "batch_context_id", null: false
+    t.bigint "batch_context_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "state", default: "waiting", null: false

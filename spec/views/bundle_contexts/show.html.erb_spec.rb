@@ -7,7 +7,7 @@ RSpec.describe 'batch_contexts/show.html.erb', type: :view do
 
   it 'diplays BatchContext info' do
     render template: 'batch_contexts/show'
-    expect(rendered).to include("<a href=\"/batch_contexts/1\">#{bc.project_name}</a> by #{bc.user.email}")
+    expect(rendered).to include("<a href=\"/batch_contexts/#{bc.id}\">#{bc.project_name}</a> by #{bc.user.email}")
     expect(rendered).to include('<i class="fa-regular fa-circle-xmark"></i>') # icon for symlink="false"
   end
 

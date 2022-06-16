@@ -424,7 +424,6 @@ GEM
       rack (~> 2.2)
       rack-protection (= 2.2.0)
       tilt (~> 2.0)
-    sqlite3 (1.4.2)
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -503,7 +502,6 @@ DEPENDENCIES
   shoulda-matchers (~> 4.1)
   simple_form
   simplecov
-  sqlite3
   state_machines-activerecord
   turbo-rails (~> 1.1)
 
