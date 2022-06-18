@@ -53,7 +53,7 @@ module PreAssembly
     def digital_objects
       return enum_for(:digital_objects) { containers_via_manifest.size } unless block_given?
 
-      containers_via_manifest.each_with_index.map do |container, i|
+      containers_via_manifest.map.with_index do |container, i|
         stageable_items = discover_items_via_crawl(container)
         row = manifest_rows[i]
         dark = dark?(row[:druid])
@@ -107,7 +107,7 @@ module PreAssembly
     def containers_via_manifest(&block)
       return enum_for(:containers_via_manifest) { manifest_rows.size } unless block_given?
 
-      manifest_rows.each_with_index do |manifest_row, i|
+      manifest_rows.each.with_index do |manifest_row, i|
         next if manifest_row[:object]
 
         raise "Missing 'object' in row #{i}: #{manifest_row}"
@@ -147,7 +147,7 @@ module PreAssembly
     # pre-assemble each object that hasn't been pre-assembled already
     # rubocop:disable Metrics/AbcSize
     def pre_assemble_each_object
-      un_pre_assembled_objects.each_with_index do |dobj, i|
+      un_pre_assembled_objects.each.with_index do |dobj, i|
         log "#{num_to_pre_assemble - i} remaining in run | #{num_to_pre_assemble} running"
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
