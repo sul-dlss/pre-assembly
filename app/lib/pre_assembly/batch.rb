@@ -50,7 +50,7 @@ module PreAssembly
     # @return [Enumerable<PreAssembly::DigitalObject>]
     # @yield [PreAssembly::DigitalObject]
     # rubocop:disable Metrics/AbcSize
-    def digital_objects(&_block)
+    def digital_objects
       return enum_for(:digital_objects) { containers_via_manifest.size } unless block_given?
 
       containers_via_manifest.each_with_index.map do |container, i|
