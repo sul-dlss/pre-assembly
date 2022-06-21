@@ -22,13 +22,13 @@ RSpec.describe 'batch_contexts/new' do
     bc = build(:batch_context, bundle_dir: nil).tap(&:valid?)
     assign(:batch_context, bc)
     render
-    expect(render).to match(/Bundle dir can&#39;t be blank/)
+    expect(render).to match(/Staging location can&#39;t be blank/)
   end
 
-  it 'displays error message for non-existent bundle directory' do
+  it 'displays error message for non-existent staging location' do
     bc = build(:batch_context, bundle_dir: 'bad path').tap(&:valid?)
     assign(:batch_context, bc)
     render
-    expect(render).to match(/Bundle dir &#39;bad path&#39; not found./)
+    expect(render).to match(/Staging location &#39;bad path&#39; not found./)
   end
 end

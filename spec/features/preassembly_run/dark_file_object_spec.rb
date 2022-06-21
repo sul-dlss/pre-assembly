@@ -50,7 +50,7 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'File', from: 'Content structure'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

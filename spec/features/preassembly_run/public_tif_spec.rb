@@ -50,7 +50,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)', type: :feat
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
     choose 'Preserve=Yes, Shelve=Yes, Publish=Yes'
 
     click_button 'Submit'

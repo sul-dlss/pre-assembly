@@ -88,7 +88,7 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Media', from: 'Content structure'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
     select 'Default', from: 'Content metadata creation'
     check 'batch_context_using_file_manifest'
 

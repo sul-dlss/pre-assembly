@@ -31,7 +31,7 @@ RSpec.describe 'Discovery Report completes with errors', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

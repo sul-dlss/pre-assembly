@@ -34,7 +34,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv', type: :feature do
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
     select 'Default', from: 'Content metadata creation'
     check 'batch_context_using_file_manifest'
 

@@ -27,7 +27,7 @@ RSpec.describe 'Pre-assemble job fails', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
     click_button 'Submit'
 
     # it fails before this:

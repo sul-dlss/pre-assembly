@@ -25,7 +25,7 @@ RSpec.describe 'Discovery Report fails', type: :feature do
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
-    fill_in 'Bundle dir', with: bundle_dir
+    fill_in 'Staging location', with: bundle_dir
     check 'batch_context_using_file_manifest'
 
     click_button 'Submit'
