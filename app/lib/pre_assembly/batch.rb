@@ -107,7 +107,7 @@ module PreAssembly
     def containers_via_manifest(&block)
       return enum_for(:containers_via_manifest) { manifest_rows.size } unless block_given?
 
-      manifest_rows.each.with_index do |manifest_row, i|
+      manifest_rows.each.with_index(1) do |manifest_row, i|
         next if manifest_row[:object]
 
         raise "Missing 'object' in row #{i}: #{manifest_row}"

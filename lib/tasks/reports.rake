@@ -14,8 +14,8 @@ namespace :reports do
     puts "Running discovery report analytics for #{total} discovery report job runs"
     CSV.open(output_file, 'w') do |csv|
       csv << %w[num_objects num_files num_errors runtime_minutes user report_date]
-      JobRun.where(job_type: 'discovery_report').each.with_index do |job_run, index|
-        puts "#{index + 1} of #{total}"
+      JobRun.where(job_type: 'discovery_report').each.with_index(1) do |job_run, i|
+        puts "#{i} of #{total}"
         if job_run.output_location && File.exist?(job_run.output_location)
           num_found += 1
           json_report = JSON.parse(File.read(job_run.output_location))
