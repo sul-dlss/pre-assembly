@@ -6,7 +6,7 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
   let(:project_name) { "image-#{RandomWord.nouns.next}" }
   # text files are public by default
   #  see https://github.com/sul-dlss/assembly-objectfile/blob/master/lib/assembly-objectfile/content_metadata/file.rb#L9-L27
-  let(:bundle_dir) { Rails.root.join('spec/test_data/text_file') }
+  let(:staging_location) { Rails.root.join('spec/test_data/text_file') }
   let(:bare_druid) { 'tx666tx9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'tx', '666', 'tx', '9999', bare_druid) }
   let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, view: 'dark') }
@@ -50,7 +50,7 @@ RSpec.describe 'Pre-assemble object with dark files', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'File', from: 'Content structure'
-    fill_in 'Staging location', with: bundle_dir
+    fill_in 'Staging location', with: staging_location
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

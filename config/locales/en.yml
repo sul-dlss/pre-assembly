@@ -30,10 +30,6 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  simple_form:
-    labels:
-      batch_context:
-        bundle_dir: 'Staging location'
   activerecord:
     state_machines:
       job_run:
@@ -47,7 +43,6 @@ en:
     attributes:
       batch_context:
         all_files_public: "Preserve, Shelve, Publish Settings"
-        bundle_dir: 'Staging location'
   helpers:
     submit:
       batch_context:

@@ -8,7 +8,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:dru) { 'gn330dv6119' }
   let(:pid) { "druid:#{dru}" }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:batch_context, bundle_dir: 'spec/test_data/images_jp2_tif') }
+  let(:bc) { create(:batch_context, staging_location: 'spec/test_data/images_jp2_tif') }
   let(:druid) { DruidTools::Druid.new(pid) }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
@@ -24,7 +24,7 @@ RSpec.describe PreAssembly::DigitalObject do
       options = { relative_path: f, checksum: i.to_s * 4 }
       options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' } if all_files_public
 
-      object.object_files.push PreAssembly::ObjectFile.new("#{object.bundle_dir}/#{dru}/#{f}", options)
+      object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{dru}/#{f}", options)
     end
   end
 
@@ -68,7 +68,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     before do
       allow(object).to receive(:druid).and_return(druid)
-      allow(object).to receive(:bundle_dir).and_return(tmp_area)
+      allow(object).to receive(:staging_location).and_return(tmp_area)
       allow(assembly_directory).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
       allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
       allow(object).to receive(:assembly_directory).and_return(assembly_directory)
@@ -453,7 +453,7 @@ RSpec.describe PreAssembly::DigitalObject do
         XML
       end
 
-      let(:bc) { create(:batch_context, :public_files, bundle_dir: 'spec/test_data/images_jp2_tif') }
+      let(:bc) { create(:batch_context, :public_files, staging_location: 'spec/test_data/images_jp2_tif') }
 
       before do
         allow(object).to receive(:druid).and_return(druid)

@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :batch_context do
-    bundle_dir { 'spec/test_data/multimedia' }
+    staging_location { 'spec/test_data/multimedia' }
     content_metadata_creation { 'default' }
     content_structure { 'simple_image' }
     project_name { 'Test_Project' }
@@ -17,14 +17,14 @@ FactoryBot.define do
     end
 
     trait :flat_dir_images do
-      bundle_dir { 'spec/test_data/flat_dir_images' }
+      staging_location { 'spec/test_data/flat_dir_images' }
       content_metadata_creation { 'default' }
       content_structure { 'simple_image' }
       project_name { 'Flat_Dir_Images' }
     end
 
     trait :folder_manifest do
-      bundle_dir { 'spec/test_data/obj_dirs_images' }
+      staging_location { 'spec/test_data/obj_dirs_images' }
       content_metadata_creation { 'default' }
       content_structure { 'simple_image' }
       project_name { 'FolderManifest' }

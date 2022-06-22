@@ -6,7 +6,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)', type: :feat
   let(:project_name) { "image-#{RandomWord.nouns.next}" }
   # tif files are dark by default
   #  see https://github.com/sul-dlss/assembly-objectfile/blob/master/lib/assembly-objectfile/content_metadata/file.rb#L9-L27
-  let(:bundle_dir) { Rails.root.join('spec/test_data/image_tif') }
+  let(:staging_location) { Rails.root.join('spec/test_data/image_tif') }
   let(:bare_druid) { 'tf111tf2222' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'tf', '111', 'tf', '2222', bare_druid) }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
@@ -50,7 +50,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)', type: :feat
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Staging location', with: bundle_dir
+    fill_in 'Staging location', with: staging_location
     choose 'Preserve=Yes, Shelve=Yes, Publish=Yes'
 
     click_button 'Submit'

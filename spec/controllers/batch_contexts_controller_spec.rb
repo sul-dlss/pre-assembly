@@ -8,7 +8,7 @@ RSpec.describe BatchContextsController, type: :controller do
           project_name: 'Multimedia',
           content_structure: 'simple_image',
           content_metadata_creation: 'default',
-          bundle_dir: 'spec/test_data/multimedia',
+          staging_location: 'spec/test_data/multimedia',
           job_runs_attributes: { '0' => { job_type: 'preassembly' } }
         }
     }
@@ -64,7 +64,7 @@ RSpec.describe BatchContextsController, type: :controller do
           expect(bc.project_name).to eq 'Multimedia'
           expect(bc.content_structure).to eq 'simple_image'
           expect(bc.content_metadata_creation).to eq 'default'
-          expect(bc.bundle_dir).to eq 'spec/test_data/multimedia'
+          expect(bc.staging_location).to eq 'spec/test_data/multimedia'
         end
 
         it 'persists the first JobRun, rejects dups' do
@@ -76,7 +76,7 @@ RSpec.describe BatchContextsController, type: :controller do
       end
 
       context 'Invalid Parameters' do
-        let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', bundle_dir: '' } }
+        let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', staging_location: '' } }
 
         it 'do not create objects' do
           params[:batch_context][:project_name] = nil

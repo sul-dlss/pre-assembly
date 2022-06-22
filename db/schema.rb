@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_22_173421) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
-    t.string "bundle_dir", null: false
+    t.string "staging_location", null: false
     t.boolean "staging_style_symlink", default: false, null: false
     t.integer "content_metadata_creation", null: false
     t.bigint "user_id", null: false
@@ -27,6 +27,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
     t.boolean "using_file_manifest", default: false, null: false
     t.index ["user_id", "project_name"], name: "index_batch_contexts_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_batch_contexts_on_user_id"
+  end
+
+  create_table "bundle_contexts", force: :cascade do |t|
+    t.string "project_name", null: false
+    t.integer "content_structure", null: false
+    t.string "bundle_dir", null: false
+    t.boolean "staging_style_symlink", default: false, null: false
+    t.integer "content_metadata_creation", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["user_id"], name: "index_bundle_contexts_on_user_id"
   end
 
   create_table "job_runs", force: :cascade do |t|

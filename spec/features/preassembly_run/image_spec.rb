@@ -4,7 +4,7 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "image-#{RandomWord.nouns.next}" }
-  let(:bundle_dir) { Rails.root.join('spec/test_data/image_jpg') }
+  let(:staging_location) { Rails.root.join('spec/test_data/image_jpg') }
   let(:bare_druid) { 'pr666rr9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
@@ -48,7 +48,7 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
-    fill_in 'Staging location', with: bundle_dir
+    fill_in 'Staging location', with: staging_location
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

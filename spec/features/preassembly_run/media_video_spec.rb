@@ -8,7 +8,7 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "media-video-objects-#{RandomWord.nouns.next}" }
-  let(:bundle_dir) { Rails.root.join('spec/test_data/media_video_test') }
+  let(:staging_location) { Rails.root.join('spec/test_data/media_video_test') }
   let(:bare_druid) { 'vd000bj0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'vd', '000', 'bj', '0000', bare_druid) }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
@@ -88,7 +88,7 @@ RSpec.describe 'Pre-assemble Media Video object', type: :feature do
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
     select 'Media', from: 'Content structure'
-    fill_in 'Staging location', with: bundle_dir
+    fill_in 'Staging location', with: staging_location
     select 'Default', from: 'Content metadata creation'
     check 'batch_context_using_file_manifest'
 

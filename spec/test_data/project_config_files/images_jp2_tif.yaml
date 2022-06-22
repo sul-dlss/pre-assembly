@@ -5,7 +5,7 @@ project_name:         'Images_jp2_tif'
 project_style:
   content_structure:  'simple_image'
 
-bundle_dir:           'spec/test_data/images_jp2_tif'
+staging_location:           'spec/test_data/images_jp2_tif'
 
 content_md_creation:
   style:              'default'

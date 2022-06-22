@@ -192,7 +192,7 @@ RSpec.describe PreAssembly::Batch do
       info_for_log = flat_dir_images.send(:info_for_log)
       expect(info_for_log).to match(/content_structure="#{flat_dir_images.content_structure}"/)
       expect(info_for_log).to match(/project_name="#{flat_dir_images.project_name}"/)
-      expect(info_for_log).to match(/bundle_dir="#{flat_dir_images.bundle_dir}"/)
+      expect(info_for_log).to match(/staging_location="#{flat_dir_images.staging_location}"/)
       expect(info_for_log).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
       expect(info_for_log).to match(/environment="test"/)
     end
@@ -211,7 +211,7 @@ RSpec.describe PreAssembly::Batch do
     end
 
     it 'handles containers correctly' do
-      expect(multimedia.digital_objects.first.container.size).to be > multimedia.bundle_dir.size
+      expect(multimedia.digital_objects.first.container.size).to be > multimedia.staging_location.size
     end
 
     it 'augments the digital objects with additional information' do
@@ -305,15 +305,15 @@ RSpec.describe PreAssembly::Batch do
     it 'returns expected information' do
       vals = %w[123.tif 456.tif 789.tif]
       allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
-      expect(flat_dir_images.send(:containers_via_manifest).to_a).to eq(vals.map { |v| flat_dir_images.bundle_dir_with_path v })
+      expect(flat_dir_images.send(:containers_via_manifest).to_a).to eq(vals.map { |v| flat_dir_images.staging_location_with_path v })
     end
   end
 
   describe '#discover_items_via_crawl' do
     it 'returns expected information' do
-      # these are the actual files in the spec/test_data/flat_dir_images bundle directory
-      items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.bundle_dir_with_path i }
-      expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.bundle_dir)).to eq(items.sort)
+      # these are the actual files in the spec/test_data/flat_dir_images staging directory
+      items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.staging_location_with_path i }
+      expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.staging_location)).to eq(items.sort)
     end
   end
 
@@ -329,10 +329,10 @@ RSpec.describe PreAssembly::Batch do
 
   describe 'file and directory utilities' do
     let(:relative) { 'abc/def.jpg' }
-    let(:full) { flat_dir_images.bundle_dir_with_path(relative) }
+    let(:full) { flat_dir_images.staging_location_with_path(relative) }
 
-    it '#bundle_dir_with_path returns expected value' do
-      expect(flat_dir_images.bundle_dir_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
+    it '#staging_location_with_path returns expected value' do
+      expect(flat_dir_images.staging_location_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
     end
   end
 end
