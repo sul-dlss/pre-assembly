@@ -44,7 +44,21 @@ RSpec.describe 'Discovery Report completes with errors', type: :feature do
     expect(page).to have_content 'Errors'
     expect(page).to have_content '1 objects had errors in the discovery report'
     expect(page).to have_link('Download').twice
+    expect(page).to have_link('View summary')
 
+    # discovery report summary table shows summary and errors
+    click_link 'View summary'
+    # summary table
+    expect(page).to have_content '250 KB'
+    expect(page).to have_content 'image/tiff : 4'
+    expect(page).to have_content 'less than a minute'
+    # error table
+    expect(page).to have_content 'Errors Summary'
+    expect(page).to have_content 'druid:oo111oo1111'
+    expect(page).to have_content 'empty_object : true'
+    expect(page).to have_content 'missing_files : true'
+
+    # discovery report JSON produced
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
     report_file = Dir[report_path].first
     discovery_report_json = JSON.parse(File.read(report_file))
@@ -53,6 +67,7 @@ RSpec.describe 'Discovery Report completes with errors', type: :feature do
     expect(discovery_report_json['summary']['objects_with_error']).to eq 1
     expect(discovery_report_json['summary']['mimetypes']['image/tiff']).to eq 4
 
+    # output log file produced
     log_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
     log = File.read(log_path)
     expect(log.scan(/status:\s+success/m).length).to eq 2

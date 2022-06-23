@@ -34,7 +34,7 @@ class JobRunsController < ApplicationController
 
   def download_report
     @job_run = JobRun.find(params[:id])
-    if @job_run.output_location && File.exist?(@job_run.output_location)
+    if @job_run.output_location
       send_file @job_run.output_location
     else
       flash[:warning] = 'Job is not complete. Please check back later.'
