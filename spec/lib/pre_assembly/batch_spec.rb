@@ -263,7 +263,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#un_pre_assembled_objects' do
     it 'returns all objects if there are no pre_assembled_object_containers' do
-      expect(flat_dir_images.un_pre_assembled_objects.to_a).to eq(flat_dir_images.digital_objects.to_a)
+      expect(digital_objects_equivalent?(flat_dir_images.un_pre_assembled_objects.to_a, flat_dir_images.digital_objects.to_a)).to be true
     end
 
     it 'calculates size correctly' do
@@ -275,7 +275,7 @@ RSpec.describe PreAssembly::Batch do
       allow(flat_dir_images).to receive(:pre_assembled_object_containers).and_return({ flat_dir_images.digital_objects.to_a.last.container => true })
       o2p = flat_dir_images.un_pre_assembled_objects.to_a
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
-      expect(o2p).to eq(flat_dir_images.digital_objects.to_a[0..-2])
+      expect(digital_objects_equivalent?(o2p, flat_dir_images.digital_objects.to_a[0..-2])).to be true
     end
   end
 
