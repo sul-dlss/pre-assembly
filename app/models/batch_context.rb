@@ -153,8 +153,8 @@ class BatchContext < ApplicationRecord
       match_flag = sub_path
       break
     end
-    # match_flag = nil means we are not in the sub path, match_flag == staging_location means the user only entered the root path.
-    return unless match_flag.nil? || match_flag == staging_location
+    # match_flag = nil means we are not in the sub path, match_flag == staging_location_path means the user only entered the root path.
+    return unless match_flag.nil? || match_flag == staging_location_path
 
     errors.add(:staging_location, 'not a sub directory of allowed parent directories.')
   end
