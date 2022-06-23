@@ -57,14 +57,14 @@ project_style:
 # Paths to the pre-assembly input and output.
 ####
 
-bundle_dir:  '/foo/bar/revs'  # Input location for the project content (i.e., the
+staging_location:  '/foo/bar/revs'  # Input location for the project content (i.e., the
                              # "bundle" or "batch"). May contain images directly or may contain
                              # folders, one per object, usually named by druid.
                              # A fully qualified path.
 
 staging_style:    'copy'     # the staging style, can be "copy" or "symlink", defaults to "copy" if not specified or nil
-                             #  if set to "copy" then all discovered files that need to be staged will be copied from the bundle directory to the staging directory
-                             #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the bundle directory
+                             #  if set to "copy" then all discovered files that need to be staged will be copied from the staging location directory to the staging directory
+                             #  if set to "symlink", then all discovered files will be symlinked into the staging directory from the staging location directory
 
 ####
 # The CSV file is expected with columns (always lowercase):

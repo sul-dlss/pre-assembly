@@ -3,7 +3,7 @@
 project_style:
   content_structure: 'simple_book'
 
-bundle_dir:  '/thumpers/dpgthumper-staging/Gould'
+staging_location:  '/thumpers/dpgthumper-staging/Gould'
 
 manifest:   ~
 

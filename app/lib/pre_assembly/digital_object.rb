@@ -8,7 +8,7 @@ module PreAssembly
     attr_reader :batch, :stageable_items, :object_files,
                 :stager, :label, :pid, :source_id, :container
 
-    delegate :bundle_dir,
+    delegate :staging_location,
              :content_md_creation,
              :content_structure,
              :project_name,

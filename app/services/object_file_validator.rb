@@ -94,11 +94,11 @@ class ObjectFileValidator
   # @return [PreAssembly::FileManifest]
   def file_manifest
     @file_manifest ||= PreAssembly::FileManifest.new(csv_filename: batch.batch_context.file_manifest,
-                                                     bundle_dir: batch.bundle_dir)
+                                                     staging_location: batch.staging_location)
   end
 
   # @return [Boolean]
   def using_file_manifest?
-    batch.using_file_manifest && File.exist?(File.join(batch.bundle_dir, batch.batch_context.file_manifest))
+    batch.using_file_manifest && File.exist?(File.join(batch.staging_location, batch.batch_context.file_manifest))
   end
 end

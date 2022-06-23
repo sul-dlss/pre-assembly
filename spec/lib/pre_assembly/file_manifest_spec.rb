@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe PreAssembly::FileManifest do
-  let(:bundle_dir) { Rails.root.join('spec/test_data/multimedia') }
+  let(:staging_location) { Rails.root.join('spec/test_data/multimedia') }
 
   describe '#create_content_metadata' do
     context 'for a media object' do
       let(:bc_params) do
         {
           project_name: 'ProjectBar',
-          bundle_dir: bundle_dir,
+          staging_location: staging_location,
           content_metadata_creation: :default,
           content_structure: 'media',
           using_file_manifest: true
@@ -20,7 +20,7 @@ RSpec.describe PreAssembly::FileManifest do
         let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
         let(:dobj2) { setup_dobj('bb222bb2222', 'object2', file_manifest) }
         let(:file_manifest) do
-          described_class.new(csv_filename: 'file_manifest.csv', bundle_dir: bundle_dir)
+          described_class.new(csv_filename: 'file_manifest.csv', staging_location: staging_location)
         end
 
         it 'generates content metadata of type media from a file manifest with no thumb columns' do
@@ -31,7 +31,7 @@ RSpec.describe PreAssembly::FileManifest do
 
       context 'with thumb declaration' do
         it 'generates content metadata of type media from a file manifest with a thumb column set to yes' do
-          file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb.csv', bundle_dir: bundle_dir)
+          file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb.csv', staging_location: staging_location)
           dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
           dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
@@ -40,7 +40,7 @@ RSpec.describe PreAssembly::FileManifest do
         end
 
         it 'generates content metadata of type media from a file manifest with a thumb column set to true' do
-          file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb_true.csv', bundle_dir: bundle_dir)
+          file_manifest = described_class.new(csv_filename: 'file_manifest_with_thumb_true.csv', staging_location: staging_location)
           dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
           dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
@@ -49,7 +49,7 @@ RSpec.describe PreAssembly::FileManifest do
         end
 
         it 'generates content metadata of type media from a file manifest with no thumbs when the thumb column is set to no' do
-          file_manifest = described_class.new(csv_filename: 'file_manifest_thumb_no.csv', bundle_dir: bundle_dir)
+          file_manifest = described_class.new(csv_filename: 'file_manifest_thumb_no.csv', staging_location: staging_location)
           dobj1 = setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest)
           dobj2 = setup_dobj('bb222bb2222', 'object2', file_manifest)
 
@@ -63,7 +63,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc_params) do
         {
           project_name: 'ProjectBaz',
-          bundle_dir: bundle_dir,
+          staging_location: staging_location,
           content_metadata_creation: :default,
           content_structure: :simple_image,
           using_file_manifest: true
@@ -75,7 +75,7 @@ RSpec.describe PreAssembly::FileManifest do
         let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
         let(:dobj2) { setup_dobj('bb222bb2222', 'object2', file_manifest) }
         let(:file_manifest) do
-          described_class.new(csv_filename: 'file_manifest.csv', bundle_dir: bundle_dir)
+          described_class.new(csv_filename: 'file_manifest.csv', staging_location: staging_location)
         end
 
         it 'generates content metadata of type image from a file manifest with no thumb columns' do

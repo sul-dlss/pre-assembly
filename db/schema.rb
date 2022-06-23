@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_07_221157) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_22_173421) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
-    t.string "bundle_dir", null: false
+    t.string "staging_location", null: false
     t.boolean "staging_style_symlink", default: false, null: false
     t.integer "content_metadata_creation", null: false
     t.bigint "user_id", null: false

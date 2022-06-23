@@ -14,11 +14,11 @@ module PreAssembly
                   :num_no_file_warnings,
                   :objects_had_errors
 
-    delegate :bundle_dir,
+    delegate :staging_location,
              :content_md_creation,
              :content_structure,
              :manifest_rows,
-             :bundle_dir_with_path,
+             :staging_location_with_path,
              :progress_log_file,
              :project_name,
              :staging_style_symlink,
@@ -27,7 +27,7 @@ module PreAssembly
 
     def initialize(batch_context)
       @batch_context = batch_context
-      @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, bundle_dir: bundle_dir) if batch_context.using_file_manifest
+      @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, staging_location: staging_location) if batch_context.using_file_manifest
       @objects_had_errors = false # will be set to true if we discover any errors when running pre-assembly
     end
 
@@ -101,7 +101,7 @@ module PreAssembly
       end
     end
 
-    # Discover object containers from the object manifest file suppled in the bundle_dir.
+    # Discover object containers from the object manifest file suppled in the staging_location.
     # @return [Enumerable<String>]
     # @yield [String]
     def containers_via_manifest(&block)
@@ -113,7 +113,7 @@ module PreAssembly
         raise "Missing 'object' in row #{i}: #{manifest_row}"
       end
 
-      manifest_rows.map { |manifest_row| bundle_dir_with_path manifest_row[:object] }.each { |manifest_row| block.call(manifest_row) }
+      manifest_rows.map { |manifest_row| staging_location_with_path manifest_row[:object] }.each { |manifest_row| block.call(manifest_row) }
     end
 
     # A method to discover stageable items (i.e. files) with a given object folder.
@@ -189,7 +189,7 @@ module PreAssembly
       log_params = {
         content_structure: content_structure,
         project_name: project_name,
-        bundle_dir: bundle_dir,
+        staging_location: staging_location,
         assembly_staging_dir: Settings.assembly_staging_dir,
         environment: Rails.env
       }

@@ -6,7 +6,7 @@ RSpec.describe BatchContext, type: :model do
   let(:attr_hash) do
     {
       project_name: 'Images_jp2_tif',
-      bundle_dir: 'spec/test_data/images_jp2_tif'
+      staging_location: 'spec/test_data/images_jp2_tif'
     }
   end
 
@@ -20,12 +20,12 @@ RSpec.describe BatchContext, type: :model do
       expect { bc.user = nil }.to change(bc, :valid?).to(false)
     end
 
-    it 'is not valid unless bundle_dir exists on filesystem' do
-      expect { bc.bundle_dir = 'does/not/exist' }.to change(bc, :valid?).to(false)
+    it 'is not valid unless staging_location exists on filesystem' do
+      expect { bc.staging_location = 'does/not/exist' }.to change(bc, :valid?).to(false)
     end
 
     it { is_expected.to validate_presence_of(:content_structure) }
-    it { is_expected.to validate_presence_of(:bundle_dir) }
+    it { is_expected.to validate_presence_of(:staging_location) }
     it { is_expected.to validate_presence_of(:content_metadata_creation) }
     it { is_expected.to validate_presence_of(:project_name) }
 
@@ -44,13 +44,13 @@ RSpec.describe BatchContext, type: :model do
       end
     end
 
-    context 'bundle_dir must be a sub dir of allowed parent directories' do
+    context 'staging_location must be a sub dir of allowed parent directories' do
       it 'cannot jailbreak' do
-        expect { bc.bundle_dir = 'tmp/../../foo/' }.to change(bc, :valid?).to(false)
+        expect { bc.staging_location = 'tmp/../../foo/' }.to change(bc, :valid?).to(false)
       end
 
       it 'cannot use the root directly' do
-        expect { bc.bundle_dir = 'tmp/' }.to change(bc, :valid?).to(false)
+        expect { bc.staging_location = 'tmp/' }.to change(bc, :valid?).to(false)
       end
     end
   end
@@ -86,8 +86,8 @@ RSpec.describe BatchContext, type: :model do
     expect(bc.content_metadata_creation).to eq 'default'
   end
 
-  it 'bundle_dir has trailing slash removed' do
-    expect(bc.bundle_dir).to eq 'spec/test_data/images_jp2_tif'
+  it 'staging_location has trailing slash removed' do
+    expect(bc.staging_location).to eq 'spec/test_data/images_jp2_tif'
   end
 
   describe '#batch' do
@@ -114,9 +114,9 @@ RSpec.describe BatchContext, type: :model do
     end
   end
 
-  describe '#bundle_dir_with_path' do
+  describe '#staging_location_with_path' do
     it 'creates a relative path' do
-      expect(bc.bundle_dir_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
+      expect(bc.staging_location_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
     end
   end
 
@@ -138,7 +138,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            bundle_dir: 'spec/test_data/exemplar_templates'
+            staging_location: 'spec/test_data/exemplar_templates'
           }
         end
 
@@ -151,7 +151,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            bundle_dir: 'spec/test_data/manifest_empty'
+            staging_location: 'spec/test_data/manifest_empty'
           }
         end
 
@@ -164,7 +164,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            bundle_dir: 'spec/test_data/manifest_missing_header'
+            staging_location: 'spec/test_data/manifest_missing_header'
           }
         end
 
@@ -177,7 +177,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            bundle_dir: 'spec/test_data/manifest_missing_rows'
+            staging_location: 'spec/test_data/manifest_missing_rows'
           }
         end
 
@@ -190,7 +190,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            bundle_dir: 'spec/test_data/manifest_missing_column'
+            staging_location: 'spec/test_data/manifest_missing_column'
           }
         end
 
@@ -261,22 +261,22 @@ RSpec.describe BatchContext, type: :model do
     end
   end
 
-  describe '#verify_bundle_directory' do
-    it 'does nothing if bundle_dir already has errors' do
-      bc.errors.add(:bundle_dir, 'test')
+  describe '#verify_staging_location' do
+    it 'does nothing if staging_location already has errors' do
+      bc.errors.add(:staging_location, 'test')
       expect(File).not_to receive(:directory?)
-      expect { bc.send(:verify_bundle_directory) }.not_to change(bc, :errors)
+      expect { bc.send(:verify_staging_location) }.not_to change(bc, :errors)
     end
 
     it 'adds error if missing manifest.csv' do
       allow(File).to receive(:exist?).with('spec/test_data/images_jp2_tif/manifest.csv').and_return(false)
-      bc.send(:verify_bundle_directory)
+      bc.send(:verify_staging_location)
       expect(bc.errors.map(&:type)).to include('missing manifest: spec/test_data/images_jp2_tif/manifest.csv')
     end
 
     it 'adds error if object selected for use with file manifest is missing file_manifest.csv' do
       allow(bc).to receive(:using_file_manifest).and_return(true)
-      bc.send(:verify_bundle_directory)
+      bc.send(:verify_staging_location)
       expect(bc.errors.map(&:type)).to include('missing file manifest: spec/test_data/images_jp2_tif/file_manifest.csv')
     end
   end

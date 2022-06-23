@@ -92,10 +92,10 @@ RSpec.describe ObjectFileFinder do
   end
 
   describe '#find_files_recursively' do
-    subject { finder.send(:find_files_recursively, bundle_dir).sort }
+    subject { finder.send(:find_files_recursively, staging_location).sort }
 
     let(:finder) { described_class.new(stageable_items: [], druid: 'foo', dark: false, all_files_public: false) }
-    let(:bundle_dir) { batch_context_from_hash(type).bundle_dir }
+    let(:staging_location) { batch_context_from_hash(type).staging_location }
 
     context 'with flat_dir_images' do
       let(:type) { :flat_dir_images }

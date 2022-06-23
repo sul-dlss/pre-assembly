@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-bundle_dir_roots = YAML.safe_load(ERB.new(File.read(Rails.root.join('config/initializers/bundle_dir_roots.yml.erb'))).result)[Rails.env]
-ALLOWABLE_BUNDLE_DIRS = bundle_dir_roots.map { |path| path.chomp('/') }
+staging_location_roots = YAML.safe_load(ERB.new(File.read(Rails.root.join('config/initializers/staging_location_roots.yml.erb'))).result)[Rails.env]
+ALLOWABLE_STAGING_LOCATIONS = staging_location_roots.map { |path| path.chomp('/') }

@@ -9,17 +9,17 @@
 class BatchContext < ApplicationRecord
   belongs_to :user
   has_many :job_runs, dependent: :destroy
-  after_initialize :normalize_bundle_dir, :default_enums
+  after_initialize :normalize_staging_location, :default_enums
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
 
-  validates :bundle_dir, :content_metadata_creation, :content_structure, presence: true
+  validates :staging_location, :content_metadata_creation, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
 
-  validate :verify_bundle_directory
-  validate :verify_bundle_dir_path
+  validate :verify_staging_location
+  validate :verify_staging_location_path
 
   enum content_structure: {
     'simple_image' => 0,
@@ -73,8 +73,8 @@ class BatchContext < ApplicationRecord
     'manifest.csv'
   end
 
-  def bundle_dir_with_path(rel_path)
-    File.join(bundle_dir, rel_path)
+  def staging_location_with_path(rel_path)
+    File.join(staging_location, rel_path)
   end
 
   # On first call, loads the manifest data, caches results
@@ -85,7 +85,7 @@ class BatchContext < ApplicationRecord
 
   # load the manifest.csv file and verify there is at least one object and the correct header is present
   def load_manifest
-    manifest_path = bundle_dir_with_path(manifest)
+    manifest_path = staging_location_with_path(manifest)
     raise 'manifest file missing or empty' if !File.exist?(manifest_path) || File.zero?(manifest_path)
 
     manifest_rows = CsvImporter.parse_to_hash(manifest_path)
@@ -108,55 +108,55 @@ class BatchContext < ApplicationRecord
     dir&.chomp('/')
   end
 
-  def normalize_bundle_dir
-    self[:bundle_dir] = normalize_dir(bundle_dir)
+  def normalize_staging_location
+    self[:staging_location] = normalize_dir(staging_location)
   end
 
-  def bundle_dir_path
-    return unless bundle_dir
+  def staging_location_path
+    return unless staging_location
 
-    Pathname.new(bundle_dir).expand_path
+    Pathname.new(staging_location).expand_path
   end
 
   def output_dir_exists!
     return if Dir.exist?(output_dir)
 
-    errors.add(:bundle_dir, "Output directory (#{output_dir}) should already exist, but doesn't")
+    errors.add(:staging_location, "Output directory (#{output_dir}) should already exist, but doesn't")
     throw(:abort)
   end
 
   def output_dir_no_exists!
     if Dir.exist?(output_dir)
-      errors.add(:bundle_dir, "Output directory (#{output_dir}) should not already exist")
+      errors.add(:staging_location, "Output directory (#{output_dir}) should not already exist")
       throw(:abort)
     end
     FileUtils.mkdir_p(output_dir)
   end
 
   # rubocop:disable Metrics/AbcSize
-  def verify_bundle_directory
-    return if errors.key?(:bundle_dir)
-    return errors.add(:bundle_dir, "'#{bundle_dir}' not found.") unless File.directory?(bundle_dir)
+  def verify_staging_location
+    return if errors.key?(:staging_location)
+    return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
 
-    errors.add(:bundle_dir, "missing manifest: #{bundle_dir}/#{manifest}") unless File.exist?(File.join(bundle_dir, manifest))
-    errors.add(:bundle_dir, "missing file manifest: #{bundle_dir}/#{file_manifest}") if using_file_manifest && !File.exist?(File.join(bundle_dir, file_manifest))
+    errors.add(:staging_location, "missing manifest: #{staging_location}/#{manifest}") unless File.exist?(File.join(staging_location, manifest))
+    errors.add(:staging_location, "missing file manifest: #{staging_location}/#{file_manifest}") if using_file_manifest && !File.exist?(File.join(staging_location, file_manifest))
   end
   # rubocop:enable Metrics/AbcSize
 
-  def verify_bundle_dir_path
-    return if errors.key?(:bundle_dir)
+  def verify_staging_location_path
+    return if errors.key?(:staging_location)
 
     match_flag = nil
-    bundle_dir_path&.ascend do |sub_path|
-      next unless ::ALLOWABLE_BUNDLE_DIRS.include?(sub_path.to_s)
+    staging_location_path&.ascend do |sub_path|
+      next unless ::ALLOWABLE_STAGING_LOCATIONS.include?(sub_path.to_s)
 
       match_flag = sub_path
       break
     end
-    # match_flag = nil means we are not in the sub path, match_flag == bundle_dir_path means the user only entered the root path.
-    return unless match_flag.nil? || match_flag == bundle_dir_path
+    # match_flag = nil means we are not in the sub path, match_flag == staging_location_path means the user only entered the root path.
+    return unless match_flag.nil? || match_flag == staging_location_path
 
-    errors.add(:bundle_dir, 'not a sub directory of allowed parent directories.')
+    errors.add(:staging_location, 'not a sub directory of allowed parent directories.')
   end
 end
 # rubocop:enable Metrics/ClassLength
