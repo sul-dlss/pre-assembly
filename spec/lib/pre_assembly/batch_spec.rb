@@ -263,17 +263,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#un_pre_assembled_objects' do
     it 'returns all objects if there are no pre_assembled_object_containers' do
-      all_dobj_array = flat_dir_images.digital_objects.to_a
-      un_preassembled_dobj_array = flat_dir_images.un_pre_assembled_objects.to_a
-      un_preassembled_dobj_array.each_with_index do |dobj, i|
-        # Each time it's called, #to_a iterates over the Enumerable and re-instantiates the yeilded
-        # objects anew.  DigitalObject doesn't have an == method, so compare the relevant fields here
-        # since default == will just check whether the two are the same instance.
-        %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
-          expect(dobj.send(field_name)).to eq(all_dobj_array[i].send(field_name))
-        end
-        expect(all_dobj_array.size).to eq(un_preassembled_dobj_array.size)
-      end
+      expect(digital_objects_equivalent?(flat_dir_images.un_pre_assembled_objects.to_a, flat_dir_images.digital_objects.to_a)).to be true
     end
 
     it 'calculates size correctly' do
@@ -285,12 +275,7 @@ RSpec.describe PreAssembly::Batch do
       allow(flat_dir_images).to receive(:pre_assembled_object_containers).and_return({ flat_dir_images.digital_objects.to_a.last.container => true })
       o2p = flat_dir_images.un_pre_assembled_objects.to_a
       expect(o2p.size).to eq(flat_dir_images.digital_objects.size - 1)
-      truncated_dobj_array = flat_dir_images.digital_objects.to_a[0..-2]
-      o2p.each_with_index do |dobj, i|
-        %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
-          expect(dobj.send(field_name)).to eq(truncated_dobj_array[i].send(field_name))
-        end
-      end
+      expect(digital_objects_equivalent?(o2p, flat_dir_images.digital_objects.to_a[0..-2])).to be true
     end
   end
 
