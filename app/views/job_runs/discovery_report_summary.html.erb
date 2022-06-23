@@ -1,0 +1,57 @@
+<%= turbo_frame_tag 'discovery_report' do %>
+  <table class="table">
+    <thead>
+      <tr class="text-center">
+        <th scope="col">Num Objects</th>
+        <th scope="col">Num with Errors</th>
+        <th scope="col">Total Size</th>
+        <th scope="col">Started</th>
+        <th scope="col">Run Time</th>
+        <th scope="col">Mime types</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-center"><%= @discovery_report['rows'].size %></td>
+        <td class="text-center"><%= @discovery_report['summary']['objects_with_error'] %></td>
+        <td class="text-center"><%= number_to_human_size(@discovery_report['summary']['total_size'], precision: 2) %></td>
+        <td class="text-center"><%= @discovery_report['summary']['start_time'].to_time.strftime('%-m/%-d/%y %T') %></td>
+        <td class="text-center"><%= distance_of_time_in_words(@discovery_report['summary']['end_time'].to_time - @discovery_report['summary']['start_time'].to_time) %></td>
+        <td><%= render partial: 'mime_type_summary', locals: {mimetypes: @discovery_report['summary']['mimetypes']}%></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <% if @discovery_report['summary']['objects_with_error'] > 0 %>
+    <h5>Errors Summary</h5>
+    <table class="table">
+      <thead>
+        <tr class="text-center">
+          <th scope="col">Druid</th>
+          <th scope="col">Errors</th>
+          <th scope="col">Num Files</th>
+          <th scope="col">Files without extension</th>
+          <th scope="col">Total Size</th>
+          <th scope="col">Mime types</th>
+        </tr>
+      </thead>
+      <tbody>
+    <% @discovery_report['rows'].each do |row|
+       next if row['errors'].blank? %>
+          <tr>
+            <td class="text-center"><%= row['druid'] %></td>
+            <td>
+              <% row['errors'].each do |error, val| %>
+                <%= error %> : <%= val %><br/>
+              <% end %>
+            </td>
+            <td class="text-center"><%= row['counts']['files_found'] %></td>
+            <td class="text-center"><%= row['counts']['filename_no_extension'] %></td>
+            <td class="text-center"><%= number_to_human_size(row['counts']['total_size'], precision: 2) %></td>
+            <td><%= render partial: 'mime_type_summary', locals: {mimetypes: row['counts']['mimetypes']}%></td>
+          </tr>
+    <% end %>
+    </tbody>
+    </table>
+  <% end %>
+<% end %>
