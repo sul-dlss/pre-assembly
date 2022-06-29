@@ -40,6 +40,7 @@ group :deployment do
   gem 'capistrano-bundler'
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
+  gem 'capistrano-rvm', require: false # for ubuntu
   gem 'dlss-capistrano', require: false
 end
 
