@@ -25,7 +25,7 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
   end
 
   before do
-    FileUtils.remove_dir(object_staging_dir) if Dir.exist?(object_staging_dir)
+    FileUtils.rm_rf(object_staging_dir)
 
     login_as(user, scope: :user)
 
