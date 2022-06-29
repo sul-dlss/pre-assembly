@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Used in Feb 2022 by Meagan Trott, implying a workflow in the Rumsey Map Center that involves it
+
 # Used to stage content from Rumsey or other similar format to folder structure ready for accessioning.
 # This script is only known to be used by the Maps Accessioning team (Rumsey Map Center)
 # Full documentation of how it is used is here (which needs to be updated if this script moves):
