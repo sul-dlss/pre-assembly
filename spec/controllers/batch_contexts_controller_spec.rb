@@ -48,7 +48,7 @@ RSpec.describe BatchContextsController, type: :controller do
       context 'Valid Parameters' do
         let(:output_dir) { "#{Settings.job_output_parent_dir}/#{subject.current_user.email}/Multimedia" }
 
-        before { FileUtils.remove_dir(output_dir) if Dir.exist?(output_dir) }
+        before { FileUtils.rm_rf(output_dir) }
 
         it 'passes newly created object' do
           post :create, params: params
@@ -70,7 +70,7 @@ RSpec.describe BatchContextsController, type: :controller do
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
           expect { post :create, params: params }.not_to change(BatchContext, :count)
-          FileUtils.remove_dir(output_dir) if Dir.exist?(output_dir) # even if the directory is missing, cannot reuse user & project_name
+          FileUtils.rm_rf(output_dir)  # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
       end

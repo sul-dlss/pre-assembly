@@ -14,7 +14,7 @@ RSpec.describe PreAssembly::Batch do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
   end
 
-  after { FileUtils.remove_dir(batch.batch_context.output_dir) if Dir.exist?(batch.batch_context.output_dir) } # cleanup
+  after { FileUtils.rm_rf(batch.batch_context.output_dir) } # cleanup
 
   describe '#run_pre_assembly' do
     before do

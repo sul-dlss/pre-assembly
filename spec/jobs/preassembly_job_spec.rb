@@ -12,7 +12,7 @@ RSpec.describe PreassemblyJob, type: :job do
     allow(batch).to receive(:pre_assemble_objects)
   end
 
-  after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
+  after { FileUtils.rm_rf(outfile) } # cleanup
 
   describe '#perform' do
     it 'requires param' do

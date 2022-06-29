@@ -7,7 +7,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
 
   before { allow(job_run.to_discovery_report).to receive(:output_path).and_return(outfile) }
 
-  after { FileUtils.rm(outfile) if File.exist?(outfile) } # cleanup
+  after { FileUtils.rm_rf(outfile) } # cleanup
 
   describe '#perform' do
     let(:jbuilder) { instance_double(Jbuilder, target!: '{"x":1}') } # mock the expensive stuff

@@ -24,7 +24,7 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
   end
 
   after do
-    FileUtils.remove_dir(object_staging_dir) if Dir.exist?(object_staging_dir)
+    FileUtils.rm_rf(object_staging_dir)
   end
 
   # have background jobs run synchronously
