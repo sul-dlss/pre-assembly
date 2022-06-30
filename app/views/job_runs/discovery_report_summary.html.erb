@@ -16,7 +16,11 @@
         <td class="text-center"><%= @discovery_report['summary']['objects_with_error'] %></td>
         <td class="text-center"><%= number_to_human_size(@discovery_report['summary']['total_size'], precision: 2) %></td>
         <td class="text-center"><%= @discovery_report['summary']['start_time'].to_time.strftime('%-m/%-d/%y %T') %></td>
-        <td class="text-center"><%= distance_of_time_in_words(@discovery_report['summary']['end_time'].to_time - @discovery_report['summary']['start_time'].to_time) %></td>
+        <% if @discovery_report['summary']['end_time'] && @discovery_report['summary']['start_time'] # not all older discovery reports have both times available %>
+          <td class="text-center"><%= distance_of_time_in_words(@discovery_report['summary']['end_time'].to_time - @discovery_report['summary']['start_time'].to_time) %></td>
+        <% else %>
+           <td class="text-center">unknown</td>
+        <% end %>
         <td><%= render partial: 'mime_type_summary', locals: {mimetypes: @discovery_report['summary']['mimetypes']}%></td>
       </tr>
     </tbody>
