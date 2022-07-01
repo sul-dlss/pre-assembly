@@ -42,6 +42,16 @@ class JobRunsController < ApplicationController
     end
   end
 
+  def discovery_report_summary
+    job_run = JobRun.find(params[:id])
+    if job_run.output_location && File.exist?(job_run.output_location)
+      @discovery_report = JSON.parse(File.read(job_run.output_location))
+    else
+      flash[:warning] = 'Discovery report file is not available.'
+      render 'show'
+    end
+  end
+
   private
 
   def job_run_params
