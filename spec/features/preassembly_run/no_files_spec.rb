@@ -7,24 +7,20 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
   let(:staging_location) { Rails.root.join('spec/test_data/media_missing') }
   let(:bare_druid) { 'aa111aa1111' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'aa', '111', 'aa', '1111', bare_druid) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_world_access) }
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
-  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
-  let(:exp_content_md) do
-    <<~XML
-      <contentMetadata objectId="aa111aa1111" type="image"/>
-    XML
+  let(:dro_access) { { view: 'world' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.object).new(access: dro_access)
   end
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
+    FileUtils.rm_rf(object_staging_dir)
+
     login_as(user, scope: :user)
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
-  end
-
-  after do
-    FileUtils.rm_rf(object_staging_dir)
+    allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
   # have background jobs run synchronously
@@ -61,10 +57,13 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 0
 
-    metadata_dir = File.join(object_staging_dir, 'metadata')
-    expect(Dir.children(metadata_dir).size).to eq 1
-
-    content_md_xml = File.read(File.join(metadata_dir, 'contentMetadata.xml'))
-    expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
+    expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
+      .with(cocina_dro: item,
+            filesets: [],
+            common_path: nil,
+            all_files_public: false,
+            reading_order: 'left-to-right',
+            content_md_creation_style: :file)
+    expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

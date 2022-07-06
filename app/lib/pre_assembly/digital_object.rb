@@ -24,10 +24,9 @@ module PreAssembly
     # @param [String] pid The identifier for the item
     # @param [String] source_id The source identifier
     # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
-    # @param [Bool] dark does this object have "dark" access
     # rubocop:disable Metrics/ParameterLists
     def initialize(batch, container: '', stageable_items: nil, object_files: nil,
-                   label: nil, pid: nil, source_id: nil, stager:, dark:)
+                   label: nil, pid: nil, source_id: nil, stager:)
       @batch = batch
       @container = container
       @stageable_items = stageable_items
@@ -36,7 +35,6 @@ module PreAssembly
       @pid = pid
       @source_id = source_id
       @stager = stager
-      @dark = dark
     end
     # rubocop:enable Metrics/ParameterLists
 
@@ -66,10 +64,9 @@ module PreAssembly
     # The main process.
     ####
 
-    # @param [Boolean] file_attributes_supplied - set to true if publish/preserve/shelve attribs are supplied
     # @return [Hash] the status of the attempt and an optional message
     # rubocop:disable Metrics/AbcSize
-    def pre_assemble(file_attributes_supplied = false)
+    def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
       if !openable? && current_object_version > 1
         return { pre_assem_finished: false,
@@ -79,7 +76,7 @@ module PreAssembly
 
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
       stage_files
-      generate_content_metadata(file_attributes_supplied)
+      update_structural_metadata
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
       log "    - pre_assemble(#{pid}) finished"
       { pre_assem_finished: true, status: 'success' }
@@ -98,17 +95,17 @@ module PreAssembly
       @druid ||= DruidTools::Druid.new(pid)
     end
 
-    def dark?
-      @dark
-    end
-
     private
 
     attr_reader :assembly_directory
 
+    def cocina_object
+      @cocina_object = object_client.find
+    end
+
     # @return [String] one of the values from Cocina::Models::DRO::TYPES
     def object_type
-      object_client.find.type
+      cocina_object.type
     rescue Dor::Services::Client::NotFoundResponse
       ''
     end
@@ -128,34 +125,51 @@ module PreAssembly
       end
     end
 
-    # Write contentMetadata.xml file
-    # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
-    def generate_content_metadata(file_attributes_supplied)
-      File.open(assembly_directory.content_metadata_xml_file, 'w') { |fh| fh.puts create_content_metadata(file_attributes_supplied) }
+    # Update dor-services-app with the new structure
+    def update_structural_metadata
+      updated_cocina = cocina_object.new(structural: build_structural)
+      object_client.update(params: updated_cocina)
+    end
+
+    def build_structural
+      if using_file_manifest
+        file_manifest.generate_structure(cocina_dro: cocina_object, object: File.basename(container),
+                                         content_md_creation_style: content_md_creation_style,
+                                         reading_order: reading_order)
+      else
+        build_from_bundle(objects: object_files.sort,
+                          bundle: content_md_creation.to_sym,
+                          content_md_creation_style: content_md_creation_style,
+                          reading_order: reading_order)
+      end
+    end
+
+    def build_from_bundle(objects:, bundle:, content_md_creation_style:, reading_order:)
+      all_paths = objects.flatten.map do |obj|
+        raise "File '#{obj.path}' not found" unless obj.file_exists?
+
+        obj.path # collect all of the filenames into an array
+      end
+
+      common_path = Assembly::ObjectFile.common_path(all_paths) # find common paths to all files provided
+
+      filesets = FromStagingLocation::FileSetBuilder.build(bundle: bundle, objects: objects, style: content_md_creation_style)
+      FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
+                                                   filesets: filesets,
+                                                   common_path: common_path,
+                                                   all_files_public: batch.batch_context.all_files_public?,
+                                                   reading_order: reading_order,
+                                                   content_md_creation_style: content_md_creation_style)
     end
 
     # The reading order for books is determined by the content structure set, defaulting to 'ltr'
     # This is passed to the content metadata creator, which uses it if the content structure is book
     def reading_order
       if content_structure == 'simple_book_rtl'
-        'rtl'
+        'right-to-left'
       else
-        'ltr'
+        'left-to-right'
       end
-    end
-
-    # Invoke the contentMetadata creation method used by the project
-    # @param [Boolean] file_attributes_supplied - true if publish/preserve/shelve attribs are supplied
-    def create_content_metadata(file_attributes_supplied)
-      ContentMetadataCreator.new(druid_id: druid.id,
-                                 object: File.basename(container),
-                                 content_md_creation: content_md_creation,
-                                 object_files: object_files,
-                                 content_md_creation_style: content_md_creation_style,
-                                 file_manifest: file_manifest,
-                                 reading_order: reading_order,
-                                 using_file_manifest: using_file_manifest,
-                                 add_file_attributes: file_attributes_supplied).create
     end
 
     ####

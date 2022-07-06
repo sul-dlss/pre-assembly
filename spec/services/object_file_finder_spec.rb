@@ -4,7 +4,7 @@ RSpec.describe ObjectFileFinder do
   describe '#run' do
     subject { finder.run.map(&:path) }
 
-    let(:finder) { described_class.new(stageable_items: stageable_items, druid: 'oo000oo0000', dark: false, all_files_public: false) }
+    let(:finder) { described_class.new(stageable_items: stageable_items, druid: 'oo000oo0000') }
 
     let(:files) do
       [
@@ -36,7 +36,7 @@ RSpec.describe ObjectFileFinder do
   end
 
   describe '#base_dir' do
-    let(:finder) { described_class.new(stageable_items: [], druid: 'foo', dark: false, all_files_public: false) }
+    let(:finder) { described_class.new(stageable_items: [], druid: 'foo') }
 
     it 'returns expected value' do
       expect(finder.send(:base_dir, 'foo/bar/fubb.txt')).to eq('foo/bar')
@@ -51,7 +51,7 @@ RSpec.describe ObjectFileFinder do
   end
 
   describe '#new_object_file' do
-    let(:finder) { described_class.new(stageable_items: [], druid: 'foo', dark: false, all_files_public: false) }
+    let(:finder) { described_class.new(stageable_items: [], druid: 'foo') }
 
     it 'returns an ObjectFile with expected path values' do
       tests = [
@@ -94,7 +94,7 @@ RSpec.describe ObjectFileFinder do
   describe '#find_files_recursively' do
     subject { finder.send(:find_files_recursively, staging_location).sort }
 
-    let(:finder) { described_class.new(stageable_items: [], druid: 'foo', dark: false, all_files_public: false) }
+    let(:finder) { described_class.new(stageable_items: [], druid: 'foo') }
     let(:staging_location) { batch_context_from_hash(type).staging_location }
 
     context 'with flat_dir_images' do

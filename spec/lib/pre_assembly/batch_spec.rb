@@ -6,9 +6,11 @@ RSpec.describe PreAssembly::Batch do
   let(:images_jp2_tif) { batch_setup(:images_jp2_tif) }
   let(:multimedia) { batch_setup(:multimedia) }
   let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_world_access) }
-  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
+  let(:dro_access) { { view: 'world' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
+  end
+  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item, update: true) }
 
   before do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
@@ -99,33 +101,6 @@ RSpec.describe PreAssembly::Batch do
       end
     end
 
-    context 'when there are dark objects' do
-      let(:dark_results) { [true, false].each }
-      let(:pre_assemble_results) { [{ pre_assem_finished: true, status: 'success' }, { pre_assem_finished: true, status: 'success' }].each }
-
-      before do
-        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
-          m.call(*args).tap do |dobj|
-            dark_result = dark_results.next
-            allow(dobj).to receive(:dark?).and_return(dark_result)
-            # rubocop:disable RSpec/ExpectInHook
-            # rubocop:disable RSpec/StubbedMock
-            # it is much easier to expect here, because use of Enumerator makes it hard to get a handle elsewhere on the specific dobj instance
-            # that was used by batch.process_digital_objects, unless we mock its exact instantiation.  this reaches into the tested code a bit less.
-            # and we still need to stub a return value for pre_assemble because the result of process_digital_objects depends on it.
-            expect(dobj).to receive(:pre_assemble).with(dark_result).and_return(pre_assemble_results.next)
-            # rubocop:enable RSpec/StubbedMock
-            # rubocop:enable RSpec/ExpectInHook
-          end
-        end
-      end
-
-      it 'calls digital_object.pre_assemble with true for the dark objects' do
-        expect(batch.send(:pre_assemble_objects)).to be true
-        expect(batch.objects_had_errors).to be false
-      end
-    end
-
     context 'when an exception occurs during #pre_assemble' do
       # simulate an exception occurring during pre-assembly of the first object
       let(:stage_files_exceptions) { [[Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'], nil].each }
@@ -154,28 +129,6 @@ RSpec.describe PreAssembly::Batch do
         expect(yaml[0]).to include(status: 'error', message: 'Read-only file system - Read-only file system @ rb_sysopen - /destination', pre_assem_finished: false)
         # second object is a success
         expect(yaml[1]).to include(status: 'success', pre_assem_finished: true)
-      end
-    end
-
-    context 'when batch_context.all_files_public? is true' do
-      before do
-        allow(batch.batch_context).to receive(:all_files_public?).and_return(true)
-        allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
-          m.call(*args).tap do |dobj|
-            # rubocop:disable RSpec/ExpectInHook
-            # rubocop:disable RSpec/StubbedMock
-            # it is much easier to expect here, because use of Enumerator makes it hard to get a handle elsewhere on the specific dobj instance
-            # that was used by batch.process_digital_objects, unless we mock its exact instantiation.  this reaches into the tested code a bit less.
-            # and we still need to stub a return value for pre_assemble because the result of process_digital_objects depends on it.
-            expect(dobj).to receive(:pre_assemble).with(true).and_return({ pre_assem_finished: true, status: 'success' })
-            # rubocop:enable RSpec/StubbedMock
-            # rubocop:enable RSpec/ExpectInHook
-          end
-        end
-      end
-
-      it 'calls digital_object.pre_assemble with true for all objects' do
-        expect(batch.send(:pre_assemble_objects)).to be true
       end
     end
   end
@@ -220,43 +173,6 @@ RSpec.describe PreAssembly::Batch do
         expect(dobj.label).to be_a(String)
         expect(dobj.label).not_to eq('Unknown') # hardcoded in class
         expect(dobj.source_id).to be_a(String)
-      end
-    end
-
-    context 'when all_files_public is true' do
-      let(:batch_context) do
-        build(:batch_context, :folder_manifest, :public_files)
-      end
-      let(:batch) { described_class.new(batch_context) }
-
-      it 'sets the file attributes to public' do
-        batch.digital_objects.each do |dobj|
-          dobj.object_files.each do |object_file|
-            expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'yes', publish: 'yes')
-          end
-        end
-      end
-    end
-
-    context 'when object is dark' do
-      let(:batch_context) do
-        build(:batch_context, :folder_manifest)
-      end
-      let(:batch) { described_class.new(batch_context) }
-      let(:cocina_model_dark_access) { instance_double(Cocina::Models::Access, view: 'dark') }
-      let(:dark_item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_dark_access) }
-      let(:dsc_object) { instance_double(Dor::Services::Client::Object, find: dark_item) }
-
-      before do
-        allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
-      end
-
-      it 'sets the file attributes to preserve only' do
-        batch.digital_objects.each do |dobj|
-          dobj.object_files.each do |object_file|
-            expect(object_file.file_attributes).to eq(preserve: 'yes', shelve: 'no', publish: 'no')
-          end
-        end
       end
     end
   end

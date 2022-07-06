@@ -11,43 +11,12 @@ RSpec.describe 'Pre-assemble Media Audio object', type: :feature do
   let(:staging_location) { Rails.root.join('spec/test_data/media_audio_test') }
   let(:bare_druid) { 'sn000dd0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'sn', '000', 'dd', '0000', bare_druid) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.media, access: cocina_model_world_access) }
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
-  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
-  let(:exp_content_md) do
-    <<~XML
-      <contentMetadata objectId="sn000dd0000" type="media">
-        <resource sequence="1" id="sn000dd0000_1" type="audio">
-          <label>Audio file 1</label>
-          <file id="sn000dd0000_audio_a_m4a.m4a" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">53b1e299e0277978f0d3f131b9a65a76</checksum>
-          </file>
-          <file id="sn000dd0000_audio_a_mp3.mp3" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">3675d9ff3dea18a17986b0776f74a218</checksum>
-          </file>
-          <file id="sn000dd0000_audio_a_wav.wav" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">224646acbdfb7063c902bbd257460fcf</checksum>
-          </file>
-        </resource>
-        <resource sequence="2" id="sn000dd0000_2" type="image">
-          <label>Image for audio</label>
-          <file id="sn000dd0000_audio_img_1.jpg" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">3e9498107f73ff827e718d5c743f8813</checksum>
-          </file>
-          <file id="sn000dd0000_audio_img_1.tif" preserve="yes" publish="no" shelve="no">
-            <checksum type="md5">4fe3ad7bf975326ff1c1271e8f743ceb</checksum>
-          </file>
-        </resource>
-        <resource sequence="3" id="sn000dd0000_3" type="text">
-          <label>Transcript</label>
-          <file id="sn000dd0000_audio_pdf.pdf" preserve="yes" publish="yes" shelve="yes">
-            <checksum type="md5">f7169731f4c163f98eed35e1be12a209</checksum>
-          </file>
-        </resource>
-      </contentMetadata>
-    XML
+  let(:dro_access) { { view: 'world' } }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.media).new(access: dro_access)
   end
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+  let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
     FileUtils.rm_rf(object_staging_dir)
@@ -56,6 +25,7 @@ RSpec.describe 'Pre-assemble Media Audio object', type: :feature do
 
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
+    allow(PreAssembly::FromFileManifest::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
   # have background jobs run synchronously
@@ -93,8 +63,13 @@ RSpec.describe 'Pre-assemble Media Audio object', type: :feature do
     # we got all the expected content files
     expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 12
 
-    content_md_path = File.join(object_staging_dir, 'metadata', 'contentMetadata.xml')
-    content_md_xml = File.read(content_md_path)
-    expect(noko_doc(content_md_xml)).to be_equivalent_to exp_content_md
+    expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
+      .with(cocina_dro: item,
+            resources: Hash,
+            object: bare_druid,
+            staging_location: staging_location.to_s,
+            reading_order: 'left-to-right',
+            content_md_creation_style: :media)
+    expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

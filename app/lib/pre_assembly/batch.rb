@@ -56,19 +56,16 @@ module PreAssembly
       containers_via_manifest.map.with_index do |container, i|
         stageable_items = discover_items_via_crawl(container)
         row = manifest_rows[i]
-        dark = dark?(row[:druid])
         yield DigitalObject.new(self,
                                 container: container,
                                 stageable_items: stageable_items,
-                                object_files: ObjectFileFinder.run(stageable_items: stageable_items, druid: row[:druid], dark: dark, all_files_public: batch_context.all_files_public?),
+                                object_files: ObjectFileFinder.run(stageable_items: stageable_items, druid: row[:druid]),
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],
-                                stager: stager,
-                                dark: dark)
+                                stager: stager)
       end
     end
-    # rubocop:enable Metrics/AbcSize
 
     # any objects that have not yet been run successfully through a pre-assembly job (used by both pre-assembly and discovery reports)
     # @return [Enumerable<PreAssembly::DigitalObject>]
@@ -124,7 +121,6 @@ module PreAssembly
     end
 
     # ignores objects already pre-assembled as part of re-runnability of preassembly job
-    # rubocop:disable Metrics/AbcSize
     def pre_assemble_objects
       @num_failures = 0
       @num_no_file_warnings = 0
@@ -152,9 +148,8 @@ module PreAssembly
         log "  - Processing object: #{dobj.container}"
         log "  - N object files: #{dobj.object_files.size}"
         @num_no_file_warnings += 1 if dobj.object_files.empty?
-        file_attributes_supplied = batch_context.all_files_public? || dobj.dark?
         load_checksums(dobj)
-        progress = dobj.pre_assemble(file_attributes_supplied)
+        progress = dobj.pre_assemble
         log "  - pre_assemble result: #{progress}"
         progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
         @num_failures += 1 if progress[:status] == 'error'
@@ -166,16 +161,6 @@ module PreAssembly
 
     def num_to_pre_assemble
       @num_to_pre_assemble ||= un_pre_assembled_objects.size
-    end
-
-    # @return [Boolean] - true if object access is dark, false otherwise
-    def dark?(druid)
-      dobj = object_client(druid).find
-      dobj.access.view == 'dark'
-    rescue Dor::Services::Client::NotFoundResponse
-      { item_not_registered: true }
-    rescue RuntimeError # HTTP timeout, network error, whatever
-      { dor_connection_error: true }
     end
 
     # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
