@@ -4,6 +4,8 @@ module PreAssembly
   module FromStagingLocation
     # Represents a groups of related Files, such as a single master file and the derivatives
     class FileSet
+      VALID_THREE_DIMENSION_EXTENTIONS = ['.obj'].freeze
+
       # @param [Array<Assembly::ObjectFile>] resource_files
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
       def initialize(resource_files:, style:)
