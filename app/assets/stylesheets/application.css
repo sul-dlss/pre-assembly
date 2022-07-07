@@ -11,10 +11,11 @@
  * It is generally better to create a new file per style scope.
  *
  */
- :root {
-   --cardinal-red: #8c1515;  /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
-   --bs-btn-color: #fff;
- }
+:root {
+  --cardinal-red: #8c1515;
+  /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+  --bs-btn-color: #fff;
+}
 
 .btn-sul-dlss {
   background-color: var(--cardinal-red);
@@ -32,7 +33,8 @@
 }
 
 /* Removes underline in the asterisk which marks a required field */
-abbr[title], abbr[data-original-title] {
+abbr[title],
+abbr[data-original-title] {
   text-decoration: none;
 }
 
@@ -50,6 +52,15 @@ input and has no visual effect. Here we try to fix matters by
 applying the clear to the div wrapping the first following radio button
 or checkbox.
 */
-legend ~ div.form-check:first-of-type {
+legend~div.form-check:first-of-type {
   clear: left;
+}
+
+#discovery-report-links {
+  max-width: 275px;
+  width: 30%;
+}
+
+#summary-link {
+  float: right;
 }

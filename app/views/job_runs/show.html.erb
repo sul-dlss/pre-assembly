@@ -41,11 +41,13 @@
     <% if @job_run.report_ready? %>
       <dt class="col-sm-2">Discovery Report</dt>
       <dd class="col-sm-10">
-        <div><%= link_to 'Download', download_report_path(@job_run) %></div>
-        <div>
-          <%= turbo_frame_tag 'discovery_report' do %>
-            <%= link_to 'View summary', discovery_report_summary_path(@job_run) %>
-          <% end %>
+        <div id="discovery-report-links">
+          <span id="download-link"><%= link_to 'Download', download_report_path(@job_run) %></span>
+          <span id="summary-link">
+            <%= turbo_frame_tag 'discovery_report' do %>
+              <%= link_to 'View summary in browser', discovery_report_summary_path(@job_run) %>
+            <% end %>
+          </span>
         </div>
       </dd>
     <% end %>
