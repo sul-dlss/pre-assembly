@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class DiscoveryReportJob < ApplicationJob
-  queue_as :discovery_report
-
   # @param [JobRun] job_run
   # rubocop:disable Metrics/AbcSize
   def perform(job_run)
