@@ -4,7 +4,7 @@ module PreAssembly
   module FromStagingLocation
     # Represents a groups of related Files, such as a single master file and the derivatives
     class FileSet
-      VALID_THREE_DIMENSION_EXTENTIONS = ['.obj'].freeze
+      VALID_THREE_DIMENSION_EXTENSIONS = ['.obj'].freeze
 
       # @param [Array<Assembly::ObjectFile>] resource_files
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
@@ -54,7 +54,7 @@ module PreAssembly
           'document'
         when :'3d'
           resource_extensions = resource_files.collect(&:ext)
-          if (resource_extensions & VALID_THREE_DIMENSION_EXTENTIONS).empty? # if this resource contains no known 3D file extensions, the resource type is file
+          if (resource_extensions & VALID_THREE_DIMENSION_EXTENSIONS).empty? # if this resource contains no known 3D file extensions, the resource type is file
             'file'
           else # otherwise the resource type is 3d
             '3d'
