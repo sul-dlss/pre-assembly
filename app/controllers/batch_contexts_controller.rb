@@ -3,10 +3,7 @@
 class BatchContextsController < ApplicationController
   def new
     @batch_context = BatchContext.new(
-      job_runs: [JobRun.new],
-      content_structure: 'simple_image',
-      content_metadata_creation: 'default',
-      using_file_manifest: false
+      job_runs: [JobRun.new]
     )
   end
 
