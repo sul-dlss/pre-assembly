@@ -10,10 +10,6 @@ def hash_from_proj(proj)
   YAML.safe_load(File.read(filename))
 end
 
-def noko_doc(text_xml)
-  Nokogiri.XML(text_xml) { |conf| conf.default_xml.noblanks }
-end
-
 def batch_context_from_hash(proj)
   hash = hash_from_proj(proj)
   cmc = hash['content_md_creation']['style']
