@@ -14,3 +14,7 @@ workflows:
           executor:
             name: ruby-rails/ruby-postgres
             ruby-tag: '3.0.3'
+          before-test:
+            - run:
+                name: Install exiftool
+                command: curl -L http://cpanmin.us | perl - --sudo Image::ExifTool
