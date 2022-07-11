@@ -22,12 +22,11 @@ module PreAssembly
              :progress_log_file,
              :project_name,
              :staging_style_symlink,
-             :using_file_manifest,
              to: :batch_context
 
-    def initialize(batch_context)
+    def initialize(batch_context, file_manifest: nil)
       @batch_context = batch_context
-      @file_manifest = PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest, staging_location: staging_location) if batch_context.using_file_manifest
+      @file_manifest = file_manifest
       @objects_had_errors = false # will be set to true if we discover any errors when running pre-assembly
     end
 

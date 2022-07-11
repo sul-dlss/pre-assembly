@@ -238,7 +238,6 @@ RSpec.describe PreAssembly::FileManifest do
     PreAssembly::DigitalObject.new(bc.batch, container: object, stager: PreAssembly::CopyStager).tap do |dobj|
       allow(dobj).to receive(:pid).and_return("druid:#{druid}")
       allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
-      allow(dobj).to receive(:using_file_manifest).and_return(true)
       allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
     end
   end

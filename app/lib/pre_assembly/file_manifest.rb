@@ -29,6 +29,10 @@ module PreAssembly
       load_manifest # this will cache the entire file manifest csv in @rows and @manifest
     end
 
+    def exists?
+      File.exist?(csv_filename)
+    end
+
     # rubocop:disable Metrics/AbcSize
     def load_manifest
       # load file into @rows and then build up @manifest
