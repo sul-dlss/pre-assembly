@@ -44,7 +44,12 @@ class BatchContext < ApplicationRecord
 
   # return [PreAssembly::Batch]
   def batch
-    @batch ||= PreAssembly::Batch.new(self)
+    @batch ||= if using_file_manifest
+                 manifest = PreAssembly::FileManifest.new(csv_filename: file_manifest, staging_location: staging_location)
+                 PreAssembly::Batch.new(self, file_manifest: manifest)
+               else
+                 PreAssembly::Batch.new(self)
+               end
   end
 
   def content_md_creation

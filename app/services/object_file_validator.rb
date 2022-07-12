@@ -25,7 +25,6 @@ class ObjectFileValidator
     object.object_files.each { |obj| counts[:mimetypes][obj.mimetype] += 1 } # number of files by mimetype
     empty_files = object.object_files.count { |obj| obj.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
-
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
       batch_id = File.basename(object.container)
       if batch_id && file_manifest.manifest[batch_id]
@@ -99,6 +98,6 @@ class ObjectFileValidator
 
   # @return [Boolean]
   def using_file_manifest?
-    batch.using_file_manifest && File.exist?(File.join(batch.staging_location, batch.batch_context.file_manifest))
+    batch.file_manifest&.exists?
   end
 end

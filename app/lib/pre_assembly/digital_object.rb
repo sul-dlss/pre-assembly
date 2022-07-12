@@ -13,7 +13,6 @@ module PreAssembly
              :content_structure,
              :project_name,
              :file_manifest,
-             :using_file_manifest,
              to: :batch
 
     # @param [PreAssembly::Batch] batch
@@ -132,7 +131,7 @@ module PreAssembly
     end
 
     def build_structural
-      if using_file_manifest
+      if file_manifest
         file_manifest.generate_structure(cocina_dro: cocina_object, object: File.basename(container),
                                          content_md_creation_style: content_md_creation_style,
                                          reading_order: reading_order)
