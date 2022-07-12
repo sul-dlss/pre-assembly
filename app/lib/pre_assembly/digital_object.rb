@@ -136,14 +136,14 @@ module PreAssembly
                                          content_md_creation_style: content_md_creation_style,
                                          reading_order: reading_order)
       else
-        build_from_bundle(objects: object_files.sort,
-                          bundle: content_md_creation.to_sym,
-                          content_md_creation_style: content_md_creation_style,
-                          reading_order: reading_order)
+        build_from_staging_location(objects: object_files.sort,
+                                    content_metadata_creation: content_md_creation.to_sym,
+                                    content_md_creation_style: content_md_creation_style,
+                                    reading_order: reading_order)
       end
     end
 
-    def build_from_bundle(objects:, bundle:, content_md_creation_style:, reading_order:)
+    def build_from_staging_location(objects:, content_metadata_creation:, content_md_creation_style:, reading_order:)
       all_paths = objects.flatten.map do |obj|
         raise "File '#{obj.path}' not found" unless obj.file_exists?
 
@@ -152,7 +152,7 @@ module PreAssembly
 
       common_path = Assembly::ObjectFile.common_path(all_paths) # find common paths to all files provided
 
-      filesets = FromStagingLocation::FileSetBuilder.build(bundle: bundle, objects: objects, style: content_md_creation_style)
+      filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation: content_metadata_creation, objects: objects, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
                                                    filesets: filesets,
                                                    common_path: common_path,
