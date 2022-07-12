@@ -69,6 +69,7 @@ brew install exiftool
 ## Running tests
 
 ```bash
+docker compose up
 bundle exec rspec
 ```
 
