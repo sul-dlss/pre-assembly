@@ -24,13 +24,9 @@ module PreAssembly
         'application/json' => { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       }.freeze
 
-      # @param [Symbol] bundle
       # @param [Assembly::ObjectFile] file
-      # @param style
-      def initialize(file:, bundle: nil, style: nil)
-        @bundle = bundle
+      def initialize(file:)
         @file = file
-        @style = style
       end
 
       delegate :sha1, :md5, :provider_md5, :provider_sha1, :mimetype, :filesize, :image?, to: :file

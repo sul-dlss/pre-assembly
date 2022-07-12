@@ -56,30 +56,30 @@ RSpec.describe ObjectFileFinder do
     it 'returns an ObjectFile with expected path values' do
       tests = [
         # Stageable is a file:
-        # - immediately in bundle dir.
-        { stageable: 'BUNDLE/x.tif',
-          file_path: 'BUNDLE/x.tif',
+        # - immediately in staging dir.
+        { stageable: 'staging_dir/x.tif',
+          file_path: 'staging_dir/x.tif',
           exp_rel_path: 'x.tif' },
-        # - within subdir of bundle dir.
-        { stageable: 'BUNDLE/a/b/x.tif',
-          file_path: 'BUNDLE/a/b/x.tif',
+        # - within subdir of staging dir.
+        { stageable: 'staging_dir/a/b/x.tif',
+          file_path: 'staging_dir/a/b/x.tif',
           exp_rel_path: 'x.tif' },
         # Stageable is a directory:
-        # - immediately in bundle dir
-        { stageable: 'BUNDLE/a',
-          file_path: 'BUNDLE/a/x.tif',
+        # - immediately in staging dir
+        { stageable: 'staging_dir/a',
+          file_path: 'staging_dir/a/x.tif',
           exp_rel_path: 'a/x.tif' },
-        # - immediately in bundle dir, with file deeper
-        { stageable: 'BUNDLE/a',
-          file_path: 'BUNDLE/a/b/x.tif',
+        # - immediately in staging dir, with file deeper
+        { stageable: 'staging_dir/a',
+          file_path: 'staging_dir/a/b/x.tif',
           exp_rel_path: 'a/b/x.tif' },
-        # - within a subdir of bundle dir
-        { stageable: 'BUNDLE/a/b',
-          file_path: 'BUNDLE/a/b/x.tif',
+        # - within a subdir of staging dir
+        { stageable: 'staging_dir/a/b',
+          file_path: 'staging_dir/a/b/x.tif',
           exp_rel_path: 'b/x.tif' },
-        # - within a subdir of bundle dir, with file deeper
-        { stageable: 'BUNDLE/a/b',
-          file_path: 'BUNDLE/a/b/c/d/x.tif',
+        # - within a subdir of staging dir, with file deeper
+        { stageable: 'staging_dir/a/b',
+          file_path: 'staging_dir/a/b/c/d/x.tif',
           exp_rel_path: 'b/c/d/x.tif' }
       ]
       tests.each do |t|

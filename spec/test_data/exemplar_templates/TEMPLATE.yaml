@@ -57,8 +57,8 @@ project_style:
 # Paths to the pre-assembly input and output.
 ####
 
-staging_location:  '/foo/bar/revs'  # Input location for the project content (i.e., the
-                             # "bundle" or "batch"). May contain images directly or may contain
+staging_location:  '/foo/bar/revs'  # Input location for the project content
+                             # May contain images directly or may contain
                              # folders, one per object, usually named by druid.
                              # A fully qualified path.
 
