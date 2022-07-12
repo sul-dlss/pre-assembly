@@ -8,11 +8,15 @@ module PreAssembly
       # @param [Array<Fileset>] filesets
       # @param [Cocina::Models::DRO] cocina_dro
       # @param [String] common_path
+      # @param [Symbol] content_md_creation_style content metadata creation styles supported by the assembly-objectfile gem
       # @param [String] reading_order
       # @param [Boolean] all_files_public
       def self.build(filesets:, cocina_dro:, common_path:, content_md_creation_style:, reading_order:, all_files_public:)
-        new(filesets: filesets, cocina_dro: cocina_dro, common_path: common_path,
-            content_md_creation_style: content_md_creation_style, reading_order: reading_order,
+        new(filesets: filesets,
+            cocina_dro: cocina_dro,
+            common_path: common_path,
+            content_md_creation_style: content_md_creation_style,
+            reading_order: reading_order,
             all_files_public: all_files_public).build
       end
 
