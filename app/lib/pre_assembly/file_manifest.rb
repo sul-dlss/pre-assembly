@@ -15,7 +15,7 @@
 
 module PreAssembly
   class FileManifest
-    attr_reader :manifest, :rows, :csv_filename, :staging_location
+    attr_reader :manifest, :csv_filename, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
     VALID_ROLES = %w[transcription annotations derivative master].freeze
@@ -24,9 +24,8 @@ module PreAssembly
       @staging_location = params[:staging_location]
       csv_file = params[:csv_filename] || BatchContext.new.file_manifest
       @csv_filename = File.join(@staging_location, csv_file)
-      @manifest = {}
       # read CSV
-      load_manifest # this will cache the entire file manifest csv in @rows and @manifest
+      @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
     end
 
     def exists?
@@ -36,8 +35,8 @@ module PreAssembly
     # rubocop:disable Metrics/AbcSize
     def load_manifest
       # load file into @rows and then build up @manifest
-      @rows = CsvImporter.parse_to_hash(@csv_filename)
-      @rows.each do |row|
+      rows = CsvImporter.parse_to_hash(@csv_filename)
+      rows.each_with_object({}) do |row, manifest|
         object = row[:object]
         file_extension = File.extname(row[:filename])
         resource_type = row[:resource_type]
