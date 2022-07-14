@@ -22,8 +22,8 @@ class ObjectFileValidator
       mimetypes: Hash.new(0),
       filename_no_extension: filename_no_extension.count
     }
-    object.object_files.each { |obj| counts[:mimetypes][obj.mimetype] += 1 } # number of files by mimetype
-    empty_files = object.object_files.count { |obj| obj.filesize == 0 }
+    object.object_files.each { |obj_file| counts[:mimetypes][obj_file.mimetype] += 1 } # number of files by mimetype
+    empty_files = object.object_files.count { |obj_file| obj_file.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
       batch_id = File.basename(object.container)

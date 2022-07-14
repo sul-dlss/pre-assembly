@@ -29,7 +29,7 @@ module PreAssembly
         @file = file
       end
 
-      delegate :sha1, :md5, :provider_md5, :provider_sha1, :mimetype, :filesize, :image?, to: :file
+      delegate :sha1, :md5, :provider_md5, :provider_sha1, :mimetype, :filesize, to: :file
 
       def file_id(common_path:)
         # set file id attribute, first check the relative_path parameter on the object, and if it is set, just use that
@@ -41,10 +41,6 @@ module PreAssembly
 
       def file_attributes
         file.file_attributes || ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
-      end
-
-      def image_data
-        { height: file.exif.imageheight, width: file.exif.imagewidth }
       end
 
       private

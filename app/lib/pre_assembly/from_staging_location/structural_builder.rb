@@ -45,17 +45,17 @@ module PreAssembly
           default_label = "#{fileset.resource_type_description.capitalize} #{resource_type_counters[fileset.resource_type_description]}"
           # but if one of the files has a label, use it instead
           resource_label = fileset.label_from_file(default: default_label)
-          contained_files = fileset.files.map do |obj| # iterate over all the files in a resource
-            file_id = obj.file_id(common_path: common_path)
+          contained_files = fileset.files.map do |fileset_file| # iterate over all the files in a resource
+            file_id = fileset_file.file_id(common_path: common_path)
             file_attributes = {
               type: 'https://cocina.sul.stanford.edu/models/file',
               externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
               version: version,
               label: file_id,
               filename: file_id,
-              hasMessageDigests: message_digests(obj),
-              hasMimeType: obj.mimetype,
-              administrative: administrative(obj),
+              hasMessageDigests: message_digests(fileset_file),
+              hasMimeType: fileset_file.mimetype,
+              administrative: administrative(fileset_file),
               access: file_access
             }
             Cocina::Models::File.new(file_attributes)
@@ -106,19 +106,19 @@ module PreAssembly
         raise "Invalid resource type: '#{val}'"
       end
 
-      def administrative(obj)
+      def administrative(fileset_file)
         return { sdrPreserve: true, publish: true, shelve: true } if all_files_public
         return { sdrPreserve: true, shelve: false, publish: false } if dro_access.view == 'dark'
 
-        file = obj.file_attributes
+        file = fileset_file.file_attributes
         publish  = file[:publish] == 'yes'
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
         { sdrPreserve: preserve, publish: publish, shelve: shelve }
       end
 
-      def message_digests(obj)
-        obj.provider_md5 ? [{ type: 'md5', digest: obj.provider_md5 }] : []
+      def message_digests(fileset_file)
+        fileset_file.provider_md5 ? [{ type: 'md5', digest: fileset_file.provider_md5 }] : []
       end
     end
   end

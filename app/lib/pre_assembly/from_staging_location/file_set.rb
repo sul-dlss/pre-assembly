@@ -19,7 +19,7 @@ module PreAssembly
       end
 
       def label_from_file(default:)
-        resource_files.find { |obj| obj.label.present? }&.label || default
+        resource_files.find { |res_file| res_file.label.present? }&.label || default
       end
 
       def files
