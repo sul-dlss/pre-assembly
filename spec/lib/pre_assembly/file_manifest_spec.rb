@@ -4,6 +4,8 @@ RSpec.describe PreAssembly::FileManifest do
   let(:staging_location) { Rails.root.join('spec/test_data/multimedia') }
 
   describe '#create_content_metadata' do
+    let(:csv_filename) { "#{staging_location}/file_manifest.csv" }
+
     context 'for a media object' do
       let(:bc_params) do
         {
@@ -17,9 +19,16 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
-        let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
+        let(:dobj1) do
+          allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
+          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', stager: PreAssembly::CopyStager).tap do |dobj|
+            allow(dobj).to receive(:pid).and_return('druid:aa111aa1111')
+            allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
+            allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
+          end
+        end
         let(:file_manifest) do
-          described_class.new(csv_filename: 'file_manifest.csv', staging_location: staging_location)
+          described_class.new(csv_filename: csv_filename, staging_location: staging_location)
         end
 
         let(:expected) do
@@ -125,9 +134,16 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
-        let(:dobj1) { setup_dobj('aa111aa1111', 'aa111aa1111', file_manifest) }
+        let(:dobj1) do
+          allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
+          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', stager: PreAssembly::CopyStager).tap do |dobj|
+            allow(dobj).to receive(:pid).and_return('druid:aa111aa1111')
+            allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
+            allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
+          end
+        end
         let(:file_manifest) do
-          described_class.new(csv_filename: 'file_manifest.csv', staging_location: staging_location)
+          described_class.new(csv_filename: csv_filename, staging_location: staging_location)
         end
 
         let(:expected1) do
@@ -230,16 +246,4 @@ RSpec.describe PreAssembly::FileManifest do
       end
     end
   end
-
-  # some helper methods for these tests
-  # rubocop:disable Metrics/AbcSize
-  def setup_dobj(druid, object, file_manifest)
-    allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
-    PreAssembly::DigitalObject.new(bc.batch, container: object, stager: PreAssembly::CopyStager).tap do |dobj|
-      allow(dobj).to receive(:pid).and_return("druid:#{druid}")
-      allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
-      allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
-    end
-  end
-  # rubocop:enable Metrics/AbcSize
 end

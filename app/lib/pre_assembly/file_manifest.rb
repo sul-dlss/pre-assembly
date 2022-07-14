@@ -1,29 +1,19 @@
 # frozen_string_literal: true
 
-# This class generates custom contentMetadata from a file manifest (file_manifest.csv), used if the user opts for this when starting a job
-# Documentation: https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-complex-content
-
-# It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
-
-# Test with
-# cm=PreAssembly::FileManifest.new(staging_location: File.join(Rails.root,'spec/test_data/media_audio_test'), csv_filename: 'file_manifest.csv', verbose: true)
-# puts cm.generate_cm(druid: 'sn000dd0000', object: 'oo000oo0001', content_md_creation_style: :media)
-
-# or in the context of a batch object:
-# cm=PreAssembly::FileManifest.new(csv_filename: @content_md_creation[:file_manifest],staging_location: @staging_location, verbose: false)
-# puts cm.generate_cm(druid: 'oo000oo0001', object: 'oo000oo0001', content_md_creation_style: :file)
-
 module PreAssembly
+  # This class generates custom structural metadata from a file manifest (file_manifest.csv), used if the user opts for this when starting a job
+  # Documentation: https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-complex-content
+
+  # It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
   class FileManifest
     attr_reader :manifest, :csv_filename, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
     VALID_ROLES = %w[transcription annotations derivative master].freeze
 
-    def initialize(params)
-      @staging_location = params[:staging_location]
-      csv_file = params[:csv_filename] || BatchContext.new.file_manifest
-      @csv_filename = File.join(@staging_location, csv_file)
+    def initialize(staging_location:, csv_filename:)
+      @staging_location = staging_location
+      @csv_filename = csv_filename
       # read CSV
       @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
     end

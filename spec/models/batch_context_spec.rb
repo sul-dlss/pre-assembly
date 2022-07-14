@@ -102,18 +102,6 @@ RSpec.describe BatchContext, type: :model do
     # rubocop:enable RSpec/IdenticalEqualityAssertion
   end
 
-  describe '#file_manifest' do
-    it 'returns the file name' do
-      expect(described_class.new.file_manifest).to eq 'file_manifest.csv'
-    end
-  end
-
-  describe '#manifest' do
-    it 'returns the file name' do
-      expect(described_class.new.manifest).to eq 'manifest.csv'
-    end
-  end
-
   describe '#staging_location_with_path' do
     it 'creates a relative path' do
       expect(bc.staging_location_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
