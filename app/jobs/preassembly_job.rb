@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class PreassemblyJob < ApplicationJob
-  queue_as :preassembly
-
   # @param [JobRun] job_run
   def perform(job_run)
     job_run.started
