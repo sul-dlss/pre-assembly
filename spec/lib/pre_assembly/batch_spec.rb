@@ -205,7 +205,7 @@ RSpec.describe PreAssembly::Batch do
 
     it 'returns expected information' do
       vals = %w[123.tif 456.tif 789.tif]
-      allow(flat_dir_images).to receive(:manifest_rows).and_return(vals.map { |v| { object: v } })
+      allow(flat_dir_images).to receive(:object_manifest_rows).and_return(vals.map { |v| { object: v } })
       expect(flat_dir_images.send(:containers_via_manifest).to_a).to eq(vals.map { |v| flat_dir_images.staging_location_with_path v })
     end
   end

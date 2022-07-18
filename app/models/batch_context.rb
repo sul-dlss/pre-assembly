@@ -11,7 +11,7 @@ class BatchContext < ApplicationRecord
   FILE_MANIFEST_FILE_NAME = 'file_manifest.csv'
 
   # the manifest specifying objects and associated folders on disk: required to run any job
-  MANIFEST_FILE_NAME = 'manifest.csv'
+  OBJECT_MANIFEST_FILE_NAME = 'manifest.csv'
 
   belongs_to :user
   has_many :job_runs, dependent: :destroy
@@ -84,15 +84,15 @@ class BatchContext < ApplicationRecord
 
   # On first call, loads the manifest data, caches results
   # @return [Array<ActiveSupport::HashWithIndifferentAccess>]
-  def manifest_rows
-    @manifest_rows ||= load_manifest
+  def object_manifest_rows
+    @object_manifest_rows ||= load_object_manifest
   end
 
   # load the manifest.csv file and verify there is at least one object and the correct header is present
-  def load_manifest
-    raise 'manifest file missing or empty' if !File.exist?(manifest_path) || File.zero?(manifest_path)
+  def load_object_manifest
+    raise 'manifest file missing or empty' if !File.exist?(object_manifest_path) || File.zero?(object_manifest_path)
 
-    manifest_rows = CsvImporter.parse_to_hash(manifest_path)
+    manifest_rows = CsvImporter.parse_to_hash(object_manifest_path)
     raise 'no rows in manifest or missing header' if manifest_rows.empty?
 
     columns = manifest_rows.first.keys
@@ -103,8 +103,8 @@ class BatchContext < ApplicationRecord
 
   private
 
-  def manifest_path
-    staging_location_with_path(MANIFEST_FILE_NAME)
+  def object_manifest_path
+    staging_location_with_path(OBJECT_MANIFEST_FILE_NAME)
   end
 
   def file_manifest_path
@@ -150,7 +150,7 @@ class BatchContext < ApplicationRecord
     return if errors.key?(:staging_location)
     return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
 
-    errors.add(:staging_location, "missing manifest: #{manifest_path}") unless File.exist?(manifest_path)
+    errors.add(:staging_location, "missing manifest: #{object_manifest_path}") unless File.exist?(object_manifest_path)
     errors.add(:staging_location, "missing file manifest: #{file_manifest_path}") if using_file_manifest && !File.exist?(file_manifest_path)
   end
   # rubocop:enable Metrics/AbcSize
