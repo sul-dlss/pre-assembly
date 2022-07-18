@@ -120,7 +120,7 @@ RSpec.describe BatchContext, type: :model do
     end
   end
 
-  describe 'manifest_rows' do
+  describe '#object_manifest_rows' do
     context 'error' do
       context 'manifest missing' do
         let(:attr_hash) do
@@ -131,7 +131,7 @@ RSpec.describe BatchContext, type: :model do
         end
 
         it 'raises an error' do
-          expect { bc.manifest_rows }.to raise_error(RuntimeError, 'manifest file missing or empty')
+          expect { bc.object_manifest_rows }.to raise_error(RuntimeError, 'manifest file missing or empty')
         end
       end
 
@@ -144,7 +144,7 @@ RSpec.describe BatchContext, type: :model do
         end
 
         it 'raises an error' do
-          expect { bc.manifest_rows }.to raise_error(RuntimeError, 'manifest file missing or empty')
+          expect { bc.object_manifest_rows }.to raise_error(RuntimeError, 'manifest file missing or empty')
         end
       end
 
@@ -157,7 +157,7 @@ RSpec.describe BatchContext, type: :model do
         end
 
         it 'raises an error' do
-          expect { bc.manifest_rows }.to raise_error(RuntimeError, 'no rows in manifest or missing header')
+          expect { bc.object_manifest_rows }.to raise_error(RuntimeError, 'no rows in manifest or missing header')
         end
       end
 
@@ -170,7 +170,7 @@ RSpec.describe BatchContext, type: :model do
         end
 
         it 'raises an error' do
-          expect { bc.manifest_rows }.to raise_error(RuntimeError, 'no rows in manifest or missing header')
+          expect { bc.object_manifest_rows }.to raise_error(RuntimeError, 'no rows in manifest or missing header')
         end
       end
 
@@ -183,7 +183,7 @@ RSpec.describe BatchContext, type: :model do
         end
 
         it 'raises an error' do
-          expect { bc.manifest_rows }.to raise_error(RuntimeError, 'manifest must have "druid" and "object" columns')
+          expect { bc.object_manifest_rows }.to raise_error(RuntimeError, 'manifest must have "druid" and "object" columns')
         end
       end
     end
@@ -191,16 +191,16 @@ RSpec.describe BatchContext, type: :model do
     context 'success' do
       it 'loads the manifest CSV' do
         expect(CsvImporter).to receive(:parse_to_hash).with('spec/test_data/images_jp2_tif/manifest.csv').and_call_original
-        bc.manifest_rows
+        bc.object_manifest_rows
       end
 
       it 'memoizes the manifest rows' do
         expect(CsvImporter).to receive(:parse_to_hash).once.with('spec/test_data/images_jp2_tif/manifest.csv').and_call_original
-        2.times { bc.manifest_rows }
+        2.times { bc.object_manifest_rows }
       end
 
       it 'expect the content of manifest rows' do
-        expect(bc.manifest_rows).to eq(
+        expect(bc.object_manifest_rows).to eq(
           [
             { 'druid' => 'druid:jy812bp9403', 'sourceid' => 'bar-1.0', 'object' => 'jy812bp9403', 'label' => 'Label 1', 'description' => 'This is a description for label 1' },
             { 'druid' => 'druid:tz250tk7584', 'sourceid' => 'bar-2.1', 'object' => 'tz250tk7584', 'label' => 'Label 2', 'description' => 'This is a description for label 2' },

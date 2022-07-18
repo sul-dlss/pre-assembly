@@ -17,7 +17,7 @@ module PreAssembly
     delegate :staging_location,
              :content_md_creation,
              :content_structure,
-             :manifest_rows,
+             :object_manifest_rows,
              :staging_location_with_path,
              :progress_log_file,
              :project_name,
@@ -54,7 +54,7 @@ module PreAssembly
 
       containers_via_manifest.map.with_index do |container, i|
         stageable_items = discover_items_via_crawl(container)
-        row = manifest_rows[i]
+        row = object_manifest_rows[i]
         yield DigitalObject.new(self,
                                 container: container,
                                 stageable_items: stageable_items,
@@ -101,15 +101,15 @@ module PreAssembly
     # @return [Enumerable<String>]
     # @yield [String]
     def containers_via_manifest(&block)
-      return enum_for(:containers_via_manifest) { manifest_rows.size } unless block_given?
+      return enum_for(:containers_via_manifest) { object_manifest_rows.size } unless block_given?
 
-      manifest_rows.each.with_index(1) do |manifest_row, i|
+      object_manifest_rows.each.with_index(1) do |manifest_row, i|
         next if manifest_row[:object]
 
         raise "Missing 'object' in row #{i}: #{manifest_row}"
       end
 
-      manifest_rows.map { |manifest_row| staging_location_with_path manifest_row[:object] }.each { |manifest_row| block.call(manifest_row) }
+      object_manifest_rows.map { |manifest_row| staging_location_with_path manifest_row[:object] }.each { |manifest_row| block.call(manifest_row) }
     end
 
     # A method to discover stageable items (i.e. files) with a given object folder.
