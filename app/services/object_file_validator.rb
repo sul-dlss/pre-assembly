@@ -63,6 +63,7 @@ class ObjectFileValidator
   attr_reader :object, :batch
 
   delegate :druid, to: :object
+  delegate :file_manifest, to: :batch
 
   # Checks filesystem for expected files
   def object_files_exist?
@@ -90,14 +91,8 @@ class ObjectFileValidator
     @object_client ||= Dor::Services::Client.object(druid.druid)
   end
 
-  # @return [PreAssembly::FileManifest]
-  def file_manifest
-    @file_manifest ||= PreAssembly::FileManifest.new(csv_filename: batch.batch_context.file_manifest,
-                                                     staging_location: batch.staging_location)
-  end
-
   # @return [Boolean]
   def using_file_manifest?
-    batch.file_manifest&.exists?
+    file_manifest&.exists?
   end
 end

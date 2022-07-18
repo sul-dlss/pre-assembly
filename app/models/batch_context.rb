@@ -7,6 +7,12 @@
 #   this creates a new JobRun, which belongs_to the associated BatchContext.
 # rubocop:disable Metrics/ClassLength
 class BatchContext < ApplicationRecord
+  # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
+  FILE_MANIFEST_FILE_NAME = 'file_manifest.csv'
+
+  # the manifest specifying objects and associated folders on disk: required to run any job
+  MANIFEST_FILE_NAME = 'manifest.csv'
+
   belongs_to :user
   has_many :job_runs, dependent: :destroy
   after_initialize :normalize_staging_location, :default_enums
@@ -45,11 +51,15 @@ class BatchContext < ApplicationRecord
   # return [PreAssembly::Batch]
   def batch
     @batch ||= if using_file_manifest
-                 manifest = PreAssembly::FileManifest.new(csv_filename: file_manifest, staging_location: staging_location)
-                 PreAssembly::Batch.new(self, file_manifest: manifest)
+                 PreAssembly::Batch.new(self, file_manifest: file_manifest)
                else
                  PreAssembly::Batch.new(self)
                end
+  end
+
+  def file_manifest
+    PreAssembly::FileManifest.new(csv_filename: file_manifest_path,
+                                  staging_location: staging_location)
   end
 
   def content_md_creation
@@ -68,16 +78,6 @@ class BatchContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
-  # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
-  def file_manifest
-    'file_manifest.csv'
-  end
-
-  # the manifest specifying objects and associated folders on disk: required to run any job
-  def manifest
-    'manifest.csv'
-  end
-
   def staging_location_with_path(rel_path)
     File.join(staging_location, rel_path)
   end
@@ -90,7 +90,6 @@ class BatchContext < ApplicationRecord
 
   # load the manifest.csv file and verify there is at least one object and the correct header is present
   def load_manifest
-    manifest_path = staging_location_with_path(manifest)
     raise 'manifest file missing or empty' if !File.exist?(manifest_path) || File.zero?(manifest_path)
 
     manifest_rows = CsvImporter.parse_to_hash(manifest_path)
@@ -103,6 +102,14 @@ class BatchContext < ApplicationRecord
   end
 
   private
+
+  def manifest_path
+    staging_location_with_path(MANIFEST_FILE_NAME)
+  end
+
+  def file_manifest_path
+    staging_location_with_path(FILE_MANIFEST_FILE_NAME)
+  end
 
   def default_enums
     self[:content_structure] ||= 0
@@ -143,8 +150,8 @@ class BatchContext < ApplicationRecord
     return if errors.key?(:staging_location)
     return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
 
-    errors.add(:staging_location, "missing manifest: #{staging_location}/#{manifest}") unless File.exist?(File.join(staging_location, manifest))
-    errors.add(:staging_location, "missing file manifest: #{staging_location}/#{file_manifest}") if using_file_manifest && !File.exist?(File.join(staging_location, file_manifest))
+    errors.add(:staging_location, "missing manifest: #{manifest_path}") unless File.exist?(manifest_path)
+    errors.add(:staging_location, "missing file manifest: #{file_manifest_path}") if using_file_manifest && !File.exist?(file_manifest_path)
   end
   # rubocop:enable Metrics/AbcSize
 
