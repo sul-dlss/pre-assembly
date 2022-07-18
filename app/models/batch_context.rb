@@ -7,9 +7,6 @@
 #   this creates a new JobRun, which belongs_to the associated BatchContext.
 # rubocop:disable Metrics/ClassLength
 class BatchContext < ApplicationRecord
-  # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
-  FILE_MANIFEST_FILE_NAME = 'file_manifest.csv'
-
   # the manifest specifying objects and associated folders on disk: required to run any job
   OBJECT_MANIFEST_FILE_NAME = 'manifest.csv'
 
@@ -49,18 +46,13 @@ class BatchContext < ApplicationRecord
 
   accepts_nested_attributes_for :job_runs
 
-  # return [PreAssembly::Batch]
-  def batch
-    @batch ||= if using_file_manifest
-                 PreAssembly::Batch.new(self, file_manifest: file_manifest)
-               else
-                 PreAssembly::Batch.new(self)
-               end
+  def manifest_factory
+    @manifest_factory ||= FileManifestFactory.new(using_file_manifest, staging_location)
   end
 
-  def file_manifest
-    PreAssembly::FileManifest.new(csv_filename: file_manifest_path,
-                                  staging_location: staging_location)
+  # return [PreAssembly::Batch]
+  def batch
+    @batch ||= PreAssembly::Batch.new(self, file_manifest: manifest_factory.build)
   end
 
   # this method would be better named manifest_type, but we are using the name content_metadata_creation in the UI
@@ -109,10 +101,6 @@ class BatchContext < ApplicationRecord
     staging_location_with_path(OBJECT_MANIFEST_FILE_NAME)
   end
 
-  def file_manifest_path
-    staging_location_with_path(FILE_MANIFEST_FILE_NAME)
-  end
-
   def default_enums
     self[:content_structure] ||= 0
     self[:content_metadata_creation] ||= 0
@@ -153,7 +141,7 @@ class BatchContext < ApplicationRecord
     return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
 
     errors.add(:staging_location, "missing manifest: #{object_manifest_path}") unless File.exist?(object_manifest_path)
-    errors.add(:staging_location, "missing file manifest: #{file_manifest_path}") if using_file_manifest && !File.exist?(file_manifest_path)
+    errors.add(:staging_location, "missing file manifest: #{manifest_factory.path}") if manifest_factory.valid?
   end
   # rubocop:enable Metrics/AbcSize
 

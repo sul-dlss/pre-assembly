@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe PreAssembly::FileManifest do
-  let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
-
-  describe '#create_content_metadata' do
+  describe '#generate_structure' do
     let(:csv_filename) { "#{staging_location}/file_manifest.csv" }
+    let(:csv) { CSV.read(csv_filename, headers: true) }
+    let(:bc) { build(:batch_context, bc_params) }
+
+    let(:staging_location) { Rails.root.join('spec/test_data/multimedia') }
 
     context 'for a media object' do
       let(:bc_params) do
@@ -16,7 +18,6 @@ RSpec.describe PreAssembly::FileManifest do
           using_file_manifest: true
         }
       end
-      let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
         let(:dobj1) do
@@ -123,7 +124,6 @@ RSpec.describe PreAssembly::FileManifest do
           using_file_manifest: true
         }
       end
-      let(:bc) { build(:batch_context, bc_params) }
 
       context 'without thumb declaration' do
         let(:dobj1) do

@@ -6,71 +6,77 @@ module PreAssembly
 
   # It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
   class FileManifest
-    attr_reader :manifest, :csv_filename, :staging_location
+    attr_reader :manifest, :csv, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
     VALID_ROLES = %w[transcription annotations derivative master].freeze
 
-    def initialize(staging_location:, csv_filename:)
+    def initialize(staging_location:, csv:)
       @staging_location = staging_location
-      @csv_filename = csv_filename
-      # read CSV
+      @csv = csv
       @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
-    end
-
-    def exists?
-      File.exist?(csv_filename)
     end
 
     # rubocop:disable Metrics/AbcSize
     def load_manifest
-      # load file into @rows and then build up @manifest
-      rows = CsvImporter.parse_to_hash(@csv_filename)
       sequence = nil
-      rows.each_with_object({}) do |row, manifest|
-        object = row[:object]
-        sequence = row[:sequence].to_i if row[:sequence].present?
-        manifest[object] ||= { file_sets: {} }
-        manifest[object][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
-        manifest[object][:file_sets][sequence][:files] << file_properties_from_row(row)
+      @csv.each_with_object({}) do |row, manifest|
+        folder_name = folder(row)
+        sequence = row['sequence'].to_i if row['sequence'].present?
+        manifest[folder_name] ||= { file_sets: {} }
+        manifest[folder_name][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
+        manifest[folder_name][:file_sets][sequence][:files] << file_properties_from_row(row, folder_name)
       end
     end
     # rubocop:enable Metrics/AbcSize
 
     def file_set_properties_from_row(row, sequence)
-      { label: row[:label], sequence: sequence, resource_type: row[:resource_type], files: [] }
+      { label: file_set_label(row), sequence: sequence, resource_type: row['resource_type'], files: [] }
     end
 
     # @param [HashWithIndifferentAccess] row
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
-    def file_properties_from_row(row)
+    def file_properties_from_row(row, folder_name)
       {
         type: Cocina::Models::ObjectType.file,
         externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
-        filename: row[:filename],
-        label: row[:filename],
+        filename: row['filename'],
+        label: row['filename'],
         use: role(row),
         administrative: administrative(row),
-        hasMessageDigests: md5_digest(row)
+        hasMessageDigests: md5_digest(row, folder_name)
       }.compact
     end
 
     def administrative(row)
-      publish  = row[:publish] == 'yes'
-      preserve = row[:preserve] == 'yes'
-      shelve   = row[:shelve] == 'yes'
+      publish  = row['publish'] == 'yes'
+      preserve = row['preserve'] == 'yes'
+      shelve   = row['shelve'] == 'yes'
       { sdrPreserve: preserve, publish: publish, shelve: shelve }
+    end
+
+    # What is the folder name for this row
+    def folder(row)
+      row['object']
+    end
+
+    def file_set_label(row)
+      row['label']
+    end
+
+    def file_label(row)
+      row['filename']
     end
 
     # @return [String] the role for the file (if a valid role value, otherwise nil)
     def role(row)
-      row[:role] if VALID_ROLES.include?(row[:role])
+      row['role'] if VALID_ROLES.include?(row['role'])
     end
 
-    def md5_digest(row)
-      container_path = File.join(staging_location, row[:object])
+    def md5_digest(row, folder_name)
+      container_path = File.join(staging_location, folder_name)
       # look for a checksum file named the same as this file
-      md5_files = Dir.glob("#{container_path}/**/#{row[:filename]}.md5")
+      md5_files = Dir.glob("#{container_path}/**/#{row['filename']}.md5")
       # if we find a corresponding md5 file, read it
       return unless md5_files.size == 1
 

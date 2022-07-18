@@ -93,6 +93,6 @@ class ObjectFileValidator
 
   # @return [Boolean]
   def using_file_manifest?
-    file_manifest&.exists?
+    file_manifest.present?
   end
 end

@@ -49,8 +49,9 @@ module PreAssembly
       end
 
       def file_builder(file_attributes:)
+        # The passed in file_attributes[:access] have precidence over the access from the DRO
         Cocina::Models::File.new(
-          file_attributes.merge(version: cocina_dro.version, access: file_access)
+          { version: cocina_dro.version, access: file_access }.merge(file_attributes)
         )
       end
 
