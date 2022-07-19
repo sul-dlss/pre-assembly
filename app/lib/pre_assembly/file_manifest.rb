@@ -22,32 +22,38 @@ module PreAssembly
       File.exist?(csv_filename)
     end
 
-    # rubocop:disable Metrics/AbcSize
     def load_manifest
       # load file into @rows and then build up @manifest
       rows = CsvImporter.parse_to_hash(@csv_filename)
       rows.each_with_object({}) do |row, manifest|
         object = row[:object]
-        file_extension = File.extname(row[:filename])
-        resource_type = row[:resource_type]
-
-        # set the role for the file (if a valid role value, otherwise it will be left off)
-        role = row[:role] if VALID_ROLES.include?(row[:role])
-
-        # set the thumb attribute for this resource - if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
-        thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
-
-        # set the publish/preserve/shelve
-        publish  = row[:publish]
-        shelve   = row[:shelve]
-        preserve = row[:preserve]
-
         manifest[object] ||= { files: [] }
-        files_hash = { file_extention: file_extension, filename: row[:filename], label: row[:label], sequence: row[:sequence] }
-        manifest[object][:files] << files_hash.merge(role: role, thumb: thumb, publish: publish, shelve: shelve, preserve: preserve, resource_type: resource_type)
+        manifest[object][:files] << file_properties_from_row(row)
       end
     end
-    # rubocop:enable Metrics/AbcSize
+
+    # @param [HashWithIndifferentAccess] row
+    # @return [Hash<Symbol,String>] The properties necessary to build a file.
+    def file_properties_from_row(row)
+      # set the role for the file (if a valid role value, otherwise it will be left off)
+      role = row[:role] if VALID_ROLES.include?(row[:role])
+
+      # set the thumb attribute for this resource - if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
+      thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
+
+      {
+        file_extention: File.extname(row[:filename]),
+        filename: row[:filename],
+        label: row[:label],
+        sequence: row[:sequence],
+        role: role,
+        thumb: thumb,
+        publish: row[:publish],
+        shelve: row[:shelve],
+        preserve: row[:preserve],
+        resource_type: row[:resource_type]
+      }
+    end
 
     # actually generate content metadata for a specific object in the manifest
     # @return [String] XML
