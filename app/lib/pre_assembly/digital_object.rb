@@ -6,7 +6,7 @@ module PreAssembly
     include PreAssembly::Logging
 
     attr_reader :batch, :stageable_items, :object_files,
-                :stager, :label, :pid, :source_id, :container
+                :stager, :label, :druid, :source_id, :container
 
     delegate :staging_location,
              :content_md_creation,
@@ -20,7 +20,7 @@ module PreAssembly
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
     # @param [String] label The label for this object
-    # @param [String] pid The identifier for the item
+    # @param [String] pid The bare druid identifier for the item
     # @param [String] source_id The source identifier
     # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
     # rubocop:disable Metrics/ParameterLists
@@ -31,7 +31,7 @@ module PreAssembly
       @stageable_items = stageable_items
       @object_files = object_files
       @label = label
-      @pid = pid
+      @druid = DruidTools::Druid.new(pid)
       @source_id = source_id
       @stager = stager
     end
@@ -77,22 +77,13 @@ module PreAssembly
       stage_files
       update_structural_metadata
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
-      log "    - pre_assemble(#{pid}) finished"
+      log "    - pre_assemble(#{druid.id}) finished"
       { pre_assem_finished: true, status: 'success' }
     rescue StandardError => e
-      log "    - pre_assemble(#{pid}) error occurred: #{e.message}"
+      log "    - pre_assemble(#{druid.id}) error occurred: #{e.message}"
       { pre_assem_finished: false, status: 'error', message: e.message }
     end
     # rubocop:enable Metrics/AbcSize
-
-    ####
-    # Determining the druid.
-    ####
-
-    # @return [DruidTools::Druid]
-    def druid
-      @druid ||= DruidTools::Druid.new(pid)
-    end
 
     private
 

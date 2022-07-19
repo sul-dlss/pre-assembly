@@ -17,7 +17,6 @@ RSpec.describe ObjectFileValidator do
     let(:object) { batch.un_pre_assembled_objects.first }
 
     before do
-      allow(object).to receive(:pid).and_return('kk203bw3276')
       allow(validator).to receive(:registration_check).and_return({}) # pretend everything is in Dor
     end
 
@@ -25,7 +24,7 @@ RSpec.describe ObjectFileValidator do
       expect(validator.validate.as_json).to match a_hash_including(
         counts: a_hash_including(total_size: 0),
         errors: a_hash_including(missing_files: true),
-        druid: 'druid:kk203bw3276'
+        druid: 'druid:oo000oo0000'
       )
     end
 

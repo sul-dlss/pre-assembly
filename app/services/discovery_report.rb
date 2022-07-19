@@ -71,7 +71,7 @@ class DiscoveryReport
     {
       status: status,
       discovery_finished: true,
-      pid: dobj.pid,
+      pid: dobj.druid.id,
       timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
     }
   end

@@ -75,9 +75,11 @@ end
 
 # iterate over an array of digital objects, and verify they have equivalent attributes to a second array of digital objects
 def digital_objects_equivalent?(objects1, objects2)
-  objects1.each_with_index.map do |obj, i|
-    %i[batch container stageable_items object_files label pid source_id stager].all? do |field_name|
-      obj.send(field_name) == objects2[i].send(field_name)
+  objects1.zip(objects2).all? do |(obj1, obj2)|
+    next false if obj1.druid.id != obj2.druid.id
+
+    %i[batch container stageable_items object_files label source_id stager].all? do |field_name|
+      obj1.send(field_name) == obj2.send(field_name)
     end
-  end.all?
+  end
 end

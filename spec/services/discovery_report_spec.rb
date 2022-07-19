@@ -26,15 +26,18 @@ RSpec.describe DiscoveryReport do
   end
 
   describe '#each_row' do
-    let(:h1) { { druid: 'druid:1', errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
-    let(:h2) { { druid: 'druid:2', errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
-    let(:h3) { { druid: 'druid:2', errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
+    let(:druid1) { DruidTools::Druid.new('cb837cp4412') }
+    let(:druid2) { DruidTools::Druid.new('cm057cr1745') }
+    let(:druid3) { DruidTools::Druid.new('cp898cs9946') }
+    let(:h1) { { errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
+    let(:h2) { { errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
+    let(:h3) { { errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
     let(:validator1) { instance_double(ObjectFileValidator, counts: h1[:counts], errors: h1[:errors], to_h: h1) }
     let(:validator2) { instance_double(ObjectFileValidator, counts: h2[:counts], errors: h2[:errors], to_h: h2) }
     let(:validator3) { instance_double(ObjectFileValidator, counts: h3[:counts], errors: h3[:errors], to_h: h3) }
-    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, pid: 'druid:1') }
-    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, pid: 'druid:2') }
-    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, pid: 'druid:3') }
+    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, druid: druid1) }
+    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, druid: druid2) }
+    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, druid: druid3) }
 
     it 'returns an Enumerable of Hashes' do
       expect(report.send(:each_row)).to be_an(Enumerable)
@@ -54,10 +57,10 @@ RSpec.describe DiscoveryReport do
       expect(File).to exist(batch.batch_context.progress_log_file)
       docs = YAML.load_stream(File.read(batch.batch_context.progress_log_file))
       expect(docs.size).to eq(3)
-      expect(docs[0]).to include(pid: 'druid:1', status: 'success')
+      expect(docs[0]).to include(pid: 'cb837cp4412', status: 'success')
       expect(docs[0][:timestamp].to_date).to eq Time.now.utc.to_date
-      expect(docs[1]).to include(pid: 'druid:2', status: 'success')
-      expect(docs[2]).to include(pid: 'druid:3', status: 'error')
+      expect(docs[1]).to include(pid: 'cm057cr1745', status: 'success')
+      expect(docs[2]).to include(pid: 'cp898cs9946', status: 'error')
     end
   end
 
@@ -99,7 +102,7 @@ RSpec.describe DiscoveryReport do
     end
 
     it 'process_dobj gives expected output for one dobj' do
-      allow(dobj).to receive(:pid).and_return('kk203bw3276')
+      allow(dobj).to receive(:druid).and_return(DruidTools::Druid.new('kk203bw3276'))
       expect(report.send(:process_dobj, dobj).as_json).to eq(
         druid: 'druid:kk203bw3276',
         errors: { dupes: true },
