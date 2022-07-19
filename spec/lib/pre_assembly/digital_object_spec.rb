@@ -112,6 +112,15 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive(:assembly_directory).and_return(assembly_directory)
     end
 
+    around do |example|
+      RSpec::Mocks.with_temporary_scope do
+        Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
+          allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
+          example.run
+        end
+      end
+    end
+
     def add_object_files(extension = 'tif')
       (1..2).each do |i|
         f = "image#{i}.#{extension}"
@@ -186,15 +195,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
-      around do |example|
-        RSpec::Mocks.with_temporary_scope do
-          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-            example.run
-          end
-        end
-      end
-
       it 'generates the expected structural' do
         expect(object.send(:build_structural).to_h).to eq expected
       end
@@ -239,15 +239,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('map')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
-      end
-
-      around do |example|
-        RSpec::Mocks.with_temporary_scope do
-          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-            example.run
-          end
-        end
       end
 
       it 'generates the expected structural' do
@@ -296,15 +287,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
-      around do |example|
-        RSpec::Mocks.with_temporary_scope do
-          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-            example.run
-          end
-        end
-      end
-
       it 'generates the expected structural' do
         expect(object.send(:build_structural).to_h).to eq expected
       end
@@ -351,15 +333,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
-      around do |example|
-        RSpec::Mocks.with_temporary_scope do
-          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-            example.run
-          end
-        end
-      end
-
       it 'generates the expected structural' do
         expect(object.send(:build_structural).to_h).to eq expected
       end
@@ -404,15 +377,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
-      end
-
-      around do |example|
-        RSpec::Mocks.with_temporary_scope do
-          Dir.mktmpdir(*tmp_dir_args) do |tmp_area|
-            allow(assembly_directory).to receive(:druid_tree_dir).and_return(tmp_area)
-            example.run
-          end
-        end
       end
 
       it 'generates the expected structural' do
