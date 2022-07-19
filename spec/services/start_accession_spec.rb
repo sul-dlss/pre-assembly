@@ -2,10 +2,10 @@
 
 RSpec.describe StartAccession do
   describe '.run' do
-    subject(:start_accession) { described_class.run(druid: pid, user: user.sunet_id) }
+    subject(:start_accession) { described_class.run(druid: druid, user: user.sunet_id) }
 
     let(:user) { create(:user) }
-    let(:pid) { 'druid:gn330dv6119' }
+    let(:druid) { 'druid:gn330dv6119' }
     let(:accession_object) { instance_double(Dor::Services::Client::Accession, start: true) }
     let(:object_client) { instance_double(Dor::Services::Client::Object, accession: accession_object) }
 
