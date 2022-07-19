@@ -150,7 +150,7 @@ module PreAssembly
         load_checksums(dobj)
         progress = dobj.pre_assemble
         log "  - pre_assemble result: #{progress}"
-        progress.merge!(pid: dobj.pid, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
+        progress.merge!(pid: dobj.druid.id, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
         @num_failures += 1 if progress[:status] == 'error'
         log "Completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }

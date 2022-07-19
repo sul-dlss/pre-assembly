@@ -2,14 +2,13 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.batch, object_files: [], stager: stager)
+    described_class.new(bc.batch, object_files: [], stager: stager, pid: pid)
   end
 
-  let(:dru) { 'gn330dv6119' }
-  let(:pid) { "druid:#{dru}" }
+  let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
   let(:bc) { create(:batch_context, staging_location: 'spec/test_data/images_jp2_tif') }
-  let(:druid) { DruidTools::Druid.new(pid) }
+  let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') }
@@ -18,19 +17,8 @@ RSpec.describe PreAssembly::DigitalObject do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
   end
 
-  def add_object_files(extension = 'tif', all_files_public: false)
-    (1..2).each do |i|
-      f = "image#{i}.#{extension}"
-      options = { relative_path: f, checksum: i.to_s * 4 }
-      options[:file_attributes] = { preserve: 'yes', shelve: 'yes', publish: 'yes' } if all_files_public
-
-      object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{dru}/#{f}", options)
-    end
-  end
-
   describe '#pre_assemble' do
     before do
-      allow(object).to receive(:pid).and_return(pid)
       allow(StartAccession).to receive(:run)
     end
 
@@ -64,10 +52,9 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:tmp_area) do
       Dir.mktmpdir(*tmp_dir_args)
     end
-    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
+    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id) }
 
     before do
-      allow(object).to receive(:druid).and_return(druid)
       allow(object).to receive(:staging_location).and_return(tmp_area)
       allow(assembly_directory).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
       allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
@@ -114,12 +101,24 @@ RSpec.describe PreAssembly::DigitalObject do
       Cocina::RSpec::Factories.build(:dro, type: cocina_type).new(access: { view: 'world' })
     end
 
+    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id) }
+
     let(:object_client) do
       instance_double(Dor::Services::Client::Object, find: dro)
     end
 
     before do
       allow(Dor::Services::Client).to receive(:object).and_return(object_client)
+      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
+    end
+
+    def add_object_files(extension = 'tif')
+      (1..2).each do |i|
+        f = "image#{i}.#{extension}"
+        options = { relative_path: f, checksum: i.to_s * 4 }
+
+        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/gn330dv6119/#{f}", options)
+      end
     end
 
     describe 'default structural metadata (image)' do
@@ -181,13 +180,9 @@ RSpec.describe PreAssembly::DigitalObject do
           isMemberOf: [] }
       end
 
-      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
-
       before do
-        allow(object).to receive(:druid).and_return(druid)
         add_object_files('tif')
         add_object_files('jp2')
-        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
@@ -239,14 +234,10 @@ RSpec.describe PreAssembly::DigitalObject do
           isMemberOf: [] }
       end
 
-      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
-
       before do
-        allow(object).to receive(:druid).and_return(druid)
         allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('map')
         add_object_files('jp2')
-        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -298,14 +289,10 @@ RSpec.describe PreAssembly::DigitalObject do
           isMemberOf: [] }
       end
 
-      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
-
       before do
-        allow(object).to receive(:druid).and_return(druid)
         allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files('jp2')
-        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -357,14 +344,10 @@ RSpec.describe PreAssembly::DigitalObject do
           isMemberOf: [] }
       end
 
-      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
-
       before do
-        allow(object).to receive(:druid).and_return(druid)
         allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
         add_object_files('jp2')
-        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -416,14 +399,10 @@ RSpec.describe PreAssembly::DigitalObject do
           isMemberOf: [] }
       end
 
-      let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: druid.id) }
-
       before do
-        allow(object).to receive(:druid).and_return(druid)
         allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files('jp2')
-        allow(object).to receive(:assembly_directory).and_return(assembly_directory)
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -494,7 +473,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:druid).and_return(druid)
         allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book')
         allow(bc).to receive(:content_md_creation).and_return('filename')
@@ -524,7 +502,6 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
     before do
-      allow(object).to receive(:druid).and_return(druid)
       allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
     end
 
@@ -539,7 +516,6 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
     before do
-      allow(object).to receive(:druid).and_return(druid)
       allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
     end
 
