@@ -235,7 +235,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('map')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
@@ -290,7 +289,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
@@ -345,7 +343,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
@@ -400,7 +397,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files('jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
@@ -473,7 +469,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(object).to receive(:object_type).and_return('')
         allow(bc).to receive(:content_structure).and_return('simple_book')
         allow(bc).to receive(:content_md_creation).and_return('filename')
         add_object_files('tif')

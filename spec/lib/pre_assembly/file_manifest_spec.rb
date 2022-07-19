@@ -21,10 +21,7 @@ RSpec.describe PreAssembly::FileManifest do
       context 'without thumb declaration' do
         let(:dobj1) do
           allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
-          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', pid: 'aa111aa1111', stager: PreAssembly::CopyStager).tap do |dobj|
-            allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
-            allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
-          end
+          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', pid: 'aa111aa1111', stager: PreAssembly::CopyStager)
         end
         let(:file_manifest) do
           described_class.new(csv_filename: csv_filename, staging_location: staging_location)
@@ -135,10 +132,7 @@ RSpec.describe PreAssembly::FileManifest do
       context 'without thumb declaration' do
         let(:dobj1) do
           allow(bc.batch).to receive(:file_manifest).and_return(file_manifest)
-          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', pid: 'aa111aa1111', stager: PreAssembly::CopyStager).tap do |dobj|
-            allow(dobj).to receive(:content_md_creation).and_return('media_cm_style')
-            allow(dobj).to receive(:object_type).and_return(Cocina::Models::ObjectType.media)
-          end
+          PreAssembly::DigitalObject.new(bc.batch, container: 'aa111aa1111', pid: 'aa111aa1111', stager: PreAssembly::CopyStager)
         end
         let(:file_manifest) do
           described_class.new(csv_filename: csv_filename, staging_location: staging_location)
