@@ -44,15 +44,11 @@ module PreAssembly
     # @param [HashWithIndifferentAccess] row
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
     def file_properties_from_row(row)
-      # set the thumb attribute for this resource - if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
-      thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
-
       {
         filename: row[:filename],
         label: row[:label],
         sequence: row[:sequence],
         role: role(row),
-        thumb: thumb,
         publish: row[:publish],
         shelve: row[:shelve],
         preserve: row[:preserve],
