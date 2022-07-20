@@ -27,7 +27,7 @@ RSpec.describe PreAssembly::FileManifest do
           { contains: [
               {
                 type: 'https://cocina.sul.stanford.edu/models/resources/media',
-                externalIdentifier: 'aa111aa1111_1',
+                externalIdentifier: 'bc234fg5678_1',
                 label: 'Tape 1, Side A', version: 1,
                 structural: {
                   contains: [
@@ -52,7 +52,7 @@ RSpec.describe PreAssembly::FileManifest do
                 }
               }, {
                 type: 'https://cocina.sul.stanford.edu/models/resources/file',
-                externalIdentifier: 'aa111aa1111_2',
+                externalIdentifier: 'bc234fg5678_2',
                 label: 'Tape 1, Side B', version: 1,
                 structural: {
                   contains: [
@@ -80,7 +80,7 @@ RSpec.describe PreAssembly::FileManifest do
                 }
               }, {
                 type: 'https://cocina.sul.stanford.edu/models/resources/file',
-                externalIdentifier: 'aa111aa1111_3',
+                externalIdentifier: 'bc234fg5678_3',
                 label: 'Transcript', version: 1,
                 structural: {
                   contains: [
@@ -134,7 +134,7 @@ RSpec.describe PreAssembly::FileManifest do
           { contains: [
               {
                 type: 'https://cocina.sul.stanford.edu/models/resources/media',
-                externalIdentifier: 'aa111aa1111_1',
+                externalIdentifier: 'bc234fg5678_1',
                 label: 'Tape 1, Side A', version: 1,
                 structural: {
                   contains: [
@@ -165,7 +165,7 @@ RSpec.describe PreAssembly::FileManifest do
                 }
               }, {
                 type: 'https://cocina.sul.stanford.edu/models/resources/file',
-                externalIdentifier: 'aa111aa1111_2',
+                externalIdentifier: 'bc234fg5678_2',
                 label: 'Tape 1, Side B', version: 1,
                 structural: {
                   contains: [
@@ -196,7 +196,7 @@ RSpec.describe PreAssembly::FileManifest do
                 }
               }, {
                 type: 'https://cocina.sul.stanford.edu/models/resources/file',
-                externalIdentifier: 'aa111aa1111_3',
+                externalIdentifier: 'bc234fg5678_3',
                 label: 'Transcript', version: 1,
                 structural: {
                   contains: [

@@ -5,8 +5,6 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
     subject(:structural) do
       described_class.build(cocina_dro: cocina_dro,
                             resources: resources,
-                            object: content_dir,
-                            staging_location: staging_location,
                             reading_order: 'left-to-right',
                             content_md_creation_style: :media)
     end
@@ -18,7 +16,6 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
 
     context 'with media style' do
       let(:content_dir) { 'vd000bj0000' }
-      let(:staging_location) { Rails.root.join 'spec/test_data/media_video_test' }
 
       let(:resources) do
         { file_sets:
@@ -34,7 +31,8 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
                       publish: 'yes',
                       shelve: 'yes',
                       preserve: 'yes',
-                      resource_type: 'video' },
+                      resource_type: 'video',
+                      md5_digest: 'ee4e90be549c5614ac6282a5b80a506b' },
                     { filename: 'vd000bj0000_video_1.mpeg',
                       label: 'Video file 1',
                       sequence: '1',
@@ -150,7 +148,6 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
 
     context 'with simple_book style' do
       let(:content_dir) { 'content' }
-      let(:staging_location) { Rails.root.join 'spec/test_data/book-file-manifest' }
 
       let(:resources) do
         { file_sets:

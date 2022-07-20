@@ -4,27 +4,22 @@ module PreAssembly
   module FromFileManifest
     # Creates a hash representing the Cocina::FileSets from a file manifest
     class FileSetBuilder
-      # @param [Object] resource
       # @param [Cocina::Models::DRO] cocina_dro
-      def self.build(resource:, cocina_dro:, external_identifier:, object:, staging_location:)
+      def self.build(resource:, cocina_dro:, external_identifier:)
         new(
           resource: resource,
           cocina_dro: cocina_dro,
-          external_identifier: external_identifier,
-          object: object,
-          staging_location: staging_location
+          external_identifier: external_identifier
         ).build
       end
 
-      def initialize(resource:, cocina_dro:, external_identifier:, object:, staging_location:)
+      def initialize(resource:, cocina_dro:, external_identifier:)
         @resource = resource
         @cocina_dro = cocina_dro
         @external_identifier = external_identifier
-        @object = object
-        @staging_location = staging_location
       end
 
-      attr_reader :resource, :cocina_dro, :external_identifier, :object, :staging_location
+      attr_reader :resource, :cocina_dro, :external_identifier
 
       def build
         {
@@ -62,22 +57,14 @@ module PreAssembly
           filename: filename,
           label: filename,
           version: cocina_dro.version,
-          hasMessageDigests: message_digests(filename),
           access: file_access,
           administrative: administrative(file)
         }
+        attributes[:hasMessageDigests] = [{ type: 'md5', digest: file[:md5_digest] }] if file[:md5_digest]
 
         attributes[:use] = file[:role] if file[:role]
 
         Cocina::Models::File.new(attributes)
-      end
-
-      def message_digests(filename)
-        # look for a checksum file named the same as this file
-        md5_files = Dir.glob("#{File.join(staging_location, object)}/**/#{filename}.md5")
-        # if we find a corresponding md5 file, read it
-        checksum = get_checksum(md5_files.first) if md5_files.size == 1
-        checksum.present? ? [{ type: 'md5', digest: checksum }] : []
       end
 
       def administrative(file)
@@ -85,12 +72,6 @@ module PreAssembly
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
         { sdrPreserve: preserve, publish: publish, shelve: shelve }
-      end
-
-      def get_checksum(md5_file)
-        s = File.read(md5_file)
-        checksums = s.scan(/[0-9a-fA-F]{32}/)
-        checksums.first ? checksums.first.strip : ''
       end
 
       def file_access

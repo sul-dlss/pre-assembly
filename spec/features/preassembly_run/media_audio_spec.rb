@@ -66,8 +66,6 @@ RSpec.describe 'Pre-assemble Media Audio object', type: :feature do
     expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             resources: Hash,
-            object: bare_druid,
-            staging_location: staging_location.to_s,
             reading_order: 'left-to-right',
             content_md_creation_style: :media)
     expect(dsc_object).to have_received(:update).with(params: item)

@@ -44,9 +44,6 @@ module PreAssembly
     # @param [HashWithIndifferentAccess] row
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
     def file_properties_from_row(row)
-      # set the role for the file (if a valid role value, otherwise it will be left off)
-      role = row[:role] if VALID_ROLES.include?(row[:role])
-
       # set the thumb attribute for this resource - if it is set in the manifest to true, yes or thumb (set to false if no value or column is missing)
       thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
 
@@ -54,13 +51,31 @@ module PreAssembly
         filename: row[:filename],
         label: row[:label],
         sequence: row[:sequence],
-        role: role,
+        role: role(row),
         thumb: thumb,
         publish: row[:publish],
         shelve: row[:shelve],
         preserve: row[:preserve],
-        resource_type: row[:resource_type]
+        resource_type: row[:resource_type],
+        md5_digest: md5_digest(row)
       }
+    end
+
+    # @return [String] the role for the file (if a valid role value, otherwise nil)
+    def role(row)
+      row[:role] if VALID_ROLES.include?(row[:role])
+    end
+
+    def md5_digest(row)
+      container_path = File.join(staging_location, row[:object])
+      # look for a checksum file named the same as this file
+      md5_files = Dir.glob("#{container_path}/**/#{row[:filename]}.md5")
+      # if we find a corresponding md5 file, read it
+      read_checksum_from_file(md5_files.first) if md5_files.size == 1
+    end
+
+    def read_checksum_from_file(md5_file)
+      File.read(md5_file).scan(/[0-9a-fA-F]{32}/).first
     end
 
     # actually generate content metadata for a specific object in the manifest
@@ -72,7 +87,6 @@ module PreAssembly
       current_directory = Dir.pwd # this must be done before resources_hash is built
       structure = FromFileManifest::StructuralBuilder.build(cocina_dro: cocina_dro,
                                                             resources: item_structure,
-                                                            object: object, staging_location: staging_location,
                                                             content_md_creation_style: content_md_creation_style,
                                                             reading_order: reading_order)
 
