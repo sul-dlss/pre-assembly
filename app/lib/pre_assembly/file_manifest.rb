@@ -45,16 +45,21 @@ module PreAssembly
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
     def file_properties_from_row(row)
       {
+        type: Cocina::Models::ObjectType.file,
+        externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
         filename: row[:filename],
-        label: row[:label],
-        sequence: row[:sequence],
-        role: role(row),
-        publish: row[:publish],
-        shelve: row[:shelve],
-        preserve: row[:preserve],
-        resource_type: row[:resource_type],
-        md5_digest: md5_digest(row)
-      }
+        label: row[:filename],
+        use: role(row),
+        administrative: administrative(row),
+        hasMessageDigests: md5_digest(row)
+      }.compact
+    end
+
+    def administrative(row)
+      publish  = row[:publish] == 'yes'
+      preserve = row[:preserve] == 'yes'
+      shelve   = row[:shelve] == 'yes'
+      { sdrPreserve: preserve, publish: publish, shelve: shelve }
     end
 
     # @return [String] the role for the file (if a valid role value, otherwise nil)
@@ -67,7 +72,12 @@ module PreAssembly
       # look for a checksum file named the same as this file
       md5_files = Dir.glob("#{container_path}/**/#{row[:filename]}.md5")
       # if we find a corresponding md5 file, read it
-      read_checksum_from_file(md5_files.first) if md5_files.size == 1
+      return unless md5_files.size == 1
+
+      digest = read_checksum_from_file(md5_files.first)
+      return unless digest
+
+      [{ type: 'md5', digest: digest }]
     end
 
     def read_checksum_from_file(md5_file)

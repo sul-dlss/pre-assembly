@@ -45,33 +45,13 @@ module PreAssembly
       end
 
       def build_files
-        resource[:files].map { |file| file_builder(file: file) }
+        resource[:files].map { |file_attributes| file_builder(file_attributes: file_attributes) }
       end
 
-      def file_builder(file:)
-        filename = file.fetch(:filename)
-
-        attributes = {
-          externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
-          type: 'https://cocina.sul.stanford.edu/models/file',
-          filename: filename,
-          label: filename,
-          version: cocina_dro.version,
-          access: file_access,
-          administrative: administrative(file)
-        }
-        attributes[:hasMessageDigests] = [{ type: 'md5', digest: file[:md5_digest] }] if file[:md5_digest]
-
-        attributes[:use] = file[:role] if file[:role]
-
-        Cocina::Models::File.new(attributes)
-      end
-
-      def administrative(file)
-        publish  = file[:publish] == 'yes'
-        preserve = file[:preserve] == 'yes'
-        shelve   = file[:shelve] == 'yes'
-        { sdrPreserve: preserve, publish: publish, shelve: shelve }
+      def file_builder(file_attributes:)
+        Cocina::Models::File.new(
+          file_attributes.merge(version: cocina_dro.version, access: file_access)
+        )
       end
 
       def file_access
