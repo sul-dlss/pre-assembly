@@ -28,7 +28,7 @@ RSpec.describe DiscoveryReportJob, type: :job do
     end
 
     context 'when failed' do
-      let(:error_message) { 'something really unexpected happened' }
+      let(:error_message) { 'StandardError : something really unexpected happened' }
       # simulate an uncaught exception while running the job
 
       before { allow(job_run.to_discovery_report).to receive(:to_builder).and_raise(StandardError, error_message) }
