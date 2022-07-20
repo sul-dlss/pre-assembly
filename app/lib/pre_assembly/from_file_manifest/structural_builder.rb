@@ -32,8 +32,8 @@ module PreAssembly
       end
 
       def build_file_sets
-        resources.keys.sort.map do |seq|
-          FromFileManifest::FileSetBuilder.build(resource: resources[seq],
+        resources[:file_sets].keys.sort.map do |seq|
+          FromFileManifest::FileSetBuilder.build(resource: resources[:file_sets][seq],
                                                  external_identifier: "#{object}_#{seq}",
                                                  cocina_dro: cocina_dro,
                                                  object: object,

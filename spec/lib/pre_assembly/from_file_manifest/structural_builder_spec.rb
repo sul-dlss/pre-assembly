@@ -21,6 +21,7 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
       let(:staging_location) { Rails.root.join 'spec/test_data/media_video_test' }
 
       let(:resources) do
+        { file_sets:
         { 1 =>
           { label: 'Video file 1',
             sequence: '1',
@@ -130,7 +131,7 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
                         publish: 'no',
                         shelve: 'no',
                         preserve: 'yes',
-                        resource_type: 'file' }] } }
+                        resource_type: 'file' }] } } }
       end
 
       it 'adds all the files' do
@@ -161,6 +162,7 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
       let(:staging_location) { Rails.root.join 'spec/test_data/book-file-manifest' }
 
       let(:resources) do
+        { file_sets:
         { 1 =>
             { label: 'page 1',
               sequence: '1',
@@ -262,7 +264,7 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
                         publish: 'yes',
                         shelve: 'yes',
                         preserve: 'yes',
-                        resource_type: 'page' }] } }
+                        resource_type: 'page' }] } } }
       end
 
       it 'adds all the files' do

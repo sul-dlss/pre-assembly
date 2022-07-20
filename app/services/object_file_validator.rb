@@ -28,10 +28,10 @@ class ObjectFileValidator
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
       batch_id = File.basename(object.container)
       if batch_id && file_manifest.manifest[batch_id]
-        cm_files = file_manifest.manifest[batch_id].fetch(:files, [])
-        counts[:files_in_manifest] = cm_files.count
+        manifest_files = file_manifest.manifest[batch_id].fetch(:file_sets, []).flat_map { |_seq, val| val[:files] }
+        counts[:files_in_manifest] = manifest_files.count
         relative_paths = object.object_files.map(&:relative_path)
-        counts[:files_found] = (cm_files.pluck(:filename) & relative_paths).count
+        counts[:files_found] = (manifest_files.pluck(:filename) & relative_paths).count
         errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
         errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
       else
