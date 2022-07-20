@@ -33,5 +33,9 @@ FactoryBot.define do
     trait :public_files do
       all_files_public { true }
     end
+
+    trait :using_file_manifest do
+      with_file_manifest { true }
+    end
   end
 end
