@@ -51,7 +51,6 @@ module PreAssembly
       thumb = row[:thumb] && %w[true yes thumb].include?(row[:thumb].downcase)
 
       {
-        file_extention: File.extname(row[:filename]),
         filename: row[:filename],
         label: row[:label],
         sequence: row[:sequence],
