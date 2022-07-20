@@ -16,7 +16,7 @@ class PreassemblyJob < ApplicationJob
       job_run.completed
     end
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
-    job_run.error_message = e.message
+    job_run.error_message = e.exception
     job_run.failed
   end
 end

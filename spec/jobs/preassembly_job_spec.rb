@@ -32,7 +32,7 @@ RSpec.describe PreassemblyJob, type: :job do
     end
 
     context 'when failed' do
-      let(:error_message) { 'something really unexpected happened' }
+      let(:error_message) { 'StandardError : something really unexpected happened' }
       # simulate an uncaught exception while running the job
 
       before { allow(batch).to receive(:pre_assemble_objects).and_raise(StandardError, error_message) }
