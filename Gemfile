@@ -13,8 +13,7 @@ gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/
 gem 'pry-rails' # useful for rails console
 gem 'rails', '~> 7.0'
 gem 'rake'
-gem 'resque', '~> 2.0' # needs to match redis on VM
-gem 'resque-pool'
+gem 'sidekiq', '~> 6.4'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
 gem 'state_machines-activerecord'
 

@@ -11,3 +11,5 @@ DOR_SERVICES:
 expected_worker_count: 5 # for okcomputer endpoint
 
 mailer_host: 'localhost'
+
+redis_url: redis://localhost:6379/

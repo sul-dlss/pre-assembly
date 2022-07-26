@@ -48,14 +48,6 @@ Rails/I18nLocaleTexts:
     - 'app/models/batch_context.rb'
 
 # Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Include.
-# Include: **/Rakefile, **/*.rake
-Rails/RakeEnvironment:
-  Exclude:
-    - 'lib/tasks/resque.rake'
-
-# Offense count: 1
 Style/ClassVars:
   Exclude:
     - 'app/lib/pre_assembly/logging.rb'
