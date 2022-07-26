@@ -8,7 +8,7 @@ class JobRun < ApplicationRecord
   validates :job_type, presence: true
   validates :state, presence: true
   after_initialize :default_enums
-  after_create :enqueue!
+  after_create_commit :enqueue!
 
   delegate :progress_log_file, to: :batch_context
 
