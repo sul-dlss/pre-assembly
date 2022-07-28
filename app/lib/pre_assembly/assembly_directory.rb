@@ -17,7 +17,10 @@ module PreAssembly
       # these are the names of files that will be staged in the 'metadata' folder instead of the 'content' folder
       metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
 
-      metadata_files.include?(File.basename(item_path).downcase) ? metadata_dir : content_dir
+      return content_dir unless metadata_files.include?(File.basename(item_path).downcase)
+
+      Honeybadger.notify("I don't think we still stage descMetadata.xml or contentMetadata.xml anymore. Investigate this.")
+      metadata_dir
     end
 
     # @return [String] the base druid tree folder for this object
