@@ -74,10 +74,10 @@ unless File.exist?(csv_out) # if we don't already have a log file, write out the
 end
 
 # read in existing log file
-log_file_data = CSV.parse(IO.read(csv_out), headers: true).map { |row| row.to_hash.with_indifferent_access }
+log_file_data = CSV.open(csv_out, 'rb:bom|utf-8', headers: true).map { |row| row.to_hash.with_indifferent_access }
 
 # read input manifest
-csv_data = CSV.parse(IO.read(csv_in), headers: true).map { |row| row.to_hash.with_indifferent_access }
+csv_data = CSV.open(csv_in, 'rb:bom|utf-8', headers: true).map { |row| row.to_hash.with_indifferent_access }
 
 start_time = Time.now
 puts ''
