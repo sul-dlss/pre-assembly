@@ -16,16 +16,16 @@ module PreAssembly
              to: :batch
 
     # @param [PreAssembly::Batch] batch
+    # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
     # @param [String] container the identifier (non-namespaced); i.e. the full path to the folder containing the object files
     # @param [Array<String>] stageable_items items to stage
     # @param [Array<ObjectFile>] object_files path to files that are part of the object
     # @param [String] label The label for this object
     # @param [String] pid The bare druid identifier for the item
     # @param [String] source_id The source identifier
-    # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
     # rubocop:disable Metrics/ParameterLists
-    def initialize(batch, container: '', stageable_items: nil, object_files: nil,
-                   label: nil, pid: nil, source_id: nil, stager:)
+    def initialize(batch, stager:, container: '', stageable_items: nil, object_files: nil,
+                   label: nil, pid: nil, source_id: nil)
       @batch = batch
       @container = container
       @stageable_items = stageable_items
