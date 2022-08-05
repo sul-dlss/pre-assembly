@@ -20,7 +20,7 @@ gem 'state_machines-activerecord'
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
 gem 'dor-services-client', '~> 12.0'
-gem 'dor-workflow-client', '~> 4.0'
+gem 'dor-workflow-client', '~> 5.0'
 gem 'druid-tools'
 
 group :test do
