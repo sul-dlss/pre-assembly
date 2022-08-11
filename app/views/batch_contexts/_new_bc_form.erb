@@ -28,7 +28,8 @@
 
 
     <%= form.input :staging_location %>
-    <%= form.input :staging_style_symlink %>
+    <%# the 'staging_style_symlink` is hidden, since we do not currently want users to access it (it may cause problems with some accessioning steps)%>
+    <%= form.hidden_field :staging_style_symlink, value: false %>
     <%= form.input :content_metadata_creation, collection:
         [
             ["Default", "default"],
