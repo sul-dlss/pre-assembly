@@ -10,7 +10,7 @@ gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem 'pry-rails' # useful for rails console
+gem 'pry' # make it possible to use pry for IRB
 gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'sidekiq', '~> 6.4'
