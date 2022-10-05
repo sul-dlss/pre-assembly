@@ -27,7 +27,7 @@ class JobRunsController < ApplicationController
     if @job_run.progress_log_file && File.exist?(@job_run.progress_log_file)
       send_file @job_run.progress_log_file
     else
-      flash[:warning] = 'Progress log file not available.'
+      flash.now[:warning] = 'Progress log file not available.'
       render 'show'
     end
   end
@@ -37,7 +37,7 @@ class JobRunsController < ApplicationController
     if @job_run.output_location
       send_file @job_run.output_location
     else
-      flash[:warning] = 'Job is not complete. Please check back later.'
+      flash.now[:warning] = 'Job is not complete. Please check back later.'
       render 'show'
     end
   end
@@ -47,7 +47,7 @@ class JobRunsController < ApplicationController
     if job_run.output_location && File.exist?(job_run.output_location)
       @discovery_report = JSON.parse(File.read(job_run.output_location))
     else
-      flash[:warning] = 'Discovery report file is not available.'
+      flash.now[:warning] = 'Discovery report file is not available.'
       render 'show'
     end
   end
