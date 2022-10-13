@@ -42,7 +42,7 @@ class ObjectFileValidator
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
     # errors[:dupes] = true unless batch.object_filenames_unique?(object)
-    errors[:dupes] = true unless batch.object_pathnames_unique?(object)
+    errors[:dupes] = true unless batch.object_filepaths_unique?(object)
     errors.merge!(registration_check)
     self
   end
