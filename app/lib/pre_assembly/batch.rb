@@ -44,6 +44,12 @@ module PreAssembly
       filenames.count == filenames.uniq.count
     end
 
+    # used by discovery report
+    def object_filepaths_unique?(dobj)
+      filepaths = dobj.object_files.map { |objfile| objfile.path }
+      filepaths.count == filepaths.uniq.count
+    end
+
     # Discovers the digital object containers and the stageable items within them.
     # For each container, creates a new PreAssembly::Digitalobject.
     # @return [Enumerable<PreAssembly::DigitalObject>]
