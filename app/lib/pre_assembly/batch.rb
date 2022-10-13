@@ -39,15 +39,8 @@ module PreAssembly
     end
 
     # used by discovery report
-    def object_filenames_unique?(dobj)
-      filenames = dobj.object_files.map { |objfile| File.basename(objfile.path) }
-      filenames.count == filenames.uniq.count
-    end
-
-    # used by discovery report
     def object_filepaths_unique?(dobj)
       filepaths = dobj.object_files.map(&:path)
-      filepaths.each { |fp| log fp }
       filepaths.count == filepaths.uniq.count
     end
 
