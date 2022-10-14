@@ -1,4 +1,5 @@
 # Pre-Assembly
+
 [![CircleCI](https://circleci.com/gh/sul-dlss/pre-assembly/tree/main.svg?style=svg)](https://circleci.com/gh/sul-dlss/pre-assembly/tree/main)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ebc2a1df25aded0adee9/test_coverage)](https://codeclimate.com/github/sul-dlss/pre-assembly/test_coverage)
 [![GitHub version](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly.svg)](https://badge.fury.io/gh/sul-dlss%2Fpre-assembly)
@@ -8,7 +9,7 @@ assembled and then accessioned into the SUL digital library.
 
 ## Basics
 
-`Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/.  There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.
+`Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/. There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.
 
 ## Deployment
 
@@ -51,7 +52,7 @@ docker compose up -d
 
 You need `exiftool` on your system in order to successfully run all of the tests.
 
-On RHEL, download latest version from:  http://www.sno.phy.queensu.ca/~phil/exiftool
+On RHEL, download latest version from: http://www.sno.phy.queensu.ca/~phil/exiftool
 
 ```bash
 tar -xf Image-ExifTool-#.##.tar.gz
@@ -62,6 +63,7 @@ sudo make install
 ```
 
 On MacOSX, use `homebrew` to install:
+
 ```bash
 brew install exiftool
 ```
@@ -91,7 +93,7 @@ REMOTE_USER=ima_user bin/rails server
 
 Because the application looks for user info in an environment variable, and because local dev environments don't have
 an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
-sets a single value in that env var at start time.  So laptop dev instances basically only allow one fake login at a time.
+sets a single value in that env var at start time. So laptop dev instances basically only allow one fake login at a time.
 
 ## Post Accessioning Reports
 
@@ -128,7 +130,7 @@ the section below for more details on how this works.
 
 The druid column **must** be called `"druid"`.
 
-See the sample manifest file [`TEMPLATE_manifest.csv`](spec/test_data/exemplar_templates/manifest_template/TEMPLATE_manifest.csv).
+See the sample manifest file [`TEMPLATE_manifest.csv`](spec/fixtures/exemplar_templates/manifest_template/TEMPLATE_manifest.csv).
 
 ## Descriptive Metadata
 
@@ -156,18 +158,20 @@ Iterate through each row in the supplied CSV manifest, find files, generate cont
 Note: filenames must match exactly (no leading 0s) but can be in any sub-folder
 
 Run with:
+
 ```
 RAILS_ENV=production bin/prepare_content INPUT_CSV_FILE.csv FULL_PATH_TO_CONTENT FULL_PATH_TO_STAGING_AREA [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 ```
 
 e.g.:
+
 ```
 RAILS_ENV=production bin/prepare_content.rb /maps/ThirdParty/Rumsey/Rumsey_Batch1.csv /maps/ThirdParty/Rumsey/content /maps/ThirdParty/Rumsey [--no-object-folders] [--report] [--content-metadata] [--content-metadata-style map]
 ```
 
 The first parameter is the input CSV (with columns labeled "Object", "Image", and "Label" (image is the filename, object is the object identifier which can be turned into a folder)
 second parameter is the full path to the content folder that will be searched (i.e. the base content folder)
-      Note: files will be searched iteratively through all sub-folders of the base content folder
+Note: files will be searched iteratively through all sub-folders of the base content folder
 third parameter is optional and is the full path to a folder to stage (i.e. symlink) content to - if not provided, will use same path as csv file, and append "staging"
 
 if you set the --report switch, it will only produce the output report, it will not symlink any files

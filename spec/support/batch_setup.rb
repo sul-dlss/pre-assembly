@@ -6,7 +6,7 @@ def batch_setup(proj)
 end
 
 def hash_from_proj(proj)
-  filename = "spec/test_data/project_config_files/#{proj}.yaml"
+  filename = "spec/fixtures/project_config_files/#{proj}.yaml"
   YAML.safe_load(File.read(filename))
 end
 

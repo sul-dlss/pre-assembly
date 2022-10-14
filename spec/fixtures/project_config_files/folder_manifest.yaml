@@ -1,0 +1,11 @@
+# An example of a project for which there are multiple files per object organized into folders
+
+project_name: 'FolderManifest'
+
+project_style:
+  content_structure: 'simple_image'
+
+staging_location: 'spec/fixtures/obj_dirs_images'
+
+content_md_creation:
+  style: 'default'

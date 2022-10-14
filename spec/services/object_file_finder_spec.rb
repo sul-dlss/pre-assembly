@@ -8,15 +8,15 @@ RSpec.describe ObjectFileFinder do
 
     let(:files) do
       [
-        'spec/test_data/images_jp2_tif/gn330dv6119/image1.jp2',
-        'spec/test_data/images_jp2_tif/gn330dv6119/image1.tif',
-        'spec/test_data/images_jp2_tif/gn330dv6119/image2.jp2',
-        'spec/test_data/images_jp2_tif/gn330dv6119/image2.tif',
-        'spec/test_data/images_jp2_tif/jy812bp9403/00/image1.tif',
-        'spec/test_data/images_jp2_tif/jy812bp9403/00/image2.tif',
-        'spec/test_data/images_jp2_tif/jy812bp9403/05/image1.jp2',
-        'spec/test_data/images_jp2_tif/tz250tk7584/00/image1.tif',
-        'spec/test_data/images_jp2_tif/tz250tk7584/00/image2.tif'
+        'spec/fixtures/images_jp2_tif/gn330dv6119/image1.jp2',
+        'spec/fixtures/images_jp2_tif/gn330dv6119/image1.tif',
+        'spec/fixtures/images_jp2_tif/gn330dv6119/image2.jp2',
+        'spec/fixtures/images_jp2_tif/gn330dv6119/image2.tif',
+        'spec/fixtures/images_jp2_tif/jy812bp9403/00/image1.tif',
+        'spec/fixtures/images_jp2_tif/jy812bp9403/00/image2.tif',
+        'spec/fixtures/images_jp2_tif/jy812bp9403/05/image1.jp2',
+        'spec/fixtures/images_jp2_tif/tz250tk7584/00/image1.tif',
+        'spec/fixtures/images_jp2_tif/tz250tk7584/00/image2.tif'
       ]
     end
 
@@ -28,7 +28,7 @@ RSpec.describe ObjectFileFinder do
 
     context 'when directories are provided as stageable items' do
       let(:stageable_items) do
-        ['spec/test_data/images_jp2_tif/gn330dv6119', 'spec/test_data/images_jp2_tif/jy812bp9403', 'spec/test_data/images_jp2_tif/tz250tk7584']
+        ['spec/fixtures/images_jp2_tif/gn330dv6119', 'spec/fixtures/images_jp2_tif/jy812bp9403', 'spec/fixtures/images_jp2_tif/tz250tk7584']
       end
 
       it { is_expected.to eq files }
@@ -102,12 +102,12 @@ RSpec.describe ObjectFileFinder do
 
       it {
         is_expected.to eq [
-          'spec/test_data/flat_dir_images/checksums.txt',
-          'spec/test_data/flat_dir_images/image1.tif',
-          'spec/test_data/flat_dir_images/image2.tif',
-          'spec/test_data/flat_dir_images/image3.tif',
-          'spec/test_data/flat_dir_images/manifest.csv',
-          'spec/test_data/flat_dir_images/manifest_badsourceid_column.csv'
+          'spec/fixtures/flat_dir_images/checksums.txt',
+          'spec/fixtures/flat_dir_images/image1.tif',
+          'spec/fixtures/flat_dir_images/image2.tif',
+          'spec/fixtures/flat_dir_images/image3.tif',
+          'spec/fixtures/flat_dir_images/manifest.csv',
+          'spec/fixtures/flat_dir_images/manifest_badsourceid_column.csv'
         ]
       }
     end
@@ -117,16 +117,16 @@ RSpec.describe ObjectFileFinder do
 
       it {
         is_expected.to eq [
-          'spec/test_data/images_jp2_tif/gn330dv6119/image1.jp2',
-          'spec/test_data/images_jp2_tif/gn330dv6119/image1.tif',
-          'spec/test_data/images_jp2_tif/gn330dv6119/image2.jp2',
-          'spec/test_data/images_jp2_tif/gn330dv6119/image2.tif',
-          'spec/test_data/images_jp2_tif/jy812bp9403/00/image1.tif',
-          'spec/test_data/images_jp2_tif/jy812bp9403/00/image2.tif',
-          'spec/test_data/images_jp2_tif/jy812bp9403/05/image1.jp2',
-          'spec/test_data/images_jp2_tif/manifest.csv',
-          'spec/test_data/images_jp2_tif/tz250tk7584/00/image1.tif',
-          'spec/test_data/images_jp2_tif/tz250tk7584/00/image2.tif'
+          'spec/fixtures/images_jp2_tif/gn330dv6119/image1.jp2',
+          'spec/fixtures/images_jp2_tif/gn330dv6119/image1.tif',
+          'spec/fixtures/images_jp2_tif/gn330dv6119/image2.jp2',
+          'spec/fixtures/images_jp2_tif/gn330dv6119/image2.tif',
+          'spec/fixtures/images_jp2_tif/jy812bp9403/00/image1.tif',
+          'spec/fixtures/images_jp2_tif/jy812bp9403/00/image2.tif',
+          'spec/fixtures/images_jp2_tif/jy812bp9403/05/image1.jp2',
+          'spec/fixtures/images_jp2_tif/manifest.csv',
+          'spec/fixtures/images_jp2_tif/tz250tk7584/00/image1.tif',
+          'spec/fixtures/images_jp2_tif/tz250tk7584/00/image2.tif'
         ]
       }
     end

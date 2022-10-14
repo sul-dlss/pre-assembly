@@ -2,15 +2,15 @@
 # you want to provide a manifest to provide descriptive metadata and a MODS template.
 # Object discovery also occurs via the manifest.
 
-project_name:         'Media_Missing'
+project_name: 'Media_Missing'
 
 project_style:
-  content_structure:  'media'
+  content_structure: 'media'
 
-staging_location:           'spec/test_data/media_missing'
+staging_location: 'spec/fixtures/media_missing'
 
 content_md_creation:
-  style:             'media'
-  file_manifest:     'file_manifest.csv'
+  style: 'media'
+  file_manifest: 'file_manifest.csv'
 
-using_file_manifest:  true
+using_file_manifest: true

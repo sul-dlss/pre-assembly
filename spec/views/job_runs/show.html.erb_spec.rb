@@ -7,7 +7,7 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
   end
 
   let(:job_run) { create(:job_run, :discovery_report) }
-  let(:actual_file) { Rails.root.join('spec/test_data/input/mock_progress_log.yaml') } # an existing file we can use for tests
+  let(:actual_file) { Rails.root.join('spec/fixtures/input/mock_progress_log.yaml') } # an existing file we can use for tests
 
   context 'discovery_report job' do
     before { allow(job_run).to receive(:output_location).and_return(actual_file) }

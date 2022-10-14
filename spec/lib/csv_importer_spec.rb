@@ -3,7 +3,7 @@
 RSpec.describe CsvImporter do
   describe '#parse_to_hash' do
     let(:manifest) do
-      described_class.parse_to_hash(Rails.root.join('spec/test_data/flat_dir_images/manifest.csv'))
+      described_class.parse_to_hash(Rails.root.join('spec/fixtures/flat_dir_images/manifest.csv'))
     end
 
     it 'loads a CSV as a hash with indifferent access' do
@@ -17,7 +17,7 @@ RSpec.describe CsvImporter do
 
     context 'windows manifest.csv' do
       let(:manifest) do
-        described_class.parse_to_hash(Rails.root.join('spec/test_data/windows_manifest/manifest.csv'))
+        described_class.parse_to_hash(Rails.root.join('spec/fixtures/windows_manifest/manifest.csv'))
       end
 
       it 'loads a CSV as a hash and provides values' do

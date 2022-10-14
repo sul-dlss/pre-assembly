@@ -4,7 +4,7 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "pdf-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/pdf_document') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/pdf_document') }
   let(:bare_druid) { 'pr666rr9999' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
   let(:dro_access) { { view: 'world' } }

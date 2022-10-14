@@ -8,7 +8,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-book-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/book-file-manifest') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/book-file-manifest') }
   let(:bare_druid) { 'bb000kk0000' }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.book, access: cocina_model_world_access) }

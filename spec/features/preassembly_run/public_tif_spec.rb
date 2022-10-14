@@ -6,7 +6,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)', type: :feat
   let(:project_name) { "image-#{RandomWord.nouns.next}" }
   # tif files are dark by default
   #  see https://github.com/sul-dlss/assembly-objectfile/blob/master/lib/assembly-objectfile/content_metadata/file.rb#L9-L27
-  let(:staging_location) { Rails.root.join('spec/test_data/image_tif') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/image_tif') }
   let(:bare_druid) { 'tf111tf2222' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'tf', '111', 'tf', '2222', bare_druid) }
   let(:dro_access) { { view: 'world' } }

@@ -5,7 +5,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "book-file-manifest-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/book-file-manifest') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/book-file-manifest') }
   let(:bare_druid) { 'bb000kk0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'bb', '000', 'kk', '0000', bare_druid) }
   let(:dro_access) { { view: 'world' } }
