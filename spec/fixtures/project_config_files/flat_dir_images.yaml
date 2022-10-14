@@ -1,0 +1,11 @@
+# A project which uses a manifest for object discovery, one file per object
+
+project_name: 'Flat_Dir_Images'
+
+project_style:
+  content_structure: 'simple_image'
+
+staging_location: 'spec/fixtures/flat_dir_images'
+
+content_md_creation:
+  style: 'default'

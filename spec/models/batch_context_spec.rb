@@ -6,7 +6,7 @@ RSpec.describe BatchContext, type: :model do
   let(:attr_hash) do
     {
       project_name: 'Images_jp2_tif',
-      staging_location: 'spec/test_data/images_jp2_tif'
+      staging_location: 'spec/fixtures/images_jp2_tif'
     }
   end
 
@@ -87,7 +87,7 @@ RSpec.describe BatchContext, type: :model do
   end
 
   it 'staging_location has trailing slash removed' do
-    expect(bc.staging_location).to eq 'spec/test_data/images_jp2_tif'
+    expect(bc.staging_location).to eq 'spec/fixtures/images_jp2_tif'
   end
 
   describe '#batch' do
@@ -104,7 +104,7 @@ RSpec.describe BatchContext, type: :model do
 
   describe '#staging_location_with_path' do
     it 'creates a relative path' do
-      expect(bc.staging_location_with_path('manifest.csv')).to eq 'spec/test_data/images_jp2_tif/manifest.csv'
+      expect(bc.staging_location_with_path('manifest.csv')).to eq 'spec/fixtures/images_jp2_tif/manifest.csv'
     end
   end
 
@@ -126,7 +126,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            staging_location: 'spec/test_data/exemplar_templates'
+            staging_location: 'spec/fixtures/exemplar_templates'
           }
         end
 
@@ -139,7 +139,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            staging_location: 'spec/test_data/manifest_empty'
+            staging_location: 'spec/fixtures/manifest_empty'
           }
         end
 
@@ -152,7 +152,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            staging_location: 'spec/test_data/manifest_missing_header'
+            staging_location: 'spec/fixtures/manifest_missing_header'
           }
         end
 
@@ -165,7 +165,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            staging_location: 'spec/test_data/manifest_missing_rows'
+            staging_location: 'spec/fixtures/manifest_missing_rows'
           }
         end
 
@@ -178,7 +178,7 @@ RSpec.describe BatchContext, type: :model do
         let(:attr_hash) do
           {
             project_name: 'Images_jp2_tif',
-            staging_location: 'spec/test_data/manifest_missing_column'
+            staging_location: 'spec/fixtures/manifest_missing_column'
           }
         end
 
@@ -190,12 +190,12 @@ RSpec.describe BatchContext, type: :model do
 
     context 'success' do
       it 'loads the manifest CSV' do
-        expect(CsvImporter).to receive(:parse_to_hash).with('spec/test_data/images_jp2_tif/manifest.csv').and_call_original
+        expect(CsvImporter).to receive(:parse_to_hash).with('spec/fixtures/images_jp2_tif/manifest.csv').and_call_original
         bc.object_manifest_rows
       end
 
       it 'memoizes the manifest rows' do
-        expect(CsvImporter).to receive(:parse_to_hash).once.with('spec/test_data/images_jp2_tif/manifest.csv').and_call_original
+        expect(CsvImporter).to receive(:parse_to_hash).once.with('spec/fixtures/images_jp2_tif/manifest.csv').and_call_original
         2.times { bc.object_manifest_rows }
       end
 
@@ -257,15 +257,15 @@ RSpec.describe BatchContext, type: :model do
     end
 
     it 'adds error if missing manifest.csv' do
-      allow(File).to receive(:exist?).with('spec/test_data/images_jp2_tif/manifest.csv').and_return(false)
+      allow(File).to receive(:exist?).with('spec/fixtures/images_jp2_tif/manifest.csv').and_return(false)
       bc.send(:verify_staging_location)
-      expect(bc.errors.map(&:type)).to include('missing manifest: spec/test_data/images_jp2_tif/manifest.csv')
+      expect(bc.errors.map(&:type)).to include('missing manifest: spec/fixtures/images_jp2_tif/manifest.csv')
     end
 
     it 'adds error if object selected for use with file manifest is missing file_manifest.csv' do
       allow(bc).to receive(:using_file_manifest).and_return(true)
       bc.send(:verify_staging_location)
-      expect(bc.errors.map(&:type)).to include('missing file manifest: spec/test_data/images_jp2_tif/file_manifest.csv')
+      expect(bc.errors.map(&:type)).to include('missing file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
     end
   end
 end

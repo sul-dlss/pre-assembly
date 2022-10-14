@@ -135,7 +135,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#pre_assembled_object_containers' do
     it 'returns expected hash of skippable items' do
-      allow(multimedia).to receive(:progress_log_file).and_return('spec/test_data/input/mock_progress_log.yaml')
+      allow(multimedia).to receive(:progress_log_file).and_return('spec/fixtures/input/mock_progress_log.yaml')
       expect(multimedia.send(:pre_assembled_object_containers)).to eq('aa' => true, 'bb' => true)
     end
   end
@@ -212,7 +212,7 @@ RSpec.describe PreAssembly::Batch do
 
   describe '#discover_items_via_crawl' do
     it 'returns expected information' do
-      # these are the actual files in the spec/test_data/flat_dir_images staging directory
+      # these are the actual files in the spec/fixtures/flat_dir_images staging directory
       items = %w[checksums.txt image1.tif image2.tif image3.tif manifest.csv manifest_badsourceid_column.csv].map { |i| flat_dir_images.staging_location_with_path i }
       expect(flat_dir_images.send(:discover_items_via_crawl, flat_dir_images.staging_location)).to eq(items.sort)
     end
@@ -233,7 +233,7 @@ RSpec.describe PreAssembly::Batch do
     let(:full) { flat_dir_images.staging_location_with_path(relative) }
 
     it '#staging_location_with_path returns expected value' do
-      expect(flat_dir_images.staging_location_with_path(relative)).to eq('spec/test_data/flat_dir_images/abc/def.jpg')
+      expect(flat_dir_images.staging_location_with_path(relative)).to eq('spec/fixtures/flat_dir_images/abc/def.jpg')
     end
   end
 end

@@ -4,7 +4,7 @@ RSpec.describe 'Discovery Report completes with errors', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-completed-with-errors-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/good_and_error_objects') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/good_and_error_objects') }
   let(:bare_druid) { 'oo000oo0000' }
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.book, access: cocina_model_world_access) }

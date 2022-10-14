@@ -63,7 +63,7 @@ RSpec.describe JobRunsController, type: :controller do
     end
 
     it 'returns file attachment' do
-      job_run_double = instance_double(JobRun, progress_log_file: 'spec/test_data/input/mock_progress_log.yaml')
+      job_run_double = instance_double(JobRun, progress_log_file: 'spec/fixtures/input/mock_progress_log.yaml')
       allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
       get :download_log, params: { id: 123 }
       expect(response).to have_http_status(:success)
@@ -85,7 +85,7 @@ RSpec.describe JobRunsController, type: :controller do
     end
 
     it 'when job is complete, returns file attachment' do
-      job_run_double = instance_double(JobRun, output_location: 'spec/test_data/input/mock_discovery_report.json')
+      job_run_double = instance_double(JobRun, output_location: 'spec/fixtures/input/mock_discovery_report.json')
       allow(JobRun).to receive(:find).with('123').and_return(job_run_double)
       get :download_report, params: { id: 123 }
       expect(response).to have_http_status(:success)

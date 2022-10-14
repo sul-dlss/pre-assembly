@@ -8,7 +8,7 @@ RSpec.describe 'Pre-assemble Media Audio object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "media-audio-objects-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/media_audio_test') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/media_audio_test') }
   let(:bare_druid) { 'sn000dd0000' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'sn', '000', 'dd', '0000', bare_druid) }
   let(:dro_access) { { view: 'world' } }

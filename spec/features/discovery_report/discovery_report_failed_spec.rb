@@ -4,7 +4,7 @@ RSpec.describe 'Discovery Report fails', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-failed-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/file_manifest_no_header') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/file_manifest_no_header') }
 
   before do
     login_as(user, scope: :user)

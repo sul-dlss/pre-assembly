@@ -7,7 +7,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:batch_context, staging_location: 'spec/test_data/images_jp2_tif') }
+  let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif') }
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
 

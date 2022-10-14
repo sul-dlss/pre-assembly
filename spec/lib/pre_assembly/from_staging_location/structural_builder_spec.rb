@@ -11,7 +11,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
                             content_md_creation_style: :document)
     end
 
-    let(:common_path) { 'spec/test_data/pdf_document/content/' }
+    let(:common_path) { 'spec/fixtures/pdf_document/content/' }
     let(:objects) { [PreAssembly::ObjectFile.new("#{common_path}document.pdf", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })] }
     let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(content_metadata_creation: :default, objects: objects, style: :document) }
     let(:cocina_dro) do

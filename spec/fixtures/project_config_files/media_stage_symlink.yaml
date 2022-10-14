@@ -1,0 +1,16 @@
+project_name: 'media-staging-symlink'
+
+project_style:
+  content_structure: 'media'
+
+staging_location: 'spec/fixtures/multimedia'
+
+staging_style: 'symlink'
+
+content_md_creation:
+  style: 'media'
+
+stageable_discovery:
+  glob: '**/*'
+  regex: '^((?!_techmd.xml|.md5).)*$'
+  files_only: true

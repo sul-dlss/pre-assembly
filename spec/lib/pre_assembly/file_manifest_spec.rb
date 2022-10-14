@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe PreAssembly::FileManifest do
-  let(:staging_location) { Rails.root.join('spec/test_data/multimedia') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
 
   describe '#create_content_metadata' do
     let(:csv_filename) { "#{staging_location}/file_manifest.csv" }

@@ -83,7 +83,7 @@ RSpec.describe DiscoveryReport do
       {
         project_name: 'SmokeTest',
         content_structure: 0,
-        staging_location: 'spec/test_data/images_jp2_tif',
+        staging_location: 'spec/fixtures/images_jp2_tif',
         staging_style_symlink: false,
         content_metadata_creation: 0,
         user: build(:user, sunet_id: 'jdoe')

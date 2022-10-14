@@ -4,7 +4,7 @@ RSpec.describe 'Pre-assemble job fails', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "failed-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/test_data/manifest_missing_column') }
+  let(:staging_location) { Rails.root.join('spec/fixtures/manifest_missing_column') }
   let(:bare_druid) { 'bc123de5678' }
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'bc', '123', 'de', '5678', bare_druid) }
 

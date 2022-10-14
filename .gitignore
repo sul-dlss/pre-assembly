@@ -12,7 +12,7 @@ memory_report.txt
 config/certs/*
 config/honeybadger.yml
 db/*.sqlite3
-spec/test_data/logging/*
+spec/fixtures/logging/*
 spec/examples.txt
 doc/*
 log/*
@@ -21,7 +21,7 @@ tags
 tmp
 /workflow_service.log*
 coverage
-spec/lib/test_data/logging/progress_log_file.yml
+spec/lib/fixtures/logging/progress_log_file.yml
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
