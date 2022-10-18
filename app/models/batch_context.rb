@@ -40,6 +40,7 @@ class BatchContext < ApplicationRecord
     'simple_book_rtl' => 9
   }
 
+  # this is a stupid inherited name in the UI for the type of manifest
   enum content_metadata_creation: {
     'default' => 0,
     'filename' => 1,
@@ -62,6 +63,7 @@ class BatchContext < ApplicationRecord
                                   staging_location: staging_location)
   end
 
+   # this is a stupid inherited name in the UI for the type of manifest
   def content_md_creation
     content_metadata_creation
   end

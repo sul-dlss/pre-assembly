@@ -1,0 +1,19 @@
+argo_url: 'https://argo-stage.stanford.edu'
+dor_services:
+  url: 'https://dor-services-stage-lb.stanford.edu'
+etd_url: 'https://etd-stage.stanford.edu'
+gis:
+  robots_host: 'kurma-robots-stage-01.stanford.edu'
+h2_url: 'https://sul-h2-stage.stanford.edu'
+purl_url: 'https://sul-purl-stage.stanford.edu' # from shared_configs for sul-h2-stage
+preassembly_bundle_directory: '/dor/staging/integration-tests/image-test'
+preassembly_hfs_bundle_directory: '/dor/staging/integration-tests/hierarchical-file-test'
+preassembly_host: 'sul-preassembly-stage.stanford.edu'
+preassembly_url: 'https://sul-preassembly-stage.stanford.edu'
+sdrapi_url: 'https://sdr-api-stage.stanford.edu'
+was_playback_url: 'https://swap-stage.stanford.edu'
+was_registrar:
+  host: 'was-registrar-app-stage.stanford.edu'
+  jobs_directory: '/was_unaccessioned_data/jobs'
+  url: 'https://was-registrar-app-stage.stanford.edu'
+  username: 'was'
