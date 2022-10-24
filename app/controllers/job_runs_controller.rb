@@ -6,9 +6,9 @@ class JobRunsController < ApplicationController
 
     @job_run = JobRun.new(job_run_params)
     if @job_run.save
-      flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      flash.now[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     else
-      flash[:error] = "Error(s) saving JobRun: #{@job_run.errors}"
+      flash.now[:error] = "Error(s) saving JobRun: #{@job_run.errors}"
     end
     redirect_to(action: 'index')
   end
