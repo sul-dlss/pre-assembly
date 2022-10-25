@@ -63,7 +63,7 @@ class BatchContext < ApplicationRecord
                                   staging_location: staging_location)
   end
 
-   # this is a stupid inherited name in the UI for the type of manifest
+  # this is a stupid inherited name in the UI for the type of manifest
   def content_md_creation
     content_metadata_creation
   end
