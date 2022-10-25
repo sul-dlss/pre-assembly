@@ -85,11 +85,11 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       let(:common_path) { 'spec/fixtures/hierarchical-files/content/' }
       let(:objects) do
         [
-          PreAssembly::ObjectFile.new("#{common_path}README.md", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/qa.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/staging.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/settings.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}test1.txt", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/test.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test1.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test2.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
           PreAssembly::ObjectFile.new("#{common_path}/images/image.jpg", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
           PreAssembly::ObjectFile.new("#{common_path}/images/subdir/image.jpg", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })
         ]
@@ -104,11 +104,11 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
           expect(file_sets.size).to eq 7
           files = file_sets.flat_map { |file_set| file_set.structural.contains }
           expect(files.map(&:filename)).to eq [
-            'README.md',
-            '/config/settings.yml',
-            '/config/settings/qa.yml',
-            '/config/settings/staging.yml',
-            '/config/settings/settings.yml',
+            'test1.txt',
+            '/config/test.yml',
+            '/config/settings/test.yml',
+            '/config/settings/test1.yml',
+            '/config/settings/test2.yml',
             '/images/image.jpg',
             '/images/subdir/image.jpg'
           ]
