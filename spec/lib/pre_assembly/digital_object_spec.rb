@@ -123,12 +123,12 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    def add_object_files(extension:, rel_path: '')
-      (1..2).each do |i|
+    def add_object_files(extension:, num: 2, rel_path: '')
+      (1..num).each do |i|
         f = "#{rel_path}image#{i}.#{extension}"
         options = { relative_path: f, checksum: i.to_s * 4 }
 
-        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/gn330dv6119/#{f}", options)
+        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
       end
     end
 
@@ -194,6 +194,65 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
+      end
+
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
+      end
+    end
+
+    describe 'default structural metadata (image) with file hierarchy' do
+      let(:pid) { 'druid:jy812bp9403' }
+      let(:cocina_type) { Cocina::Models::ObjectType.image }
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: '00/image1.tif',
+                                                  filename: '00/image1.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: '00/image2.tif',
+                                                  filename: '00/image2.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_3',
+                       label: 'Image 3',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
+                                                  label: '05/image1.jp2',
+                                                  filename: '05/image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+
+          hasMemberOrders: [],
+          isMemberOf: [] }
+      end
+
+      before do
+        add_object_files(extension: 'tif', rel_path: '00/')
+        add_object_files(num: 1, extension: 'jp2', rel_path: '05/')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
