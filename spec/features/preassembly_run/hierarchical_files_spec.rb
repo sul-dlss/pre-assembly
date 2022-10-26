@@ -54,8 +54,21 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
     yaml = YAML.load_file(result_file)
     expect(yaml[:status]).to eq 'success'
 
-    # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 5
+    # we got all the expected content files and folders, and they are staged correctly in sub-folders
+    content_root = File.join(object_staging_dir, 'content')
+    staged_files_and_folders = Dir.glob("#{content_root}/**/**")
+    expect(staged_files_and_folders.size).to eq 11
+    expect(staged_files_and_folders).to eq ["#{content_root}/config",
+                                            "#{content_root}/config/settings",
+                                            "#{content_root}/config/settings/test.yml",
+                                            "#{content_root}/config/settings/test1.yml",
+                                            "#{content_root}/config/settings/test2.yml",
+                                            "#{content_root}/config/test.yml",
+                                            "#{content_root}/images",
+                                            "#{content_root}/images/image.jpg",
+                                            "#{content_root}/images/subdir",
+                                            "#{content_root}/images/subdir/image.jpg",
+                                            "#{content_root}/test1.txt"]
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
