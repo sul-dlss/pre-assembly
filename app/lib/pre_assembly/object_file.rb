@@ -15,10 +15,10 @@ module PreAssembly
       @provider_md5 ||= params[:checksum]
     end
 
-    # This is a bit of a lie.  ObjectFiles with the same relative_path but different checksums
+    # This is a bit of a lie.  ObjectFiles with the same path but different checksums
     # are clearly not representing the same thing.
     def <=>(other)
-      relative_path <=> other.relative_path
+      path <=> other.path
     end
   end
 end

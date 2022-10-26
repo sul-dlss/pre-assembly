@@ -125,10 +125,10 @@ RSpec.describe PreAssembly::DigitalObject do
 
     def add_object_files(extension:, num: 2, rel_path: '')
       (1..num).each do |i|
-        f = "#{rel_path}image#{i}.#{extension}"
+        f = "image#{i}.#{extension}"
         options = { relative_path: f, checksum: i.to_s * 4 }
 
-        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
+        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{rel_path}#{f}", options)
       end
     end
 
