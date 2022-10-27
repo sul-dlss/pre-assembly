@@ -8,7 +8,7 @@
 # Full documentation of how it is used is here (which needs to be updated if this script moves):
 # https://consul.stanford.edu/pages/viewpage.action?pageId=146704638
 
-# Iterate through each row in the supplied CSV manifest, find files, generate contentMetadata and symlink to new location.
+# Iterate through each row in the supplied CSV manifest, find files, generate contentMetadata and copies/symlinks to new location.
 # Note: filenames must match exactly (no leading 0s) but can be in any sub-folder
 
 # Peter Mangiafico
@@ -22,17 +22,18 @@
 # the first parameter is the input CSV (with columns labeled "Object", "Image", and "Label" (image is the filename, object is the object identifier which can be turned into a folder)
 # second parameter is the full path to the content folder that will be searched (i.e. the base content folder)
 #      Note: files will be searched iteratively through all sub-folders of the base content folder
-# third parameter is optional and is the full path to a folder to stage (i.e. symlink) content to - if not provided, will use same path as csv file, and append "staging"
+# third parameter is optional and is the full path to a folder to stage (i.e. copy or symlink) content to - if not provided, will use same path as csv file, and append "staging"
 #
-# if you set the --report switch, it will only produce the output report, it will not symlink any files
-# if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
+# if you set the --report switch, it will only produce the output report, it will not copy or symlink any files
+# if you set the --no-object-folders switch, then all copied/symlinked files will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store copied/symlinked files
 # note that file extensions do not matter when matching
 
 require 'optparse'
-report = false # if set to true, will only show output and produce report, won't actually symlink files or create anything, can be overriden with --report switch
-no_object_folders = false # if false, then each new object will be in a separately created folder, with symlinks contained inside it; if true, you will get a flat list
+report = false # if set to true, will only show output and produce report, won't actually copy or symlink files or create anything, can be overriden with --report switch
+no_object_folders = false # if false, then each new object will be in a separately created folder, with copied/symlinked contained inside it; if true, you will get a flat list
+symlink = false # if false, then files are copied/symlinked to output folder, if true, then files are symlinked to output folder
 
-help = "Usage:\n    #{$PROGRAM_NAME} INPUT_CSV_FILE BASE_CONTENT_FOLDER [STAGING_FOLDER] [--no-object-folders] [--report]\n"
+help = "Usage:\n    #{$PROGRAM_NAME} INPUT_CSV_FILE BASE_CONTENT_FOLDER [STAGING_FOLDER] [--no-object-folders] [--report] [--symlink]\n"
 OptionParser.new do |opts|
   opts.banner = help
   opts.on('--report') do |_dr|
@@ -40,6 +41,9 @@ OptionParser.new do |opts|
   end
   opts.on('--no-object-folders') do |_ob|
     no_object_folders = true
+  end
+  opts.on('--symlink') do |_dr|
+    symlink = true
   end
 end.parse!
 
@@ -53,6 +57,7 @@ base_content_folder = ARGV[1]
 source_path = File.dirname(csv_in)
 source_name = File.basename(csv_in, File.extname(csv_in))
 csv_out = File.join(source_path, source_name + '_log.csv')
+action = symlink ? 'symlink' : 'copy'
 
 staging_folder = if ARGV.size == 2 # no staging path provided, use same as CSV In and append "staging"
                    File.join(source_path, 'staging')
@@ -84,6 +89,7 @@ puts ''
 puts '***Prepare Content***'
 puts 'Only producing report' if report
 puts 'Creating object folders' unless no_object_folders
+puts 'Create symlinks instead of copy' if symlink
 puts "Input CSV File: #{csv_in}"
 puts "Logging to: #{csv_out}"
 puts "Base Content Folder: #{base_content_folder}"
@@ -146,13 +152,15 @@ csv_data.each do |row|
   #  or that match exacatly but are in a sub-directory (as indicated by having a path separator, e.g. a "/" right before the filename)
   # e.g. if you are looking for a file called "test.csv", this will match "test", "test.csv", "test.jpg", "dir/test.csv", "dir/test", but NOT "0test", or "dir/0test.jpg"
   files_found = files_to_search.grep(/((.+\/{1}#{filename})|(^#{filename}))\.\S+/i)
-  # if found, symlink files that match
+  # if found, copies or symlinks files that match
   files_found.each do |input_file|
     input_filename = File.basename(input_file)
-    message = "found #{input_file}, symlink to object folder #{object_folder}"
+    message = "found #{input_file}, #{action} to object folder #{object_folder}"
     output_file_full_path = no_object_folders ? File.join(staging_folder, input_filename) : File.join(object_folder, input_filename)
     input_file_full_path = Pathname.new(File.join(base_content_folder, input_file)).cleanpath(true).to_s
-    FileUtils.ln_s(input_file_full_path, output_file_full_path, force: true) unless report || File.exist?(output_file_full_path)
+    unless report || File.exist?(output_file_full_path)
+      symlink ? FileUtils.ln_s(input_file_full_path, output_file_full_path, force: true) : FileUtils.cp(input_file_full_path, output_file_full_path)
+    end
     num_files_copied += 1
     success = true
     CSV.open(csv_out, 'a') do |f|
@@ -179,7 +187,7 @@ end
 
 puts ''
 puts "Total objects staged: #{num_objects}"
-puts "Total files symlinked: #{num_files_copied}"
+puts "Total files #{action}: #{num_files_copied}"
 puts "Total rows: #{csv_data.size}"
 puts "Total files not found: #{num_files_not_found}"
 
