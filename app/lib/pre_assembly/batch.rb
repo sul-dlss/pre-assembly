@@ -54,11 +54,12 @@ module PreAssembly
 
       containers_via_manifest.map.with_index do |container, i|
         stageable_items = discover_items_via_crawl(container)
+        common_path = Assembly::ObjectFile.common_path(stageable_items) # find common paths to all files provided
         row = object_manifest_rows[i]
         yield DigitalObject.new(self,
                                 container: container,
                                 stageable_items: stageable_items,
-                                object_files: ObjectFileFinder.run(stageable_items: stageable_items, druid: row[:druid]),
+                                object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: item.gsub(common_path, '') }) },
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],
@@ -116,7 +117,7 @@ module PreAssembly
     # Takes a root path of the object folder (as supplied in the object manifest).
     # It then finds all files within with an eager glob pattern.
     def discover_items_via_crawl(root)
-      Dir.glob("#{root}/**/*")
+      Dir.glob("#{root}/**/*").select { |fname| File.file?(fname) }
     end
 
     # ignores objects already pre-assembled as part of re-runnability of preassembly job
