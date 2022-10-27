@@ -102,13 +102,12 @@ RSpec.describe DiscoveryReport do
     end
 
     it 'process_dobj gives expected output for one dobj' do
-      allow(dobj).to receive(:druid).and_return(DruidTools::Druid.new('kk203bw3276'))
       expect(report.send(:process_dobj, dobj).as_json).to eq(
-        druid: 'druid:kk203bw3276',
-        errors: { dupes: true },
+        druid: 'druid:jy812bp9403',
+        errors: {},
         counts: {
-          total_size: 254_802,
-          mimetypes: { 'image/tiff' => 4, 'image/jp2' => 2 },
+          total_size: 127_401,
+          mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
           filename_no_extension: 0
         }
       )
@@ -117,12 +116,12 @@ RSpec.describe DiscoveryReport do
       )
     end
 
-    it 'produces the json, indicates if errors occurs and records the error message' do
+    it 'produces the json, indicates no errors occurred' do
       json = JSON.parse(report.to_builder.target!)
       expect(json['rows'].size).to eq 3
-      expect(report.objects_had_errors).to be true
-      expect(report.error_message).to eq '2 objects had errors in the discovery report'
-      expect(report.summary).to include(objects_with_error: 2, total_size: 636_563)
+      expect(report.objects_had_errors).to be false
+      expect(report.error_message).to be_nil
+      expect(report.summary).to include(objects_with_error: 0, total_size: 382_224)
     end
   end
 end
