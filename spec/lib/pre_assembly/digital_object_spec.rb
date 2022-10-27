@@ -11,11 +11,12 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
   let(:tmp_area) do
-    Rails.root.join(Dir.mktmpdir(*tmp_dir_args)).to_s
+    File.expand_path(Dir.mktmpdir(*tmp_dir_args))
   end
   let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, common_path: tmp_area) }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
+  after { FileUtils.remove_entry tmp_area }
 
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
@@ -67,15 +68,21 @@ RSpec.describe PreAssembly::DigitalObject do
       assembly_directory.send(:create_object_directories)
     end
 
-    after { FileUtils.remove_entry tmp_area }
-
     context 'when the copy stager is passed' do
       it 'is able to copy stageable items successfully' do
+        # source exists, but not copy yet
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = assembly_directory.path_for(f)
+          expect(File.exist?(src)).to be(true)
+          expect(File.exist?(cpy)).to be(false)
+          expect(File.symlink?(cpy)).to be(false)
+        end
         object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.send(:content_dir), f)
+          cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(false)
@@ -87,11 +94,19 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:stager) { PreAssembly::LinkStager }
 
       it 'is able to symlink stageable items successfully' do
+        # source exists, but not copy yet
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = assembly_directory.path_for(f)
+          expect(File.exist?(src)).to be(true)
+          expect(File.exist?(cpy)).to be(false)
+          expect(File.symlink?(cpy)).to be(false)
+        end
         object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.send(:content_dir), f)
+          cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(true)
