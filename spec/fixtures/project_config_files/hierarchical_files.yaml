@@ -1,0 +1,11 @@
+# An example of a project for which there is an object hierarchy
+
+project_name: 'Hierarchical_Files'
+
+project_style:
+  content_structure: 'file'
+
+staging_location: 'spec/fixtures/hierarchical-files'
+
+content_md_creation:
+  style: 'default'

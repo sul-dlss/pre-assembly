@@ -148,7 +148,6 @@ module PreAssembly
       filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation: content_metadata_creation, objects: objects, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
                                                    filesets: filesets,
-                                                   common_path: common_path,
                                                    all_files_public: batch.batch_context.all_files_public?,
                                                    reading_order: reading_order,
                                                    content_md_creation_style: content_md_creation_style)

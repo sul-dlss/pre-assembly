@@ -60,7 +60,6 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             filesets: Array,
-            common_path: "#{staging_location}/content/",
             all_files_public: false,
             reading_order: 'left-to-right',
             content_md_creation_style: :simple_image)

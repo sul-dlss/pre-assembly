@@ -11,6 +11,11 @@ RSpec.describe PreAssembly::Batch do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
   end
   let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item, update: true) }
+  let(:relative_file_paths) do
+    batch.digital_objects.map do |digital_object|
+      digital_object.object_files.map(&:relative_path)
+    end
+  end
 
   before do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
@@ -152,27 +157,78 @@ RSpec.describe PreAssembly::Batch do
   end
 
   describe '#digital_objects' do
-    let(:batch) { batch_setup(:folder_manifest) }
+    context 'with flat folder structure' do
+      let(:batch) { batch_setup(:folder_manifest) }
 
-    it 'calculates size correctly' do
-      # #size on the Enumerator object is calculated in a way that avoids iterating over the whole thing
-      expect(flat_dir_images.digital_objects.size).to eq(flat_dir_images.digital_objects.to_a.size)
+      it 'calculates size correctly' do
+        # #size on the Enumerator object is calculated in a way that avoids iterating over the whole thing
+        expect(flat_dir_images.digital_objects.size).to eq(flat_dir_images.digital_objects.to_a.size)
+      end
+
+      it 'finds the correct number of objects' do
+        expect(batch.digital_objects.size).to eq(3)
+      end
+
+      it 'sets the correct relative_paths for the files' do
+        expect(relative_file_paths).to eq [
+          [
+            'image1.tif',
+            'image2.tif'
+          ],
+          [
+            'image1.tif',
+            'image2.tif'
+          ],
+          [
+            'image1.tif',
+            'image2.tif'
+          ]
+        ]
+      end
+
+      it 'handles containers correctly' do
+        expect(multimedia.digital_objects.first.container.size).to be > multimedia.staging_location.size
+      end
+
+      it 'augments the digital objects with additional information' do
+        expect(flat_dir_images.digital_objects.size).to eq(3)
+        extra_info = flat_dir_images.digital_objects.map { |dobj| { label: dobj.label, source_id: dobj.source_id } }
+        expect(extra_info).to eq [
+          {
+            label: 'Avus 1937',
+            source_id: 'foo-1.0'
+          },
+          {
+            label: 'Avus 1938',
+            source_id: 'foo-2.1'
+          },
+          {
+            label: 'Avus 1938, 1956',
+            source_id: 'foo-2.2'
+          }
+        ]
+      end
     end
 
-    it 'finds the correct number of objects' do
-      expect(batch.digital_objects.size).to eq(3)
-    end
+    context 'with hierarchical file structure' do
+      let(:batch) { batch_setup(:hierarchical_files) }
 
-    it 'handles containers correctly' do
-      expect(multimedia.digital_objects.first.container.size).to be > multimedia.staging_location.size
-    end
+      it 'finds the correct number of objects' do
+        expect(batch.digital_objects.size).to eq(1)
+      end
 
-    it 'augments the digital objects with additional information' do
-      expect(flat_dir_images.digital_objects.size).to eq(3)
-      flat_dir_images.digital_objects.each do |dobj|
-        expect(dobj.label).to be_a(String)
-        expect(dobj.label).not_to eq('Unknown') # hardcoded in class
-        expect(dobj.source_id).to be_a(String)
+      it 'sets the correct relative_paths for the files' do
+        expect(relative_file_paths).to eq [
+          [
+            'config/settings/test.yml',
+            'config/settings/test1.yml',
+            'config/settings/test2.yml',
+            'config/test.yml',
+            'images/image.jpg',
+            'images/subdir/image.jpg',
+            'test1.txt'
+          ]
+        ]
       end
     end
   end

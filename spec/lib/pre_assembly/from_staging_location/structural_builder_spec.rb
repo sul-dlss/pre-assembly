@@ -5,7 +5,6 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
     subject(:structural) do
       described_class.build(cocina_dro: cocina_dro,
                             filesets: filesets,
-                            common_path: common_path,
                             all_files_public: all_files_public,
                             reading_order: 'left-to-right',
                             content_md_creation_style: :document)
@@ -18,7 +17,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
     context 'with flat file structure' do
       let(:common_path) { 'spec/fixtures/pdf_document/content/' }
-      let(:objects) { [PreAssembly::ObjectFile.new("#{common_path}document.pdf", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })] }
+      let(:objects) { [PreAssembly::ObjectFile.new("#{common_path}document.pdf", { relative_path: 'document.pdf', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })] }
 
       context 'with all files public' do
         let(:dro_access) { { view: 'world' } }
@@ -85,13 +84,13 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       let(:common_path) { 'spec/fixtures/hierarchical-files/content/' }
       let(:objects) do
         [
-          PreAssembly::ObjectFile.new("#{common_path}test1.txt", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/test.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test1.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test2.yml", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/images/image.jpg", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{common_path}/images/subdir/image.jpg", { file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })
+          PreAssembly::ObjectFile.new("#{common_path}test1.txt", { relative_path: 'test1.txt', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/test.yml", { relative_path: '/config/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test.yml", { relative_path: '/config/settings/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test1.yml", { relative_path: '/config/settings/test1.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/config/settings/test2.yml", { relative_path: '/config/settings/test2.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/images/image.jpg", { relative_path: '/images/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          PreAssembly::ObjectFile.new("#{common_path}/images/subdir/image.jpg", { relative_path: '/images/subdir/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })
         ]
       end
 

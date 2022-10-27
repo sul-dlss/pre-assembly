@@ -29,11 +29,7 @@ module PreAssembly
         @file = file
       end
 
-      delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, to: :file
-
-      def file_id(common_path: '')
-        file.path.gsub(common_path, '')
-      end
+      delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, :relative_path, to: :file
 
       def file_attributes
         file.file_attributes || ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
