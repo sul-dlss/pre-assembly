@@ -35,7 +35,7 @@ RSpec.describe ObjectFileValidator do
     end
 
     context 'folders are not empty' do
-      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: 'random/path', filesize: 324, mimetype: '') }
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: '', relative_path: 'random/path', filesize: 324, mimetype: '') }
 
       before do
         allow(object).to receive(:object_files).and_return([obj_file, obj_file])
@@ -50,7 +50,7 @@ RSpec.describe ObjectFileValidator do
 
     context 'missing_media_container_name_or_manifest' do
       let(:batch) { batch_setup(:media_missing) }
-      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: '', filesize: 324, mimetype: '') }
+      let(:obj_file) { instance_double(PreAssembly::ObjectFile, path: '', relative_path: '', filesize: 324, mimetype: '') }
 
       before do
         allow(object).to receive(:object_files).and_return([obj_file, obj_file])

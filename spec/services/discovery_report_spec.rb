@@ -82,7 +82,7 @@ RSpec.describe DiscoveryReport do
     let(:bc_params) do
       {
         project_name: 'SmokeTest',
-        content_structure: 0,
+        content_structure: content_structure,
         staging_location: 'spec/fixtures/images_jp2_tif',
         staging_style_symlink: false,
         content_metadata_creation: 0,
@@ -101,27 +101,54 @@ RSpec.describe DiscoveryReport do
       allow(Dor::Services::Client).to receive(:object).and_return(client_object)
     end
 
-    it 'process_dobj gives expected output for one dobj' do
-      expect(report.send(:process_dobj, dobj).as_json).to eq(
-        druid: 'druid:jy812bp9403',
-        errors: {},
-        counts: {
-          total_size: 127_401,
-          mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
-          filename_no_extension: 0
-        }
-      )
-      expect(report.summary).to include(
-        objects_with_error: 0, mimetypes: {}, total_size: 0
-      )
+    context 'with image content structure type' do
+      let(:content_structure) { 'simple_image' }
+
+      it 'process_dobj gives expected output for one dobj' do
+        expect(report.send(:process_dobj, dobj).as_json).to eq(
+          druid: 'druid:jy812bp9403',
+          errors: {
+            wrong_content_structure: true
+          },
+          counts: {
+            total_size: 127_401,
+            mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
+            filename_no_extension: 0
+          }
+        )
+      end
+
+      it 'produces the json, indicates errors occurred' do
+        json = JSON.parse(report.to_builder.target!)
+        expect(json['rows'].size).to eq 3
+        expect(report.objects_had_errors).to be true
+        expect(report.error_message).to eq '2 objects had errors in the discovery report' # hierarchy with non-file type
+        expect(report.summary).to include(objects_with_error: 2, total_size: 382_224)
+      end
     end
 
-    it 'produces the json, indicates no errors occurred' do
-      json = JSON.parse(report.to_builder.target!)
-      expect(json['rows'].size).to eq 3
-      expect(report.objects_had_errors).to be false
-      expect(report.error_message).to be_nil
-      expect(report.summary).to include(objects_with_error: 0, total_size: 382_224)
+    context 'with file content structure type' do
+      let(:content_structure) { 'file' }
+
+      it 'process_dobj gives expected output for one dobj' do
+        expect(report.send(:process_dobj, dobj).as_json).to eq(
+          druid: 'druid:jy812bp9403',
+          errors: {},
+          counts: {
+            total_size: 127_401,
+            mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
+            filename_no_extension: 0
+          }
+        )
+      end
+
+      it 'produces the json, indicates no errors occurred' do
+        json = JSON.parse(report.to_builder.target!)
+        expect(json['rows'].size).to eq 3
+        expect(report.objects_had_errors).to be false
+        expect(report.error_message).to be_nil
+        expect(report.summary).to include(objects_with_error: 0, total_size: 382_224)
+      end
     end
   end
 end

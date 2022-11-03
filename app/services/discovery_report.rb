@@ -8,7 +8,7 @@ class DiscoveryReport
   attr_reader :batch, :summary
   attr_accessor :error_message, :objects_had_errors
 
-  delegate :staging_location, :content_md_creation, :project_style, :object_filepaths_unique?, :object_filenames_unique?, :file_manifest, to: :batch
+  delegate :staging_location, :content_md_creation, :project_style, :file_manifest, to: :batch
 
   # @param [PreAssembly::Batch] batch
   def initialize(batch)
