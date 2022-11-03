@@ -4,13 +4,13 @@ module PreAssembly
   # Represents the assembly structure on the filesystem,
   # Used by PreAssembly::DigitalObject
   class AssemblyDirectory
-    def self.create(druid_id:, common_path: '')
-      new(druid_id: druid_id, common_path: common_path).tap(&:create_object_directories)
+    def self.create(druid_id:, base_path: '')
+      new(druid_id: druid_id, base_path: base_path).tap(&:create_object_directories)
     end
 
-    def initialize(druid_id:, common_path: '')
+    def initialize(druid_id:, base_path: '')
       @druid_id = druid_id
-      @common_path = common_path
+      @base_path = base_path
     end
 
     # @return [String] the appropriate path for the file ('metadata' or 'content' will be last segment)
@@ -18,7 +18,7 @@ module PreAssembly
       # these are the names of files that will be staged in the 'metadata' folder instead of the 'content' folder
       metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
 
-      relative_path = item_path.gsub(common_path, '')
+      relative_path = item_path.delete_prefix(base_path)
       return File.join(content_dir, relative_path) unless metadata_files.include?(File.basename(item_path).downcase)
 
       Honeybadger.notify("I don't think we still stage descMetadata.xml or contentMetadata.xml anymore. Investigate this.")
@@ -32,7 +32,7 @@ module PreAssembly
 
     private
 
-    attr_reader :druid_id, :common_path
+    attr_reader :druid_id, :base_path
 
     def create_object_directories
       FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)

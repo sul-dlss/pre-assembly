@@ -13,7 +13,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:tmp_area) do
     File.expand_path(Dir.mktmpdir(*tmp_dir_args))
   end
-  let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, common_path: tmp_area) }
+  let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area) }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
   after { FileUtils.remove_entry tmp_area }
