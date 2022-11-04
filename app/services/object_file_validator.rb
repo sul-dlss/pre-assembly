@@ -58,6 +58,11 @@ class ObjectFileValidator
     { druid: druid.druid, errors: errors.compact, counts: counts }
   end
 
+  # check to see if files within object has hierarchy (i.e. paths in filenames)
+  def object_has_hierarchy?
+    filepaths.any?(/\/+/)
+  end
+
   private
 
   attr_reader :object, :batch
@@ -80,11 +85,6 @@ class ObjectFileValidator
   # check that all filenames are unique
   def object_filepaths_unique?
     filepaths.count == filepaths.uniq.count
-  end
-
-  # check to see if files within object has hierarchy (i.e. paths in filenames)
-  def object_has_hierarchy?
-    filepaths.any?(/\/+/)
   end
 
   def filename_no_extension

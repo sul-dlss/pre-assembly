@@ -84,50 +84,83 @@ RSpec.describe 'Pre-assemble Image object', type: :feature do
     end
   end
 
-  it 'runs successfully and creates log file' do
-    visit '/'
-    expect(page).to have_selector('h3', text: 'Complete the form below')
+  context 'with File content structure' do
+    it 'runs successfully and creates log file' do
+      visit '/'
+      expect(page).to have_selector('h3', text: 'Complete the form below')
 
-    fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Media', from: 'Content structure'
-    fill_in 'Staging location', with: staging_location
-    check 'batch_context_using_file_manifest'
+      fill_in 'Project name', with: project_name
+      select 'Pre Assembly Run', from: 'Job type'
+      select 'File', from: 'Content structure'
+      fill_in 'Staging location', with: staging_location
+      check 'batch_context_using_file_manifest'
 
-    click_button 'Submit'
-    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+      click_button 'Submit'
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
 
-    # go to job details page, wait for preassembly to finish
-    first('td  > a').click
-    expect(page).to have_content project_name
-    expect(page).to have_link('Download').once
+      # go to job details page, wait for preassembly to finish
+      first('td  > a').click
+      expect(page).to have_content project_name
+      expect(page).to have_link('Download').once
 
-    result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
-    yaml = YAML.load_file(result_file)
-    expect(yaml[:status]).to eq 'success'
+      result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
+      yaml = YAML.load_file(result_file)
+      expect(yaml[:status]).to eq 'success'
 
-    # we got all the expected content files and folders, and they are staged correctly in sub-folders
-    content_root = File.join(object_staging_dir, 'content')
-    staged_files_and_folders = Dir.glob("#{content_root}/**/**")
-    expect(staged_files_and_folders.size).to eq 11
-    expect(staged_files_and_folders).to eq ["#{content_root}/config",
-                                            "#{content_root}/config/settings",
-                                            "#{content_root}/config/settings/test.yml",
-                                            "#{content_root}/config/settings/test1.yml",
-                                            "#{content_root}/config/settings/test2.yml",
-                                            "#{content_root}/config/test.yml",
-                                            "#{content_root}/images",
-                                            "#{content_root}/images/image.jpg",
-                                            "#{content_root}/images/subdir",
-                                            "#{content_root}/images/subdir/image.jpg",
-                                            "#{content_root}/test1.txt"]
+      # we got all the expected content files and folders, and they are staged correctly in sub-folders
+      content_root = File.join(object_staging_dir, 'content')
+      staged_files_and_folders = Dir.glob("#{content_root}/**/**")
+      expect(staged_files_and_folders.size).to eq 11
+      expect(staged_files_and_folders).to eq ["#{content_root}/config",
+                                              "#{content_root}/config/settings",
+                                              "#{content_root}/config/settings/test.yml",
+                                              "#{content_root}/config/settings/test1.yml",
+                                              "#{content_root}/config/settings/test2.yml",
+                                              "#{content_root}/config/test.yml",
+                                              "#{content_root}/images",
+                                              "#{content_root}/images/image.jpg",
+                                              "#{content_root}/images/subdir",
+                                              "#{content_root}/images/subdir/image.jpg",
+                                              "#{content_root}/test1.txt"]
 
-    expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
-      .with(cocina_dro: item,
-            resources: resources,
-            reading_order: 'left-to-right',
-            content_md_creation_style: :media)
-    expect(dsc_object).to have_received(:update).with(params: item)
+      expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
+        .with(cocina_dro: item,
+              resources: resources,
+              reading_order: 'left-to-right',
+              content_md_creation_style: :file)
+      expect(dsc_object).to have_received(:update).with(params: item)
+    end
+  end
+
+  context 'with Media content structure' do
+    it 'indicates there was an error and does not stage or accession anything' do
+      visit '/'
+      expect(page).to have_selector('h3', text: 'Complete the form below')
+
+      fill_in 'Project name', with: project_name
+      select 'Pre Assembly Run', from: 'Job type'
+      select 'Media', from: 'Content structure'
+      fill_in 'Staging location', with: staging_location
+      check 'batch_context_using_file_manifest'
+
+      click_button 'Submit'
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
+
+      # go to job details page, wait for preassembly to finish
+      first('td  > a').click
+      expect(page).to have_content project_name
+      expect(page).to have_link('Download').once
+
+      result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
+      yaml = YAML.load_file(result_file)
+      expect(yaml[:status]).to eq 'error'
+
+      # nothing got staged or updated because this object had hierarchy and the file content structure was not selected
+      content_root = File.join(object_staging_dir, 'content')
+      staged_files_and_folders = Dir.glob("#{content_root}/**/**")
+      expect(staged_files_and_folders.size).to eq 0
+    end
   end
 end
