@@ -4,11 +4,11 @@ module PreAssembly
   # Represents the assembly structure on the filesystem,
   # Used by PreAssembly::DigitalObject
   class AssemblyDirectory
-    def self.create(druid_id:, base_path: '')
+    def self.create(druid_id:, base_path:)
       new(druid_id: druid_id, base_path: base_path).tap(&:create_object_directories)
     end
 
-    def initialize(druid_id:, base_path: '')
+    def initialize(druid_id:, base_path:)
       @druid_id = druid_id
       @base_path = base_path
     end

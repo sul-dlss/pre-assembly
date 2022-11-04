@@ -30,18 +30,4 @@ RSpec.describe PreAssembly::AssemblyDirectory do
       expect(object.path_for('/staging_path/some_folder/file.txt')).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/content/some_folder/file.txt')
     end
   end
-
-  context 'when no base_path provided' do
-    subject(:object) { described_class.new(druid_id: 'gn330dv6119') }
-
-    describe '#path_for' do
-      it 'has the correct path for a file in the root of the folder' do
-        expect(object.path_for('file.txt')).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/content/file.txt')
-      end
-
-      it 'has the correct path for a file in a subfolder' do
-        expect(object.path_for('some_folder/file.txt')).to eq('tmp/assembly/gn/330/dv/6119/gn330dv6119/content/some_folder/file.txt')
-      end
-    end
-  end
 end
