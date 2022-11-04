@@ -10,8 +10,13 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif') }
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
+  let(:tmp_area) do
+    File.expand_path(Dir.mktmpdir(*tmp_dir_args))
+  end
+  let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area) }
 
-  before(:all) { FileUtils.remove_dir('log/test_jobs') }
+  before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
+  after { FileUtils.remove_entry tmp_area }
 
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
@@ -48,30 +53,36 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe '#stage_files' do
-    let(:files) { [1, 2, 3].map { |n| "image#{n}.tif" } }
-    let(:tmp_area) do
-      Dir.mktmpdir(*tmp_dir_args)
-    end
-    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id) }
+    let(:files) { ['image1.tif', 'image2.tif', 'subfolder/image1.tif'] }
 
     before do
       allow(object).to receive(:staging_location).and_return(tmp_area)
       allow(assembly_directory).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
       allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
       allow(object).to receive(:assembly_directory).and_return(assembly_directory)
-      object.stageable_items.each { |si| FileUtils.touch si }
+      # setup the file structure defined above in a hierarchy
+      object.stageable_items.each do |si|
+        FileUtils.mkdir_p File.dirname(si)
+        FileUtils.touch si
+      end
       assembly_directory.send(:create_object_directories)
     end
 
-    after { FileUtils.remove_entry tmp_area }
-
     context 'when the copy stager is passed' do
       it 'is able to copy stageable items successfully' do
+        # source exists, but not copy yet
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = assembly_directory.path_for(f)
+          expect(File.exist?(src)).to be(true)
+          expect(File.exist?(cpy)).to be(false)
+          expect(File.symlink?(cpy)).to be(false)
+        end
         object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.send(:content_dir), f)
+          cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(false)
@@ -83,11 +94,19 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:stager) { PreAssembly::LinkStager }
 
       it 'is able to symlink stageable items successfully' do
+        # source exists, but not copy yet
+        files.each_with_index do |f, i|
+          src = object.stageable_items[i]
+          cpy = assembly_directory.path_for(f)
+          expect(File.exist?(src)).to be(true)
+          expect(File.exist?(cpy)).to be(false)
+          expect(File.symlink?(cpy)).to be(false)
+        end
         object.send(:stage_files)
         # Check outcome: both source and copy should exist.
         files.each_with_index do |f, i|
           src = object.stageable_items[i]
-          cpy = File.join(assembly_directory.send(:content_dir), f)
+          cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
           expect(File.symlink?(cpy)).to be(true)
@@ -100,8 +119,6 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:dro) do
       Cocina::RSpec::Factories.build(:dro, type: cocina_type).new(access: { view: 'world' })
     end
-
-    let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id) }
 
     let(:object_client) do
       instance_double(Dor::Services::Client::Object, find: dro)
@@ -121,12 +138,12 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    def add_object_files(extension = 'tif')
-      (1..2).each do |i|
-        f = "image#{i}.#{extension}"
+    def add_object_files(extension:, num: 2, rel_path: '')
+      (1..num).each do |i|
+        f = "#{rel_path}image#{i}.#{extension}"
         options = { relative_path: f, checksum: i.to_s * 4 }
 
-        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/gn330dv6119/#{f}", options)
+        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
       end
     end
 
@@ -190,8 +207,67 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        add_object_files('tif')
-        add_object_files('jp2')
+        add_object_files(extension: 'tif')
+        add_object_files(extension: 'jp2')
+        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
+      end
+
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
+      end
+    end
+
+    describe 'default structural metadata (image) with file hierarchy' do
+      let(:pid) { 'druid:jy812bp9403' }
+      let(:cocina_type) { Cocina::Models::ObjectType.image }
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: '00/image1.tif',
+                                                  filename: '00/image1.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: '00/image2.tif',
+                                                  filename: '00/image2.tif',
+                                                  version: 1,
+                                                  hasMimeType: 'image/tiff',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_3',
+                       label: 'Image 3',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
+                                                  label: '05/image1.jp2',
+                                                  filename: '05/image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+
+          hasMemberOrders: [],
+          isMemberOf: [] }
+      end
+
+      before do
+        add_object_files(extension: 'tif', rel_path: '00/')
+        add_object_files(num: 1, extension: 'jp2', rel_path: '05/')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
@@ -236,7 +312,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       before do
         allow(bc).to receive(:content_structure).and_return('map')
-        add_object_files('jp2')
+        add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -281,7 +357,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       before do
         allow(bc).to receive(:content_structure).and_return('simple_book')
-        add_object_files('jp2')
+        add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -326,7 +402,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       before do
         allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
-        add_object_files('jp2')
+        add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -371,7 +447,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
       before do
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
-        add_object_files('jp2')
+        add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
@@ -435,8 +511,8 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(bc).to receive(:content_structure).and_return('simple_book')
         allow(bc).to receive(:content_md_creation).and_return('filename')
-        add_object_files('tif')
-        add_object_files('jp2')
+        add_object_files(extension: 'tif')
+        add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 

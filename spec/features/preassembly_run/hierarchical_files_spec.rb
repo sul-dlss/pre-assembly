@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Pre-assemble document object', type: :feature do
+# hierarchical files without a file manifest (i.e. normal filesystem discovery)
+RSpec.describe 'Pre-assemble Image object', type: :feature do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
-  let(:project_name) { "pdf-#{RandomWord.nouns.next}" }
-  let(:staging_location) { Rails.root.join('spec/fixtures/pdf_document') }
-  let(:bare_druid) { 'pr666rr9999' }
-  let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
+  let(:project_name) { "hierarchical-image-#{RandomWord.nouns.next}" }
+  let(:staging_location) { Rails.root.join('spec/fixtures/hierarchical-files') }
+  let(:bare_druid) { 'mm111mm2222' }
+  let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'mm', '111', 'mm', '2222', bare_druid) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
-    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.document).new(access: dro_access)
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
   end
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
@@ -38,7 +39,7 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
 
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
-    select 'Document', from: 'Content structure'
+    select 'Image', from: 'Content structure'
     fill_in 'Staging location', with: staging_location
 
     click_button 'Submit'
@@ -54,15 +55,28 @@ RSpec.describe 'Pre-assemble document object', type: :feature do
     yaml = YAML.load_file(result_file)
     expect(yaml[:status]).to eq 'success'
 
-    # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 1
+    # we got all the expected content files and folders, and they are staged correctly in sub-folders
+    content_root = File.join(object_staging_dir, 'content')
+    staged_files_and_folders = Dir.glob("#{content_root}/**/**")
+    expect(staged_files_and_folders.size).to eq 11
+    expect(staged_files_and_folders).to eq ["#{content_root}/config",
+                                            "#{content_root}/config/settings",
+                                            "#{content_root}/config/settings/test.yml",
+                                            "#{content_root}/config/settings/test1.yml",
+                                            "#{content_root}/config/settings/test2.yml",
+                                            "#{content_root}/config/test.yml",
+                                            "#{content_root}/images",
+                                            "#{content_root}/images/image.jpg",
+                                            "#{content_root}/images/subdir",
+                                            "#{content_root}/images/subdir/image.jpg",
+                                            "#{content_root}/test1.txt"]
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             filesets: Array,
             all_files_public: false,
             reading_order: 'left-to-right',
-            content_md_creation_style: :document)
+            content_md_creation_style: :simple_image)
     expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

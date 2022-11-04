@@ -73,7 +73,7 @@ module PreAssembly
                  message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
       end
 
-      @assembly_directory = AssemblyDirectory.create(druid_id: druid.id)
+      @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container)
       stage_files
       update_structural_metadata
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
@@ -135,18 +135,9 @@ module PreAssembly
     end
 
     def build_from_staging_location(objects:, content_metadata_creation:, content_md_creation_style:, reading_order:)
-      all_paths = objects.flatten.map do |obj|
-        raise "File '#{obj.path}' not found" unless obj.file_exists?
-
-        obj.path # collect all of the filenames into an array
-      end
-
-      common_path = Assembly::ObjectFile.common_path(all_paths) # find common paths to all files provided
-
       filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation: content_metadata_creation, objects: objects, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
                                                    filesets: filesets,
-                                                   common_path: common_path,
                                                    all_files_public: batch.batch_context.all_files_public?,
                                                    reading_order: reading_order,
                                                    content_md_creation_style: content_md_creation_style)

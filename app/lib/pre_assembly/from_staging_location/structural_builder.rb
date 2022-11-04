@@ -4,33 +4,27 @@ module PreAssembly
   module FromStagingLocation
     # Updates the Cocina::DROStructural metadata with the new structure derived from a staging location
     class StructuralBuilder
-      # rubocop:disable Metrics/ParameterLists
       # @param [Array<Fileset>] filesets
       # @param [Cocina::Models::DRO] cocina_dro
-      # @param [String] common_path
       # @param [Symbol] content_md_creation_style content metadata creation styles supported by the assembly-objectfile gem
       # @param [String] reading_order
       # @param [Boolean] all_files_public
-      def self.build(filesets:, cocina_dro:, common_path:, content_md_creation_style:, reading_order:, all_files_public:)
+      def self.build(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
         new(filesets: filesets,
             cocina_dro: cocina_dro,
-            common_path: common_path,
             content_md_creation_style: content_md_creation_style,
             reading_order: reading_order,
             all_files_public: all_files_public).build
       end
 
-      def initialize(filesets:, cocina_dro:, common_path:, content_md_creation_style:, reading_order:, all_files_public:)
+      def initialize(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
         @filesets = filesets
         @cocina_dro = cocina_dro
-        @common_path = common_path
         @content_md_creation_style = content_md_creation_style
         @reading_order = reading_order
         @all_files_public = all_files_public
       end
-      # rubocop:enable Metrics/ParameterLists
-
-      attr_reader :content_md_creation_style, :filesets, :cocina_dro, :common_path, :reading_order, :all_files_public
+      attr_reader :content_md_creation_style, :filesets, :cocina_dro, :reading_order, :all_files_public
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
@@ -46,7 +40,7 @@ module PreAssembly
           # but if one of the files has a label, use it instead
           resource_label = fileset.label_from_file(default: default_label)
           contained_files = fileset.files.map do |fileset_file| # iterate over all the files in a resource
-            file_id = fileset_file.file_id(common_path: common_path)
+            file_id = fileset_file.relative_path
             file_attributes = {
               type: 'https://cocina.sul.stanford.edu/models/file',
               externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",

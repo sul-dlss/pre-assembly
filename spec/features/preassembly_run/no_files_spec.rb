@@ -60,7 +60,6 @@ RSpec.describe 'Run preassembly on object with no files', type: :feature do
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             filesets: [],
-            common_path: nil,
             all_files_public: false,
             reading_order: 'left-to-right',
             content_md_creation_style: :file)

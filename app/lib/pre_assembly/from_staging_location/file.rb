@@ -29,15 +29,7 @@ module PreAssembly
         @file = file
       end
 
-      delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, to: :file
-
-      def file_id(common_path:)
-        # set file id attribute, first check the relative_path parameter on the object, and if it is set, just use that
-        return file.relative_path if file.relative_path
-
-        # if the relative_path attribute is not set, then use the path attribute and check to see if we need to remove the common part of the path
-        common_path ? file.path.gsub(common_path, '') : file.path
-      end
+      delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, :relative_path, to: :file
 
       def file_attributes
         file.file_attributes || ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']

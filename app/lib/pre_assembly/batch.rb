@@ -39,9 +39,9 @@ module PreAssembly
     end
 
     # used by discovery report
-    def object_filenames_unique?(dobj)
-      filenames = dobj.object_files.map { |objfile| File.basename(objfile.path) }
-      filenames.count == filenames.uniq.count
+    def object_filepaths_unique?(dobj)
+      filepaths = dobj.object_files.map(&:path)
+      filepaths.count == filepaths.uniq.count
     end
 
     # Discovers the digital object containers and the stageable items within them.
@@ -54,12 +54,11 @@ module PreAssembly
 
       containers_via_manifest.map.with_index do |container, i|
         stageable_items = discover_items_via_crawl(container)
-        common_path = Assembly::ObjectFile.common_path(stageable_items) # find common paths to all files provided
         row = object_manifest_rows[i]
         yield DigitalObject.new(self,
                                 container: container,
                                 stageable_items: stageable_items,
-                                object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: item.gsub(common_path, '') }) },
+                                object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],

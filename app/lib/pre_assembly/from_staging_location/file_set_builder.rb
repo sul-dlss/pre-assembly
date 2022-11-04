@@ -5,6 +5,7 @@ module PreAssembly
     # Creates a data structure of FileSets from a staging location
     class FileSetBuilder
       # @param [Symbol] content_metadata_creation one of: :default or :filename
+      #   this variable would be better named manifest_type, but we are using the name content_metadata_creation in the UI
       # @param [Array<Assembly::ObjectFile>] objects
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
       def self.build(content_metadata_creation:, objects:, style:)

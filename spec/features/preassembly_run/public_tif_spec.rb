@@ -63,7 +63,6 @@ RSpec.describe 'Pre-assemble public object (shelved and published)', type: :feat
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             filesets: Array,
-            common_path: "#{staging_location}/content/",
             all_files_public: true,
             reading_order: 'left-to-right',
             content_md_creation_style: :simple_image)

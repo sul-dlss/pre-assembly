@@ -40,6 +40,7 @@ class BatchContext < ApplicationRecord
     'simple_book_rtl' => 9
   }
 
+  # this would be better named manifest_type, but we are using the name content_metadata_creation in the UI
   enum content_metadata_creation: {
     'default' => 0,
     'filename' => 1,
@@ -62,6 +63,7 @@ class BatchContext < ApplicationRecord
                                   staging_location: staging_location)
   end
 
+  # this method would be better named manifest_type, but we are using the name content_metadata_creation in the UI
   def content_md_creation
     content_metadata_creation
   end
