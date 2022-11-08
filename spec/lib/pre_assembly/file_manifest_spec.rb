@@ -6,7 +6,7 @@ RSpec.describe PreAssembly::FileManifest do
     let(:csv) { CSV.read(csv_filename, headers: true) }
     let(:bc) { build(:batch_context, bc_params) }
 
-    let(:staging_location) { Rails.root.join('spec/test_data/multimedia') }
+    let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
 
     context 'for a media object' do
       let(:bc_params) do
