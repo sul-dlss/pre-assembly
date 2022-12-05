@@ -3,7 +3,6 @@
 RSpec.describe PreAssembly::Batch do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:flat_dir_images) { batch_setup(:flat_dir_images) }
-  let(:images_jp2_tif) { batch_setup(:images_jp2_tif) }
   let(:multimedia) { batch_setup(:multimedia) }
   let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
   let(:dro_access) { { view: 'world' } }

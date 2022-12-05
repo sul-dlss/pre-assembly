@@ -38,10 +38,10 @@ class ObjectFileValidator
         errors[:missing_media_container_name_or_manifest] = true
       end
     end
-
+    errors[:wrong_content_structure] = true if object_has_hierarchy? && batch.content_structure != 'file'
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
-    errors[:dupes] = true unless batch.object_filepaths_unique?(object)
+    errors[:dupes] = true unless object_filepaths_unique?
     errors.merge!(registration_check)
     self
   end
@@ -58,6 +58,11 @@ class ObjectFileValidator
     { druid: druid.druid, errors: errors.compact, counts: counts }
   end
 
+  # check to see if files within object has hierarchy (i.e. paths in filenames)
+  def object_has_hierarchy?
+    filepaths.any?(/\/+/)
+  end
+
   private
 
   attr_reader :object, :batch
@@ -70,6 +75,16 @@ class ObjectFileValidator
     return false if object.object_files.empty?
 
     object.object_files.map(&:path).all? { |path| File.readable?(path) }
+  end
+
+  # an array of all relative filepaths in the object
+  def filepaths
+    object.object_files.map(&:relative_path)
+  end
+
+  # check that all filenames are unique
+  def object_filepaths_unique?
+    filepaths.count == filepaths.uniq.count
   end
 
   def filename_no_extension

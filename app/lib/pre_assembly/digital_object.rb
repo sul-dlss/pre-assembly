@@ -65,12 +65,19 @@ module PreAssembly
 
     # @return [Hash] the status of the attempt and an optional message
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
       if !openable? && current_object_version > 1
         return { pre_assem_finished: false,
                  status: 'error',
                  message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
+      end
+
+      if ObjectFileValidator.new(object: self, batch: batch).object_has_hierarchy? && content_structure != 'file'
+        return { pre_assem_finished: false,
+                 status: 'error',
+                 message: "can't be accessioned -- if object files have hierarchy the content structure must be set to file" }
       end
 
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container)
@@ -84,6 +91,7 @@ module PreAssembly
       { pre_assem_finished: false, status: 'error', message: e.message }
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     private
 
