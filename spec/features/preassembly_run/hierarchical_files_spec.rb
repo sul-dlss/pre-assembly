@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # hierarchical files without a file manifest (i.e. normal filesystem discovery)
-RSpec.describe 'Pre-assemble Image object', type: :feature do
+RSpec.describe 'Pre-assemble Image object' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "hierarchical-image-#{RandomWord.nouns.next}" }

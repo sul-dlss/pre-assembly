@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Run preassembly on object with no files', type: :feature do
+RSpec.describe 'Run preassembly on object with no files' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "no-files-#{RandomWord.nouns.next}" }

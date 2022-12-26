@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe PreassemblyJob, type: :job do
+RSpec.describe PreassemblyJob do
   let(:job) { described_class.new }
   let(:job_run) { create(:job_run, :preassembly) }
   let(:outfile) { 'tmp/foobar_progress.yaml' }

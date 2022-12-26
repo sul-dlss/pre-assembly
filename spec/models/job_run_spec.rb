@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe JobRun, type: :model do
+RSpec.describe JobRun do
   let(:job_run) { build(:job_run) }
 
   it { is_expected.to belong_to(:batch_context) }

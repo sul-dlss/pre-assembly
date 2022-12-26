@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # this test uses file_manifest.csv approach
-RSpec.describe 'Pre-assemble Book Using File Manifest', type: :feature do
+RSpec.describe 'Pre-assemble Book Using File Manifest' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "book-file-manifest-#{RandomWord.nouns.next}" }

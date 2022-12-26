@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Discovery Report for hierarchical files with build manifest', type: :feature do
+RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-hierarchical-image-#{RandomWord.nouns.next}" }

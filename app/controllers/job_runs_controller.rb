@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 class JobRunsController < ApplicationController
+  def index
+    @job_runs = JobRun.order('created_at desc').page params[:page]
+    return render 'recent_history' if request.headers['Turbo-Frame']
+  end
+
+  def show
+    @job_run = JobRun.find(params[:id])
+  end
+
   def create
     raise ActionController::ParameterMissing, :batch_context_id unless job_run_params[:batch_context_id]
 
@@ -11,15 +20,6 @@ class JobRunsController < ApplicationController
       flash.now[:error] = "Error(s) saving JobRun: #{@job_run.errors}"
     end
     redirect_to(action: 'index')
-  end
-
-  def index
-    @job_runs = JobRun.order('created_at desc').page params[:page]
-    return render 'recent_history' if request.headers['Turbo-Frame']
-  end
-
-  def show
-    @job_run = JobRun.find(params[:id])
   end
 
   def download_log

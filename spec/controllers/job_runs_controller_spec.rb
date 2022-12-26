@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe JobRunsController, type: :controller do
+RSpec.describe JobRunsController do
   let(:bc) { create(:batch_context_with_deleted_output_dir) }
 
   before { sign_in(create(:user)) }

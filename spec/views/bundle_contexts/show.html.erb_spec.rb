@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'batch_contexts/show.html.erb', type: :view do
+RSpec.describe 'batch_contexts/show.html.erb' do
   let(:bc) { create(:batch_context) }
 
   before { assign(:batch_context, bc) }

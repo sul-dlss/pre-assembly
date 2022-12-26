@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe JobMailer, type: :mailer do
+RSpec.describe JobMailer do
   let(:job_run) { create(:job_run, :discovery_report) }
   let(:job_notification) { described_class.with(job_run: job_run).completion_email }
 
@@ -22,7 +22,7 @@ RSpec.describe JobMailer, type: :mailer do
     before { job_run.state = 'complete' }
 
     it 'renders the body' do
-      expect(job_notification.body.encoded).to include("Your Discovery report job \##{job_run.id} finished with status 'Completed'")
+      expect(job_notification.body.encoded).to include("Your Discovery report job ##{job_run.id} finished with status 'Completed'")
         .and include("http://localhost:3000/job_runs/#{job_run.id}")
     end
   end
