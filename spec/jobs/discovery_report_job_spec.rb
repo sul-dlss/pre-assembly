@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe DiscoveryReportJob, type: :job do
+RSpec.describe DiscoveryReportJob do
   let(:job) { described_class.new }
   let(:job_run) { create(:job_run) }
   let(:outfile) { 'tmp/foo.out' }

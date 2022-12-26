@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe BatchContextsController, type: :controller do
+RSpec.describe BatchContextsController do
   let(:params) do
     {
       batch_context:

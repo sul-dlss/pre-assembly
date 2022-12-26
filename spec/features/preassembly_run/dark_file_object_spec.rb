@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Pre-assemble object with dark files', type: :feature do
+RSpec.describe 'Pre-assemble object with dark files' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "image-#{RandomWord.nouns.next}" }

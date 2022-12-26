@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Pre-assemble document object', type: :feature do
+RSpec.describe 'Pre-assemble document object' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "pdf-#{RandomWord.nouns.next}" }

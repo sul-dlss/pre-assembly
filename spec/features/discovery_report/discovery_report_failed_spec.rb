@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Discovery Report fails', type: :feature do
+RSpec.describe 'Discovery Report fails' do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-failed-#{RandomWord.nouns.next}" }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe BatchContext, type: :model do
+RSpec.describe BatchContext do
   subject(:bc) { build(:batch_context_with_deleted_output_dir, attr_hash) }
 
   let(:attr_hash) do

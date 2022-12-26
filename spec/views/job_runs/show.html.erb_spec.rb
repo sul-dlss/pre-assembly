@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'job_runs/show.html.erb', type: :view do
+RSpec.describe 'job_runs/show.html.erb' do
   before do
     assign(:job_run, job_run)
     allow(job_run).to receive(:progress_log_file).and_return(actual_file)
@@ -14,7 +14,7 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
 
     it 'displays a job_run' do
       render template: 'job_runs/show'
-      expect(rendered).to include("Discovery report \##{job_run.id}")
+      expect(rendered).to include("Discovery report ##{job_run.id}")
     end
 
     it 'with a completed job, presents a download link to the report and the log file' do
@@ -57,7 +57,7 @@ RSpec.describe 'job_runs/show.html.erb', type: :view do
 
     it 'displays a job_run' do
       render template: 'job_runs/show'
-      expect(rendered).to include("Preassembly \##{job_run.id}")
+      expect(rendered).to include("Preassembly ##{job_run.id}")
     end
 
     it 'with a completed job, presents a download link to only the log file' do

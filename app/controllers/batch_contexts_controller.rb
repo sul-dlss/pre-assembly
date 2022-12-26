@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 class BatchContextsController < ApplicationController
+  def index
+    @batch_contexts = BatchContext.order(:created_at).page(params[:page])
+  end
+
+  def show
+    @batch_context = BatchContext.find(params[:id])
+  end
+
   def new
     @batch_context = BatchContext.new(
       job_runs: [JobRun.new]
@@ -15,14 +23,6 @@ class BatchContextsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def index
-    @batch_contexts = BatchContext.order(:created_at).page(params[:page])
-  end
-
-  def show
-    @batch_context = BatchContext.find(params[:id])
   end
 
   private
