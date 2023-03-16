@@ -355,6 +355,8 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redis (4.8.1)
+    redis-client (0.14.0)
+      connection_pool
     regexp_parser (2.7.0)
     responders (3.1.0)
       actionpack (>= 5.2)
@@ -406,10 +408,11 @@ GEM
     ruby2_keywords (0.0.5)
     shoulda-matchers (4.5.1)
       activesupport (>= 4.2.0)
-    sidekiq (6.5.8)
-      connection_pool (>= 2.2.5, < 3)
-      rack (~> 2.0)
-      redis (>= 4.5.0, < 5)
+    sidekiq (7.0.7)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.11.0)
     simple_form (5.2.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
@@ -486,13 +489,14 @@ DEPENDENCIES
   rails-controller-testing
   rake
   random-word
+  redis (~> 4.0)
   rspec-rails (~> 5)
   rspec_junit_formatter
   rubocop (~> 1.25)
   rubocop-rails
   rubocop-rspec
   shoulda-matchers (~> 4.1)
-  sidekiq (~> 6.4)
+  sidekiq (~> 7.0)
   simple_form
   simplecov
   state_machines-activerecord
