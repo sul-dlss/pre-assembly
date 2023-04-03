@@ -70,7 +70,7 @@ RSpec.describe BatchContextsController do
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: params }.to change(JobRun, :count).by(1)
           expect { post :create, params: params }.not_to change(BatchContext, :count)
-          FileUtils.rm_rf(output_dir)  # even if the directory is missing, cannot reuse user & project_name
+          FileUtils.rm_rf(output_dir) # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: params }.to raise_error(ActiveRecord::RecordNotUnique)
         end
       end
