@@ -4,9 +4,9 @@ assembly_staging_dir: tmp/assembly
 # writable directory where job run artifacts will live
 job_output_parent_dir:  'log/jobs'
 
-DOR_SERVICES:
-  URL: 'http://localhost:3003'
-  TOKEN: 'secret-token'
+dor_services:
+  url: 'http://localhost:3003'
+  token: 'secret-token'
 
 expected_worker_count: 5 # for okcomputer endpoint
 
