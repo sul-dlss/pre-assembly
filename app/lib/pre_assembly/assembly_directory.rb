@@ -13,16 +13,10 @@ module PreAssembly
       @base_path = base_path
     end
 
-    # @return [String] the appropriate path for the file ('metadata' or 'content' will be last segment)
+    # @return [String] the appropriate path for the file ('content' will be last segment)
     def path_for(item_path)
-      # these are the names of files that will be staged in the 'metadata' folder instead of the 'content' folder
-      metadata_files = ['descMetadata.xml', 'contentMetadata.xml'].map(&:downcase)
-
       relative_path = item_path.delete_prefix(base_path)
-      return File.join(content_dir, relative_path) unless metadata_files.include?(File.basename(item_path).downcase)
-
-      Honeybadger.notify("I don't think we still stage descMetadata.xml or contentMetadata.xml anymore. Investigate this.")
-      metadata_dir
+      File.join(content_dir, relative_path)
     end
 
     # @return [String] the base druid tree folder for this object
