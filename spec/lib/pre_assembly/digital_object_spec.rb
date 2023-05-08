@@ -64,6 +64,7 @@ RSpec.describe PreAssembly::DigitalObject do
       object.stageable_items.each do |si|
         FileUtils.mkdir_p File.dirname(si)
         FileUtils.touch si
+        FileUtils.chmod 0o0600, si
       end
       assembly_directory.send(:create_object_directories)
     end
@@ -76,6 +77,7 @@ RSpec.describe PreAssembly::DigitalObject do
           cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(false)
+          expect(File.world_readable?(cpy)).to be_nil
           expect(File.symlink?(cpy)).to be(false)
         end
         object.send(:stage_files)
@@ -85,6 +87,7 @@ RSpec.describe PreAssembly::DigitalObject do
           cpy = assembly_directory.path_for(f)
           expect(File.exist?(src)).to be(true)
           expect(File.exist?(cpy)).to be(true)
+          expect(File.world_readable?(cpy)).not_to be_nil # return value is a platform-dependent integer
           expect(File.symlink?(cpy)).to be(false)
         end
       end
