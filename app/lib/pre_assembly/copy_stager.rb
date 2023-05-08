@@ -15,6 +15,11 @@ module PreAssembly
         return
       end
 
+      Honeybadger.notify(
+        '[EXPERIMENT] Pre-assembly stages directories in addition to files',
+        context: { path: path }
+      )
+
       FileUtils.chmod 0o0775, path
 
       Dir["#{path}/*"].each do |f|
