@@ -6,6 +6,25 @@ module PreAssembly
     def self.stage(source, destination)
       FileUtils.mkdir_p File.dirname(destination)
       FileUtils.cp_r source, destination
+      recursively_chmod_based_on_type!(destination)
+    end
+
+    def self.recursively_chmod_based_on_type!(path)
+      unless File.directory?(path)
+        FileUtils.chmod 0o0664, path
+        return
+      end
+
+      Honeybadger.notify(
+        '[EXPERIMENT] Pre-assembly stages directories in addition to files',
+        context: { path: path }
+      )
+
+      FileUtils.chmod 0o0775, path
+
+      Dir["#{path}/*"].each do |f|
+        recursively_chmod_based_on_type!(f)
+      end
     end
   end
 end

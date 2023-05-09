@@ -92,7 +92,7 @@ class BatchContext < ApplicationRecord
 
   # load the manifest.csv file and verify there is at least one object and the correct header is present
   def load_object_manifest
-    raise 'manifest file missing or empty' if !File.exist?(object_manifest_path) || File.zero?(object_manifest_path)
+    raise 'manifest file missing or empty' if !File.exist?(object_manifest_path) || File.empty?(object_manifest_path)
 
     manifest_rows = CsvImporter.parse_to_hash(object_manifest_path)
     raise 'no rows in manifest or missing header' if manifest_rows.empty?
