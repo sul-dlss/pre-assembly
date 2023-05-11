@@ -39,7 +39,7 @@ RSpec.describe JobRun do
 
     it 'sends a notification email when job_run completes' do
       expect(job_run).to receive(:send_notification).and_call_original
-      expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
+      expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
       job_run.completed
@@ -47,7 +47,7 @@ RSpec.describe JobRun do
 
     it 'sends a notification email when job_run fails' do
       expect(job_run).to receive(:send_notification).and_call_original
-      expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
+      expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
       job_run.failed
@@ -55,7 +55,7 @@ RSpec.describe JobRun do
 
     it 'sends a notification email when job_run completes with errors' do
       expect(job_run).to receive(:send_notification).and_call_original
-      expect(JobMailer).to receive(:with).with(job_run: job_run).and_return(mock_mailer)
+      expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
       job_run.completed_with_errors

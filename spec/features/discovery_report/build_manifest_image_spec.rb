@@ -53,9 +53,7 @@ RSpec.describe 'Discovery Report from (build) manifest' do
     expect(discovery_report_json['summary']['end_time'].to_date).to eq Time.now.utc.to_date
 
     log_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
-    # rubocop:disable Security/YAMLLoad
     log_hash = YAML.load(File.read(log_path))
-    # rubocop:enable Security/YAMLLoad
     expect(log_hash).to include(status: 'success', pid: bare_druid, discovery_finished: true)
     expect(log_hash.keys.size).to eq 4
   end

@@ -52,7 +52,7 @@ class BatchContext < ApplicationRecord
   # return [PreAssembly::Batch]
   def batch
     @batch ||= if using_file_manifest
-                 PreAssembly::Batch.new(self, file_manifest: file_manifest)
+                 PreAssembly::Batch.new(self, file_manifest:)
                else
                  PreAssembly::Batch.new(self)
                end
@@ -60,7 +60,7 @@ class BatchContext < ApplicationRecord
 
   def file_manifest
     PreAssembly::FileManifest.new(csv_filename: file_manifest_path,
-                                  staging_location: staging_location)
+                                  staging_location:)
   end
 
   # this method would be better named manifest_type, but we are using the name content_metadata_creation in the UI

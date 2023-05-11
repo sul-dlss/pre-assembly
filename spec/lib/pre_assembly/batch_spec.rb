@@ -88,7 +88,7 @@ RSpec.describe PreAssembly::Batch do
 
       before do
         allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
-          m.call(*args).tap do |dobj|
+          m.call(args.first, **args.second).tap do |dobj|
             allow(dobj).to receive(:pre_assemble).and_return(pre_assemble_results.next)
           end
         end
@@ -116,7 +116,7 @@ RSpec.describe PreAssembly::Batch do
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
         # simulate an exception occurring during pre-assembly of the first object
         allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
-          m.call(*args).tap do |dobj|
+          m.call(args.first, **args.second).tap do |dobj|
             stage_files_exception = stage_files_exceptions.next
             pre_assemble_result = pre_assemble_results.next
             allow(dobj).to receive(:stage_files).and_raise(*stage_files_exception) if stage_files_exception

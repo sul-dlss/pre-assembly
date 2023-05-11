@@ -2,7 +2,7 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.batch, object_files: [], stager: stager, pid: pid)
+    described_class.new(bc.batch, object_files: [], stager:, pid:)
   end
 
   let(:pid) { 'druid:gn330dv6119' }

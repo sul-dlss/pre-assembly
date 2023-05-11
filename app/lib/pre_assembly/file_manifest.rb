@@ -38,7 +38,7 @@ module PreAssembly
     # rubocop:enable Metrics/AbcSize
 
     def file_set_properties_from_row(row, sequence)
-      { label: row[:label], sequence: sequence, resource_type: row[:resource_type], files: [] }
+      { label: row[:label], sequence:, resource_type: row[:resource_type], files: [] }
     end
 
     # @param [HashWithIndifferentAccess] row
@@ -59,7 +59,7 @@ module PreAssembly
       publish  = row[:publish] == 'yes'
       preserve = row[:preserve] == 'yes'
       shelve   = row[:shelve] == 'yes'
-      { sdrPreserve: preserve, publish: publish, shelve: shelve }
+      { sdrPreserve: preserve, publish:, shelve: }
     end
 
     # @return [String] the role for the file (if a valid role value, otherwise nil)
@@ -77,7 +77,7 @@ module PreAssembly
       digest = read_checksum_from_file(md5_files.first)
       return unless digest
 
-      [{ type: 'md5', digest: digest }]
+      [{ type: 'md5', digest: }]
     end
 
     def read_checksum_from_file(md5_file)
@@ -91,10 +91,10 @@ module PreAssembly
       raise "no structure found in mainifest for `#{object}'" unless item_structure
 
       current_directory = Dir.pwd # this must be done before resources_hash is built
-      structure = FromFileManifest::StructuralBuilder.build(cocina_dro: cocina_dro,
+      structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
                                                             resources: item_structure,
-                                                            content_md_creation_style: content_md_creation_style,
-                                                            reading_order: reading_order)
+                                                            content_md_creation_style:,
+                                                            reading_order:)
 
       # write the contentMetadata.xml file
       FileUtils.cd(current_directory)

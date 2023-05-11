@@ -50,13 +50,13 @@ module PreAssembly
         stageable_items = discover_items_via_crawl(container)
         row = object_manifest_rows[i]
         yield DigitalObject.new(self,
-                                container: container,
-                                stageable_items: stageable_items,
+                                container:,
+                                stageable_items:,
                                 object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],
-                                stager: stager)
+                                stager:)
       end
     end
 
@@ -165,9 +165,9 @@ module PreAssembly
 
     def info_for_log
       log_params = {
-        content_structure: content_structure,
-        project_name: project_name,
-        staging_location: staging_location,
+        content_structure:,
+        project_name:,
+        staging_location:,
         assembly_staging_dir: Settings.assembly_staging_dir,
         environment: Rails.env
       }

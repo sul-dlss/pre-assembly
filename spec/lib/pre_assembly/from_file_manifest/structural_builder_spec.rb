@@ -3,8 +3,8 @@
 RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
   describe '#build' do
     subject(:structural) do
-      described_class.build(cocina_dro: cocina_dro,
-                            resources: resources,
+      described_class.build(cocina_dro:,
+                            resources:,
                             reading_order: 'left-to-right',
                             content_md_creation_style: :media)
     end

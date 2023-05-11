@@ -7,9 +7,9 @@ module PreAssembly
       # @param [Cocina::Models::DRO] cocina_dro
       def self.build(resource:, cocina_dro:, external_identifier:)
         new(
-          resource: resource,
-          cocina_dro: cocina_dro,
-          external_identifier: external_identifier
+          resource:,
+          cocina_dro:,
+          external_identifier:
         ).build
       end
 
@@ -27,7 +27,7 @@ module PreAssembly
           type: resource_type(resource[:resource_type]),
           externalIdentifier: external_identifier,
           version: cocina_dro.version,
-          structural: structural
+          structural:
         }
       end
 
@@ -45,7 +45,7 @@ module PreAssembly
       end
 
       def build_files
-        resource[:files].map { |file_attributes| file_builder(file_attributes: file_attributes) }
+        resource[:files].map { |file_attributes| file_builder(file_attributes:) }
       end
 
       def file_builder(file_attributes:)

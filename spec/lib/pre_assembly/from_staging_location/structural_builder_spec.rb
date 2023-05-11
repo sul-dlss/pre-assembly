@@ -3,14 +3,14 @@
 RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
   describe '#build' do
     subject(:structural) do
-      described_class.build(cocina_dro: cocina_dro,
-                            filesets: filesets,
-                            all_files_public: all_files_public,
+      described_class.build(cocina_dro:,
+                            filesets:,
+                            all_files_public:,
                             reading_order: 'left-to-right',
                             content_md_creation_style: :document)
     end
 
-    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(content_metadata_creation: :default, objects: objects, style: :document) }
+    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(content_metadata_creation: :default, objects:, style: :document) }
     let(:cocina_dro) do
       Cocina::RSpec::Factories.build(:dro, collection_ids: ['druid:bb000kk0000']).new(access: dro_access)
     end

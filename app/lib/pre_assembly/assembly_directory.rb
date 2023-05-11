@@ -5,7 +5,7 @@ module PreAssembly
   # Used by PreAssembly::DigitalObject
   class AssemblyDirectory
     def self.create(druid_id:, base_path:)
-      new(druid_id: druid_id, base_path: base_path).tap(&:create_object_directories)
+      new(druid_id:, base_path:).tap(&:create_object_directories)
     end
 
     def initialize(druid_id:, base_path:)
@@ -24,15 +24,15 @@ module PreAssembly
       @druid_tree_dir ||= DruidTools::Druid.new(druid_id, assembly_staging_dir).path
     end
 
-    private
-
-    attr_reader :druid_id, :base_path
-
     def create_object_directories
       FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)
       FileUtils.mkdir_p metadata_dir unless File.directory?(metadata_dir)
       FileUtils.mkdir_p content_dir unless File.directory?(content_dir)
     end
+
+    private
+
+    attr_reader :druid_id, :base_path
 
     def assembly_staging_dir
       Settings.assembly_staging_dir

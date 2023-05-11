@@ -55,7 +55,7 @@ class ObjectFileValidator
   end
 
   def to_h
-    { druid: druid.druid, errors: errors.compact, counts: counts }
+    { druid: druid.druid, errors: errors.compact, counts: }
   end
 
   # check to see if files within object has hierarchy (i.e. paths in filenames)
