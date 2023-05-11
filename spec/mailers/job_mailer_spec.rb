@@ -2,7 +2,7 @@
 
 RSpec.describe JobMailer do
   let(:job_run) { create(:job_run, :discovery_report) }
-  let(:job_notification) { described_class.with(job_run: job_run).completion_email }
+  let(:job_notification) { described_class.with(job_run:).completion_email }
 
   it 'renders the headers' do
     expect(job_notification.subject).to eq('[Test_Project] Your Discovery report job completed')

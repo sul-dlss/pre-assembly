@@ -9,7 +9,7 @@ module PreAssembly
       # @param [Array<Assembly::ObjectFile>] objects
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
       def self.build(content_metadata_creation:, objects:, style:)
-        new(content_metadata_creation: content_metadata_creation, objects: objects, style: style).build
+        new(content_metadata_creation:, objects:, style:).build
       end
 
       def initialize(content_metadata_creation:, objects:, style:)
@@ -22,7 +22,7 @@ module PreAssembly
       def build
         case content_metadata_creation
         when :default # one resource per object
-          objects.collect { |obj| FileSet.new(resource_files: [obj], style: style) }
+          objects.collect { |obj| FileSet.new(resource_files: [obj], style:) }
         when :filename # one resource per distinct filename (excluding extension)
           build_for_filename
         else
@@ -40,7 +40,7 @@ module PreAssembly
         distinct_filenames = objects.collect(&:filename_without_ext).uniq # find all the unique filenames in the set of objects, leaving off extensions and base paths
         distinct_filenames.map do |distinct_filename|
           FileSet.new(resource_files: objects.collect { |obj| obj if obj.filename_without_ext == distinct_filename }.compact,
-                      style: style)
+                      style:)
         end
       end
     end

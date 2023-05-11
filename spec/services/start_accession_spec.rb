@@ -2,7 +2,7 @@
 
 RSpec.describe StartAccession do
   describe '.run' do
-    subject(:start_accession) { described_class.run(druid: druid, user: user.sunet_id) }
+    subject(:start_accession) { described_class.run(druid:, user: user.sunet_id) }
 
     let(:user) { create(:user) }
     let(:druid) { 'druid:gn330dv6119' }

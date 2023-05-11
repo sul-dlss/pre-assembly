@@ -10,7 +10,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc_params) do
         {
           project_name: 'ProjectBar',
-          staging_location: staging_location,
+          staging_location:,
           content_metadata_creation: :default,
           content_structure: 'media',
           using_file_manifest: true
@@ -117,7 +117,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:bc_params) do
         {
           project_name: 'ProjectBaz',
-          staging_location: staging_location,
+          staging_location:,
           content_metadata_creation: :default,
           content_structure: :simple_image,
           using_file_manifest: true

@@ -10,11 +10,11 @@ module PreAssembly
       # @param [String] reading_order
       # @param [Boolean] all_files_public
       def self.build(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
-        new(filesets: filesets,
-            cocina_dro: cocina_dro,
-            content_md_creation_style: content_md_creation_style,
-            reading_order: reading_order,
-            all_files_public: all_files_public).build
+        new(filesets:,
+            cocina_dro:,
+            content_md_creation_style:,
+            reading_order:,
+            all_files_public:).build
       end
 
       def initialize(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
@@ -44,7 +44,7 @@ module PreAssembly
             file_attributes = {
               type: 'https://cocina.sul.stanford.edu/models/file',
               externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
-              version: version,
+              version:,
               label: file_id,
               filename: file_id,
               hasMessageDigests: message_digests(fileset_file),
@@ -57,7 +57,7 @@ module PreAssembly
 
           fs_attributes = {
             label: resource_label,
-            version: version,
+            version:,
             externalIdentifier: "#{external_identifier.delete_prefix('druid:')}_#{sequence}",
             type: file_set_type(fileset.resource_type_description),
             structural: { contains: contained_files }
@@ -108,7 +108,7 @@ module PreAssembly
         publish  = file[:publish] == 'yes'
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
-        { sdrPreserve: preserve, publish: publish, shelve: shelve }
+        { sdrPreserve: preserve, publish:, shelve: }
       end
 
       def message_digests(fileset_file)

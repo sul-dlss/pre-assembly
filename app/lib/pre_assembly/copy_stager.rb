@@ -17,7 +17,7 @@ module PreAssembly
 
       Honeybadger.notify(
         '[EXPERIMENT] Pre-assembly stages directories in addition to files',
-        context: { path: path }
+        context: { path: }
       )
 
       FileUtils.chmod 0o0775, path

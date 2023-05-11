@@ -23,7 +23,7 @@ module PreAssembly
       end
 
       def files
-        resource_files.map { |file| File.new(file: file) }
+        resource_files.map { |file| File.new(file:) }
       end
 
       private
@@ -54,10 +54,10 @@ module PreAssembly
           'document'
         when :'3d'
           resource_extensions = resource_files.collect(&:ext)
-          if (resource_extensions & VALID_THREE_DIMENSION_EXTENSIONS).empty? # if this resource contains no known 3D file extensions, the resource type is file
-            'file'
-          else # otherwise the resource type is 3d
+          if resource_extensions.intersect?(VALID_THREE_DIMENSION_EXTENSIONS)
             '3d'
+          else
+            'file'
           end
         end
       end

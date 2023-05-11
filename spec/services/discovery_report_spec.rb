@@ -82,7 +82,7 @@ RSpec.describe DiscoveryReport do
     let(:bc_params) do
       {
         project_name: 'SmokeTest',
-        content_structure: content_structure,
+        content_structure:,
         staging_location: 'spec/fixtures/images_jp2_tif',
         staging_style_symlink: false,
         content_metadata_creation: 0,

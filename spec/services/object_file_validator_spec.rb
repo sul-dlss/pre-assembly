@@ -5,7 +5,7 @@ RSpec.describe ObjectFileValidator do
   let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
   let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
   let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
-  let(:validator) { described_class.new(object: object, batch: batch) }
+  let(:validator) { described_class.new(object:, batch:) }
 
   before do
     allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)

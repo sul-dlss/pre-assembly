@@ -6,8 +6,8 @@ module PreAssembly
     class StructuralBuilder
       # @param [String] reading_order
       def self.build(cocina_dro:, resources:, content_md_creation_style:, reading_order: 'left-to-right')
-        new(cocina_dro: cocina_dro, resources: resources,
-            content_md_creation_style: content_md_creation_style, reading_order: reading_order).build
+        new(cocina_dro:, resources:,
+            content_md_creation_style:, reading_order:).build
       end
 
       def initialize(cocina_dro:, resources:, content_md_creation_style:, reading_order:)
@@ -30,8 +30,8 @@ module PreAssembly
         resources[:file_sets].keys.sort.map do |seq|
           external_identifier = "#{cocina_dro.externalIdentifier.delete_prefix('druid:')}_#{seq}"
           FromFileManifest::FileSetBuilder.build(resource: resources[:file_sets][seq],
-                                                 external_identifier: external_identifier,
-                                                 cocina_dro: cocina_dro)
+                                                 external_identifier:,
+                                                 cocina_dro:)
         end
       end
     end

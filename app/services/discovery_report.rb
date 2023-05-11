@@ -69,7 +69,7 @@ class DiscoveryReport
   # return [Hash] progress info that will be logged as json in a running log file
   def log_progress_info(dobj, status)
     {
-      status: status,
+      status:,
       discovery_finished: true,
       pid: dobj.druid.id,
       timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')
@@ -79,6 +79,6 @@ class DiscoveryReport
   # @param [PreAssembly::DigitalObject]
   # @return [Hash<Symbol => Object>]
   def process_dobj(dobj)
-    ObjectFileValidator.new(object: dobj, batch: batch).validate
+    ObjectFileValidator.new(object: dobj, batch:).validate
   end
 end

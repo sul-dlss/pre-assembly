@@ -74,7 +74,7 @@ module PreAssembly
                  message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
       end
 
-      if ObjectFileValidator.new(object: self, batch: batch).object_has_hierarchy? && content_structure != 'file'
+      if ObjectFileValidator.new(object: self, batch:).object_has_hierarchy? && content_structure != 'file'
         return { pre_assem_finished: false,
                  status: 'error',
                  message: "can't be accessioned -- if object files have hierarchy the content structure must be set to file" }
@@ -132,23 +132,23 @@ module PreAssembly
     def build_structural
       if file_manifest
         file_manifest.generate_structure(cocina_dro: cocina_object, object: File.basename(container),
-                                         content_md_creation_style: content_md_creation_style,
-                                         reading_order: reading_order)
+                                         content_md_creation_style:,
+                                         reading_order:)
       else
         build_from_staging_location(objects: object_files.sort,
                                     content_metadata_creation: content_md_creation.to_sym,
-                                    content_md_creation_style: content_md_creation_style,
-                                    reading_order: reading_order)
+                                    content_md_creation_style:,
+                                    reading_order:)
       end
     end
 
     def build_from_staging_location(objects:, content_metadata_creation:, content_md_creation_style:, reading_order:)
-      filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation: content_metadata_creation, objects: objects, style: content_md_creation_style)
+      filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
-                                                   filesets: filesets,
+                                                   filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,
-                                                   reading_order: reading_order,
-                                                   content_md_creation_style: content_md_creation_style)
+                                                   reading_order:,
+                                                   content_md_creation_style:)
     end
 
     # The reading order for books is determined by the content structure set, defaulting to 'ltr'
