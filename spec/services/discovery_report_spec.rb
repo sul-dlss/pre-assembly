@@ -26,18 +26,20 @@ RSpec.describe DiscoveryReport do
   end
 
   describe '#each_row' do
+    # rubocop:disable RSpec/IndexedLet
     let(:druid1) { DruidTools::Druid.new('cb837cp4412') }
     let(:druid2) { DruidTools::Druid.new('cm057cr1745') }
     let(:druid3) { DruidTools::Druid.new('cp898cs9946') }
-    let(:h1) { { errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
-    let(:h2) { { errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
-    let(:h3) { { errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
-    let(:validator1) { instance_double(ObjectFileValidator, counts: h1[:counts], errors: h1[:errors], to_h: h1) }
-    let(:validator2) { instance_double(ObjectFileValidator, counts: h2[:counts], errors: h2[:errors], to_h: h2) }
-    let(:validator3) { instance_double(ObjectFileValidator, counts: h3[:counts], errors: h3[:errors], to_h: h3) }
+    let(:results1) { { errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
+    let(:results2) { { errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
+    let(:results3) { { errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
+    let(:validator1) { instance_double(ObjectFileValidator, counts: results1[:counts], errors: results1[:errors], to_h: results1) }
+    let(:validator2) { instance_double(ObjectFileValidator, counts: results2[:counts], errors: results2[:errors], to_h: results2) }
+    let(:validator3) { instance_double(ObjectFileValidator, counts: results3[:counts], errors: results3[:errors], to_h: results3) }
     let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, druid: druid1) }
     let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, druid: druid2) }
     let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, druid: druid3) }
+    # rubocop:enable RSpec/IndexedLet
 
     it 'returns an Enumerable of Hashes' do
       expect(report.send(:each_row)).to be_an(Enumerable)
