@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :job_run do
-    association :batch_context, factory: :batch_context_with_deleted_output_dir
+    batch_context factory: %i[batch_context_with_deleted_output_dir]
 
     trait :preassembly do
       job_type { 'preassembly' }
