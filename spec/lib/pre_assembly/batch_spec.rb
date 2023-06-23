@@ -43,6 +43,7 @@ RSpec.describe PreAssembly::Batch do
   describe '#pre_assemble_objects' do
     before do
       allow(StartAccession).to receive(:run)
+      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:accessioning?).and_return(false)
     end
 
     it 'runs cleanly for new objects' do
@@ -114,6 +115,7 @@ RSpec.describe PreAssembly::Batch do
 
       before do
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
+        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
         # simulate an exception occurring during pre-assembly of the first object
         allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
           m.call(args.first, **args.second).tap do |dobj|

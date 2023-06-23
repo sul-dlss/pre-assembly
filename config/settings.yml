@@ -13,3 +13,8 @@ expected_worker_count: 5 # for okcomputer endpoint
 mailer_host: 'localhost'
 
 redis_url: redis://localhost:6379/
+
+workflow_url: 'http://localhost:3002'
+
+workflow:
+  timeout: 60

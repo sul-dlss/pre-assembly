@@ -28,6 +28,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'calls all methods needed to accession' do
+      allow(object).to receive(:accessioning?).and_return(false)
       allow(object).to receive(:openable?).and_return(false)
       allow(object).to receive(:current_object_version).and_return(1)
       expect(object).to receive(:stage_files)
@@ -38,6 +39,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the object is not openable' do
       before do
+        allow(object).to receive(:accessioning?).and_return(false)
         allow(object).to receive(:openable?).and_return(false)
         allow(object).to receive(:current_object_version).and_return(2)
       end
@@ -48,6 +50,21 @@ RSpec.describe PreAssembly::DigitalObject do
         expect(object).not_to receive(:stage_files)
         expect(status).to eq(status: 'error', pre_assem_finished: false,
                              message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened")
+      end
+    end
+
+    context 'when the object is already in accessioning' do
+      before do
+        allow(object).to receive(:accessioning?).and_return(true)
+        allow(object).to receive(:current_object_version).and_return(1)
+      end
+
+      let(:status) { object.pre_assemble }
+
+      it 'logs an error for objects in accessioning' do
+        expect(object).not_to receive(:stage_files)
+        expect(status).to eq(status: 'error', pre_assem_finished: false,
+                             message: 'cannot accession when object is already in the process of accessioning')
       end
     end
   end
