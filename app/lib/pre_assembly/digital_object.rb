@@ -68,7 +68,13 @@ module PreAssembly
     # rubocop:disable Metrics/MethodLength
     def pre_assemble
       log "  - pre_assemble(#{source_id}) started"
-      if !openable? && current_object_version > 1
+      if accessioning?
+        return { pre_assem_finished: false,
+                 status: 'error',
+                 message: 'cannot accession when object is already in the process of accessioning' }
+      end
+
+      if current_object_version > 1 && !openable?
         return { pre_assem_finished: false,
                  status: 'error',
                  message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
@@ -179,6 +185,20 @@ module PreAssembly
 
     def current_object_version
       @current_object_version ||= version_client.current.to_i
+    end
+
+    def workflow_client
+      Dor::Workflow::Client.new(url: Settings.workflow_url, timeout: Settings.workflow.timeout)
+    end
+
+    def accessioning?
+      return true if workflow_client.active_lifecycle(
+        druid: druid.druid,
+        milestone_name: 'submitted',
+        version: current_object_version.to_s
+      )
+
+      false
     end
   end
 end
