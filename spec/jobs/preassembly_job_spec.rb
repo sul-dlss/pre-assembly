@@ -48,8 +48,7 @@ RSpec.describe PreassemblyJob do
       let(:error_message) { 'something bad happened' }
 
       before do
-        allow(batch).to receive(:objects_had_errors).and_return(true)
-        allow(batch).to receive(:error_message).and_return(error_message)
+        allow(batch).to receive_messages(objects_had_errors: true, error_message:)
       end
 
       it 'calls run_pre_assembly and ends in a completed with error state, and saves error message to the database' do

@@ -28,9 +28,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     it 'calls all methods needed to accession' do
-      allow(object).to receive(:accessioning?).and_return(false)
-      allow(object).to receive(:openable?).and_return(false)
-      allow(object).to receive(:current_object_version).and_return(1)
+      allow(object).to receive_messages(accessioning?: false, openable?: false, current_object_version: 1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:update_structural_metadata)
       object.pre_assemble
@@ -39,9 +37,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the object is not openable' do
       before do
-        allow(object).to receive(:accessioning?).and_return(false)
-        allow(object).to receive(:openable?).and_return(false)
-        allow(object).to receive(:current_object_version).and_return(2)
+        allow(object).to receive_messages(accessioning?: false, openable?: false, current_object_version: 2)
       end
 
       let(:status) { object.pre_assemble }
@@ -55,8 +51,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the object is already in accessioning' do
       before do
-        allow(object).to receive(:accessioning?).and_return(true)
-        allow(object).to receive(:current_object_version).and_return(1)
+        allow(object).to receive_messages(accessioning?: true, current_object_version: 1)
       end
 
       let(:status) { object.pre_assemble }
@@ -73,10 +68,8 @@ RSpec.describe PreAssembly::DigitalObject do
     let(:files) { ['image1.tif', 'image2.tif', 'subfolder/image1.tif'] }
 
     before do
-      allow(object).to receive(:staging_location).and_return(tmp_area)
+      allow(object).to receive_messages(staging_location: tmp_area, stageable_items: files.map { |f| File.expand_path("#{tmp_area}/#{f}") }, assembly_directory:)
       allow(assembly_directory).to receive(:assembly_staging_dir).and_return("#{tmp_area}/target")
-      allow(object).to receive(:stageable_items).and_return(files.map { |f| File.expand_path("#{tmp_area}/#{f}") })
-      allow(object).to receive(:assembly_directory).and_return(assembly_directory)
       # setup the file structure defined above in a hierarchy
       object.stageable_items.each do |si|
         FileUtils.mkdir_p File.dirname(si)
@@ -529,8 +522,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book')
-        allow(bc).to receive(:content_md_creation).and_return('filename')
+        allow(bc).to receive_messages(content_structure: 'simple_book', content_md_creation: 'filename')
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')

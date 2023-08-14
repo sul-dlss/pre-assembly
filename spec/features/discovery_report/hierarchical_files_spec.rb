@@ -54,7 +54,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     expect(discovery_report_json['summary']['end_time'].to_date).to eq Time.now.utc.to_date
 
     log_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
-    log_hash = YAML.load(File.read(log_path))
+    log_hash = YAML.load_file(log_path)
     expect(log_hash).to include(status: 'success', pid: bare_druid, discovery_finished: true)
     expect(log_hash.keys.size).to eq 4
   end
@@ -89,7 +89,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     expect(discovery_report_json['summary']['start_time'].to_date).to eq Time.now.utc.to_date
     expect(discovery_report_json['summary']['end_time'].to_date).to eq Time.now.utc.to_date
     log_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
-    log_hash = YAML.load(File.read(log_path))
+    log_hash = YAML.load_file(log_path)
     expect(log_hash).to include(status: 'error', pid: bare_druid, discovery_finished: true)
     expect(log_hash.keys.size).to eq 4
   end
