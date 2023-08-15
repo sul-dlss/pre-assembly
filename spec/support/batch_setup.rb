@@ -7,7 +7,7 @@ end
 
 def hash_from_proj(proj)
   filename = "spec/fixtures/project_config_files/#{proj}.yaml"
-  YAML.safe_load(File.read(filename))
+  YAML.safe_load_file(filename)
 end
 
 def batch_context_from_hash(proj)
