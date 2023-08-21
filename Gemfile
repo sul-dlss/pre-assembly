@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem "bunny", "~> 2.17" # RabbitMQ library
 gem 'config'
 gem 'devise'
 gem 'devise-remote-user'
@@ -15,6 +16,7 @@ gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'sidekiq', '~> 7.0'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
+gem "sneakers", "~> 2.11" # rabbitMQ background processing
 gem 'state_machines-activerecord'
 gem "turbo-rails", "~> 1.1"
 

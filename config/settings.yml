@@ -18,3 +18,11 @@ workflow_url: 'http://localhost:3002'
 
 workflow:
   timeout: 60
+
+rabbitmq:
+  enabled: false
+  hostname: localhost
+  vhost: /
+  username: guest
+  password: guest
+
