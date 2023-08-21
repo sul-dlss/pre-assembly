@@ -46,7 +46,7 @@ RSpec.describe 'Pre-assemble Media Audio object' do
     select 'Pre Assembly Run', from: 'Job type'
     select 'Media', from: 'Content structure'
     fill_in 'Staging location', with: staging_location
-    select 'Default', from: 'Content metadata creation'
+    select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'
 
     click_button 'Submit'

@@ -15,7 +15,7 @@ module PreAssembly
                   :objects_had_errors
 
     delegate :staging_location,
-             :content_md_creation,
+             :processing_configuration,
              :content_structure,
              :object_manifest_rows,
              :staging_location_with_path,

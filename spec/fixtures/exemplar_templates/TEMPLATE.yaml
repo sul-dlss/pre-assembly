@@ -76,7 +76,7 @@ staging_style:    'copy'     # the staging style, can be "copy" or "symlink", de
 ####
 
 # The method used to group resources together when generating content metadata.
-content_md_creation:
+processing_configuration:
   style:       'default'                # Used by most projects, creates one resource per file.
                'filename'                 # Collects files together into a single resource based on filename -- files with the same name but different extensions will become
                                           # part of a single resource node.

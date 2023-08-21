@@ -4,35 +4,34 @@ module PreAssembly
   module FromStagingLocation
     # Creates a data structure of FileSets from a staging location
     class FileSetBuilder
-      # @param [Symbol] content_metadata_creation one of: :default or :filename
-      #   this variable would be better named manifest_type, but we are using the name content_metadata_creation in the UI
+      # @param [Symbol] processing_configuration one of: :default or :filename
       # @param [Array<Assembly::ObjectFile>] objects
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
-      def self.build(content_metadata_creation:, objects:, style:)
-        new(content_metadata_creation:, objects:, style:).build
+      def self.build(processing_configuration:, objects:, style:)
+        new(processing_configuration:, objects:, style:).build
       end
 
-      def initialize(content_metadata_creation:, objects:, style:)
-        @content_metadata_creation = content_metadata_creation
+      def initialize(processing_configuration:, objects:, style:)
+        @processing_configuration = processing_configuration.to_sym
         @objects = objects
         @style = style
       end
 
       # @return [Array<FileSet>] a list of filesets in the object
       def build
-        case content_metadata_creation
+        case processing_configuration
         when :default # one resource per object
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:) }
         when :filename # one resource per distinct filename (excluding extension)
           build_for_filename
         else
-          raise 'Invalid content_metadata_creation: must be :default or :filename'
+          raise 'Invalid processing_configuration: must be :default or :filename'
         end
       end
 
       private
 
-      attr_reader :content_metadata_creation, :objects, :style
+      attr_reader :processing_configuration, :objects, :style
 
       def build_for_filename
         # loop over distinct filenames, this determines how many resources we will have and

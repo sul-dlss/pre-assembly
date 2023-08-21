@@ -30,7 +30,7 @@ class BatchContextsController < ApplicationController
   def batch_contexts_params
     params.require(:batch_context)
           .permit(:project_name, :content_structure, :staging_style_symlink,
-                  :content_metadata_creation, :staging_location, :all_files_public,
+                  :processing_configuration, :staging_location, :all_files_public,
                   :using_file_manifest, job_runs_attributes: [:job_type])
           .merge(user: current_user)
   end

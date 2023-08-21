@@ -9,7 +9,7 @@ module PreAssembly
                 :stager, :label, :druid, :source_id, :container
 
     delegate :staging_location,
-             :content_md_creation,
+             :processing_configuration,
              :content_structure,
              :project_name,
              :file_manifest,
@@ -142,14 +142,14 @@ module PreAssembly
                                          reading_order:)
       else
         build_from_staging_location(objects: object_files.sort,
-                                    content_metadata_creation: content_md_creation.to_sym,
+                                    processing_configuration:,
                                     content_md_creation_style:,
                                     reading_order:)
       end
     end
 
-    def build_from_staging_location(objects:, content_metadata_creation:, content_md_creation_style:, reading_order:)
-      filesets = FromStagingLocation::FileSetBuilder.build(content_metadata_creation:, objects:, style: content_md_creation_style)
+    def build_from_staging_location(objects:, processing_configuration:, content_md_creation_style:, reading_order:)
+      filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,

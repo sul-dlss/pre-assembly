@@ -35,7 +35,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv' do
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
     fill_in 'Staging location', with: staging_location
-    select 'Default', from: 'Content metadata creation'
+    select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'
 
     click_button 'Submit'

@@ -43,7 +43,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     select 'Pre Assembly Run', from: 'Job type'
     select 'Book (rtl)', from: 'Content structure'
     fill_in 'Staging location', with: staging_location
-    select 'Default', from: 'Content metadata creation'
+    select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'
 
     click_button 'Submit'

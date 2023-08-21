@@ -26,7 +26,7 @@ RSpec.describe BatchContext do
 
     it { is_expected.to validate_presence_of(:content_structure) }
     it { is_expected.to validate_presence_of(:staging_location) }
-    it { is_expected.to validate_presence_of(:content_metadata_creation) }
+    it { is_expected.to validate_presence_of(:processing_configuration) }
     it { is_expected.to validate_presence_of(:project_name) }
 
     describe 'project_name' do
@@ -71,7 +71,7 @@ RSpec.describe BatchContext do
   end
 
   it do
-    is_expected.to define_enum_for(:content_metadata_creation).with_values(
+    is_expected.to define_enum_for(:processing_configuration).with_values(
       'default' => 0,
       'filename' => 1,
       'media_cm_style' => 2
@@ -83,7 +83,7 @@ RSpec.describe BatchContext do
   it 'enums default to their default values' do
     bc = described_class.new
     expect(bc.content_structure).to eq 'simple_image'
-    expect(bc.content_metadata_creation).to eq 'default'
+    expect(bc.processing_configuration).to eq 'default'
   end
 
   it 'staging_location has trailing slash removed' do

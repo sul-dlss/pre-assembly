@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :batch_context do
     staging_location { 'spec/fixtures/multimedia' }
-    content_metadata_creation { 'default' }
+    processing_configuration { 'default' }
     content_structure { 'simple_image' }
     project_name { 'Test_Project' }
     staging_style_symlink { false }
@@ -18,14 +18,14 @@ FactoryBot.define do
 
     trait :flat_dir_images do
       staging_location { 'spec/fixtures/flat_dir_images' }
-      content_metadata_creation { 'default' }
+      processing_configuration { 'default' }
       content_structure { 'simple_image' }
       project_name { 'Flat_Dir_Images' }
     end
 
     trait :folder_manifest do
       staging_location { 'spec/fixtures/obj_dirs_images' }
-      content_metadata_creation { 'default' }
+      processing_configuration { 'default' }
       content_structure { 'simple_image' }
       project_name { 'FolderManifest' }
     end

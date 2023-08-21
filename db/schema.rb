@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_22_173421) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_21_221826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_22_173421) do
     t.integer "content_structure", null: false
     t.string "staging_location", null: false
     t.boolean "staging_style_symlink", default: false, null: false
-    t.integer "content_metadata_creation", null: false
+    t.integer "processing_configuration", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false

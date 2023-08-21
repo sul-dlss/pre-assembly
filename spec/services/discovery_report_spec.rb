@@ -87,7 +87,7 @@ RSpec.describe DiscoveryReport do
         content_structure:,
         staging_location: 'spec/fixtures/images_jp2_tif',
         staging_style_symlink: false,
-        content_metadata_creation: 0,
+        processing_configuration: 0,
         user: build(:user, sunet_id: 'jdoe')
       }
     end

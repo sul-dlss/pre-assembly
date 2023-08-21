@@ -12,14 +12,14 @@ end
 
 def batch_context_from_hash(proj)
   hash = hash_from_proj(proj)
-  cmc = hash['content_md_creation']['style']
+  cmc = hash['processing_configuration']['style']
   cmc += '_cm_style' if cmc == 'media'
   build(
     :batch_context,
     project_name: hash['project_name'],
     content_structure: hash['project_style']['content_structure'],
     staging_location: hash['staging_location'],
-    content_metadata_creation: cmc,
+    processing_configuration: cmc,
     using_file_manifest: hash['using_file_manifest'],
     user: build(:user, sunet_id: 'Jdoe')
   )

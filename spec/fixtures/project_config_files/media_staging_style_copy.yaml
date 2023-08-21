@@ -7,7 +7,7 @@ staging_location: 'spec/fixtures/multimedia'
 
 staging_style: 'copy'
 
-content_md_creation:
+processing_configuration:
   style: 'media'
   file_manifest: 'file_manifest.csv'
 

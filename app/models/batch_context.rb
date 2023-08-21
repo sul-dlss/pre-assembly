@@ -19,7 +19,7 @@ class BatchContext < ApplicationRecord
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
 
-  validates :staging_location, :content_metadata_creation, :content_structure, presence: true
+  validates :staging_location, :processing_configuration, :content_structure, presence: true
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
@@ -40,8 +40,7 @@ class BatchContext < ApplicationRecord
     'simple_book_rtl' => 9
   }
 
-  # this would be better named manifest_type, but we are using the name content_metadata_creation in the UI
-  enum content_metadata_creation: {
+  enum processing_configuration: {
     'default' => 0,
     'filename' => 1,
     'media_cm_style' => 2 # Deprecated
@@ -61,11 +60,6 @@ class BatchContext < ApplicationRecord
   def file_manifest
     PreAssembly::FileManifest.new(csv_filename: file_manifest_path,
                                   staging_location:)
-  end
-
-  # this method would be better named manifest_type, but we are using the name content_metadata_creation in the UI
-  def content_md_creation
-    content_metadata_creation
   end
 
   def project_style
@@ -115,7 +109,7 @@ class BatchContext < ApplicationRecord
 
   def default_enums
     self[:content_structure] ||= 0
-    self[:content_metadata_creation] ||= 0
+    self[:processing_configuration] ||= 0
   end
 
   def normalize_dir(dir)
