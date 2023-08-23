@@ -9,6 +9,6 @@ project_style:
 
 staging_location: 'spec/fixtures/multimedia'
 
-content_md_creation:
+processing_configuration:
   style: 'media'
   file_manifest: 'file_manifest_with_thumb.csv'

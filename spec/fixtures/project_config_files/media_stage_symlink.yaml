@@ -7,7 +7,7 @@ staging_location: 'spec/fixtures/multimedia'
 
 staging_style: 'symlink'
 
-content_md_creation:
+processing_configuration:
   style: 'media'
 
 stageable_discovery:

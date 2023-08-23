@@ -10,7 +10,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
                             content_md_creation_style: :document)
     end
 
-    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(content_metadata_creation: :default, objects:, style: :document) }
+    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration: :default, objects:, style: :document) }
     let(:cocina_dro) do
       Cocina::RSpec::Factories.build(:dro, collection_ids: ['druid:bb000kk0000']).new(access: dro_access)
     end

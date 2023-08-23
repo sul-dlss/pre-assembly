@@ -11,7 +11,7 @@ RSpec.describe PreAssembly::FileManifest do
         {
           project_name: 'ProjectBar',
           staging_location:,
-          content_metadata_creation: :default,
+          processing_configuration: :default,
           content_structure: 'media',
           using_file_manifest: true
         }
@@ -118,7 +118,7 @@ RSpec.describe PreAssembly::FileManifest do
         {
           project_name: 'ProjectBaz',
           staging_location:,
-          content_metadata_creation: :default,
+          processing_configuration: :default,
           content_structure: :simple_image,
           using_file_manifest: true
         }

@@ -7,7 +7,7 @@ RSpec.describe BatchContextsController do
         {
           project_name: 'Multimedia',
           content_structure: 'simple_image',
-          content_metadata_creation: 'default',
+          processing_configuration: 'default',
           staging_location: 'spec/fixtures/multimedia',
           job_runs_attributes: { '0' => { job_type: 'preassembly' } }
         }
@@ -63,7 +63,7 @@ RSpec.describe BatchContextsController do
           bc = assigns(:batch_context)
           expect(bc.project_name).to eq 'Multimedia'
           expect(bc.content_structure).to eq 'simple_image'
-          expect(bc.content_metadata_creation).to eq 'default'
+          expect(bc.processing_configuration).to eq 'default'
           expect(bc.staging_location).to eq 'spec/fixtures/multimedia'
         end
 
@@ -76,7 +76,7 @@ RSpec.describe BatchContextsController do
       end
 
       context 'Invalid Parameters' do
-        let(:bc_params) { { project_name: '', content_structure: '', content_metadata_creation: '', staging_location: '' } }
+        let(:bc_params) { { project_name: '', content_structure: '', processing_configuration: '', staging_location: '' } }
 
         it 'do not create objects' do
           params[:batch_context][:project_name] = nil

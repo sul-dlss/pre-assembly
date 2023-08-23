@@ -522,7 +522,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive_messages(content_structure: 'simple_book', content_md_creation: 'filename')
+        allow(bc).to receive_messages(content_structure: 'simple_book', processing_configuration: 'filename')
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')

@@ -9,7 +9,7 @@ project_style:
 
 staging_location: 'spec/fixtures/media_missing'
 
-content_md_creation:
+processing_configuration:
   style: 'media'
   file_manifest: 'file_manifest.csv'
 

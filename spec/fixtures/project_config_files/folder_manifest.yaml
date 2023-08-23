@@ -7,5 +7,5 @@ project_style:
 
 staging_location: 'spec/fixtures/obj_dirs_images'
 
-content_md_creation:
+processing_configuration:
   style: 'default'

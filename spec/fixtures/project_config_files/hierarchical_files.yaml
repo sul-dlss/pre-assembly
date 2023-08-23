@@ -7,5 +7,5 @@ project_style:
 
 staging_location: 'spec/fixtures/hierarchical-files'
 
-content_md_creation:
+processing_configuration:
   style: 'default'
