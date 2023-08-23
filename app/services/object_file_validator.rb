@@ -108,6 +108,6 @@ class ObjectFileValidator
 
   # @return [Boolean]
   def using_file_manifest?
-    file_manifest&.exists?
+    batch.using_file_manifest
   end
 end

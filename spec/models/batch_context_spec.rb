@@ -295,11 +295,53 @@ RSpec.describe BatchContext do
       bc.send(:verify_staging_location)
       expect(bc.errors.map(&:type)).to include('missing manifest: spec/fixtures/images_jp2_tif/manifest.csv')
     end
+  end
 
-    it 'adds error if object selected for use with file manifest is missing file_manifest.csv' do
-      allow(bc).to receive(:using_file_manifest).and_return(true)
-      bc.send(:verify_staging_location)
-      expect(bc.errors.map(&:type)).to include('missing file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
+  describe '#verify_file_manifest' do
+    context 'when not using a file manifest' do
+      before { allow(bc).to receive(:using_file_manifest).and_return(false) }
+
+      it 'does nothing' do
+        expect { bc.send(:verify_file_manifest) }.not_to change(bc, :errors)
+      end
+    end
+
+    context 'when using a file manifest' do
+      before { allow(bc).to receive(:using_file_manifest).and_return(true) }
+
+      context 'when not found' do
+        it 'adds error' do
+          bc.send(:verify_file_manifest)
+          expect(bc.errors.map(&:type)).to include('missing file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
+        end
+      end
+
+      context 'when valid' do
+        let(:attr_hash) do
+          {
+            project_name: 'Hierarchical-files-with-file-manifest',
+            staging_location: 'spec/fixtures/hierarchical-files-with-file-manifest'
+          }
+        end
+
+        it 'does nothing' do
+          expect { bc.send(:verify_file_manifest) }.not_to change(bc, :errors)
+        end
+      end
+
+      context 'when invalid' do
+        let(:attr_hash) do
+          {
+            project_name: 'Invalid-file-manifest',
+            staging_location: 'spec/fixtures/invalid-file-manifest'
+          }
+        end
+
+        it 'adds error' do
+          bc.send(:verify_file_manifest)
+          expect(bc.errors.map(&:type)).to include('invalid file manifest: spec/fixtures/invalid-file-manifest/file_manifest.csv (such as preserve and shelve both being set to no for a single file)')
+        end
+      end
     end
   end
 end

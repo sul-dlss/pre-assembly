@@ -18,8 +18,12 @@ module PreAssembly
       @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
     end
 
-    def exists?
-      File.exist?(csv_filename)
+    def valid?
+      # check to see if any files in any file sets have both preserve and shelve set to "no" ... this makes no sense and should be marked as invalid
+      files = manifest.map { |__object, resources| resources[:file_sets].map { |__num, file_set| file_set[:files] } }.flatten
+      invalid_files = files.any? { |file| file.dig(:administrative, :sdrPreserve) == false && file.dig(:administrative, :shelve) == false }
+
+      !invalid_files
     end
 
     # rubocop:disable Metrics/AbcSize

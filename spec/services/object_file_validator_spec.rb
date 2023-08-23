@@ -39,7 +39,6 @@ RSpec.describe ObjectFileValidator do
 
       before do
         allow(object).to receive(:object_files).and_return([obj_file, obj_file])
-        # allow(report).to receive(:using_file_manifest?).and_return(false)
         allow(validator).to receive(:registration_check).and_return({}) # pretend everything is in Dor
       end
 
@@ -54,7 +53,6 @@ RSpec.describe ObjectFileValidator do
 
       before do
         allow(object).to receive(:object_files).and_return([obj_file, obj_file])
-        # allow(report).to receive(:using_file_manifest?).and_return(true)
         allow(validator).to receive(:registration_check).and_return({}) # pretend everything is in Dor
       end
 

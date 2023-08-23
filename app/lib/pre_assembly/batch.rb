@@ -20,6 +20,7 @@ module PreAssembly
              :object_manifest_rows,
              :staging_location_with_path,
              :progress_log_file,
+             :using_file_manifest,
              :project_name,
              :staging_style_symlink,
              to: :batch_context
