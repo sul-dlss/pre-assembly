@@ -188,3 +188,12 @@ Pre-Assembly has a fairly simple [data model](db/schema.rb) based on three types
 * *JobRun*: represents a specific batch load run using information from the BatchContext. These jobs are picked up by an asynchronous Sidekiq job when requested by the user. The job can be a full run, which submits the data to the [dor-services-app](https://github.com/sul-dlss/dor-services-app) API, or simply a "discovery report" which checks that the data and configuration look correct.
 
 A *User* can have multiple *BatchContext*s and a *BatchContext* can have multiple *JobRun*s. When a user chooses to run or rerun a job in the user interface a new *JobRun* is created using the same *BatchContext*.
+
+## Reset Process (for QA/Stage)
+
+### Steps
+
+1. Reset the database: `bin/rails -e p db:reset`
+2. Delete the staging directory: `rm -fr /dor/assembly/*`
+3. Delete the job artifacts output directory: `rm -fr /dor/preassembly/*`
+4. To test, run the `preassembly_*_spec.rb` integration tests.
