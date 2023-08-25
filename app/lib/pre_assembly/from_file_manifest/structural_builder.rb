@@ -19,6 +19,7 @@ module PreAssembly
       attr_reader :content_md_creation_style, :resources, :cocina_dro, :reading_order
 
       # generate the base of the Cocina Structural metadata for this new druid
+      # @return [Cocina::Models::DROStructural] the structural metadata
       def build
         attributes = { contains: build_file_sets }
         attributes[:hasMemberOrders] = [{ viewingDirection: reading_order }] if content_md_creation_style == :simple_book
