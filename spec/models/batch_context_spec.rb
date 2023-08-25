@@ -29,6 +29,40 @@ RSpec.describe BatchContext do
     it { is_expected.to validate_presence_of(:processing_configuration) }
     it { is_expected.to validate_presence_of(:project_name) }
 
+    context 'file_manifest required for media' do
+      context 'when using_file_manifest is not selected' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: 'media',
+            using_file_manifest: false
+          }
+        end
+
+        it 'is not valid' do
+          expect(bc.valid?).to be false
+          expect(bc.errors.size).to eq 1
+          expect(bc.errors.first.attribute).to eq :content_structure
+        end
+      end
+
+      context 'when using_file_manifest is selected' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: 'media',
+            using_file_manifest: true
+          }
+        end
+
+        it 'is valid' do
+          expect(bc.valid?).to be true
+        end
+      end
+    end
+
     describe 'project_name' do
       it 'is not valid with chars other than alphanum, hyphen and underscore' do
         expect { bc.project_name = 's p a c e s' }.to change(bc, :valid?).to(false)

@@ -24,6 +24,8 @@ class BatchContext < ApplicationRecord
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
 
+  validate :verify_file_manifest_selected_for_media
+
   validate :verify_staging_location
   validate :verify_staging_location_path
 
@@ -139,6 +141,12 @@ class BatchContext < ApplicationRecord
       throw(:abort)
     end
     FileUtils.mkdir_p(output_dir)
+  end
+
+  def verify_file_manifest_selected_for_media
+    return unless content_structure == 'media' && !using_file_manifest
+
+    errors.add(:content_structure, 'requires a file manifest.  Please select the checkbox and ensure a file manifest is present.')
   end
 
   # rubocop:disable Metrics/AbcSize
