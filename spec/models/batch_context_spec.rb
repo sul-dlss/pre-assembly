@@ -297,12 +297,12 @@ RSpec.describe BatchContext do
     end
   end
 
-  describe '#verify_file_manifest' do
+  describe '#verify_file_manifest_exists' do
     context 'when not using a file manifest' do
       before { allow(bc).to receive(:using_file_manifest).and_return(false) }
 
       it 'does nothing' do
-        expect { bc.send(:verify_file_manifest) }.not_to change(bc, :errors)
+        expect { bc.send(:verify_file_manifest_exists) }.not_to change(bc, :errors)
       end
     end
 
@@ -311,8 +311,22 @@ RSpec.describe BatchContext do
 
       context 'when not found' do
         it 'adds error' do
-          bc.send(:verify_file_manifest)
-          expect(bc.errors.map(&:type)).to include('missing file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
+          bc.send(:verify_file_manifest_exists)
+          expect(bc.errors.map(&:type)).to include('missing or empty file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
+        end
+      end
+
+      context 'when empty' do
+        let(:attr_hash) do
+          {
+            project_name: 'Empty_file_manifest',
+            staging_location: 'spec/fixtures/manifest_empty'
+          }
+        end
+
+        it 'adds error' do
+          bc.send(:verify_file_manifest_exists)
+          expect(bc.errors.map(&:type)).to include('missing or empty file manifest: spec/fixtures/manifest_empty/file_manifest.csv')
         end
       end
 
@@ -325,21 +339,7 @@ RSpec.describe BatchContext do
         end
 
         it 'does nothing' do
-          expect { bc.send(:verify_file_manifest) }.not_to change(bc, :errors)
-        end
-      end
-
-      context 'when invalid' do
-        let(:attr_hash) do
-          {
-            project_name: 'Invalid-file-manifest',
-            staging_location: 'spec/fixtures/invalid-file-manifest'
-          }
-        end
-
-        it 'adds error' do
-          bc.send(:verify_file_manifest)
-          expect(bc.errors.map(&:type)).to include('invalid file manifest: spec/fixtures/invalid-file-manifest/file_manifest.csv (such as preserve and shelve both being set to no for a single file)')
+          expect { bc.send(:verify_file_manifest_exists) }.not_to change(bc, :errors)
         end
       end
     end

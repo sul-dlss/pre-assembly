@@ -36,7 +36,7 @@ RSpec.describe 'Discovery Report fails' do
     first('td  > a').click
     expect(page).to have_content project_name
     expect(page).to have_content 'Failed'
-    expect(page).to have_content "undefined method `find' for nil:NilClass"
+    expect(page).to have_content 'no rows in file_manifest or missing header'
     expect(page).to have_content 'No progress log file is available'
   end
 end

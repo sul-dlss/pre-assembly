@@ -28,7 +28,7 @@ class BatchContext < ApplicationRecord
 
   validate :verify_staging_location
   validate :verify_staging_location_path
-  validate :verify_file_manifest, if: :using_file_manifest
+  validate :verify_file_manifest_exists, if: :using_file_manifest
 
   enum content_structure: {
     'simple_image' => 0,
@@ -173,13 +173,8 @@ class BatchContext < ApplicationRecord
     errors.add(:staging_location, 'not a sub directory of allowed parent directories.')
   end
 
-  def verify_file_manifest
-    unless File.exist?(file_manifest_path)
-      errors.add(:staging_location, "missing file manifest: #{file_manifest_path}")
-      return
-    end
-
-    errors.add(:staging_location, "invalid file manifest: #{file_manifest_path} (such as preserve and shelve both being set to no for a single file)") unless file_manifest.valid?
+  def verify_file_manifest_exists
+    errors.add(:staging_location, "missing or empty file manifest: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
   end
 end
 # rubocop:enable Metrics/ClassLength
