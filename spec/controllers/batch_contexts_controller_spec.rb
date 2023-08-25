@@ -76,7 +76,7 @@ RSpec.describe BatchContextsController do
       end
 
       context 'Invalid Parameters' do
-        let(:bc_params) { { project_name: '', content_structure: '', processing_configuration: '', staging_location: '' } }
+        let(:bc_params) { { project_name: '', content_structure: 'media', processing_configuration: '', staging_location: '' } }
 
         it 'do not create objects' do
           params[:batch_context][:project_name] = nil

@@ -20,6 +20,10 @@ RSpec.describe BatchContext do
       expect { bc.user = nil }.to change(bc, :valid?).to(false)
     end
 
+    it 'is not valid if user does not select a file manifest' do
+      expect { bc.using_file_manifest = nil }.to change(bc, :valid?).to(false)
+    end
+
     it 'is not valid unless staging_location exists on filesystem' do
       expect { bc.staging_location = 'does/not/exist' }.to change(bc, :valid?).to(false)
     end
