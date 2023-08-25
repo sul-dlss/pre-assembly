@@ -178,3 +178,13 @@ if you set the --report switch, it will only produce the output report, it will 
 if you set the --content-metadata switch, it will only generate content metadata for each object using the log file for successfully found files, assuming you also have columns in your input CSV labeled "Druid", "Sequence" and "Label"
 if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
 note that file extensions do not matter when matching
+
+## Data Model
+
+Pre-Assembly has a fairly simple [data model](db/schema.rb) based on three types of objects:
+
+* *User*: a SUL staff person who is able to log in, based on configuration in [Puppet](https://github.com/sul-dlss/puppet/blob/production/hieradata/node/sul-preassembly-prod.stanford.edu.eyaml)
+* *BatchContext*: includes details about a particular type of batch load, including where the data lives, who created it, the type of batch load, etc. This is also known as a "Project" in the user interface.
+* *JobRun*: represents a specific batch load run using information from the BatchContext. These jobs are picked up by an asynchronous Sidekiq job when requested by the user. The job can be a full run, which submits the data to the [dor-services-app](https://github.com/sul-dlss/dor-services-app) API, or simply a "discovery report" which checks that the data and configuration look correct.
+
+A *User* can have multiple *BatchContext*s and a *BatchContext* can have multiple *JobRun*s. When a user chooses to run or rerun a job in the user interface a new *JobRun* is created using the same *BatchContext*.
