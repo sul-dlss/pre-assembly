@@ -50,11 +50,13 @@ module PreAssembly
 
       def file_builder(file_attributes:)
         Cocina::Models::File.new(
-          file_attributes.merge(version: cocina_dro.version, access: file_access)
+          file_attributes.merge(version: cocina_dro.version, access: file_access(file_attributes))
         )
       end
 
-      def file_access
+      def file_access(file_attributes)
+        return file_attributes[:access] if file_attributes[:access].present?
+
         file_access = cocina_dro.access.to_h.slice(:view, :download, :location, :controlledDigitalLending)
         file_access[:view] = 'dark' if file_access[:view] == 'citation-only'
         file_access

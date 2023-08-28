@@ -26,7 +26,7 @@ class ObjectFileValidator
     empty_files = object.object_files.count { |obj_file| obj_file.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
-      batch_id = File.basename(object.container)
+      batch_id = object.druid.id
       if batch_id && file_manifest.manifest[batch_id]
         manifest_files = file_manifest.manifest[batch_id].fetch(:file_sets, []).flat_map { |_seq, val| val[:files] }
         counts[:files_in_manifest] = manifest_files.count
