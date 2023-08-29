@@ -1,9 +1,36 @@
 # frozen_string_literal: true
 
 RSpec.describe PreAssembly::FileManifest do
-  let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
+  describe '#load_manifest' do
+    let(:staging_location) { Rails.root.join('spec/fixtures/media_missing') }
+
+    context 'when no rows' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_no_rows.csv" }
+
+      it 'throws an exception' do
+        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'no rows in file_manifest or missing header')
+      end
+    end
+
+    context 'when invalid rows' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_invalid.csv" }
+
+      it 'throws an exception' do
+        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'file_manifest has preserve and shelve both being set to no for a single file')
+      end
+    end
+
+    context 'when missing columns' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_missing_columns.csv" }
+
+      it 'throws an exception' do
+        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'file_manifest missing required columns')
+      end
+    end
+  end
 
   describe '#create_content_metadata' do
+    let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
     let(:csv_filename) { "#{staging_location}/file_manifest.csv" }
 
     context 'for a media object' do
@@ -65,7 +92,7 @@ RSpec.describe PreAssembly::FileManifest do
                       filename: 'aa111aa1111_001_b_sh.wav', version: 1,
                       hasMessageDigests: [{ type: 'md5', digest: '0e80068efa7b0d749ed5da097f6d0eeb' }],
                       access: { view: 'world', download: 'none', controlledDigitalLending: false },
-                      administrative: { publish: false, sdrPreserve: false, shelve: false } },
+                      administrative: { publish: false, sdrPreserve: true, shelve: false } },
                     { type: 'https://cocina.sul.stanford.edu/models/file', externalIdentifier: 'https://cocina.sul.stanford.edu/file/7', label: 'aa111aa1111_001_b_sl.mp3',
                       filename: 'aa111aa1111_001_b_sl.mp3', version: 1,
                       hasMessageDigests: [],
@@ -180,7 +207,7 @@ RSpec.describe PreAssembly::FileManifest do
                       filename: 'aa111aa1111_001_b_sh.wav', version: 1,
                       hasMessageDigests: [{ type: 'md5', digest: '0e80068efa7b0d749ed5da097f6d0eeb' }],
                       access: { view: 'world', download: 'none', controlledDigitalLending: false },
-                      administrative: { publish: false, sdrPreserve: false, shelve: false } },
+                      administrative: { publish: false, sdrPreserve: true, shelve: false } },
                     { type: 'https://cocina.sul.stanford.edu/models/file',
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/7', label: 'aa111aa1111_001_b_sl.mp3',
                       filename: 'aa111aa1111_001_b_sl.mp3', version: 1,

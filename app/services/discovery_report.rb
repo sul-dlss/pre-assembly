@@ -23,11 +23,6 @@ class DiscoveryReport
     Dir::Tmpname.create(["#{self.class.name.underscore}_", '.json'], batch.batch_context.output_dir) { |path| path }
   end
 
-  # @return [Boolean]
-  def using_file_manifest?
-    file_manifest&.exists?
-  end
-
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
   # @return [Jbuilder] (caller needs obj.to_builder.target! for the JSON string)
   def to_builder

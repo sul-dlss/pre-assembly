@@ -11,21 +11,34 @@ module PreAssembly
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
     VALID_ROLES = %w[transcription annotations derivative master].freeze
 
+    # the required columns that must exist in the file manifest
+    REQUIRED_COLUMNS = %w[object filename label sequence publish shelve preserve resource_type].freeze
+
     def initialize(staging_location:, csv_filename:)
       @staging_location = staging_location
       @csv_filename = csv_filename
       # read CSV
       @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
+
+      check_for_invalid_rows
     end
 
-    def exists?
-      File.exist?(csv_filename)
+    def check_for_invalid_rows
+      # check to see if any files in any file sets have both preserve and shelve set to "no" ... this makes no sense and should be marked as invalid
+      files = manifest.map { |__object, resources| resources[:file_sets].map { |__num, file_set| file_set[:files] } }.flatten
+      invalid_files = files.any? { |file| file.dig(:administrative, :sdrPreserve) == false && file.dig(:administrative, :shelve) == false }
+
+      raise 'file_manifest has preserve and shelve both being set to no for a single file' if invalid_files
     end
 
     # rubocop:disable Metrics/AbcSize
     def load_manifest
-      # load file into @rows and then build up @manifest
+      # load file into rows and then build up @manifest
       rows = CsvImporter.parse_to_hash(@csv_filename)
+
+      raise 'no rows in file_manifest or missing header' if rows.empty?
+      raise 'file_manifest missing required columns' unless (REQUIRED_COLUMNS - rows.first.keys).empty?
+
       sequence = nil
       rows.each_with_object({}) do |row, manifest|
         object = row[:object]

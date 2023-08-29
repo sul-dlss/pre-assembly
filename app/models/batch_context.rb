@@ -28,6 +28,7 @@ class BatchContext < ApplicationRecord
 
   validate :verify_staging_location
   validate :verify_staging_location_path
+  validate :verify_file_manifest_exists, if: :using_file_manifest
 
   enum content_structure: {
     'simple_image' => 0,
@@ -149,15 +150,12 @@ class BatchContext < ApplicationRecord
     errors.add(:content_structure, 'requires a file manifest.  Please select the checkbox and ensure a file manifest is present.')
   end
 
-  # rubocop:disable Metrics/AbcSize
   def verify_staging_location
     return if errors.key?(:staging_location)
     return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
 
     errors.add(:staging_location, "missing manifest: #{object_manifest_path}") unless File.exist?(object_manifest_path)
-    errors.add(:staging_location, "missing file manifest: #{file_manifest_path}") if using_file_manifest && !File.exist?(file_manifest_path)
   end
-  # rubocop:enable Metrics/AbcSize
 
   def verify_staging_location_path
     return if errors.key?(:staging_location)
@@ -173,6 +171,10 @@ class BatchContext < ApplicationRecord
     return unless match_flag.nil? || match_flag == staging_location_path
 
     errors.add(:staging_location, 'not a sub directory of allowed parent directories.')
+  end
+
+  def verify_file_manifest_exists
+    errors.add(:staging_location, "missing or empty file manifest: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
   end
 end
 # rubocop:enable Metrics/ClassLength
