@@ -6,7 +6,7 @@ module PreAssembly
 
   # It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
   class FileManifest
-    attr_reader :manifest, :csv_filename, :staging_location
+    attr_reader :csv_filename, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
     VALID_ROLES = %w[transcription annotations derivative master].freeze
@@ -17,38 +17,50 @@ module PreAssembly
     def initialize(staging_location:, csv_filename:)
       @staging_location = staging_location
       @csv_filename = csv_filename
-      # read CSV
-      @manifest = load_manifest # this will cache the entire file manifest csv in @manifest
-
-      check_for_invalid_rows
-    end
-
-    def check_for_invalid_rows
-      # check to see if any files in any file sets have both preserve and shelve set to "no" ... this makes no sense and should be marked as invalid
-      files = manifest.map { |__object, resources| resources[:file_sets].map { |__num, file_set| file_set[:files] } }.flatten
-      invalid_files = files.any? { |file| file.dig(:administrative, :sdrPreserve) == false && file.dig(:administrative, :shelve) == false }
-
-      raise 'file_manifest has preserve and shelve both being set to no for a single file' if invalid_files
     end
 
     # rubocop:disable Metrics/AbcSize
-    def load_manifest
-      # load file into rows and then build up @manifest
-      rows = CsvImporter.parse_to_hash(@csv_filename)
+    def manifest
+      @manifest ||= begin
+        # load file into @rows and then build up @manifest
+        rows = CsvImporter.parse_to_hash(@csv_filename)
 
-      raise 'no rows in file_manifest or missing header' if rows.empty?
-      raise 'file_manifest missing required columns' unless (REQUIRED_COLUMNS - rows.first.keys).empty?
+        validate_rows(rows)
 
-      sequence = nil
-      rows.each_with_object({}) do |row, manifest|
-        object = row[:object]
-        sequence = row[:sequence].to_i if row[:sequence].present?
-        manifest[object] ||= { file_sets: {} }
-        manifest[object][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
-        manifest[object][:file_sets][sequence][:files] << file_properties_from_row(row)
+        sequence = nil
+        rows.each_with_object({}) do |row, manifest|
+          object = row[:object]
+          sequence = row[:sequence].to_i if row[:sequence].present?
+          manifest[object] ||= { file_sets: {} }
+          manifest[object][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
+          manifest[object][:file_sets][sequence][:files] << file_properties_from_row(row)
+        end
       end
     end
     # rubocop:enable Metrics/AbcSize
+
+    # actually generate content metadata for a specific object in the manifest
+    # @returns [Cocina::Models::DROStructural] the structural metadata
+    def generate_structure(cocina_dro:, object:, content_md_creation_style:, reading_order: 'left-to-right')
+      item_structure = manifest[object]
+      raise "no structure found in mainifest for `#{object}'" unless item_structure
+
+      current_directory = Dir.pwd # this must be done before resources_hash is built
+      structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
+                                                            resources: item_structure,
+                                                            content_md_creation_style:,
+                                                            reading_order:)
+
+      FileUtils.cd(current_directory)
+      structure
+    end
+
+    private
+
+    def validate_rows(rows)
+      raise 'no rows in file_manifest or missing header' if rows.empty?
+      raise 'file_manifest missing required columns' unless (REQUIRED_COLUMNS - rows.first.keys).empty?
+    end
 
     def file_set_properties_from_row(row, sequence)
       { label: row[:label], sequence:, resource_type: row[:resource_type], files: [] }
@@ -72,6 +84,9 @@ module PreAssembly
       publish  = row[:publish] == 'yes'
       preserve = row[:preserve] == 'yes'
       shelve   = row[:shelve] == 'yes'
+
+      raise 'file_manifest has preserve and shelve both being set to no for a single file' if !preserve && !shelve
+
       { sdrPreserve: preserve, publish:, shelve: }
     end
 
@@ -95,23 +110,6 @@ module PreAssembly
 
     def read_checksum_from_file(md5_file)
       File.read(md5_file).scan(/[0-9a-fA-F]{32}/).first
-    end
-
-    # actually generate content metadata for a specific object in the manifest
-    # @return [String] XML
-    def generate_structure(cocina_dro:, object:, content_md_creation_style:, reading_order: 'left-to-right')
-      item_structure = manifest[object]
-      raise "no structure found in mainifest for `#{object}'" unless item_structure
-
-      current_directory = Dir.pwd # this must be done before resources_hash is built
-      structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
-                                                            resources: item_structure,
-                                                            content_md_creation_style:,
-                                                            reading_order:)
-
-      # write the contentMetadata.xml file
-      FileUtils.cd(current_directory)
-      structure
     end
   end
 end

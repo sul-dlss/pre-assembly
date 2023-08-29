@@ -8,7 +8,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:csv_filename) { "#{staging_location}/file_manifest_no_rows.csv" }
 
       it 'throws an exception' do
-        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'no rows in file_manifest or missing header')
+        expect { described_class.new(staging_location:, csv_filename:).manifest }.to raise_error(RuntimeError, 'no rows in file_manifest or missing header')
       end
     end
 
@@ -16,7 +16,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:csv_filename) { "#{staging_location}/file_manifest_invalid.csv" }
 
       it 'throws an exception' do
-        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'file_manifest has preserve and shelve both being set to no for a single file')
+        expect { described_class.new(staging_location:, csv_filename:).manifest }.to raise_error(RuntimeError, 'file_manifest has preserve and shelve both being set to no for a single file')
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe PreAssembly::FileManifest do
       let(:csv_filename) { "#{staging_location}/file_manifest_missing_columns.csv" }
 
       it 'throws an exception' do
-        expect { described_class.new(staging_location:, csv_filename:) }.to raise_error(RuntimeError, 'file_manifest missing required columns')
+        expect { described_class.new(staging_location:, csv_filename:).manifest }.to raise_error(RuntimeError, 'file_manifest missing required columns')
       end
     end
   end
