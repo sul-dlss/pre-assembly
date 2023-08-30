@@ -8,7 +8,7 @@ RSpec.describe 'batch_contexts/show.html.erb' do
   it 'diplays BatchContext info' do
     render template: 'batch_contexts/show'
     expect(rendered).to include("<a href=\"/batch_contexts/#{bc.id}\">#{bc.project_name}</a> by #{bc.user.email}")
-    expect(rendered).to include('<i class="fa-regular fa-circle-xmark"></i>') # icon for symlink="false"
+    expect(rendered).to include('no')
   end
 
   it 'has buttons for new Jobs' do

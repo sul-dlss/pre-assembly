@@ -1,0 +1,58 @@
+ <table class="table">
+    <thead class="table-light">
+        <tr>
+            <th colspan="2">Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Job type</td>
+            <td><%= @job_run.job_type %></td>
+        </tr>
+        <tr>
+            <td>Created at</td>
+            <td><%= @job_run.created_at %></td>
+        </tr>
+        <tr>
+            <td>Updated at</td>
+            <td><%= @job_run.updated_at %></td>
+        </tr>
+        <tr>
+            <td>State</td>
+            <td><%= @job_run.human_state_name %></td>
+        </tr>
+        <% if @job_run.error_message %>
+            <tr>
+                <td>Errors</td>
+                <td><%= @job_run.error_message %></td>
+            </tr>
+        <% end %>
+        <tr>
+            <td>Job output log</td>
+            <td>
+                <% if @job_run.in_progress? %>
+                    Job is not yet complete.  Please check back later.
+                <% elsif File.exist? @job_run.progress_log_file %>
+                    <%= link_to 'Download', download_log_path(@job_run) %>
+                <% else %>
+                    No progress log file is available.
+                <% end %>
+            </td>
+        </tr>
+        <% if @job_run.report_ready? %>
+            <tr>
+                <td>Discovery Report</td>
+                <td>
+                    <div id="discovery-report-links">
+                        <span id="download-link"><%= link_to 'Download', download_report_path(@job_run) %></span>
+                        <span id="summary-link">
+                            <%= turbo_frame_tag 'discovery_report' do %>
+                            <%= link_to 'View summary in browser', discovery_report_summary_path(@job_run) %>
+                            <% end %>
+                        </span>
+                    </div>
+                </td>>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
