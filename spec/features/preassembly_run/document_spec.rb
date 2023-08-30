@@ -63,8 +63,7 @@ RSpec.describe 'Pre-assemble document object' do
       .with(cocina_dro: item,
             filesets: Array,
             all_files_public: false,
-            reading_order: 'left-to-right',
-            content_md_creation_style: :document)
+            reading_order: nil)
     expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

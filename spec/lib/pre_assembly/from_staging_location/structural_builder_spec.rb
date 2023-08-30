@@ -5,9 +5,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
     subject(:structural) do
       described_class.build(cocina_dro:,
                             filesets:,
-                            all_files_public:,
-                            reading_order: 'left-to-right',
-                            content_md_creation_style: :document)
+                            all_files_public:)
     end
 
     let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration: :default, objects:, style: :document) }
