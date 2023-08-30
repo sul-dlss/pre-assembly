@@ -16,6 +16,7 @@ gem 'rake'
 gem 'sidekiq', '~> 7.0'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
 gem 'state_machines-activerecord'
+gem "turbo-rails", "~> 1.1"
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
@@ -54,5 +55,3 @@ group :development, :test do
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
 end
-
-gem "turbo-rails", "~> 1.1"
