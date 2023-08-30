@@ -37,7 +37,7 @@ RSpec.describe PreAssembly::FileManifest do
     let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
 
     let(:structural) do
-      file_manifest.generate_structure(cocina_dro: dro, object: 'aa111aa1111', content_md_creation_style: :media)
+      file_manifest.generate_structure(cocina_dro: dro, object: 'aa111aa1111')
     end
 
     let(:dro) { Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' }) }

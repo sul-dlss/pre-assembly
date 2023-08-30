@@ -41,14 +41,13 @@ module PreAssembly
 
     # actually generate content metadata for a specific object in the manifest
     # @returns [Cocina::Models::DROStructural] the structural metadata
-    def generate_structure(cocina_dro:, object:, content_md_creation_style:, reading_order: 'left-to-right')
+    def generate_structure(cocina_dro:, object:, reading_order: nil)
       item_structure = manifest[object]
-      raise "no structure found in mainifest for `#{object}'" unless item_structure
+      raise "no structure found in manifest for `#{object}'" unless item_structure
 
       current_directory = Dir.pwd # this must be done before resources_hash is built
       structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
                                                             resources: item_structure,
-                                                            content_md_creation_style:,
                                                             reading_order:)
 
       FileUtils.cd(current_directory)

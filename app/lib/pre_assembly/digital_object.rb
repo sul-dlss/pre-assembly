@@ -138,28 +138,27 @@ module PreAssembly
     def build_structural
       if file_manifest
         file_manifest.generate_structure(cocina_dro: cocina_object, object: File.basename(container),
-                                         content_md_creation_style:,
                                          reading_order:)
       else
         build_from_staging_location(objects: object_files.sort,
                                     processing_configuration:,
-                                    content_md_creation_style:,
                                     reading_order:)
       end
     end
 
-    def build_from_staging_location(objects:, processing_configuration:, content_md_creation_style:, reading_order:)
+    def build_from_staging_location(objects:, processing_configuration:, reading_order:)
       filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,
-                                                   reading_order:,
-                                                   content_md_creation_style:)
+                                                   reading_order:)
     end
 
     # The reading order for books is determined by the content structure set, defaulting to 'ltr'
     # This is passed to the content metadata creator, which uses it if the content structure is book
     def reading_order
+      return unless content_md_creation_style == :simple_book
+
       if content_structure == 'simple_book_rtl'
         'right-to-left'
       else

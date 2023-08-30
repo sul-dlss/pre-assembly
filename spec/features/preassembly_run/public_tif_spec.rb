@@ -66,8 +66,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)' do
       .with(cocina_dro: item,
             filesets: Array,
             all_files_public: true,
-            reading_order: 'left-to-right',
-            content_md_creation_style: :simple_image)
+            reading_order: nil)
     expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

@@ -64,8 +64,7 @@ RSpec.describe 'Run preassembly on object with no files' do
       .with(cocina_dro: item,
             filesets: [],
             all_files_public: false,
-            reading_order: 'left-to-right',
-            content_md_creation_style: :file)
+            reading_order: nil)
     expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

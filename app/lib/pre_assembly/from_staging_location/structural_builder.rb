@@ -6,25 +6,22 @@ module PreAssembly
     class StructuralBuilder
       # @param [Array<Fileset>] filesets
       # @param [Cocina::Models::DRO] cocina_dro
-      # @param [Symbol] content_md_creation_style content metadata creation styles supported by the assembly-objectfile gem
       # @param [String] reading_order
       # @param [Boolean] all_files_public
-      def self.build(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
+      def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil)
         new(filesets:,
             cocina_dro:,
-            content_md_creation_style:,
             reading_order:,
             all_files_public:).build
       end
 
-      def initialize(filesets:, cocina_dro:, content_md_creation_style:, reading_order:, all_files_public:)
+      def initialize(filesets:, cocina_dro:, all_files_public:, reading_order: nil)
         @filesets = filesets
         @cocina_dro = cocina_dro
-        @content_md_creation_style = content_md_creation_style
         @reading_order = reading_order
         @all_files_public = all_files_public
       end
-      attr_reader :content_md_creation_style, :filesets, :cocina_dro, :reading_order, :all_files_public
+      attr_reader :filesets, :cocina_dro, :reading_order, :all_files_public
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
@@ -68,7 +65,7 @@ module PreAssembly
         # rubocop:enable Metrics/BlockLength
 
         attributes = { contains: cocina_filesets }
-        attributes[:hasMemberOrders] = [{ viewingDirection: reading_order }] if content_md_creation_style == :simple_book
+        attributes[:hasMemberOrders] = [{ viewingDirection: reading_order }] if reading_order
 
         cocina_dro.structural.new(attributes)
       end
