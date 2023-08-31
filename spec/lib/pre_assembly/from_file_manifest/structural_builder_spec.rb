@@ -3,8 +3,7 @@
 RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
   describe '#build' do
     subject(:structural) do
-      described_class.build(cocina_dro:,
-                            resources:)
+      described_class.build(cocina_dro:, resources:)
     end
 
     let(:dro_access) { { view: 'world' } }

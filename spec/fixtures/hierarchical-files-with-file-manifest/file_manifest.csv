@@ -1,8 +1,8 @@
-object,filename,label,sequence,publish,preserve,shelve,resource_type,role
-content,test1.txt,page 1,1,no,yes,no,page,
-content,config/test.yml,file 2,1,yes,yes,yes,file,
-content,config/settings/test.yml,file 3,1,yes,yes,yes,page,transcription
-content,config/settings/test1.yml,file 4,1,yes,yes,yes,page,transcription
-content,config/settings/test2.yml,file 5,1,yes,yes,yes,page,transcription
-content,config/images/image.jpg,page 2,2,yes,yes,yes,page,page
-content,config/images/subdir/image.jpg,file 6,2,yes,yes,yes,page,transcription
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role
+mm111mm2222,test1.txt,page 1,1,no,yes,no,page,
+mm111mm2222,config/test.yml,file 2,1,yes,yes,yes,file,
+mm111mm2222,config/settings/test.yml,file 3,1,yes,yes,yes,page,transcription
+mm111mm2222,config/settings/test1.yml,file 4,1,yes,yes,yes,page,transcription
+mm111mm2222,config/settings/test2.yml,file 5,1,yes,yes,yes,page,transcription
+mm111mm2222,config/images/image.jpg,page 2,2,yes,yes,yes,page,page
+mm111mm2222,config/images/subdir/image.jpg,file 6,2,yes,yes,yes,page,transcription

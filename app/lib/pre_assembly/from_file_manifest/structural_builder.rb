@@ -4,7 +4,7 @@ module PreAssembly
   module FromFileManifest
     # Updates the Cocina::DROStructural metadata with the new structure derived from a file manifest
     class StructuralBuilder
-      # @param [String] reading_order
+      # @param [String,nil] reading_order
       def self.build(cocina_dro:, resources:, reading_order: nil)
         new(cocina_dro:, resources:, reading_order:).build
       end

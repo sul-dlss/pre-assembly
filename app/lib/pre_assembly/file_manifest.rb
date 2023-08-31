@@ -12,7 +12,7 @@ module PreAssembly
     VALID_ROLES = %w[transcription annotations derivative master].freeze
 
     # the required columns that must exist in the file manifest
-    REQUIRED_COLUMNS = %w[object filename label sequence publish shelve preserve resource_type].freeze
+    REQUIRED_COLUMNS = %w[druid filename resource_label sequence publish shelve preserve resource_type].freeze
 
     def initialize(staging_location:, csv_filename:)
       @staging_location = staging_location
@@ -29,11 +29,11 @@ module PreAssembly
 
         sequence = nil
         rows.each_with_object({}) do |row, manifest|
-          object = row[:object]
+          druid = row[:druid]
           sequence = row[:sequence].to_i if row[:sequence].present?
-          manifest[object] ||= { file_sets: {} }
-          manifest[object][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
-          manifest[object][:file_sets][sequence][:files] << file_properties_from_row(row)
+          manifest[druid] ||= { file_sets: {} }
+          manifest[druid][:file_sets][sequence] ||= file_set_properties_from_row(row, sequence)
+          manifest[druid][:file_sets][sequence][:files] << file_properties_from_row(row)
         end
       end
     end
@@ -62,7 +62,12 @@ module PreAssembly
     end
 
     def file_set_properties_from_row(row, sequence)
-      { label: row[:label], sequence:, resource_type: row[:resource_type], files: [] }
+      {
+        label: row[:resource_label].presence,
+        sequence:,
+        resource_type: row[:resource_type],
+        files: []
+      }.compact
     end
 
     # @param [HashWithIndifferentAccess] row
@@ -72,11 +77,21 @@ module PreAssembly
         type: Cocina::Models::ObjectType.file,
         externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
         filename: row[:filename],
-        label: row[:filename],
+        label: row[:file_label].presence || row[:filename],
         use: role(row),
         administrative: administrative(row),
-        hasMessageDigests: md5_digest(row)
+        hasMessageDigests: md5_digest(row),
+        hasMimeType: row[:mimetype].presence,
+        access: access_properties_from_row(row)
       }.compact
+    end
+
+    def access_properties_from_row(row)
+      {
+        view: row['rights_view'].presence,
+        download: row['rights_download'].presence,
+        location: row['rights_location'].presence
+      }.compact.presence
     end
 
     def administrative(row)
@@ -95,7 +110,7 @@ module PreAssembly
     end
 
     def md5_digest(row)
-      container_path = File.join(staging_location, row[:object])
+      container_path = File.join(staging_location, row[:druid])
       # look for a checksum file named the same as this file
       md5_files = Dir.glob("#{container_path}/**/#{row[:filename]}.md5")
       # if we find a corresponding md5 file, read it
