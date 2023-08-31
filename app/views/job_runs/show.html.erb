@@ -5,14 +5,21 @@
       <p><%= @job_run.job_type.humanize %> #<%= @job_run.id %></p>
     </div>
   </div>
-   <div class="row p-1 pl-5">
-      <div class="col-6">
-          <%= render partial: 'settings', locals: { batch_context: @job_run.batch_context } %>
+  <div class="row p-1 pl-5">
+    <div class="col-6">
+        <%= render partial: 'settings', locals: { batch_context: @job_run.batch_context } %>
+    </div>
+    <div class="col-6">
+      <%= render partial: 'details' %>
+    </div>
+  </div>
+  <% if @discovery_report %>
+    <div class="row mt-5">
+      <div class="col-12">
+        <%= render partial: 'discovery_report_summary' %>
       </div>
-      <div class="col-6">
-        <%= render partial: 'details' %>
-      </div>
-   </div>
+    </div>
+  <% end %>
   <div class="row mt-5">
      <div class="col-8">
         <p><%= link_to 'Return to homepage', root_path, class: 'nav-link' %></p>

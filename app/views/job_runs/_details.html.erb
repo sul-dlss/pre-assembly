@@ -1,6 +1,6 @@
- <table class="table">
-    <thead class="table-light">
-        <tr>
+ <table class="table table-bordered">
+    <thead>
+        <tr class="table-secondary">
             <th colspan="2">Details</th>
         </tr>
     </thead>
@@ -21,7 +21,7 @@
             <td>State</td>
             <td><%= @job_run.human_state_name %></td>
         </tr>
-        <% if @job_run.error_message %>
+        <% unless @job_run.error_message.blank? %>
             <tr>
                 <td>Errors</td>
                 <td><%= @job_run.error_message %></td>
@@ -42,16 +42,7 @@
         <% if @job_run.report_ready? %>
             <tr>
                 <td>Discovery Report</td>
-                <td>
-                    <div id="discovery-report-links">
-                        <span id="download-link"><%= link_to 'Download', download_report_path(@job_run) %></span>
-                        <span id="summary-link">
-                            <%= turbo_frame_tag 'discovery_report' do %>
-                            <%= link_to 'View summary in browser', discovery_report_summary_path(@job_run) %>
-                            <% end %>
-                        </span>
-                    </div>
-                </td>>
+                <td><%= link_to 'Download', download_report_path(@job_run) %></td>
             </tr>
         <% end %>
     </tbody>

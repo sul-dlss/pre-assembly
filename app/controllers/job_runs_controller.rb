@@ -8,6 +8,7 @@ class JobRunsController < ApplicationController
 
   def show
     @job_run = JobRun.find(params[:id])
+    @discovery_report = JSON.parse(File.read(@job_run.output_location)) if @job_run.report_ready?
   end
 
   def create
@@ -38,16 +39,6 @@ class JobRunsController < ApplicationController
       send_file @job_run.output_location
     else
       flash.now[:warning] = 'Job is not complete. Please check back later.'
-      render 'show'
-    end
-  end
-
-  def discovery_report_summary
-    job_run = JobRun.find(params[:id])
-    if job_run.output_location && File.exist?(job_run.output_location)
-      @discovery_report = JSON.parse(File.read(job_run.output_location))
-    else
-      flash.now[:warning] = 'Discovery report file is not available.'
       render 'show'
     end
   end

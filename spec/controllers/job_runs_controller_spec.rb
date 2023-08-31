@@ -37,8 +37,14 @@ RSpec.describe JobRunsController do
   end
 
   describe '#show' do
+    let(:job_run) { instance_double(JobRun) }
+
+    before do
+      allow(JobRun).to receive(:find).with('123').and_return(job_run)
+      allow(job_run).to receive(:report_ready?).and_return(false)
+    end
+
     it 'returns http success' do
-      allow(JobRun).to receive(:find).with('123').and_return(instance_double(JobRun))
       get :show, params: { id: 123 }
       expect(response).to have_http_status(:success)
     end
