@@ -80,7 +80,7 @@ bundle exec rspec
 Just the usual:
 
 ```bash
-bundle exec rails server
+bin/dev
 ```
 
 When running the application in development mode, it will use a default sunet_id (`'tmctesterson'`) for
@@ -88,7 +88,7 @@ its sessions. To override that behavior and specify an alternate user, you can m
 environment variable at startup, like so:
 
 ```bash
-REMOTE_USER=ima_user bin/rails server
+REMOTE_USER=ima_user bin/dev
 ```
 
 Because the application looks for user info in an environment variable, and because local dev environments don't have

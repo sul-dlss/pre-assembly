@@ -137,6 +137,8 @@ GEM
       dry-validation (~> 1.0, >= 1.0.0)
     connection_pool (2.4.1)
     crass (1.0.6)
+    cssbundling-rails (1.2.0)
+      railties (>= 6.0.0)
     date (3.3.3)
     deep_merge (1.2.2)
     deprecation (1.1.0)
@@ -475,6 +477,7 @@ DEPENDENCIES
   capistrano-rvm
   capybara
   config
+  cssbundling-rails (~> 1.2)
   devise
   devise-remote-user
   dlss-capistrano
