@@ -6,8 +6,9 @@ RSpec.describe 'Discovery Report from (build) manifest' do
   let(:project_name) { "discovery-report-image-#{RandomWord.nouns.next}" }
   let(:staging_location) { Rails.root.join('spec/fixtures/image_jpg') }
   let(:bare_druid) { 'pr666rr9999' }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, type: Cocina::Models::ObjectType.image, access: cocina_model_world_access) }
+  let(:item) do
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: { view: 'world' })
+  end
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 

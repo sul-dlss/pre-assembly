@@ -56,7 +56,7 @@ class DiscoveryReport
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
       # log the output to a running progress file
       File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
-      yield row.to_h
+      yield row.to_h.merge(file_diffs: process_diffs(dobj))
     end
   end
   # rubocop:enable Metrics/AbcSize
@@ -72,8 +72,17 @@ class DiscoveryReport
   end
 
   # @param [PreAssembly::DigitalObject]
-  # @return [Hash<Symbol => Object>]
+  # @return [ObjectFileValidator]
   def process_dobj(dobj)
     ObjectFileValidator.new(object: dobj, batch:).validate
+  end
+
+  def process_diffs(dobj)
+    StructuralFilesDiffer.diff(
+      new_structural: dobj.build_structural,
+      existing_structural: dobj.existing_cocina_object.structural,
+      staging_location: dobj.staging_location,
+      druid: dobj.druid.id
+    )
   end
 end

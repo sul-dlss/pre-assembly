@@ -99,17 +99,28 @@ module PreAssembly
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
+    def existing_cocina_object
+      @existing_cocina_object = object_client.find
+    end
+
+    def build_structural
+      if file_manifest
+        file_manifest.generate_structure(cocina_dro: existing_cocina_object, object: File.basename(container),
+                                         reading_order:)
+      else
+        build_from_staging_location(objects: object_files.sort,
+                                    processing_configuration:,
+                                    reading_order:)
+      end
+    end
+
     private
 
     attr_reader :assembly_directory
 
-    def cocina_object
-      @cocina_object = object_client.find
-    end
-
     # @return [String] one of the values from Cocina::Models::DRO::TYPES
     def object_type
-      cocina_object.type
+      existing_cocina_object.type
     rescue Dor::Services::Client::NotFoundResponse
       ''
     end
@@ -131,24 +142,13 @@ module PreAssembly
 
     # Update dor-services-app with the new structure
     def update_structural_metadata
-      updated_cocina = cocina_object.new(structural: build_structural)
+      updated_cocina = existing_cocina_object.new(structural: build_structural)
       object_client.update(params: updated_cocina)
-    end
-
-    def build_structural
-      if file_manifest
-        file_manifest.generate_structure(cocina_dro: cocina_object, object: File.basename(container),
-                                         reading_order:)
-      else
-        build_from_staging_location(objects: object_files.sort,
-                                    processing_configuration:,
-                                    reading_order:)
-      end
     end
 
     def build_from_staging_location(objects:, processing_configuration:, reading_order:)
       filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: content_md_creation_style)
-      FromStagingLocation::StructuralBuilder.build(cocina_dro: cocina_object,
+      FromStagingLocation::StructuralBuilder.build(cocina_dro: existing_cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,
                                                    reading_order:)
