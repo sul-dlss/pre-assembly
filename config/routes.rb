@@ -11,5 +11,4 @@ Rails.application.routes.draw do
   resources :job_runs, only: [:create, :index, :show]
   get 'job_runs/:id/download_log', to: 'job_runs#download_log', as: 'download_log'
   get 'job_runs/:id/download_report', to: 'job_runs#download_report', as: 'download_report'
-  get 'job_runs/:id/discovery_report_summary', to: 'job_runs#discovery_report_summary', as: 'discovery_report_summary'
 end

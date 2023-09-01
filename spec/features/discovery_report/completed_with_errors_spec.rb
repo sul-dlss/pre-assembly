@@ -44,10 +44,7 @@ RSpec.describe 'Discovery Report completes with errors' do
     expect(page).to have_content 'Errors'
     expect(page).to have_content '1 objects had errors in the discovery report'
     expect(page).to have_link('Download').twice
-    expect(page).to have_link('View summary')
 
-    # discovery report summary table shows summary and errors
-    click_link 'View summary'
     # summary table
     expect(page).to have_content '250 KB'
     expect(page).to have_content 'image/tiff : 4'

@@ -59,7 +59,7 @@ class JobRun < ApplicationRecord
     (waiting? || running?)
   end
 
-  # indicates if the discovery report job is ready for display and is avaiable (some jobs may fail, leaving no report)
+  # indicates if the discovery report job is ready for display and is available (some jobs may fail, leaving no report)
   def report_ready?
     job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
   end

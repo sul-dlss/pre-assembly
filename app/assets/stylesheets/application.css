@@ -42,6 +42,11 @@ abbr[data-original-title] {
   margin-bottom: 1rem;
 }
 
+.btn-outline {
+  color: var(--cardinal-red);
+  background-color: var(--bs-btn-color);
+  border-color: var(--cardinal-red);
+}
 /*
 From https://github.com/heartcombo/simple_form-bootstrap/blob/main/app/assets/stylesheets/simple_form-bootstrap/_form_legend_clear.scss
 In bootstrap 5 legend floats left and requires the following element
