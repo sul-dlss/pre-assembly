@@ -36,9 +36,13 @@ RSpec.describe DiscoveryReport do
     let(:validator1) { instance_double(ObjectFileValidator, counts: results1[:counts], errors: results1[:errors], to_h: results1) }
     let(:validator2) { instance_double(ObjectFileValidator, counts: results2[:counts], errors: results2[:errors], to_h: results2) }
     let(:validator3) { instance_double(ObjectFileValidator, counts: results3[:counts], errors: results3[:errors], to_h: results3) }
-    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, druid: druid1) }
-    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, druid: druid2) }
-    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, druid: druid3) }
+    let(:cocina_obj1) { Cocina::RSpec::Factories.build(:dro, id: druid1.druid) }
+    let(:cocina_obj2) { Cocina::RSpec::Factories.build(:dro, id: druid2.druid) }
+    let(:cocina_obj3) { Cocina::RSpec::Factories.build(:dro, id: druid3.druid) }
+
+    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, druid: druid1, build_structural: cocina_obj1.structural, existing_cocina_object: cocina_obj1, staging_location: '') }
+    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, druid: druid2, build_structural: cocina_obj2.structural, existing_cocina_object: cocina_obj2, staging_location: '') }
+    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, druid: druid3, build_structural: cocina_obj3.structural, existing_cocina_object: cocina_obj3, staging_location: '') }
     # rubocop:enable RSpec/IndexedLet
 
     it 'returns an Enumerable of Hashes' do
@@ -94,8 +98,9 @@ RSpec.describe DiscoveryReport do
     let(:batch_context) { BatchContext.new(bc_params) }
     let(:batch) { PreAssembly::Batch.new(batch_context) }
     let(:dobj) { report.batch.un_pre_assembled_objects.first }
-    let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-    let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
+    let(:item) do
+      Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' })
+    end
     let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true) }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 
@@ -106,8 +111,9 @@ RSpec.describe DiscoveryReport do
     context 'with image content structure type' do
       let(:content_structure) { 'simple_image' }
 
-      it 'process_dobj gives expected output for one dobj' do
-        expect(report.send(:process_dobj, dobj).as_json).to eq(
+      it 'to_builder gives expected output for one dobj' do
+        report_json = JSON.parse(report.to_builder.target!)
+        expect(report_json['rows'].first.with_indifferent_access).to match(
           druid: 'druid:jy812bp9403',
           errors: {
             wrong_content_structure: true
@@ -116,6 +122,15 @@ RSpec.describe DiscoveryReport do
             total_size: 127_401,
             mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
             filename_no_extension: 0
+          },
+          file_diffs: {
+            added_files: [
+              '00/image1.tif',
+              '00/image2.tif',
+              '05/image1.jp2'
+            ],
+            deleted_files: [],
+            updated_files: []
           }
         )
       end
