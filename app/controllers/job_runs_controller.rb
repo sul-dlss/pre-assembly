@@ -9,6 +9,7 @@ class JobRunsController < ApplicationController
   def show
     @job_run = JobRun.find(params[:id])
     @discovery_report = JSON.parse(File.read(@job_run.output_location)) if @job_run.report_ready?
+    @structural_has_changed = structural_changed?
   end
 
   def create
@@ -47,5 +48,11 @@ class JobRunsController < ApplicationController
 
   def job_run_params
     params.require(:job_run).permit(:batch_context_id, :job_type)
+  end
+
+  def structural_changed?
+    return false unless @discovery_report
+
+    !@discovery_report['rows'].each.with_object('file_diffs').map(&:[]).compact.empty?
   end
 end
