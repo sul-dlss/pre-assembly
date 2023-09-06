@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   ruby-rails: sul-dlss/ruby-rails@4.1.0
+  node: circleci/node@5.0.0
 workflows:
   build:
     jobs:
@@ -12,3 +13,6 @@ workflows:
             - run:
                 name: Install exiftool
                 command: curl -L http://cpanmin.us | perl - --sudo Image::ExifTool
+            - run:
+                name: Assets precompile
+                command: bundle exec rake assets:precompile
