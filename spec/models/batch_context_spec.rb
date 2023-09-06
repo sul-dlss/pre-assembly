@@ -124,18 +124,6 @@ RSpec.describe BatchContext do
     expect(bc.staging_location).to eq 'spec/fixtures/images_jp2_tif'
   end
 
-  describe '#batch' do
-    it 'returns a PreAssembly::Batch' do
-      expect(bc.batch).to be_a(PreAssembly::Batch)
-    end
-
-    # rubocop:disable RSpec/IdenticalEqualityAssertion
-    it 'caches the Batch' do
-      expect(bc.batch).to be(bc.batch) # same instance
-    end
-    # rubocop:enable RSpec/IdenticalEqualityAssertion
-  end
-
   describe '#staging_location_with_path' do
     it 'creates a relative path' do
       expect(bc.staging_location_with_path('manifest.csv')).to eq 'spec/fixtures/images_jp2_tif/manifest.csv'

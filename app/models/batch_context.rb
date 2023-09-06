@@ -51,20 +51,6 @@ class BatchContext < ApplicationRecord
 
   accepts_nested_attributes_for :job_runs
 
-  # return [PreAssembly::Batch]
-  def batch
-    @batch ||= if using_file_manifest
-                 PreAssembly::Batch.new(self, file_manifest:)
-               else
-                 PreAssembly::Batch.new(self)
-               end
-  end
-
-  def file_manifest
-    PreAssembly::FileManifest.new(csv_filename: file_manifest_path,
-                                  staging_location:)
-  end
-
   def project_style
     content_structure
   end
@@ -100,14 +86,14 @@ class BatchContext < ApplicationRecord
     manifest_rows
   end
 
+  def file_manifest_path
+    staging_location_with_path(FILE_MANIFEST_FILE_NAME)
+  end
+
   private
 
   def object_manifest_path
     staging_location_with_path(OBJECT_MANIFEST_FILE_NAME)
-  end
-
-  def file_manifest_path
-    staging_location_with_path(FILE_MANIFEST_FILE_NAME)
   end
 
   def default_enums

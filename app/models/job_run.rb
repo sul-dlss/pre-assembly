@@ -5,6 +5,7 @@
 #  the user is able to instantiate multiple jobs (the same and/or different types) using the same BatchContext and each will get its own JobRun
 class JobRun < ApplicationRecord
   belongs_to :batch_context
+  has_many :accessions, dependent: :destroy
   validates :job_type, presence: true
   validates :state, presence: true
   after_initialize :default_enums
@@ -72,7 +73,21 @@ class JobRun < ApplicationRecord
 
   # @return [DiscoveryReport]
   def to_discovery_report
-    @to_discovery_report ||= DiscoveryReport.new(batch_context.batch)
+    @to_discovery_report ||= DiscoveryReport.new(batch)
+  end
+
+  # return [PreAssembly::Batch]
+  def batch
+    @batch ||= if batch_context.using_file_manifest
+                 PreAssembly::Batch.new(self, file_manifest:)
+               else
+                 PreAssembly::Batch.new(self)
+               end
+  end
+
+  def file_manifest
+    PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest_path,
+                                  staging_location: batch_context.staging_location)
   end
 
   private

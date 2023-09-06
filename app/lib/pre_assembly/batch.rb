@@ -7,13 +7,14 @@ module PreAssembly
   class Batch
     include PreAssembly::Logging
 
-    attr_reader :batch_context
+    attr_reader :job_run
     attr_accessor :error_message,
                   :file_manifest,
                   :num_failures,
                   :num_no_file_warnings,
                   :objects_had_errors
 
+    delegate :batch_context, to: :job_run
     delegate :staging_location,
              :processing_configuration,
              :content_structure,
@@ -25,8 +26,8 @@ module PreAssembly
              :staging_style_symlink,
              to: :batch_context
 
-    def initialize(batch_context, file_manifest: nil)
-      @batch_context = batch_context
+    def initialize(job_run, file_manifest: nil)
+      @job_run = job_run
       @file_manifest = file_manifest
       @objects_had_errors = false # will be set to true if we discover any errors when running pre-assembly
     end
@@ -136,6 +137,7 @@ module PreAssembly
 
     # pre-assemble each object that hasn't been pre-assembled already
     # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def pre_assemble_each_object
       un_pre_assembled_objects.each.with_index do |dobj, i|
         log "#{num_to_pre_assemble - i} remaining in run | #{num_to_pre_assemble} running"
@@ -146,12 +148,18 @@ module PreAssembly
         progress = dobj.pre_assemble
         log "  - pre_assemble result: #{progress}"
         progress.merge!(pid: dobj.druid.id, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
-        @num_failures += 1 if progress[:status] == 'error'
+
+        if progress[:status] == 'error'
+          @num_failures += 1
+        else
+          Accession.find_or_create_by!(druid: dobj.druid.id, version: progress.fetch(:version), job_run:)
+        end
         log "Completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
     end
     # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     def num_to_pre_assemble
       @num_to_pre_assemble ||= un_pre_assembled_objects.size

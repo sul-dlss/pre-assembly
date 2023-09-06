@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_21_221826) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_05_160434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accessions", force: :cascade do |t|
+    t.string "druid", null: false
+    t.integer "version", null: false
+    t.datetime "completed_at", precision: nil
+    t.bigint "job_run_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_run_id"], name: "index_accessions_on_job_run_id"
+  end
 
   create_table "batch_contexts", force: :cascade do |t|
     t.string "project_name", null: false
@@ -48,6 +58,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_221826) do
     t.index ["sunet_id"], name: "index_users_on_sunet_id", unique: true
   end
 
+  add_foreign_key "accessions", "job_runs"
   add_foreign_key "batch_contexts", "users"
   add_foreign_key "job_runs", "batch_contexts"
 end

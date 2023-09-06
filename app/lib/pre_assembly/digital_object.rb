@@ -91,7 +91,8 @@ module PreAssembly
       update_structural_metadata
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
       log "    - pre_assemble(#{druid.id}) finished"
-      { pre_assem_finished: true, status: 'success' }
+      # Return possibly incremented version.
+      { pre_assem_finished: true, status: 'success', version: version_client.current.to_i }
     rescue StandardError => e
       log "    - pre_assemble(#{druid.id}) error occurred: #{e.message}"
       { pre_assem_finished: false, status: 'error', message: e.message }
