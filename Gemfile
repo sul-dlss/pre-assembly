@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'config'
+gem "cssbundling-rails", "~> 1.2"
 gem 'devise'
 gem 'devise-remote-user'
 gem 'honeybadger', '~> 4.5'

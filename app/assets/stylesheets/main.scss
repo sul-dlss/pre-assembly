@@ -1,0 +1,58 @@
+ :root {
+    --cardinal-red: #8c1515;
+    /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+    --bs-btn-color: #fff;
+  }
+
+  .btn-sul-dlss {
+    background-color: var(--cardinal-red);
+    color: var(--bs-btn-color);
+  }
+
+  .btn-sul-dlss:hover {
+    filter: brightness(85%);
+    color: var(--bs-btn-color);
+  }
+
+  .brand {
+    background-color: var(--cardinal-red);
+    font-family: serif;
+  }
+
+  /* Removes underline in the asterisk which marks a required field */
+  abbr[title],
+  abbr[data-original-title] {
+    text-decoration: none;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .btn-outline {
+    color: var(--cardinal-red);
+    background-color: var(--bs-btn-color);
+    border-color: var(--cardinal-red);
+  }
+  /*
+  From https://github.com/heartcombo/simple_form-bootstrap/blob/main/app/assets/stylesheets/simple_form-bootstrap/_form_legend_clear.scss
+  In bootstrap 5 legend floats left and requires the following element
+  to be cleared. In a radio button or checkbox group the element after
+  the legend will be the automatically generated hidden input; the fix
+  in https://github.com/twbs/bootstrap/pull/30345 applies to the hidden
+  input and has no visual effect. Here we try to fix matters by
+  applying the clear to the div wrapping the first following radio button
+  or checkbox.
+  */
+  legend~div.form-check:first-of-type {
+    clear: left;
+  }
+
+  #discovery-report-links {
+    max-width: 275px;
+    width: 30%;
+  }
+
+  #summary-link {
+    float: right;
+  }
