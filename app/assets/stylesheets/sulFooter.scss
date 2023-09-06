@@ -1,71 +1,31 @@
-$stanford-footer-height: 250px;
-$stanford-footer-md-height: 140px;
-$sul-footer-height: 80px;
-
-#su-content {
-  height: 100%;
-  padding-bottom: $stanford-footer-height + $sul-footer-height !important;
-
-  @media (min-width: 768px) {
-    padding-bottom: $stanford-footer-md-height + $sul-footer-height !important;
-  }
+// This body styles allow the SUL and SU footers to render at the bottom of the viewport
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-#sul-footer-container {
-  background-color: $white;
-  -webkit-box-shadow: 0 4px 8px -8px rgba(0, 0, 0, .2) inset;
-  box-shadow: 0 4px 8px -8px rgba(0, 0, 0, .2) inset;
-  clear: both;
-  margin-top: -1 * ($stanford-footer-height + $sul-footer-height);
-  min-height: $stanford-footer-height + $sul-footer-height;
-  margin-left: 50px;
-
-  @media (min-width: 768px) {
-    margin-top: -1 * ($stanford-footer-md-height + $sul-footer-height);
-    min-height: $stanford-footer-md-height + $sul-footer-height;
-  }
-  padding: 0 !important;
-  position: relative;
-  width: 100%;
+#pre-footer {
+  background-color: $pre-footer-background;
 }
 
-#sul-footer {
-  @extend .container;
-  display: table;
-  height: $sul-footer-height;
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    li {
-      display: inline;
-      margin: 0 13px 3px 0;
-      padding: 0;
-    }
+.su-global-footer {
+  background-color: $brand-color;
+  color: $footer-color;
+  a {
+    color: $footer-color;
   }
 
-  li a {
-    white-space: nowrap;
-    color: $stanford-digital-blue;
+  .su-global-footer__menu--policy {
+    font-size: 0.9rem;
   }
-}
 
-#sul-footer-img {
-  display: table-cell;
-  vertical-align: middle;
-  width: 162px;
-}
+  .su-global-footer__menu--global {
+    font-weight: 600;
+  }
 
-#sul-footer-links {
-  display: table-cell;
-  font-size: small;
-  padding-left: 15px;
-  text-align: left;
-  vertical-align: middle;
-}
+  .su-global-footer__copyright {
+    font-size: 0.8rem;
+  }
 
-#global-footer .container {
-  box-sizing: border-box !important;
 }
