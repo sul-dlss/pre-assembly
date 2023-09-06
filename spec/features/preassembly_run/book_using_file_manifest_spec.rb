@@ -65,7 +65,8 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
             resources: Hash,
-            reading_order: 'right-to-left')
+            reading_order: 'right-to-left',
+            staging_location: staging_location.to_s)
     expect(dsc_object).to have_received(:update).with(params: item)
   end
 end

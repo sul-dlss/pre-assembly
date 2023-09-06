@@ -129,7 +129,8 @@ RSpec.describe 'Pre-assemble Image object' do
       expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
         .with(cocina_dro: item,
               resources:,
-              reading_order: nil)
+              reading_order: nil,
+              staging_location: staging_location.to_s)
       expect(dsc_object).to have_received(:update).with(params: item)
     end
   end
