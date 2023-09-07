@@ -9,6 +9,7 @@ class JobRunsController < ApplicationController
   def show
     @job_run = JobRun.find(params[:id])
     @discovery_report = JSON.parse(File.read(@job_run.output_location)) if @job_run.report_ready?
+    @structural_has_changed = structural_changed?
   end
 
   def create
@@ -47,5 +48,13 @@ class JobRunsController < ApplicationController
 
   def job_run_params
     params.require(:job_run).permit(:batch_context_id, :job_type)
+  end
+
+  # This method is used to determine if any rows in the discovery report include file changes.
+  # Consider extracting to a service object if we would like to enhance test coverage.
+  def structural_changed?
+    return false unless @discovery_report
+
+    @discovery_report['rows']&.any? { |druid| druid.key?('file_diffs') }
   end
 end
