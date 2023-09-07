@@ -39,6 +39,18 @@ cd pre-assembly
 bundle install
 ```
 
+### Get Javascript dependencies
+
+```bash
+yarn install
+```
+
+### Build the CSS
+
+```bash
+bin/rake css:build
+```
+
 #### Development/Test
 
 The pre-assembly app requires redis and postgres for local development and testing. In order to run the tests or run the
@@ -179,7 +191,7 @@ if you set the --content-metadata switch, it will only generate content metadata
 if you set the --no-object-folders switch, then all symlinks will be flat in the staging directory (i.e. no object level folders) -- this requires all filenames to be unique across objects, if left off, then object folders will be created to store symlinks
 note that file extensions do not matter when matching
 
-## Data Model
+## Data [Model](Model)
 
 Pre-Assembly has a fairly simple [data model](db/schema.rb) based on three types of objects:
 
