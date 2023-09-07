@@ -1,25 +1,25 @@
-<div class="structural_changes">
-    <h5>Updates from csv</h5>
-    <table class="table">
+<div class="structural-changes">
+  <table class="table">
+    <caption>Updates from csv</caption>
     <thead class="table">
-        <tr>
+    <tr>
         <th>Druid</th>
         <th>Filename</th>
         <th>Status</th>
-        </tr>
+    </tr>
     </thead>
-
+    <tbody>
     <% druids.each do |druid| %>
-    <% %w[added_files deleted_files updated_files].each do |status| %>
+        <% %w[added_files deleted_files updated_files].each do |status| %>
         <% druid['file_diffs'][status]&.each do |filename| %>
-        <tr>
+            <tr>
             <td><%= druid['druid'] %></td>
             <td><%= filename %></td>
             <td><%= status.sub('_files', '').capitalize %></td>
-        </tr>
+            </tr>
+        <% end %>
         <% end %>
     <% end %>
-    <% end %>
-
-    </table>
+    </tbody>
+  </table>
 </div>

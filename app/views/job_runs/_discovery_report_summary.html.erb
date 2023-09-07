@@ -1,5 +1,5 @@
-<h5>Results summary</h5>
 <table class="table">
+  <caption>Results summary</caption>
   <thead>
     <tr>
       <th class="text-center">Number of objects</th>
@@ -29,8 +29,8 @@
 <%= render partial: 'structural_updates_summary', locals: { druids: @discovery_report['rows'] } if @structural_has_changed %>
 
 <% if @discovery_report['summary']['objects_with_error'] > 0 %>
-  <h5>Errors Summary</h5>
   <table class="table">
+    <caption>Errors Summary</caption>
     <thead class="table">
       <tr>
         <th class="text-center">Druid</th>
