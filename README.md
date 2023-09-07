@@ -39,19 +39,7 @@ cd pre-assembly
 bundle install
 ```
 
-### Get Javascript dependencies
-
-```bash
-yarn install
-```
-
-### Build the CSS
-
-```bash
-bin/rake css:build
-```
-
-#### Development/Test
+## Development/Test
 
 The pre-assembly app requires redis and postgres for local development and testing. In order to run the tests or run the
 webapp locally, you will need to have start these dependencies via `docker compose`:
@@ -60,7 +48,14 @@ webapp locally, you will need to have start these dependencies via `docker compo
 docker compose up -d
 ```
 
-#### exiftool
+### Prepare for testing
+
+```bash
+# Makes sure the DB is ready, assets are built, and javascript dependencies are installed
+bin/rake db:prepare test:prepare
+```
+
+### Install exiftool
 
 You need `exiftool` on your system in order to successfully run all of the tests.
 
@@ -80,7 +75,7 @@ On MacOSX, use `homebrew` to install:
 brew install exiftool
 ```
 
-## Running tests
+### Running tests
 
 ```bash
 docker compose up

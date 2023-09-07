@@ -14,5 +14,5 @@ workflows:
                 name: Install exiftool
                 command: curl -L http://cpanmin.us | perl - --sudo Image::ExifTool
             - run:
-                name: Assets precompile
-                command: bundle exec rake assets:precompile
+                name: Install javascript dependencies and build assets
+                command: bin/rake test:prepare

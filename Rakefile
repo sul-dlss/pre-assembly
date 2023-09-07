@@ -10,4 +10,4 @@ unless Rails.env.production?
   RuboCop::RakeTask.new
 end
 
-task default: [:spec, :rubocop]
+task default: ['test:prepare', :spec, :rubocop]
