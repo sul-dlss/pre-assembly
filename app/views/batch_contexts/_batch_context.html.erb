@@ -6,14 +6,14 @@
 <div class="row p-1 pl-5">
   <div class="hstack gap-2">
     <div>
-      <%= form_for(batch_context.job_runs.new) do |form| %>
+      <%= form_for(JobRun.new) do |form| %>
       <%= form.hidden_field :batch_context_id, value: batch_context.id %>
       <%= form.hidden_field :job_type, value: 'discovery_report' %>
       <%= form.submit 'New Discovery Report', class: 'btn btn-sm btn-sul-dlss' %>
       <% end %>
     </div>
     <div>
-      <%= form_for(batch_context.job_runs.new) do |form| %>
+      <%= form_for(JobRun.new) do |form| %>
       <%= form.hidden_field :batch_context_id, value: batch_context.id %>
       <%= form.hidden_field :job_type, value: 'preassembly' %>
       <%= form.submit 'Run Preassembly', class: 'btn btn-sm btn-sul-dlss' %>
@@ -33,3 +33,28 @@
   <dt class="col-sm-3">Created At</dt>
   <dd class="col-sm-9"><%= batch_context.created_at %></dd>
 </dl>
+<% if batch_context.job_runs.present? %>
+  <div class="row mt-4">
+    <h5>Jobs summary</h5>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>JobRun ID</th>
+          <th>Type</th>
+          <th>Created</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% batch_context.job_runs.each do |job_run|%>
+          <tr>
+            <td><%= link_to(job_run.id, job_run) %></td>
+            <td><%= job_run.job_type.humanize %></td>
+            <td><%= job_run.created_at %></td>
+            <td><%= job_run.state.humanize %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
