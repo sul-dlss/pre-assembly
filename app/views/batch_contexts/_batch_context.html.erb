@@ -5,20 +5,7 @@
 </div>
 <div class="row p-1 pl-5">
   <div class="hstack gap-2">
-    <div>
-      <%= form_for(JobRun.new) do |form| %>
-      <%= form.hidden_field :batch_context_id, value: batch_context.id %>
-      <%= form.hidden_field :job_type, value: 'discovery_report' %>
-      <%= form.submit 'New Discovery Report', class: 'btn btn-sm btn-sul-dlss' %>
-      <% end %>
-    </div>
-    <div>
-      <%= form_for(JobRun.new) do |form| %>
-      <%= form.hidden_field :batch_context_id, value: batch_context.id %>
-      <%= form.hidden_field :job_type, value: 'preassembly' %>
-      <%= form.submit 'Run Preassembly', class: 'btn btn-sm btn-sul-dlss' %>
-      <% end %>
-    </div>
+    <%= render partial: 'actions', locals: { batch_context: } %>
   </div>
 </div>
 <dl class="dl row">
