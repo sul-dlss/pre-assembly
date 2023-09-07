@@ -96,7 +96,8 @@ RSpec.describe DiscoveryReport do
       }
     end
     let(:batch_context) { BatchContext.new(bc_params) }
-    let(:batch) { PreAssembly::Batch.new(batch_context) }
+    let(:job_run) { JobRun.new(batch_context:) }
+    let(:batch) { PreAssembly::Batch.new(job_run) }
     let(:dobj) { report.batch.un_pre_assembled_objects.first }
     let(:item) do
       Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' })

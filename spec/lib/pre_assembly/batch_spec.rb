@@ -1,15 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe PreAssembly::Batch do
+  let(:batch) { job_run.batch }
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:flat_dir_images) { batch_setup(:flat_dir_images) }
   let(:multimedia) { batch_setup(:multimedia) }
-  let(:batch) { create(:batch_context_with_deleted_output_dir).batch }
+  let(:batch_context) { create(:batch_context_with_deleted_output_dir) }
+  let(:job_run) { create(:job_run, :preassembly, batch_context:) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
   end
-  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item, update: true) }
+  let(:object_client) { instance_double(Dor::Services::Client::Object, find: item, update: true, version: version_client) }
+  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '1') }
   let(:relative_file_paths) do
     batch.digital_objects.map do |digital_object|
       digital_object.object_files.map(&:relative_path)
@@ -17,7 +20,7 @@ RSpec.describe PreAssembly::Batch do
   end
 
   before do
-    allow(Dor::Services::Client).to receive(:object).and_return(dor_services_client_object)
+    allow(Dor::Services::Client).to receive(:object).and_return(object_client)
   end
 
   after { FileUtils.rm_rf(batch.batch_context.output_dir) } # cleanup
@@ -48,8 +51,7 @@ RSpec.describe PreAssembly::Batch do
 
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
-      allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
-      expect(batch.send(:pre_assemble_objects)).to be true
+      expect { batch.send(:pre_assemble_objects) }.to change(Accession, :count).by(2)
       expect(batch.objects_had_errors).to be false
     end
 
@@ -81,7 +83,7 @@ RSpec.describe PreAssembly::Batch do
       let(:pre_assemble_results) do
         [
           { pre_assem_finished: false, status: 'error', message: 'oops' },
-          { pre_assem_finished: true, status: 'success' }
+          { pre_assem_finished: true, status: 'success', version: 1 }
         ].each
       end
 
@@ -109,13 +111,12 @@ RSpec.describe PreAssembly::Batch do
     context 'when an exception occurs during #pre_assemble' do
       # simulate an exception occurring during pre-assembly of the first object
       let(:stage_files_exceptions) { [[Errno::EROFS, 'Read-only file system @ rb_sysopen - /destination'], nil].each }
-      let(:pre_assemble_results) { [nil, { pre_assem_finished: true, status: 'success' }].each }
+      let(:pre_assemble_results) { [nil, { pre_assem_finished: true, status: 'success', version: 1 }].each }
 
       let(:yaml) { YAML.load_stream(File.read(batch.progress_log_file)) }
 
       before do
         allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
-        allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(1)
         # simulate an exception occurring during pre-assembly of the first object
         allow(PreAssembly::DigitalObject).to receive(:new).and_wrap_original do |m, *args|
           m.call(args.first, **args.second).tap do |dobj|

@@ -84,4 +84,16 @@ RSpec.describe JobRun do
       expect(described_class.new(batch_context: build(:batch_context))).to be_valid
     end
   end
+
+  describe '#batch' do
+    it 'returns a PreAssembly::Batch' do
+      expect(job_run.batch).to be_a(PreAssembly::Batch)
+    end
+
+    # rubocop:disable RSpec/IdenticalEqualityAssertion
+    it 'caches the Batch' do
+      expect(job_run.batch).to be(job_run.batch) # same instance
+    end
+    # rubocop:enable RSpec/IdenticalEqualityAssertion
+  end
 end

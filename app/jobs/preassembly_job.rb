@@ -4,7 +4,7 @@ class PreassemblyJob < ApplicationJob
   # @param [JobRun] job_run
   def perform(job_run)
     job_run.started
-    batch = job_run.batch_context.batch
+    batch = job_run.batch
     # .run_pre_assembly iterates over all objects and runs preassembly on each
     batch.run_pre_assembly
     if batch.objects_had_errors # individual objects processed had errors

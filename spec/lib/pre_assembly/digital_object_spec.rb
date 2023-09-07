@@ -2,27 +2,33 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(bc.batch, object_files: [], stager:, pid:)
+    described_class.new(job_run.batch, object_files: [], stager:, pid:)
   end
 
   let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
   let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif') }
+  let(:job_run) { create(:job_run, :preassembly, batch_context: bc) }
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
   let(:tmp_area) do
     File.expand_path(Dir.mktmpdir(*tmp_dir_args))
   end
   let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area) }
+  let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
+  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '3') }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
   after { FileUtils.remove_entry tmp_area }
 
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
+    allow(Dor::Services::Client).to receive(:object).and_return(object_client)
   end
 
   describe '#pre_assemble' do
+    let(:status) { object.pre_assemble }
+
     before do
       allow(StartAccession).to receive(:run)
     end
@@ -31,7 +37,9 @@ RSpec.describe PreAssembly::DigitalObject do
       allow(object).to receive_messages(accessioning?: false, openable?: false, current_object_version: 1)
       expect(object).to receive(:stage_files)
       expect(object).to receive(:update_structural_metadata)
-      object.pre_assemble
+      expect(status).to eq({ pre_assem_finished: true,
+                             status: 'success',
+                             version: 3 })
       expect(StartAccession).to have_received(:run)
     end
 
@@ -39,8 +47,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(object).to receive_messages(accessioning?: false, openable?: false, current_object_version: 2)
       end
-
-      let(:status) { object.pre_assemble }
 
       it 'logs an error for existing non-openable objects' do
         expect(object).not_to receive(:stage_files)
@@ -53,8 +59,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(object).to receive_messages(accessioning?: true, current_object_version: 1)
       end
-
-      let(:status) { object.pre_assemble }
 
       it 'logs an error for objects in accessioning' do
         expect(object).not_to receive(:stage_files)
@@ -134,7 +138,7 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     let(:object_client) do
-      instance_double(Dor::Services::Client::Object, find: dro)
+      instance_double(Dor::Services::Client::Object, find: dro, version: version_client)
     end
 
     before do

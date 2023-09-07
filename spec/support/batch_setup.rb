@@ -2,7 +2,9 @@
 
 # @return [PreAssembly::Batch]
 def batch_setup(proj)
-  batch_context_from_hash(proj).batch
+  batch_context = batch_context_from_hash(proj)
+  job_run = build(:job_run, batch_context:)
+  job_run.batch
 end
 
 def hash_from_proj(proj)
