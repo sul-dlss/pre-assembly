@@ -1,13 +1,13 @@
 <div class="col-2">
-    <%= form_for(@job_run.batch_context.job_runs.new) do |form| %>
-    <%= form.hidden_field :batch_context_id, value: @job_run.batch_context.id %>
+    <%= form_for(JobRun.new) do |form| %>
+    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
     <%= form.hidden_field :job_type, value: 'discovery_report' %>
     <%= form.submit 'New Discovery Report', class: 'btn btn-outline' %>
     <% end %>
 </div>
 <div class="col-2 text-end">
-    <%= form_for(@job_run.batch_context.job_runs.new) do |form| %>
-    <%= form.hidden_field :batch_context_id, value: @job_run.batch_context.id %>
+    <%= form_for(JobRun.new) do |form| %>
+    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
     <%= form.hidden_field :job_type, value: 'preassembly' %>
     <%= form.submit 'Run Preassembly', class: 'btn btn-sul-dlss' %>
     <% end %>
