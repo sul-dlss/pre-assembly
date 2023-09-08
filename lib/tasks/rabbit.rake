@@ -14,8 +14,9 @@ namespace :rabbitmq do
 
     # connect topic to the queue
     exchange = channel.topic('sdr.workflow')
-    queue = channel.queue('preassembly.deposit_complete', durable: true)
+    queue = channel.queue('preassembly.accession_complete', durable: true)
     queue.bind(exchange, routing_key: 'end-accession.completed')
+    queue.bind(exchange, routing_key: '*.error')
 
     conn.close
   end

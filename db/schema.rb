@@ -10,17 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_08_185452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "accessions", force: :cascade do |t|
     t.string "druid", null: false
     t.integer "version", null: false
-    t.datetime "completed_at", precision: nil
     t.bigint "job_run_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "state", default: "in_progress", null: false
+    t.index ["druid", "version", "state"], name: "index_accessions_on_druid_and_version_and_state"
     t.index ["job_run_id"], name: "index_accessions_on_job_run_id"
   end
 
