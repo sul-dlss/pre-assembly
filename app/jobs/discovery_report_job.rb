@@ -13,9 +13,9 @@ class DiscoveryReportJob < ApplicationJob
     job_run.save!
     if report.objects_had_errors # individual objects processed had errors
       job_run.error_message = report.error_message
-      job_run.completed_with_errors
+      job_run.discovery_report_completed_with_errors
     else
-      job_run.completed
+      job_run.discovery_report_completed
     end
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
     job_run.error_message = e.exception
