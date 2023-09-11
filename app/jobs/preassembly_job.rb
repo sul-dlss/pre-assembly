@@ -9,9 +9,9 @@ class PreassemblyJob < ApplicationJob
     batch.run_pre_assembly
     if batch.objects_had_errors # individual objects processed had errors
       job_run.error_message = batch.error_message
-      job_run.completed_with_errors
+      job_run.preassembly_completed_with_errors
     else
-      job_run.completed
+      job_run.preassembly_completed
     end
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
     job_run.error_message = e.exception

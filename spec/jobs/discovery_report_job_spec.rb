@@ -23,7 +23,7 @@ RSpec.describe DiscoveryReportJob do
       it 'writes JSON file and saves job_run.output_location' do
         expect { job.perform(job_run) }.to change { File.exist?(outfile) }.to(true)
         expect(job_run.reload.output_location).to eq(outfile)
-        expect(job_run).to be_complete
+        expect(job_run).to be_discovery_report_complete
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe DiscoveryReportJob do
 
       it 'calls to_discovery_report and ends in a completed with error state, and saves error message to the database' do
         job.perform(job_run)
-        expect(job_run).to be_complete_with_errors
+        expect(job_run).to be_discovery_report_complete_with_errors
         expect(job_run.error_message).to eq error_message
       end
     end

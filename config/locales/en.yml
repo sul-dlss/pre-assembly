@@ -36,10 +36,12 @@ en:
         state:
           states:
             running: 'Running'
-            complete: 'Completed'
+            discovery_report_complete: 'Discovery report completed'
+            preassembly_complete: 'Preassembly completed'
             failed: 'Failed'
             waiting: 'Queued'
-            complete_with_errors: 'Completed (with errors)'
+            discovery_report_complete_with_errors: 'Discovery report completed (with errors)'
+            preassembly_complete_with_errors: 'Preassembly completed (with errors)'
     attributes:
       batch_context:
         all_files_public: "Preserve, Shelve, Publish Settings"

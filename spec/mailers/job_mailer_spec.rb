@@ -19,10 +19,10 @@ RSpec.describe JobMailer do
   end
 
   describe 'body' do
-    before { job_run.state = 'complete' }
+    before { job_run.state = 'discovery_report_complete' }
 
     it 'renders the body' do
-      expect(job_notification.body.encoded).to include("Your Discovery report job ##{job_run.id} finished with status 'Completed'")
+      expect(job_notification.body.encoded).to include("Your Discovery report job ##{job_run.id} finished with status 'Discovery report completed'")
         .and include("http://localhost:3000/job_runs/#{job_run.id}")
     end
   end

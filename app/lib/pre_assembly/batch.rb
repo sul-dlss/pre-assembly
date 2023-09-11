@@ -154,7 +154,7 @@ module PreAssembly
         else
           Accession.find_or_create_by!(druid: dobj.druid.id, version: progress.fetch(:version), job_run:)
         end
-        log "Completed #{dobj.druid}"
+        log "Preassembly completed #{dobj.druid}"
         File.open(progress_log_file, 'a') { |f| f.puts progress.to_yaml }
       end
     end
