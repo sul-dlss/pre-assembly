@@ -36,6 +36,9 @@ append :linked_dirs, 'log', 'config/certs', 'config/settings', 'tmp', 'vendor/bu
 set :sidekiq_systemd_role, :worker
 set :sidekiq_systemd_use_hooks, true
 
+# Manage sneakers via systemd (from dlss-capistrano gem)
+set :sneakers_systemd_use_hooks, true
+
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
