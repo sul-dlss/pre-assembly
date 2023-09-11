@@ -41,7 +41,7 @@ RSpec.describe JobRunsController do
 
     before do
       allow(JobRun).to receive(:find).with('123').and_return(job_run)
-      allow(job_run).to receive(:report_ready?).and_return(false)
+      allow(job_run).to receive_messages(report_ready?: false, progress_log_file: nil)
     end
 
     it 'returns http success' do

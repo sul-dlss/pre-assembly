@@ -9,6 +9,7 @@ class JobRunsController < ApplicationController
   def show
     @job_run = JobRun.find(params[:id])
     @discovery_report = JSON.parse(File.read(@job_run.output_location)) if @job_run.report_ready?
+    @progress_log = YAML.load_stream(File.read(@job_run.progress_log_file)) if @job_run.progress_log_file && File.exist?(@job_run.progress_log_file)
     @structural_has_changed = structural_changed?
   end
 

@@ -20,6 +20,13 @@
       </div>
     </div>
   <% end %>
+  <% if @progress_log %>
+    <div class="row mt-5">
+      <div class="col-12">
+        <%= render partial: 'progress_log' %>
+      </div>
+    </div>
+  <% end %>
   <div class="row mt-5">
      <div class="col-8">
         <p><%= link_to 'Return to homepage', root_path, class: 'nav-link' %></p>
