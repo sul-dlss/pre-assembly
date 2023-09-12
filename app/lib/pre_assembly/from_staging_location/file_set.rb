@@ -8,9 +8,10 @@ module PreAssembly
 
       # @param [Array<Assembly::ObjectFile>] resource_files
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
-      def initialize(resource_files:, style:)
+      def initialize(resource_files:, style:, processing_configuration:)
         @resource_files = resource_files
         @style = style
+        @processing_configuration = processing_configuration
       end
 
       # otherwise look at the style to determine the resource_type_description
@@ -28,7 +29,7 @@ module PreAssembly
 
       private
 
-      attr_reader :resource_files, :style
+      attr_reader :resource_files, :style, :processing_configuration
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/CyclomaticComplexity

@@ -108,7 +108,8 @@ RSpec.describe BatchContext do
     is_expected.to define_enum_for(:processing_configuration).with_values(
       'default' => 0,
       'filename' => 1,
-      'media_cm_style' => 2
+      'media_cm_style' => 2,
+      'filename_with_ocr' => 3
     )
   end
 
