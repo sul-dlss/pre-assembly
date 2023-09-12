@@ -31,6 +31,7 @@ RSpec.describe AccessionCompleteJob do
     let(:status) { 'completed' }
 
     context 'when an accession' do
+      # This test is using a single druid and single message to update multiple accessions as a short-cut.
       let!(:accession_in_progress) { create(:accession, druid: bare_druid, version:, state: 'in_progress') }
       let!(:accession_failed) { create(:accession, druid: bare_druid, version:, state: 'failed') }
       let!(:accession_different_version) { create(:accession, druid: bare_druid, version: version + 1, state: 'in_progress') }
@@ -57,6 +58,7 @@ RSpec.describe AccessionCompleteJob do
     let(:status) { 'error' }
 
     context 'when an accession' do
+      # This test is using a single druid and single message to update multiple accessions as a short-cut.
       let!(:accession_in_progress) { create(:accession, druid: bare_druid, version:, state: 'in_progress') }
       let!(:accession_failed) { create(:accession, druid: bare_druid, version:, state: 'failed') }
       let!(:accession_different_version) { create(:accession, druid: bare_druid, version: version + 1, state: 'in_progress') }
