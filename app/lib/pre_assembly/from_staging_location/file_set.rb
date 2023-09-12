@@ -24,7 +24,7 @@ module PreAssembly
       end
 
       def files
-        resource_files.map { |file| File.new(file:) }
+        resource_files.map { |file| File.new(file:, processing_configuration:) }
       end
 
       private

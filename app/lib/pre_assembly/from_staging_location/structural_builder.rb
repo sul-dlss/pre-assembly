@@ -105,7 +105,11 @@ module PreAssembly
         publish  = file[:publish] == 'yes'
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
-        { sdrPreserve: preserve, publish:, shelve: }
+        role     = file[:role]
+
+        return { sdrPreserve: preserve, publish:, shelve: } unless role
+
+        { sdrPreserve: preserve, publish:, shelve:, role: }
       end
 
       def message_digests(fileset_file)

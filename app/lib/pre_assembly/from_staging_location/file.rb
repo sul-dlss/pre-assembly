@@ -24,20 +24,39 @@ module PreAssembly
         'application/json' => { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       }.freeze
 
+      ATTRIBUTES_FOR_TYPE_WITH_OCR = {
+        'image/tif' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'image/tiff' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'image/jp2' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'image/jpeg' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'image/png' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'application/pdf' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
+        'plain/text' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
+        'text/plain' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
+        'application/xml' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription' }
+      }.freeze
+
       # @param [Assembly::ObjectFile] file
-      def initialize(file:)
+      def initialize(file:, processing_configuration:)
         @file = file
+        @processing_configuration = processing_configuration
       end
 
       delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, :relative_path, to: :file
 
       def file_attributes
-        file.file_attributes || ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
+        file.file_attributes || file_attributes_for_mimetype(mimetype)
       end
 
       private
 
-      attr_reader :file
+      attr_reader :file, :processing_configuration
+
+      def file_attributes_for_mimetype(mimetype)
+        return ATTRIBUTES_FOR_TYPE_WITH_OCR[mimetype] if processing_configuration == :filename_with_ocr && ATTRIBUTES_FOR_TYPE_WITH_OCR.key?(mimetype)
+
+        ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
+      end
     end
   end
 end

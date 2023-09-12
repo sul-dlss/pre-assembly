@@ -22,7 +22,7 @@ module PreAssembly
         case processing_configuration
         when :default # one resource per object
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:, processing_configuration:) }
-        when :filename # one resource per distinct filename (excluding extension)
+        when :filename, :filename_with_ocr # one resource per distinct filename (excluding extension)
           build_for_filename
         else
           raise 'Invalid processing_configuration: must be :default or :filename'
