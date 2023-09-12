@@ -17,10 +17,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
   create_table "accessions", force: :cascade do |t|
     t.string "druid", null: false
     t.integer "version", null: false
-    t.datetime "completed_at", precision: nil
     t.bigint "job_run_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "state", default: "in_progress", null: false
+    t.index ["druid", "version", "state"], name: "index_accessions_on_druid_and_version_and_state"
     t.index ["job_run_id"], name: "index_accessions_on_job_run_id"
   end
 
