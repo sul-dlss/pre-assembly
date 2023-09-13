@@ -8,7 +8,6 @@ class JobRunsController < ApplicationController
 
   def show
     @job_run = JobRun.find(params[:id])
-    @discovery_report = JSON.parse(File.read(@job_run.output_location)) if @job_run.report_ready?
     @structural_has_changed = structural_changed?
   end
 
@@ -26,7 +25,7 @@ class JobRunsController < ApplicationController
 
   def download_log
     @job_run = JobRun.find(params[:id])
-    if @job_run.progress_log_file && File.exist?(@job_run.progress_log_file)
+    if @job_run.progress_log_file_exists?
       send_file @job_run.progress_log_file
     else
       flash.now[:warning] = 'Progress log file not available.'
@@ -40,6 +39,26 @@ class JobRunsController < ApplicationController
       send_file @job_run.output_location
     else
       flash.now[:warning] = 'Job is not complete. Please check back later.'
+      render 'show'
+    end
+  end
+
+  def discovery_report_summary
+    @job_run = JobRun.find(params[:id])
+    if @job_run.report_ready?
+      @discovery_report = JSON.parse(File.read(@job_run.output_location))
+    else
+      flash.now[:warning] = 'There is no discovery report. Please check back later.'
+      render 'show'
+    end
+  end
+
+  def progress_log
+    @job_run = JobRun.find(params[:id])
+    if @job_run.progress_log_file_exists?
+      @progress_log = YAML.load_stream(File.read(@job_run.progress_log_file)) if @job_run.progress_log_file_exists?
+    else
+      flash.now[:warning] = 'Progress log file not available.'
       render 'show'
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Discovery Report completes with errors' do
+RSpec.describe 'Discovery Report completes with errors', :js do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-completed-with-errors-#{RandomWord.nouns.next}" }

@@ -13,12 +13,11 @@
       <%= render partial: 'details' %>
     </div>
   </div>
-  <% if @discovery_report %>
-    <div class="row mt-5">
-      <div class="col-12">
-        <%= render partial: 'discovery_report_summary' %>
-      </div>
-    </div>
+  <% if @job_run.report_ready? %>
+      <turbo-frame id="discovery-report-frame" src="<%= discovery_report_summary_job_run_path(@job_run) %>"></turbo-frame>
+  <% end %>
+  <% if @job_run.progress_log_file_exists? %>
+      <turbo-frame id="progress-log-frame" src="<%= progress_log_job_run_path(@job_run) %>"></turbo-frame>
   <% end %>
   <div class="row mt-5">
      <div class="col-8">

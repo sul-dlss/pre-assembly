@@ -78,6 +78,10 @@ class JobRun < ApplicationRecord
     job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
   end
 
+  def progress_log_file_exists?
+    progress_log_file && File.exist?(progress_log_file)
+  end
+
   def send_notification
     return if in_progress?
 

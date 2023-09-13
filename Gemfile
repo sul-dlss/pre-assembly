@@ -35,6 +35,7 @@ group :test do
   gem 'random-word'
   gem 'rspec_junit_formatter'
   gem 'rspec-rails', '~> 5'
+  gem 'selenium-webdriver'
   gem 'shoulda-matchers', '~> 4.1'
   gem 'simplecov'
 end

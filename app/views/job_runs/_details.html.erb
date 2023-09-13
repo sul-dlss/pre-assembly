@@ -33,7 +33,7 @@
                 <% if @job_run.in_progress? %>
                     Job is not yet complete.  Please check back later.
                 <% elsif File.exist? @job_run.progress_log_file %>
-                    <%= link_to 'Download', download_log_path(@job_run) %>
+                    <%= link_to 'Download', download_log_job_run_path(@job_run) %>
                 <% else %>
                     No progress log file is available.
                 <% end %>
@@ -42,7 +42,7 @@
         <% if @job_run.report_ready? %>
             <tr>
                 <td>Discovery Report</td>
-                <td><%= link_to 'Download', download_report_path(@job_run) %></td>
+                <td><%= link_to 'Download', download_report_job_run_path(@job_run) %></td>
             </tr>
         <% end %>
     </tbody>
