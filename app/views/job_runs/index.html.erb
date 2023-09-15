@@ -6,6 +6,7 @@
     <thead>
       <tr class="table-secondary">
         <th scope="col">ID</th>
+        <th scope="col">Project</th>
         <th scope="col">Type</th>
         <th scope="col">Creator</th>
         <th scope="col">Status</th>
@@ -13,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      <%= render 'job_runs', job_prefix: 'Job #' %>
+      <%= render 'job_runs', job_prefix: 'Job #', show_project: true %>
    </tbody>
   </table>
 
