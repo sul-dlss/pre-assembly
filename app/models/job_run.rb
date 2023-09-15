@@ -11,7 +11,7 @@ class JobRun < ApplicationRecord
   after_initialize :default_enums
   after_create_commit :enqueue!
 
-  delegate :progress_log_file, to: :batch_context
+  delegate :progress_log_file, :progress_log_file_exists?, to: :batch_context
 
   enum job_type: {
     'discovery_report' => 0,
@@ -76,10 +76,6 @@ class JobRun < ApplicationRecord
   # indicates if the discovery report job is ready for display and is available (some jobs may fail, leaving no report)
   def report_ready?
     job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
-  end
-
-  def progress_log_file_exists?
-    progress_log_file && File.exist?(progress_log_file)
   end
 
   def send_notification
