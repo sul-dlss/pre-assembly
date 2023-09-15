@@ -48,7 +48,8 @@ module PreAssembly
       current_directory = Dir.pwd # this must be done before resources_hash is built
       structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
                                                             resources: item_structure,
-                                                            reading_order:)
+                                                            reading_order:,
+                                                            staging_location:)
 
       FileUtils.cd(current_directory)
       structure

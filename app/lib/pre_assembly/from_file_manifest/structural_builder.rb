@@ -5,16 +5,18 @@ module PreAssembly
     # Updates the Cocina::DROStructural metadata with the new structure derived from a file manifest
     class StructuralBuilder
       # @param [String,nil] reading_order
-      def self.build(cocina_dro:, resources:, reading_order: nil)
-        new(cocina_dro:, resources:, reading_order:).build
+      def self.build(cocina_dro:, resources:, staging_location:, reading_order: nil)
+        new(cocina_dro:, resources:, staging_location:, reading_order:).build
       end
 
-      def initialize(cocina_dro:, resources:, reading_order: nil)
+      def initialize(cocina_dro:, resources:, staging_location:, reading_order: nil)
         @cocina_dro = cocina_dro
         @resources = resources
         @reading_order = reading_order
+        @staging_location = staging_location
       end
-      attr_reader :resources, :cocina_dro, :reading_order
+
+      attr_reader :resources, :cocina_dro, :reading_order, :staging_location
 
       # generate the base of the Cocina Structural metadata for this new druid
       # @return [Cocina::Models::DROStructural] the structural metadata
@@ -30,7 +32,8 @@ module PreAssembly
           external_identifier = "#{cocina_dro.externalIdentifier.delete_prefix('druid:')}_#{seq}"
           FromFileManifest::FileSetBuilder.build(resource: resources[:file_sets][seq],
                                                  external_identifier:,
-                                                 cocina_dro:)
+                                                 cocina_dro:,
+                                                 staging_location:)
         end
       end
     end
