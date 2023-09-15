@@ -45,7 +45,8 @@ class JobRun < ApplicationRecord
     end
 
     after_transition do |job_run, transition|
-      job_run.send_notification if transition.from_name == :running
+      job_run.send_notification if transition.from_name == :running && transition.to_name != :preassembly_complete
+      job_run.send_notification if transition.to_name == :accessioning_complete
     end
   end
 
