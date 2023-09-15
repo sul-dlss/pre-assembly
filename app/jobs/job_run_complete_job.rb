@@ -3,6 +3,9 @@
 # Updates a JobRun if all Accessions are complete
 class JobRunCompleteJob < ApplicationJob
   def perform(job_run)
-    # Not implemented
+    return if job_run.accessioning_complete?
+    return if job_run.accessions.exists?(state: :in_progress)
+
+    job_run.accessioning_completed
   end
 end

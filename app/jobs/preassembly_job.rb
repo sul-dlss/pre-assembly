@@ -13,6 +13,8 @@ class PreassemblyJob < ApplicationJob
     else
       job_run.preassembly_completed
     end
+    # To avoid a possible race condition, run JobrunCompleteJob.
+    JobRunCompleteJob.perform_later(job_run)
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
     job_run.error_message = e.exception
     job_run.failed

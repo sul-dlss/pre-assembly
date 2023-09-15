@@ -10,6 +10,7 @@ RSpec.describe PreassemblyJob do
   before do
     allow(batch_context).to receive(:progress_log_file).and_return(outfile)
     allow(batch).to receive(:pre_assemble_objects)
+    allow(JobRunCompleteJob).to receive(:perform_later)
   end
 
   after { FileUtils.rm_rf(outfile) } # cleanup
@@ -28,6 +29,7 @@ RSpec.describe PreassemblyJob do
         job.perform(job_run)
         expect(job_run).to be_preassembly_complete
         expect(job_run.error_message).to be_nil
+        expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end
     end
 
@@ -56,6 +58,7 @@ RSpec.describe PreassemblyJob do
         job.perform(job_run)
         expect(job_run).to be_preassembly_complete_with_errors
         expect(job_run.error_message).to eq error_message
+        expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end
     end
   end
