@@ -37,7 +37,7 @@
         ]
     %>
 
-    <p><%= form.check_box :using_file_manifest%> I have a file manifest</p>
+    <%= form.input :using_file_manifest, as: :boolean, label: 'I have a file manifest'%>
 
     <%= form.input :all_files_public,
                    as: :radio_buttons,
