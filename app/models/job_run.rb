@@ -29,21 +29,14 @@ class JobRun < ApplicationRecord
     end
 
     # signifies the job ran through, but at least one object had an error of some kind (e.g. network blip)
-    event :discovery_report_completed_with_errors do
-      transition running: :discovery_report_complete_with_errors
+    event :completed_with_errors do
+      transition running: :discovery_report_complete_with_errors, if: :discovery_report?
+      transition running: :preassembly_complete_with_errors, if: :preassembly?
     end
 
-    event :discovery_report_completed do
-      transition running: :discovery_report_complete
-    end
-
-    # signifies the job ran through, but at least one object had an error of some kind (e.g. network blip)
-    event :preassembly_completed_with_errors do
-      transition running: :preassembly_complete_with_errors
-    end
-
-    event :preassembly_completed do
-      transition running: :preassembly_complete
+    event :completed do
+      transition running: :discovery_report_complete, if: :discovery_report?
+      transition running: :preassembly_complete, if: :preassembly?
     end
 
     event :accessioning_completed do
