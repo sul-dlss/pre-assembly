@@ -63,6 +63,10 @@ class BatchContext < ApplicationRecord
     @progress_log_file ||= File.join(output_dir, "#{project_name}_progress.yml")
   end
 
+  def progress_log_file_exists?
+    progress_log_file && File.exist?(progress_log_file)
+  end
+
   def staging_location_with_path(rel_path)
     File.join(staging_location, rel_path)
   end

@@ -45,3 +45,7 @@
     </table>
   </div>
 <% end %>
+
+<% if batch_context.progress_log_file_exists? %>
+    <turbo-frame id="progress-log-frame" src="<%= progress_log_job_run_path(batch_context.job_runs.last) %>"></turbo-frame>
+<% end %>
