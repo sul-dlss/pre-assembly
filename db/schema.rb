@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_19_141548) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -48,6 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "state", default: "waiting", null: false
     t.text "error_message"
+    t.jsonb "objects_with_error", default: [], null: false
     t.index ["batch_context_id"], name: "index_job_runs_on_batch_context_id"
     t.index ["state"], name: "index_job_runs_on_state"
   end

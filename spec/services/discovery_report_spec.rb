@@ -57,7 +57,7 @@ RSpec.describe DiscoveryReport do
       report.send(:each_row) { |r| expect(r).to be_a Hash } # iterate through the Enumerable that generates the report
       expect(report.summary).to match a_hash_including(
         total_size: 6,
-        objects_with_error: 1,
+        objects_with_error: ['cp898cs9946'],
         mimetypes: { a: 1, b: 5, q: 13 }
       )
       expect(File).to exist(batch.batch_context.progress_log_file)
@@ -141,7 +141,7 @@ RSpec.describe DiscoveryReport do
         expect(json['rows'].size).to eq 3
         expect(report.objects_had_errors).to be true
         expect(report.error_message).to eq '2 objects had errors in the discovery report' # hierarchy with non-file type
-        expect(report.summary).to include(objects_with_error: 2, total_size: 382_224)
+        expect(report.summary).to include(objects_with_error: %w[jy812bp9403 tz250tk7584], total_size: 382_224)
       end
     end
 
@@ -165,7 +165,7 @@ RSpec.describe DiscoveryReport do
         expect(json['rows'].size).to eq 3
         expect(report.objects_had_errors).to be false
         expect(report.error_message).to be_nil
-        expect(report.summary).to include(objects_with_error: 0, total_size: 382_224)
+        expect(report.summary).to include(objects_with_error: [], total_size: 382_224)
       end
     end
   end

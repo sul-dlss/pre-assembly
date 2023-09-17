@@ -11,6 +11,7 @@ dor_services:
 expected_worker_count: 5 # for okcomputer endpoint
 
 mailer_host: 'localhost'
+repository_manager_email: CHANGE_ME@stanford.edu
 
 redis_url: redis://localhost:6379/
 

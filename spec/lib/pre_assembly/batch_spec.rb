@@ -74,6 +74,7 @@ RSpec.describe PreAssembly::Batch do
         batch.send(:pre_assemble_objects)
         expect(batch.objects_had_errors).to be true
         expect(batch.error_message).to eq '2 objects had errors during pre-assembly'
+        expect(batch.objects_with_error).to eq %w[aa111aa1111 bb222bb2222]
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end

@@ -1,0 +1,11 @@
+Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> encountered errors.
+You can view the job details and log file at: <%= job_run_url(@job_run); %>
+
+The following <%= pluralize(@job_run.objects_with_error.size, 'object') %> in your <%= @job_run.job_type.humanize %> job failed to complete:
+<ul>
+  <% @job_run.objects_with_error.each do |druid| %>
+    <li><%= druid %></li>
+  <% end %>
+</ul>
+
+Please see <%= job_run_url(@job_run) %> for details or contact <a href="mailto:<%= Settings.repository_manager_email %>"><%= Settings.repository_manager_email %></a>.

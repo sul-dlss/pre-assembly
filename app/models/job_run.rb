@@ -34,6 +34,8 @@ class JobRun < ApplicationRecord
       transition running: :preassembly_complete_with_errors, if: :preassembly?
     end
 
+    after_transition on: [:completed_with_errors, :failed], do: :send_error_notification
+
     event :completed do
       transition running: :discovery_report_complete, if: :discovery_report?
       transition running: :preassembly_complete, if: :preassembly?
@@ -42,10 +44,6 @@ class JobRun < ApplicationRecord
     event :accessioning_completed do
       transition preassembly_complete: :accessioning_complete
       transition preassembly_complete_with_errors: :accessioning_complete
-    end
-
-    after_transition do |job_run, transition|
-      job_run.send_notification if transition.from_name == :running
     end
   end
 
@@ -72,10 +70,8 @@ class JobRun < ApplicationRecord
     job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
   end
 
-  def send_notification
-    return if in_progress?
-
-    JobMailer.with(job_run: self).completion_email.deliver_later
+  def send_error_notification
+    JobMailer.with(job_run: self).completion_error_email.deliver_later
   end
 
   # @return [DiscoveryReport]

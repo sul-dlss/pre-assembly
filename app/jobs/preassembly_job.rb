@@ -8,6 +8,7 @@ class PreassemblyJob < ApplicationJob
     # .run_pre_assembly iterates over all objects and runs preassembly on each
     batch.run_pre_assembly
     if batch.objects_had_errors # individual objects processed had errors
+      job_run.objects_with_error = batch.objects_with_error
       job_run.error_message = batch.error_message
       job_run.completed_with_errors
     else

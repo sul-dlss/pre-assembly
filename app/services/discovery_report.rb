@@ -6,7 +6,6 @@
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :summary
-  attr_accessor :error_message, :objects_had_errors
 
   delegate :staging_location, :project_style, :file_manifest, to: :batch
 
@@ -15,7 +14,7 @@ class DiscoveryReport
     raise ArgumentError unless batch.is_a?(PreAssembly::Batch)
 
     @batch = batch
-    @summary = { objects_with_error: 0, mimetypes: Hash.new(0), start_time: Time.now.utc.to_s, total_size: 0 }
+    @summary = { objects_with_error: [], mimetypes: Hash.new(0), start_time: Time.now.utc.to_s, total_size: 0 }
   end
 
   # @return [String] output_path to store report results, generate a different string each time
@@ -26,13 +25,20 @@ class DiscoveryReport
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
   # @return [Jbuilder] (caller needs obj.to_builder.target! for the JSON string)
   def to_builder
-    json_report = Jbuilder.new do |json|
+    Jbuilder.new do |json|
       json.rows { json.array!(each_row) }
       json.summary summary.merge(end_time: Time.now.utc.to_s)
     end
-    @objects_had_errors = (summary[:objects_with_error] > 0) # indicate if any objects generated errors
-    @error_message = "#{summary[:objects_with_error]} objects had errors in the discovery report" if objects_had_errors
-    json_report
+  end
+
+  def objects_had_errors
+    summary[:objects_with_error].any?
+  end
+
+  def error_message
+    return unless objects_had_errors
+
+    "#{summary[:objects_with_error].size} objects had errors in the discovery report"
   end
 
   private
@@ -50,7 +56,7 @@ class DiscoveryReport
       if row.errors.empty?
         status = 'success'
       else
-        summary[:objects_with_error] += 1
+        summary[:objects_with_error] << dobj.druid.id
         status = 'error'
       end
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }

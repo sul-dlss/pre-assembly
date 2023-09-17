@@ -20,7 +20,7 @@ namespace :reports do
           num_found += 1
           json_report = JSON.parse(File.read(job_run.output_location))
           num_objects = json_report['rows'].count
-          num_errors = json_report['summary']['objects_with_error']
+          num_errors = json_report['summary']['objects_with_error'].size
           start_time = json_report['summary']['start_time'].to_datetime
           end_time = if json_report['summary']['end_time'].nil?
                        # fallback to file modification date if no end_time in json summary
