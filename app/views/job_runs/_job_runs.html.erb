@@ -1,6 +1,9 @@
 <% @job_runs.each do |job_run| %>
     <tr>
     <td><%= link_to "#{job_prefix}#{job_run.id}", job_run, data: { turbo_frame: "_top" } %></td>
+    <% if show_project %>
+        <td><%= link_to job_run.batch_context.project_name, batch_context_path(job_run.batch_context), data: { turbo_frame: "_top" } %></td>
+    <% end %>
     <td><%= job_run.job_type.humanize %></td>
     <td><%= job_run.batch_context.user.sunet_id %></td>
     <td><%= job_run.human_state_name %></td>
