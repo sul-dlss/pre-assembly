@@ -7,6 +7,14 @@ body {
 
 #pre-footer {
   background-color: $pre-footer-background;
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
 }
 
 .su-global-footer {
@@ -14,6 +22,11 @@ body {
   color: $footer-color;
   a {
     color: $footer-color;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 
   .su-global-footer__menu--policy {
