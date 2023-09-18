@@ -49,6 +49,8 @@ module PreAssembly
               administrative: administrative(fileset_file),
               access: file_access
             }
+            file_attributes[:use] = fileset_file.file_attributes[:role] if role?(fileset_file)
+
             Cocina::Models::File.new(file_attributes)
           end
 
@@ -105,11 +107,11 @@ module PreAssembly
         publish  = file[:publish] == 'yes'
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
-        role     = file[:role]
+        { sdrPreserve: preserve, publish:, shelve: }
+      end
 
-        return { sdrPreserve: preserve, publish:, shelve: } unless role
-
-        { sdrPreserve: preserve, publish:, shelve:, role: }
+      def role?(fileset_file)
+        fileset_file.file_attributes.key? :role
       end
 
       def message_digests(fileset_file)
