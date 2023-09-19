@@ -38,7 +38,7 @@ class TablesHaveDataCheck < OkComputer::Check
     msg = [
       User,
       JobRun,
-      BatchContext
+      Project
     ].map { |klass| table_check(klass) }.join(' ')
     mark_message msg
   end

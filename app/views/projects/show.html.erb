@@ -1,27 +1,27 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col">
-      <h1><%= @batch_context.project_name %> by <%= @batch_context.user.email %></h1>
+      <h1><%= @project.project_name %> by <%= @project.user.email %></h1>
     </div>
   </div>
   <div class="row p-1 pl-5">
     <div class="hstack gap-2">
-      <%= render partial: 'actions', locals: { batch_context: @batch_context } %>
+      <%= render partial: 'actions', locals: { project: @project } %>
     </div>
   </div>
   <dl class="dl row">
     <dt class="col-sm-3">Content Structure</dt>
-    <dd class="col-sm-9"><%= @batch_context.content_structure %></dd>
+    <dd class="col-sm-9"><%= @project.content_structure %></dd>
     <dt class="col-sm-3">Staging Location</dt>
-    <dd class="col-sm-9"><%= @batch_context.staging_location %></dd>
+    <dd class="col-sm-9"><%= @project.staging_location %></dd>
     <dt class="col-sm-3">Processing configuration</dt>
-    <dd class="col-sm-9"><%= @batch_context.processing_configuration %></dd>
+    <dd class="col-sm-9"><%= @project.processing_configuration %></dd>
     <dt class="col-sm-3">Using File Manifest</dt>
-    <dd class="col-sm-9"><%= @batch_context.using_file_manifest ? 'yes' : 'no' %></dd>
+    <dd class="col-sm-9"><%= @project.using_file_manifest ? 'yes' : 'no' %></dd>
     <dt class="col-sm-3">Created At</dt>
-    <dd class="col-sm-9"><%= @batch_context.created_at %></dd>
+    <dd class="col-sm-9"><%= @project.created_at %></dd>
   </dl>
-  <% if @batch_context.job_runs.present? %>
+  <% if @project.job_runs.present? %>
     <div class="row mt-4">
       <h5>Jobs summary</h5>
       <table class="table">
@@ -34,7 +34,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @batch_context.job_runs.each do |job_run|%>
+          <% @project.job_runs.each do |job_run|%>
             <tr>
               <td><%= link_to(job_run.id, job_run) %></td>
               <td><%= job_run.job_type.humanize %></td>
@@ -47,7 +47,7 @@
     </div>
   <% end %>
 
-  <% if @batch_context.progress_log_file_exists? %>
-    <turbo-frame id="progress-log-frame" src="<%= progress_log_job_run_path(@batch_context.job_runs.last) %>"></turbo-frame>
+  <% if @project.progress_log_file_exists? %>
+    <turbo-frame id="progress-log-frame" src="<%= progress_log_job_run_path(@project.job_runs.last) %>"></turbo-frame>
   <% end %>
 </div>

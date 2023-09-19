@@ -1,4 +1,4 @@
-class ChangeBundleContextsToBatchContexts < ActiveRecord::Migration[6.0]
+class ChangeBundleContextsToProjects < ActiveRecord::Migration[6.0]
   def change
     rename_table :bundle_contexts, :batch_contexts
     change_table :job_runs do |t|

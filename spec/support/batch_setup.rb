@@ -2,8 +2,8 @@
 
 # @return [PreAssembly::Batch]
 def batch_setup(proj)
-  batch_context = batch_context_from_hash(proj)
-  job_run = build(:job_run, batch_context:)
+  project = project_from_hash(proj)
+  job_run = build(:job_run, project:)
   job_run.batch
 end
 
@@ -12,12 +12,12 @@ def hash_from_proj(proj)
   YAML.safe_load_file(filename)
 end
 
-def batch_context_from_hash(proj)
+def project_from_hash(proj)
   hash = hash_from_proj(proj)
   cmc = hash['processing_configuration']['style']
   cmc += '_cm_style' if cmc == 'media'
   build(
-    :batch_context,
+    :project,
     project_name: hash['project_name'],
     content_structure: hash['project_style']['content_structure'],
     staging_location: hash['staging_location'],

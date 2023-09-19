@@ -5,8 +5,8 @@ RSpec.describe PreAssembly::Batch do
   let(:md5_regex) { /^[0-9a-f]{32}$/ }
   let(:flat_dir_images) { batch_setup(:flat_dir_images) }
   let(:multimedia) { batch_setup(:multimedia) }
-  let(:batch_context) { create(:batch_context_with_deleted_output_dir) }
-  let(:job_run) { create(:job_run, :preassembly, batch_context:) }
+  let(:project) { create(:project_with_deleted_output_dir) }
+  let(:job_run) { create(:job_run, :preassembly, project:) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
@@ -23,7 +23,7 @@ RSpec.describe PreAssembly::Batch do
     allow(Dor::Services::Client).to receive(:object).and_return(object_client)
   end
 
-  after { FileUtils.rm_rf(batch.batch_context.output_dir) } # cleanup
+  after { FileUtils.rm_rf(batch.project.output_dir) } # cleanup
 
   describe '#run_pre_assembly' do
     before do

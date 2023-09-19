@@ -89,7 +89,7 @@ module PreAssembly
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container)
       stage_files
       update_structural_metadata
-      StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
+      StartAccession.run(druid: druid.druid, user: batch.project.user.sunet_id)
       log "    - pre_assemble(#{druid.id}) finished"
       # Return possibly incremented version.
       { pre_assem_finished: true, status: 'success', version: version_client.current.to_i }
@@ -151,7 +151,7 @@ module PreAssembly
       filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: existing_cocina_object,
                                                    filesets:,
-                                                   all_files_public: batch.batch_context.all_files_public?,
+                                                   all_files_public: batch.project.all_files_public?,
                                                    reading_order:)
     end
 

@@ -1,6 +1,6 @@
 <div class="row mt-5">
   <div class="col-sm-12">
-    <h1><%= link_to @job_run.batch_context.project_name, @job_run.batch_context %> by <%= @job_run.batch_context.user.email %></h1>
+    <h1><%= link_to @job_run.project.project_name, @job_run.project %> by <%= @job_run.project.user.email %></h1>
     <p><%= @job_run.job_type.humanize %> #<%= @job_run.id %></p>
   </div>
 </div>

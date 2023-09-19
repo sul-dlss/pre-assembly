@@ -38,15 +38,15 @@ RSpec/StubbedMock:
 RSpec/SubjectStub:
   Exclude:
     - 'spec/lib/pre_assembly/digital_object_spec.rb'
-    - 'spec/models/batch_context_spec.rb'
+    - 'spec/models/project_spec.rb'
     - 'spec/services/discovery_report_spec.rb'
 
 # Offense count: 5
 Rails/I18nLocaleTexts:
   Exclude:
-    - 'app/controllers/batch_contexts_controller.rb'
+    - 'app/controllers/projects_controller.rb'
     - 'app/controllers/job_runs_controller.rb'
-    - 'app/models/batch_context.rb'
+    - 'app/models/project.rb'
 
 # Offense count: 1
 Style/ClassVars:
@@ -57,7 +57,7 @@ Style/ClassVars:
 # Configuration parameters: AllowedConstants.
 Style/Documentation:
   Exclude:
-    - 'app/controllers/batch_contexts_controller.rb'
+    - 'app/controllers/projects_controller.rb'
     - 'app/controllers/job_runs_controller.rb'
     - 'app/helpers/application_helper.rb'
     - 'app/jobs/discovery_report_job.rb'

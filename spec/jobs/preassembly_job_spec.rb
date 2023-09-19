@@ -4,11 +4,11 @@ RSpec.describe PreassemblyJob do
   let(:job) { described_class.new }
   let(:job_run) { create(:job_run, :preassembly) }
   let(:outfile) { 'tmp/foobar_progress.yaml' }
-  let(:batch_context) { job_run.batch_context }
+  let(:project) { job_run.project }
   let(:batch) { job_run.batch }
 
   before do
-    allow(batch_context).to receive(:progress_log_file).and_return(outfile)
+    allow(project).to receive(:progress_log_file).and_return(outfile)
     allow(batch).to receive(:pre_assemble_objects)
     allow(JobRunCompleteJob).to receive(:perform_later)
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_19_211946) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,7 +25,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
     t.index ["job_run_id"], name: "index_accessions_on_job_run_id"
   end
 
-  create_table "batch_contexts", force: :cascade do |t|
+  create_table "job_runs", force: :cascade do |t|
+    t.string "output_location"
+    t.integer "job_type", null: false
+    t.bigint "project_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.string "state", default: "waiting", null: false
+    t.text "error_message"
+    t.index ["project_id"], name: "index_job_runs_on_project_id"
+    t.index ["state"], name: "index_job_runs_on_state"
+  end
+
+  create_table "projects", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "content_structure", null: false
     t.string "staging_location", null: false
@@ -36,20 +48,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "all_files_public", default: false, null: false
     t.boolean "using_file_manifest", default: false, null: false
-    t.index ["user_id", "project_name"], name: "index_batch_contexts_on_user_id_and_project_name", unique: true
-    t.index ["user_id"], name: "index_batch_contexts_on_user_id"
-  end
-
-  create_table "job_runs", force: :cascade do |t|
-    t.string "output_location"
-    t.integer "job_type", null: false
-    t.bigint "batch_context_id", null: false
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.string "state", default: "waiting", null: false
-    t.text "error_message"
-    t.index ["batch_context_id"], name: "index_job_runs_on_batch_context_id"
-    t.index ["state"], name: "index_job_runs_on_state"
+    t.index ["user_id", "project_name"], name: "index_projects_on_user_id_and_project_name", unique: true
+    t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -60,6 +60,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
   end
 
   add_foreign_key "accessions", "job_runs"
-  add_foreign_key "batch_contexts", "users"
-  add_foreign_key "job_runs", "batch_contexts"
+  add_foreign_key "job_runs", "projects"
+  add_foreign_key "projects", "users"
 end

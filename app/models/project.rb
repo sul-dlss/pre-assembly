@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-# Model class for the database table batch_context;
+# Model class for the database table projects;
 #  contains information needed to run jobs, be they discovery reports or pre_assemble runs
-#  The user creates a new BatchContext by filling in the main form in the pre-assembly UI, indicating parameters common to both
+#  The user creates a new Project by filling in the main form in the pre-assembly UI, indicating parameters common to both
 #   pre-assembly and discovery report jobs.  They can then run either type of job using these common paramters by clicking a button:
-#   this creates a new JobRun, which belongs_to the associated BatchContext.
+#   this creates a new JobRun, which belongs_to the associated Project.
 # rubocop:disable Metrics/ClassLength
-class BatchContext < ApplicationRecord
+class Project < ApplicationRecord
   # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
   FILE_MANIFEST_FILE_NAME = 'file_manifest.csv'
 

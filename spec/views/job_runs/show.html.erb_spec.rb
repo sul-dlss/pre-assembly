@@ -40,9 +40,9 @@ RSpec.describe 'job_runs/show.html.erb' do
       expect(rendered).not_to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")
     end
 
-    it 'displays user email from batch context' do
+    it 'displays user email from project' do
       render template: 'job_runs/show'
-      expect(rendered).to include(job_run.batch_context.user.email)
+      expect(rendered).to include(job_run.project.user.email)
     end
 
     it 'displays an error message if present' do

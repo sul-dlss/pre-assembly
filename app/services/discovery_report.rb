@@ -2,7 +2,7 @@
 
 # Takes a Batch, enumerates report data via #each_row
 # To use:
-#   report = DiscoveryReport.new(batch_context.batch)
+#   report = DiscoveryReport.new(project.batch)
 #   report.to_builder.target!  # generates the report as a JSON string
 class DiscoveryReport
   attr_reader :batch, :summary
@@ -20,7 +20,7 @@ class DiscoveryReport
 
   # @return [String] output_path to store report results, generate a different string each time
   def output_path
-    Dir::Tmpname.create(["#{self.class.name.underscore}_", '.json'], batch.batch_context.output_dir) { |path| path }
+    Dir::Tmpname.create(["#{self.class.name.underscore}_", '.json'], batch.project.output_dir) { |path| path }
   end
 
   # By using jbuilder on an enumerator, we reduce memory footprint (vs. to_a)
@@ -55,7 +55,7 @@ class DiscoveryReport
       end
       row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
       # log the output to a running progress file
-      File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
+      File.open(batch.project.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
       yield row.to_h.merge(file_diffs: process_diffs(dobj))
     end
   end

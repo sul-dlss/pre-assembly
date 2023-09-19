@@ -3,7 +3,7 @@
 RSpec.describe JobRun do
   let(:job_run) { build(:job_run) }
 
-  it { is_expected.to belong_to(:batch_context) }
+  it { is_expected.to belong_to(:project) }
 
   describe 'enqueue!' do
     it 'does nothing if unpersisted' do
@@ -80,8 +80,8 @@ RSpec.describe JobRun do
       expect(described_class.new).not_to be_valid
     end
 
-    it 'is valid with just batch_context' do
-      expect(described_class.new(batch_context: build(:batch_context))).to be_valid
+    it 'is valid with just project' do
+      expect(described_class.new(project: build(:project))).to be_valid
     end
   end
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :batch_context do
+  factory :project do
     staging_location { 'spec/fixtures/multimedia' }
     processing_configuration { 'default' }
     content_structure { 'simple_image' }
@@ -9,10 +9,10 @@ FactoryBot.define do
     staging_style_symlink { false }
     user
 
-    # some tests require BCs with clean output_dir
-    factory :batch_context_with_deleted_output_dir do
-      after(:build) do |bc|
-        FileUtils.rm_rf(bc.output_dir)
+    # some tests require Projects with clean output_dir
+    factory :project_with_deleted_output_dir do
+      after(:build) do |project|
+        FileUtils.rm_rf(project.output_dir)
       end
     end
 

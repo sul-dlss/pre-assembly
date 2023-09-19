@@ -12,7 +12,7 @@ class JobRunsController < ApplicationController
   end
 
   def create
-    raise ActionController::ParameterMissing, :batch_context_id unless job_run_params[:batch_context_id]
+    raise ActionController::ParameterMissing, :project_id unless job_run_params[:project_id]
 
     @job_run = JobRun.new(job_run_params)
     if @job_run.save
@@ -66,7 +66,7 @@ class JobRunsController < ApplicationController
   private
 
   def job_run_params
-    params.require(:job_run).permit(:batch_context_id, :job_type)
+    params.require(:job_run).permit(:project_id, :job_type)
   end
 
   # This method is used to determine if any rows in the discovery report include file changes.

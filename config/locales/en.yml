@@ -43,10 +43,10 @@ en:
             discovery_report_complete_with_errors: 'Discovery report completed (with errors)'
             preassembly_complete_with_errors: 'Preassembly completed (with errors)'
     attributes:
-      batch_context:
+      project:
         all_files_public: "Preserve, Shelve, Publish Settings"
   helpers:
     submit:
-      batch_context:
+      project:
         update: "Submit"
         create: "Submit"

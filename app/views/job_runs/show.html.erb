@@ -1,12 +1,12 @@
 <div class="row mt-5">
   <div class="col-sm-12">
-    <h1><%= link_to @job_run.batch_context.project_name, @job_run.batch_context %> by <%= @job_run.batch_context.user.email %></h1>
+    <h1><%= link_to @job_run.project.project_name, @job_run.project %> by <%= @job_run.project.user.email %></h1>
     <p><%= @job_run.job_type.humanize %> #<%= @job_run.id %></p>
   </div>
 </div>
 <div class="row p-1 pl-5">
   <div class="col-6">
-    <%= render partial: 'settings', locals: { batch_context: @job_run.batch_context } %>
+    <%= render partial: 'settings', locals: { project: @job_run.project } %>
   </div>
   <div class="col-6">
     <%= render partial: 'details' %>
@@ -19,7 +19,7 @@
     <div class="col-8">
       <p><%= link_to 'Return to homepage', root_path, class: 'nav-link' %></p>
     </div>
-      <%= render partial: 'batch_contexts/actions', locals: { batch_context: @job_run.batch_context } %>
+      <%= render partial: 'projects/actions', locals: { project: @job_run.project } %>
     </div>
   </div>
 </div>

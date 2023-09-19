@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-class BatchContextsController < ApplicationController
+class ProjectsController < ApplicationController
   def index
-    @batch_contexts = BatchContext.order(:created_at).page(params[:page])
+    @projects = Project.order(:created_at).page(params[:page])
   end
 
   def show
-    @batch_context = BatchContext.find(params[:id])
+    @project = Project.find(params[:id])
   end
 
   def new
-    @batch_context = BatchContext.new(
+    @project = Project.new(
       job_runs: [JobRun.new]
     )
   end
 
   def create
-    @batch_context = BatchContext.new(batch_contexts_params)
-    if @batch_context.save
+    @project = Project.new(project_params)
+    if @project.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs', status: :see_other
     else
@@ -27,8 +27,8 @@ class BatchContextsController < ApplicationController
 
   private
 
-  def batch_contexts_params
-    params.require(:batch_context)
+  def project_params
+    params.require(:project)
           .permit(:project_name, :content_structure, :staging_style_symlink,
                   :processing_configuration, :staging_location, :all_files_public,
                   :using_file_manifest, job_runs_attributes: [:job_type])

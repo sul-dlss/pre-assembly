@@ -2,7 +2,7 @@
 
 module PreAssembly
   # theoretically contains code common to both discovery reports and pre-assemble runs
-  #   both job types need to process the digital objects determined from the batch_context and
+  #   both job types need to process the digital objects determined from the project and
   #   indicated either by a file_manifest.csv, or by walking the directory with the object data to be used.
   class Batch
     include PreAssembly::Logging
@@ -14,7 +14,7 @@ module PreAssembly
                   :num_no_file_warnings,
                   :objects_had_errors
 
-    delegate :batch_context, to: :job_run
+    delegate :project, to: :job_run
     delegate :staging_location,
              :processing_configuration,
              :content_structure,
@@ -24,7 +24,7 @@ module PreAssembly
              :using_file_manifest,
              :project_name,
              :staging_style_symlink,
-             to: :batch_context
+             to: :project
 
     def initialize(job_run, file_manifest: nil)
       @job_run = job_run

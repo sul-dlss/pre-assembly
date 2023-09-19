@@ -9,9 +9,9 @@ RSpec.describe DiscoveryReport do
     # make sure that for these tests
     # (a) the tmp job output dir exists for the progress log file to be written to
     # (b) we get a new clean progress log file for the tests each time we run them
-    # In the actual application, `batch_context.output_dir_no_exists!` would get run and thus we would always have a unique folder created for each job
-    FileUtils.mkdir_p(batch.batch_context.output_dir)
-    FileUtils.rm_f(batch.batch_context.progress_log_file)
+    # In the actual application, `project.output_dir_no_exists!` would get run and thus we would always have a unique folder created for each job
+    FileUtils.mkdir_p(batch.project.output_dir)
+    FileUtils.rm_f(batch.project.progress_log_file)
   end
 
   describe '#initialize' do
@@ -60,8 +60,8 @@ RSpec.describe DiscoveryReport do
         objects_with_error: 1,
         mimetypes: { a: 1, b: 5, q: 13 }
       )
-      expect(File).to exist(batch.batch_context.progress_log_file)
-      docs = YAML.load_stream(File.read(batch.batch_context.progress_log_file))
+      expect(File).to exist(batch.project.progress_log_file)
+      docs = YAML.load_stream(File.read(batch.project.progress_log_file))
       expect(docs.size).to eq(3)
       expect(docs[0]).to include(pid: 'cb837cp4412', status: 'success')
       expect(docs[0][:timestamp].to_date).to eq Time.now.utc.to_date
@@ -72,7 +72,7 @@ RSpec.describe DiscoveryReport do
 
   describe '#output_path' do
     it 'starts with output_dir' do
-      expect(report.output_path).to start_with(report.batch.batch_context.output_dir)
+      expect(report.output_path).to start_with(report.batch.project.output_dir)
     end
 
     it 'ends with discovery_report[...].json' do
@@ -85,7 +85,7 @@ RSpec.describe DiscoveryReport do
   end
 
   context 'integration test' do
-    let(:bc_params) do
+    let(:project_params) do
       {
         project_name: 'SmokeTest',
         content_structure:,
@@ -95,8 +95,8 @@ RSpec.describe DiscoveryReport do
         user: build(:user, sunet_id: 'jdoe')
       }
     end
-    let(:batch_context) { BatchContext.new(bc_params) }
-    let(:job_run) { JobRun.new(batch_context:) }
+    let(:project) { Project.new(project_params) }
+    let(:job_run) { JobRun.new(project:) }
     let(:batch) { PreAssembly::Batch.new(job_run) }
     let(:dobj) { report.batch.un_pre_assembled_objects.first }
     let(:item) do

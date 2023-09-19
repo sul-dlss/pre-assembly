@@ -16,6 +16,6 @@ RSpec.describe 'shared/_header.erb' do
   end
 
   it 'All Projects' do
-    expect(rendered).to include("<a class=\"nav-link\" href=\"/batch_contexts\">All Projects</a>\n")
+    expect(rendered).to include("<a class=\"nav-link\" href=\"/projects\">All Projects</a>\n")
   end
 end

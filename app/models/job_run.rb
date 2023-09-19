@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 # Model class for the database table job_runs;
-#  contains information about a specific pre-assembly or discovery report run; parameters used for that run are in the associated BatchContext
-#  the user is able to instantiate multiple jobs (the same and/or different types) using the same BatchContext and each will get its own JobRun
+#  contains information about a specific pre-assembly or discovery report run; parameters used for that run are in the associated Project
+#  the user is able to instantiate multiple jobs (the same and/or different types) using the same Project and each will get its own JobRun
 class JobRun < ApplicationRecord
-  belongs_to :batch_context
+  belongs_to :project
   has_many :accessions, dependent: :destroy
   validates :job_type, presence: true
   validates :state, presence: true
   after_initialize :default_enums
   after_create_commit :enqueue!
 
-  delegate :progress_log_file, :progress_log_file_exists?, to: :batch_context
+  delegate :progress_log_file, :progress_log_file_exists?, to: :project
 
   enum job_type: {
     'discovery_report' => 0,
@@ -59,7 +59,7 @@ class JobRun < ApplicationRecord
 
   # @return [String] Subject line for notification email
   def mail_subject
-    "[#{batch_context.project_name}] Your #{job_type.humanize} job completed"
+    "[#{project.project_name}] Your #{job_type.humanize} job completed"
   end
 
   # the states that indicate this job is either not started or is currently running
@@ -85,7 +85,7 @@ class JobRun < ApplicationRecord
 
   # return [PreAssembly::Batch]
   def batch
-    @batch ||= if batch_context.using_file_manifest
+    @batch ||= if project.using_file_manifest
                  PreAssembly::Batch.new(self, file_manifest:)
                else
                  PreAssembly::Batch.new(self)
@@ -93,8 +93,8 @@ class JobRun < ApplicationRecord
   end
 
   def file_manifest
-    PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest_path,
-                                  staging_location: batch_context.staging_location)
+    PreAssembly::FileManifest.new(csv_filename: project.file_manifest_path,
+                                  staging_location: project.staging_location)
   end
 
   private

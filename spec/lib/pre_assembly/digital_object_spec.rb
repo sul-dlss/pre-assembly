@@ -7,8 +7,8 @@ RSpec.describe PreAssembly::DigitalObject do
 
   let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif') }
-  let(:job_run) { create(:job_run, :preassembly, batch_context: bc) }
+  let(:project) { create(:project, staging_location: 'spec/fixtures/images_jp2_tif') }
+  let(:job_run) { create(:job_run, :preassembly, project:) }
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
   let(:tmp_area) do
@@ -22,7 +22,7 @@ RSpec.describe PreAssembly::DigitalObject do
   after { FileUtils.remove_entry tmp_area }
 
   before do
-    allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
+    allow(project).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
     allow(Dor::Services::Client).to receive(:object).and_return(object_client)
   end
 
@@ -328,7 +328,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('map')
+        allow(project).to receive(:content_structure).and_return('map')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
@@ -373,7 +373,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book')
+        allow(project).to receive(:content_structure).and_return('simple_book')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
@@ -418,7 +418,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
+        allow(project).to receive(:content_structure).and_return('simple_book_rtl')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
@@ -463,7 +463,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('webarchive-seed')
+        allow(project).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
@@ -526,7 +526,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive_messages(content_structure: 'simple_book', processing_configuration: 'filename')
+        allow(project).to receive_messages(content_structure: 'simple_book', processing_configuration: 'filename')
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
         allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')

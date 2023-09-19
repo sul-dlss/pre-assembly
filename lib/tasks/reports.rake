@@ -30,7 +30,7 @@ namespace :reports do
                      end
           runtime_minutes = (end_time - start_time) / 60.0
           num_files = json_report['summary']['mimetypes'].sum { |_k, v| v }
-          csv << [num_objects, num_files, num_errors, runtime_minutes.round(2), job_run.batch_context.user.sunet_id, job_run.updated_at.to_date.to_s]
+          csv << [num_objects, num_files, num_errors, runtime_minutes.round(2), job_run.project.user.sunet_id, job_run.updated_at.to_date.to_s]
         else
           num_not_found += 1
         end

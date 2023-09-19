@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
 RSpec.describe JobRunsController do
-  let(:bc) { create(:batch_context_with_deleted_output_dir) }
+  let(:project) { create(:project_with_deleted_output_dir) }
 
   before { sign_in(create(:user)) }
 
   describe '#create' do
     context 'with good params' do
       it 'creates JobRun and redirects to index with success flash' do
-        expect { post :create, params: { job_run: { batch_context_id: bc.id } } }
+        expect { post :create, params: { job_run: { project_id: project.id } } }
           .to change(JobRun, :count).by(1)
         expect(response).to redirect_to(job_runs_path)
         expect(flash[:success]).to start_with('Success! Your job is queued.')
-        expect(bc.job_runs.reload.first.job_type).to eq('discovery_report') # the default
+        expect(project.job_runs.reload.first.job_type).to eq('discovery_report') # the default
       end
 
       it 'creates JobRun with correct job_type' do
-        post :create, params: { job_run: { batch_context_id: bc.id, job_type: 'preassembly' } }
-        expect(bc.job_runs.reload.first.job_type).to eq('preassembly')
+        post :create, params: { job_run: { project_id: project.id, job_type: 'preassembly' } }
+        expect(project.job_runs.reload.first.job_type).to eq('preassembly')
       end
     end
 
@@ -29,7 +29,7 @@ RSpec.describe JobRunsController do
       end
 
       it 'redirects to index with error flash' do
-        post :create, params: { job_run: { batch_context_id: 999 } }
+        post :create, params: { job_run: { project_id: 999 } }
         expect(response).to redirect_to(job_runs_path)
         expect(flash[:error]).not_to be_nil
       end

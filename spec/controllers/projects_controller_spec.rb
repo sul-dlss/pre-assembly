@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe BatchContextsController do
+RSpec.describe ProjectsController do
   let(:params) do
     {
-      batch_context:
+      project:
         {
           project_name: 'Multimedia',
           content_structure: 'simple_image',
@@ -52,7 +52,7 @@ RSpec.describe BatchContextsController do
 
         it 'passes newly created object' do
           post(:create, params:)
-          expect(assigns(:batch_context)).to be_a(BatchContext).and be_persisted
+          expect(assigns(:project)).to be_a(Project).and be_persisted
           expect(response).to have_http_status(:see_other) # HTTP code for redirect
           expect(response).to redirect_to(job_runs_path)
           expect(flash[:success]).to start_with('Success! Your job is queued.')
@@ -60,30 +60,30 @@ RSpec.describe BatchContextsController do
 
         it 'has the correct attributes' do
           post(:create, params:)
-          bc = assigns(:batch_context)
-          expect(bc.project_name).to eq 'Multimedia'
-          expect(bc.content_structure).to eq 'simple_image'
-          expect(bc.processing_configuration).to eq 'default'
-          expect(bc.staging_location).to eq 'spec/fixtures/multimedia'
+          project = assigns(:project)
+          expect(project.project_name).to eq 'Multimedia'
+          expect(project.content_structure).to eq 'simple_image'
+          expect(project.processing_configuration).to eq 'default'
+          expect(project.staging_location).to eq 'spec/fixtures/multimedia'
         end
 
         it 'persists the first JobRun, rejects dups' do
           expect { post :create, params: }.to change(JobRun, :count).by(1)
-          expect { post :create, params: }.not_to change(BatchContext, :count)
+          expect { post :create, params: }.not_to change(Project, :count)
           FileUtils.rm_rf(output_dir) # even if the directory is missing, cannot reuse user & project_name
           expect { post :create, params: }.to raise_error(ActiveRecord::RecordNotUnique)
         end
       end
 
       context 'Invalid Parameters' do
-        let(:bc_params) { { project_name: '', content_structure: '', processing_configuration: '', staging_location: '' } }
+        let(:project_params) { { project_name: '', content_structure: '', processing_configuration: '', staging_location: '' } }
 
         it 'do not create objects' do
-          params[:batch_context][:project_name] = nil
-          expect { post :create, params: }.not_to change(BatchContext, :count)
-          expect { post :create, params: { batch_context: bc_params } }.not_to change(BatchContext, :count)
-          bc_params[:project_name] = "SMPL's folly"
-          expect { post :create, params: { batch_context: bc_params } }.not_to change(BatchContext, :count)
+          params[:project][:project_name] = nil
+          expect { post :create, params: }.not_to change(Project, :count)
+          expect { post :create, params: { project: project_params } }.not_to change(Project, :count)
+          project_params[:project_name] = "SMPL's folly"
+          expect { post :create, params: { project: project_params } }.not_to change(Project, :count)
         end
       end
     end

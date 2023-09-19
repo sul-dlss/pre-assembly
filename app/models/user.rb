@@ -2,7 +2,7 @@
 
 class User < ApplicationRecord
   devise :remote_user_authenticatable # We don't want other (default) Devise modules
-  has_many :batch_contexts, dependent: :destroy
+  has_many :projects, dependent: :destroy
   validates :sunet_id, presence: true, uniqueness: true
 
   def email

@@ -1,0 +1,36 @@
+<div class="container">
+  <h2>Projects History</h2>
+
+  <%= paginate @projects %>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr class="table-secondary">
+        <th scope="col">Name</th>
+        <th scope="col">Creator</th>
+        <th scope="col">Content Structure</th>
+        <th scope="col">Staging Location</th>
+        <th scope="col">Processing Configuration</th>
+        <th scope="col">Using File Manifest</th>
+        <th scope="col"># Job Runs</th>
+        <th scope="col">Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @projects.each do |project| %>
+        <tr>
+          <td><%= link_to project.project_name, project %></td>
+          <td><%= project.user.email %></td>
+          <td><%= project.content_structure %></td>
+          <td><%= project.staging_location %></td>
+          <td><%= project.processing_configuration %></td>
+          <td><%= project.using_file_manifest ? 'yes' : 'no' %></td>
+          <td><%= project.job_runs.count %></td>
+          <td><%= project.created_at.in_time_zone('Pacific Time (US & Canada)').to_formatted_s(:long) %></td>
+        </tr>
+    <% end %>
+   </tbody>
+  </table>
+
+<%= paginate @projects %>
+</div>

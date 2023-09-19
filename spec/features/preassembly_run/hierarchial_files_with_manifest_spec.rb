@@ -95,7 +95,7 @@ RSpec.describe 'Pre-assemble Image object' do
       select 'Pre Assembly Run', from: 'Job type'
       select 'File', from: 'Content structure'
       fill_in 'Staging location', with: staging_location
-      check 'batch_context_using_file_manifest'
+      check 'project_using_file_manifest'
 
       click_button 'Submit'
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
@@ -144,7 +144,7 @@ RSpec.describe 'Pre-assemble Image object' do
       select 'Pre Assembly Run', from: 'Job type'
       select 'Media', from: 'Content structure'
       fill_in 'Staging location', with: staging_location
-      check 'batch_context_using_file_manifest'
+      check 'project_using_file_manifest'
 
       click_button 'Submit'
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

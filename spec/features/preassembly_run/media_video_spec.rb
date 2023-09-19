@@ -47,7 +47,7 @@ RSpec.describe 'Pre-assemble Media Video object' do
     select 'Media', from: 'Content structure'
     fill_in 'Staging location', with: staging_location
     select 'Default', from: 'Processing configuration'
-    check 'batch_context_using_file_manifest'
+    check 'project_using_file_manifest'
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

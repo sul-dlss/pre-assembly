@@ -11,7 +11,7 @@ RSpec.describe User do
 
     it { is_expected.to validate_uniqueness_of(:sunet_id) }
     it { is_expected.to validate_presence_of(:sunet_id) }
-    it { is_expected.to have_many(:batch_contexts) }
+    it { is_expected.to have_many(:projects) }
 
     describe 'enforces unique constraint on sunet_id' do
       before { user.save! }

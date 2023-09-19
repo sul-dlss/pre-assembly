@@ -7,23 +7,23 @@
     <tbody>
         <tr>
             <td>Content Structure</td>
-            <td><%= @job_run.batch_context.content_structure %></td>
+            <td><%= @job_run.project.content_structure %></td>
         </tr>
         <tr>
             <td>Staging Location</td>
-            <td><%= @job_run.batch_context.staging_location %></td>
+            <td><%= @job_run.project.staging_location %></td>
         </tr>
         <tr>
             <td>Processing configuration</td>
-            <td><%= @job_run.batch_context.processing_configuration %></td>
+            <td><%= @job_run.project.processing_configuration %></td>
         </tr>
         <tr>
             <td>Using File Manifest</td>
-            <td><%= @job_run.batch_context.using_file_manifest ? 'yes' : 'no' %></td>
+            <td><%= @job_run.project.using_file_manifest ? 'yes' : 'no' %></td>
         </tr>
         <tr>
             <td>Publish/shelve/preserve setting</td>
-            <td><%= @job_run.batch_context.all_files_public ? 'all files public' : 'default' %></td>
+            <td><%= @job_run.project.all_files_public ? 'all files public' : 'default' %></td>
         </tr>
     </tbody>
 </table>

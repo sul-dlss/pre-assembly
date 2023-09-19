@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :job_run do
-    batch_context factory: %i[batch_context_with_deleted_output_dir]
+    project factory: %i[project_with_deleted_output_dir]
     state { 'waiting' }
 
     trait :preassembly do
