@@ -41,6 +41,7 @@ class JobRun < ApplicationRecord
 
     event :accessioning_completed do
       transition preassembly_complete: :accessioning_complete
+      transition preassembly_complete_with_errors: :accessioning_complete
     end
 
     after_transition do |job_run, transition|
