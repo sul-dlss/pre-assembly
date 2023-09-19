@@ -24,7 +24,26 @@ RSpec.describe PreAssembly::FileManifest do
       end
     end
 
-    context 'when missing columns' do
+    context 'when blank rows' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_blank_rows.csv" }
+
+      it 'ignores them' do
+        manifest = described_class.new(staging_location:, csv_filename:).manifest
+        expect(manifest.keys).to eq %w[aa111aa1111 bb222bb2222]
+        expect(manifest['aa111aa1111'][:file_sets].size).to eq 3
+        expect(manifest['bb222bb2222'][:file_sets].size).to eq 3
+      end
+    end
+
+    context 'when missing druid column' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_missing_druid_column.csv" }
+
+      it 'throws an exception' do
+        expect { described_class.new(staging_location:, csv_filename:).manifest }.to raise_error(RuntimeError, 'no rows in file_manifest or missing header')
+      end
+    end
+
+    context 'when missing columns other than druid' do
       let(:csv_filename) { "#{staging_location}/file_manifest_missing_columns.csv" }
 
       it 'throws an exception' do

@@ -22,8 +22,8 @@ module PreAssembly
     # rubocop:disable Metrics/AbcSize
     def manifest
       @manifest ||= begin
-        # load file into @rows and then build up @manifest
-        rows = CsvImporter.parse_to_hash(@csv_filename)
+        # load file into @rows and then build up @manifest; rejecting any blank rows
+        rows = CsvImporter.parse_to_hash(@csv_filename).delete_if { |row| row['druid'].blank? }
 
         validate_rows(rows)
 
