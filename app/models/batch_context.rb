@@ -46,7 +46,8 @@ class BatchContext < ApplicationRecord
   enum processing_configuration: {
     'default' => 0,
     'filename' => 1,
-    'media_cm_style' => 2 # Deprecated
+    'media_cm_style' => 2, # Deprecated
+    'filename_with_ocr' => 3
   }
 
   accepts_nested_attributes_for :job_runs

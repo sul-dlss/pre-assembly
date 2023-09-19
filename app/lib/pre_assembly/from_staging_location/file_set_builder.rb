@@ -21,8 +21,8 @@ module PreAssembly
       def build
         case processing_configuration
         when :default # one resource per object
-          objects.collect { |obj| FileSet.new(resource_files: [obj], style:) }
-        when :filename # one resource per distinct filename (excluding extension)
+          objects.collect { |obj| FileSet.new(resource_files: [obj], style:, processing_configuration:) }
+        when :filename, :filename_with_ocr # one resource per distinct filename (excluding extension)
           build_for_filename
         else
           raise 'Invalid processing_configuration: must be :default or :filename'
@@ -39,7 +39,8 @@ module PreAssembly
         distinct_filenames = objects.collect(&:filename_without_ext).uniq # find all the unique filenames in the set of objects, leaving off extensions and base paths
         distinct_filenames.map do |distinct_filename|
           FileSet.new(resource_files: objects.collect { |obj| obj if obj.filename_without_ext == distinct_filename }.compact,
-                      style:)
+                      style:,
+                      processing_configuration:)
         end
       end
     end
