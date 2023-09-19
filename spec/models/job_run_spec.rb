@@ -42,7 +42,7 @@ RSpec.describe JobRun do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
-      job_run.preassembly_completed
+      job_run.completed
       job_run.accessioning_completed
     end
 
