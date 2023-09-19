@@ -46,4 +46,13 @@ RSpec.describe JobRunCompleteJob do
       expect { job.perform(job_run) }.not_to(change { job_run.reload.state })
     end
   end
+
+  context 'when started but preassembly not completed' do
+    let(:accessions) { [completed_accession, failed_accession] }
+    let(:state) { 'running' }
+
+    it 'does not change the state' do
+      expect { job.perform(job_run) }.not_to(change { job_run.reload.state })
+    end
+  end
 end
