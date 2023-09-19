@@ -8,7 +8,6 @@ class JobRunsController < ApplicationController
 
   def show
     @job_run = JobRun.find(params[:id])
-    @structural_has_changed = structural_changed?
   end
 
   def create
@@ -47,6 +46,7 @@ class JobRunsController < ApplicationController
     @job_run = JobRun.find(params[:id])
     if @job_run.report_ready?
       @discovery_report = JSON.parse(File.read(@job_run.output_location))
+      @structural_has_changed = structural_changed?
     else
       flash.now[:warning] = 'There is no discovery report. Please check back later.'
       render 'show'
