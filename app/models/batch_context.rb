@@ -15,6 +15,7 @@ class BatchContext < ApplicationRecord
 
   belongs_to :user
   has_many :job_runs, dependent: :destroy
+  has_one :globus_destinations, dependent: :destroy
   after_initialize :normalize_staging_location, :default_enums
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
