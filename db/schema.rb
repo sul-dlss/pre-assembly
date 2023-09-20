@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_20_123240) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
     t.index ["user_id"], name: "index_batch_contexts_on_user_id"
   end
 
+  create_table "globus_destinations", force: :cascade do |t|
+    t.datetime "deleted_at", precision: nil
+    t.bigint "batch_context_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_context_id"], name: "index_globus_destinations_on_batch_context_id"
+    t.index ["user_id"], name: "index_globus_destinations_on_user_id"
+  end
+
   create_table "job_runs", force: :cascade do |t|
     t.string "output_location"
     t.integer "job_type", null: false
@@ -61,5 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_09_033128) do
 
   add_foreign_key "accessions", "job_runs"
   add_foreign_key "batch_contexts", "users"
+  add_foreign_key "globus_destinations", "batch_contexts"
+  add_foreign_key "globus_destinations", "users"
   add_foreign_key "job_runs", "batch_contexts"
 end

@@ -194,6 +194,7 @@ Pre-Assembly has a fairly simple [data model](db/schema.rb) based on three types
 * *User*: a SUL staff person who is able to log in, based on configuration in [Puppet](https://github.com/sul-dlss/puppet/blob/production/hieradata/node/sul-preassembly-prod.stanford.edu.eyaml)
 * *BatchContext*: includes details about a particular type of batch load, including where the data lives, who created it, the type of batch load, etc. This is also known as a "Project" in the user interface.
 * *JobRun*: represents a specific batch load run using information from the BatchContext. These jobs are picked up by an asynchronous Sidekiq job when requested by the user. The job can be a full run, which submits the data to the [dor-services-app](https://github.com/sul-dlss/dor-services-app) API, or simply a "discovery report" which checks that the data and configuration look correct.
+* *GlobusDestination*: represents a user and created_at timestamp for creating a Globus directory that will be associated with a BatchContext. 
 
 A *User* can have multiple *BatchContext*s and a *BatchContext* can have multiple *JobRun*s. When a user chooses to run or rerun a job in the user interface a new *JobRun* is created using the same *BatchContext*.
 
