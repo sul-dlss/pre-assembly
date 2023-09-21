@@ -182,11 +182,5 @@ module PreAssembly
       }
       log_params.map { |k, v| "#{k}=#{v.inspect}" }.join(', ')
     end
-
-    def object_client(druid)
-      d = druid
-      d = "druid:#{d}" unless d.start_with?('druid:')
-      @object_client ||= Dor::Services::Client.object(d)
-    end
   end
 end
