@@ -24,6 +24,12 @@ RSpec.describe PreAssembly::DigitalObject do
   before do
     allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('images_jp2_tif').path)
     allow(Dor::Services::Client).to receive(:object).and_return(object_client)
+    allow(PreAssembly::FileIdentifierGenerator).to receive(:generate).and_return(
+      'https://cocina.sul.stanford.edu/file/1',
+      'https://cocina.sul.stanford.edu/file/2',
+      'https://cocina.sul.stanford.edu/file/3',
+      'https://cocina.sul.stanford.edu/file/4'
+    )
   end
 
   describe '#pre_assemble' do
@@ -226,7 +232,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
       it 'generates the expected structural' do
@@ -285,7 +290,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         add_object_files(extension: 'tif', rel_path: '00/')
         add_object_files(num: 1, extension: 'jp2', rel_path: '05/')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
       it 'generates the expected structural' do
@@ -330,7 +334,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(bc).to receive(:content_structure).and_return('map')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       it 'generates the expected structural' do
@@ -375,7 +378,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       it 'generates the expected structural' do
@@ -420,7 +422,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       it 'generates the expected structural' do
@@ -465,7 +466,6 @@ RSpec.describe PreAssembly::DigitalObject do
       before do
         allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2')
       end
 
       it 'generates the expected structural' do
@@ -529,7 +529,6 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(bc).to receive_messages(content_structure: 'simple_book', processing_configuration: 'filename')
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
-        allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4')
       end
 
       it 'generates the expected structural' do

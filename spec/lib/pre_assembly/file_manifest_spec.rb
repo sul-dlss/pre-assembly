@@ -62,7 +62,17 @@ RSpec.describe PreAssembly::FileManifest do
     let(:dro) { Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' }) }
 
     before do
-      allow(SecureRandom).to receive(:uuid).and_return('1', '2', '3', '4', '5', '6', '7', '8', '9')
+      allow(PreAssembly::FileIdentifierGenerator).to receive(:generate).and_return(
+        'https://cocina.sul.stanford.edu/file/1',
+        'https://cocina.sul.stanford.edu/file/2',
+        'https://cocina.sul.stanford.edu/file/3',
+        'https://cocina.sul.stanford.edu/file/4',
+        'https://cocina.sul.stanford.edu/file/5',
+        'https://cocina.sul.stanford.edu/file/6',
+        'https://cocina.sul.stanford.edu/file/7',
+        'https://cocina.sul.stanford.edu/file/8',
+        'https://cocina.sul.stanford.edu/file/9'
+      )
     end
 
     # These are fields that were in common use prior to alignment with Argo manifest
