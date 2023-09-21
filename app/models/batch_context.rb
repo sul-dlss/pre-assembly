@@ -30,6 +30,7 @@ class BatchContext < ApplicationRecord
   validate :verify_staging_location
   validate :verify_staging_location_path
   validate :verify_file_manifest_exists, if: :using_file_manifest
+  validate :verify_output_dir_no_exists, unless: proc { persisted? }
 
   enum content_structure: {
     'simple_image' => 0,
@@ -58,7 +59,7 @@ class BatchContext < ApplicationRecord
   end
 
   def output_dir
-    @output_dir ||= File.join(normalize_dir(Settings.job_output_parent_dir), user.email, project_name)
+    @output_dir ||= File.join(normalize_dir(Settings.job_output_parent_dir), user&.email, project_name)
   end
 
   def progress_log_file
@@ -134,6 +135,15 @@ class BatchContext < ApplicationRecord
       throw(:abort)
     end
     FileUtils.mkdir_p(output_dir)
+  end
+
+  def verify_output_dir_no_exists
+    return unless Dir.exist?(output_dir)
+
+    errors.add(:staging_location, "Output directory (#{output_dir}) should not already exist")
+  rescue TypeError
+    # Indicates that user email or project_name are missing.
+    # However, these are validated separately, so OK to ignore here.
   end
 
   def verify_file_manifest_selected_for_media

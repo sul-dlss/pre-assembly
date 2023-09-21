@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'batch_contexts/show.html.erb' do
-  let(:bc) { create(:batch_context) }
+  let(:bc) { create(:batch_context_with_deleted_output_dir) }
 
   before { assign(:batch_context, bc) }
 
@@ -23,8 +23,6 @@ RSpec.describe 'batch_contexts/show.html.erb' do
   end
 
   context 'when job runs exist' do
-    let(:bc) { create(:batch_context) }
-
     let!(:job_run) { create(:job_run, batch_context: bc) }
 
     it 'displays job summary' do
