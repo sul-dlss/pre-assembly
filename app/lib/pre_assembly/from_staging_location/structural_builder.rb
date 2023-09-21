@@ -40,7 +40,7 @@ module PreAssembly
             file_id = fileset_file.relative_path
             file_attributes = {
               type: 'https://cocina.sul.stanford.edu/models/file',
-              externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
+              externalIdentifier: FileIdentifierGenerator.generate,
               version:,
               label: file_id,
               filename: file_id,

@@ -76,7 +76,7 @@ module PreAssembly
     def file_properties_from_row(row)
       {
         type: Cocina::Models::ObjectType.file,
-        externalIdentifier: "https://cocina.sul.stanford.edu/file/#{SecureRandom.uuid}",
+        externalIdentifier: FileIdentifierGenerator.generate,
         filename: row[:filename],
         label: row[:file_label].presence || row[:filename],
         use: role(row),
