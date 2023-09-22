@@ -29,3 +29,5 @@ rabbitmq:
 globus: 
   directory: '/globus'
   endpoint_id: endpoint_uuid
+  client_id: client_id
+  client_secret: client_secret
