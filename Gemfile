@@ -1,12 +1,13 @@
 source 'https://rubygems.org'
 
-gem "bunny", "~> 2.17" # RabbitMQ library
+gem 'bunny', '~> 2.17' # RabbitMQ library
 gem 'config'
-gem "cssbundling-rails", "~> 1.2"
+gem 'cssbundling-rails', '~> 1.2'
 gem 'devise'
 gem 'devise-remote-user'
 gem 'globus_client', '~> 0.12.0'
 gem 'honeybadger', '~> 4.5'
+gem 'importmap-rails', '~> 1.2'
 gem 'jbuilder'
 gem 'kaminari' # pagination
 gem 'nokogiri'
@@ -18,9 +19,10 @@ gem 'rails', '~> 7.0'
 gem 'rake'
 gem 'sidekiq', '~> 7.0'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
-gem "sneakers", "~> 2.11" # rabbitMQ background processing
+gem 'sneakers', '~> 2.11' # rabbitMQ background processing
 gem 'state_machines-activerecord'
-gem "turbo-rails", "~> 1.1"
+gem 'stimulus-rails'
+gem 'turbo-rails', '~> 1.1'
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'

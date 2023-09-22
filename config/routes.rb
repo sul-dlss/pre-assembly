@@ -16,4 +16,5 @@ Rails.application.routes.draw do
       get :progress_log
     end
   end
+  resources :globus, only: [:show, :index, :create]
 end

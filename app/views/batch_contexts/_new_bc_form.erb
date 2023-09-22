@@ -1,4 +1,14 @@
-<h3>Complete the form below</h3>
+
+<div data-controller="globus">
+
+<div class="row">
+    <div class="col">
+        <h3>Complete the form below</h3>
+    </div>
+    <div class="col" style="text-align: right;">
+      <button class="btn btn-sul-dlss" data-globus-target="requestGlobusLink" data-action="click->globus#createDestination">Request Globus Link</button>
+    </div>
+</div>
 
 <%= simple_form_for @batch_context do |form| %>
     <%= form.input :project_name %>
@@ -26,8 +36,8 @@
     ]
     %>
 
+    <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 
-    <%= form.input :staging_location %>
     <%# the 'staging_style_symlink` is hidden, since we do not currently want users to access it (it may cause problems with some accessioning steps)%>
     <%= form.hidden_field :staging_style_symlink, value: false %>
     <%= form.input :processing_configuration, collection:
@@ -46,3 +56,5 @@
 
     <%= form.button :submit, class: "btn-sul-dlss" %>
 <% end %>
+
+</div>
