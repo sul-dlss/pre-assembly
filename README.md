@@ -103,6 +103,10 @@ Because the application looks for user info in an environment variable, and beca
 an Apache module setting that environment variable per request based on headers from Webauth/Shibboleth, dev just always
 sets a single value in that env var at start time. So laptop dev instances basically only allow one fake login at a time.
 
+### Globus client gem
+
+The Globus client gem needs to be configured for it work in stage/qa during development.  You will need the client_id/secrets/config from vault for the pre-assembly application, and then add them to your `config/settings.local.yml`, matching the Globus config setup shown in `config/settings.yml`.
+
 ## Post Accessioning Reports
 
 Use [Argo](https://argo.stanford.edu/).

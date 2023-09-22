@@ -234,6 +234,11 @@ GEM
     ffi (1.15.5)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    globus_client (0.12.0)
+      activesupport (>= 4.2, < 8)
+      faraday
+      faraday-retry
+      zeitwerk
     honeybadger (4.12.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
@@ -512,6 +517,7 @@ DEPENDENCIES
   druid-tools
   equivalent-xml
   factory_bot_rails
+  globus_client (~> 0.12.0)
   honeybadger (~> 4.5)
   jbuilder
   kaminari
