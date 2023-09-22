@@ -14,21 +14,27 @@ RSpec.describe GlobusDestination do
 
   describe '#url' do
     it 'returns a globus url with the destination path' do
-      expect(globus_destination.url).to eq 'https://app.globus.org/file-manager?&destination_id=some-endpoint-uuid&destination_path=/globus/ima_user/20230921125959'
+      expect(globus_destination.url).to eq 'https://app.globus.org/file-manager?&destination_id=some-endpoint-uuid&destination_path=/ima_user/20230921125959'
     end
   end
 
   describe '#destination_path' do
     it 'returns the destination globus directory' do
-      expect(globus_destination.destination_path).to eq '/globus/ima_user/20230921125959'
+      expect(globus_destination.destination_path).to eq '/ima_user/20230921125959'
+    end
+  end
+
+  describe '#staging_location' do
+    it 'returns the globus staging location' do
+      expect(globus_destination.staging_location).to eq '/globus/ima_user/20230921125959'
     end
   end
 
   describe '#parse_path' do
-    let(:url) { 'https://app.globus.org/file-manager?&destination_id=some-endpoint-uuid&destination_path=/globus/ima_user/20230921125959' }
+    let(:url) { 'https://app.globus.org/file-manager?&destination_id=some-endpoint-uuid&destination_path=/ima_user/20230921125959' }
 
     it 'finds the destination_path' do
-      expect(globus_destination.parse_path(url)).to eq '/globus/ima_user/20230921125959'
+      expect(globus_destination.parse_path(url)).to eq '/ima_user/20230921125959'
     end
   end
 end
