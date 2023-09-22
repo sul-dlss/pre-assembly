@@ -10,12 +10,17 @@ class GlobusDestination < ApplicationRecord
     "https://app.globus.org/file-manager?&destination_id=#{Settings.globus.endpoint_id}&destination_path=#{destination_path}"
   end
 
-  # directory within globus including user directory in the format /globus/sunet/datetime
+  # directory within globus including user directory in the format /sunet/datetime
   def destination_path
-    "#{Settings.globus.directory}/#{user.sunet_id}/#{created_at.strftime('%Y%m%d%H%M%S')}"
+    "/#{user.sunet_id}/#{created_at.strftime('%Y%m%d%H%M%S')}"
   end
 
-  # parse the path from a globus URL e.g. https://app.globus.org/file-manager?&destination_id=f3e29605-7ba5-45f5-8900-f1234566&destination_path=/globus/edsu/20230907044801
+  # path on preassembly filesystem to staged files
+  def staging_location
+    "#{Settings.globus.directory}#{destination_path}"
+  end
+
+  # parse the path from a globus URL e.g. https://app.globus.org/file-manager?&destination_id=f3e29605-7ba5-45f5-8900-f1234566&destination_path=/edsu/20230907044801
   def parse_path(uri)
     params = CGI.parse(URI.parse(uri).query)
     params['destination_path'].first
