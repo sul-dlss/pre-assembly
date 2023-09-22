@@ -5,6 +5,7 @@ gem 'config'
 gem "cssbundling-rails", "~> 1.2"
 gem 'devise'
 gem 'devise-remote-user'
+gem 'globus_client', '~> 0.12.0'
 gem 'honeybadger', '~> 4.5'
 gem 'jbuilder'
 gem 'kaminari' # pagination
