@@ -16,10 +16,6 @@ RSpec.describe ObjectFileValidator do
 
     let(:object) { batch.un_pre_assembled_objects.first }
 
-    before do
-      allow(validator).to receive(:registration_check).and_return({}) # pretend everything is in Dor
-    end
-
     it 'converts a DigtialObject to structured data (Hash)' do
       expect(validator.validate.as_json).to match a_hash_including(
         counts: a_hash_including(total_size: 0),
@@ -58,6 +54,16 @@ RSpec.describe ObjectFileValidator do
 
       it 'adds missing_media_container_name_or_manifest error' do
         expect(json).to match a_hash_including(errors: a_hash_including(missing_media_container_name_or_manifest: true))
+      end
+    end
+
+    context 'dor services client does not find itm' do
+      before do
+        allow(dor_services_client_object).to receive(:find).and_raise(Dor::Services::Client::NotFoundResponse)
+      end
+
+      it 'adds item_not_registered error' do
+        expect(json).to match a_hash_including(errors: a_hash_including(item_not_registered: true))
       end
     end
   end

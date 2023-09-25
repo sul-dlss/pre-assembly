@@ -10,6 +10,7 @@ class StructuralFilesDiffer
   # @param [String] staging_location - the location where the files for the batch are staged
   # @param [String] druid - the druid of the object, which corresponds to the directory name in the staging location
   # @return [Hash] hash containing arrays of added, deleted, and updated files
+  # @raise [Dor::Services::Client::NotFoundResponse] if the item has not been registered
   def self.diff(existing_structural:, new_structural:, staging_location:, druid:)
     new(existing_structural:,
         new_structural:,
