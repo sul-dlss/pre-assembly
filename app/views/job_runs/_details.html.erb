@@ -19,7 +19,7 @@
         </tr>
         <tr>
             <td>State</td>
-            <td><%= @job_run.human_state_name %></td>
+            <td><%= @job_run.human_state_name.capitalize %></td>
         </tr>
         <% unless @job_run.error_message.blank? %>
             <tr>
