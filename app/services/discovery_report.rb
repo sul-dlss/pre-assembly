@@ -40,24 +40,30 @@ class DiscoveryReport
   # this is where we do the work -- by calling process_dobj on each object in the batch
   # @return [Enumerable<Hash<Symbol => Object>>]
   # @yield [Hash<Symbol => Object>] data structure about a DigitalObject
-  # rubocop:disable Metrics/AbcSize
   def each_row
     return enum_for(:each_row) unless block_given?
 
     batch.un_pre_assembled_objects.each do |dobj|
-      row = process_dobj(dobj)
-      summary[:total_size] += row.counts[:total_size]
-      if row.errors.empty?
-        status = 'success'
-      else
-        summary[:objects_with_error] += 1
-        status = 'error'
-      end
-      row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
-      # log the output to a running progress file
-      File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
-      yield row.to_h.merge(file_diffs: process_diffs(dobj))
+      yield each_dobj(dobj)
     end
+  end
+
+  # rubocop:disable Metrics/AbcSize
+  def each_dobj(dobj)
+    row = process_dobj(dobj)
+    summary[:total_size] += row.counts[:total_size]
+    if row.errors.empty?
+      status = 'success'
+    else
+      summary[:objects_with_error] += 1
+      status = 'error'
+    end
+    row.counts[:mimetypes].each { |k, v| summary[:mimetypes][k] += v }
+    # log the output to a running progress file
+    File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
+    row_hash = row.to_h
+    row_hash.merge!(file_diffs: process_diffs(dobj)) unless dor_error?(row)
+    row_hash
   end
   # rubocop:enable Metrics/AbcSize
 
@@ -84,5 +90,9 @@ class DiscoveryReport
       staging_location: dobj.staging_location,
       druid: dobj.druid.id
     )
+  end
+
+  def dor_error?(row)
+    row.errors[:item_not_registered] || row.errors[:dor_connection_error]
   end
 end

@@ -168,5 +168,29 @@ RSpec.describe DiscoveryReport do
         expect(report.summary).to include(objects_with_error: 0, total_size: 382_224)
       end
     end
+
+    context 'with item that is not registered' do
+      let(:content_structure) { 'simple_image' }
+
+      before do
+        allow(client_object).to receive(:find).and_raise(RuntimeError)
+      end
+
+      it 'to_builder gives expected output for one dobj omitting structural diff' do
+        report_json = JSON.parse(report.to_builder.target!)
+        expect(report_json['rows'].first.with_indifferent_access).to match(
+          druid: 'druid:jy812bp9403',
+          errors: {
+            wrong_content_structure: true,
+            dor_connection_error: true
+          },
+          counts: {
+            total_size: 127_401,
+            mimetypes: { 'image/tiff' => 2, 'image/jp2' => 1 },
+            filename_no_extension: 0
+          }
+        )
+      end
+    end
   end
 end
