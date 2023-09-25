@@ -15,7 +15,7 @@ RSpec.describe JobRunCompleteJob do
     let(:accessions) { [completed_accession, failed_accession] }
     let(:state) { 'preassembly_complete' }
 
-    it 'transitions the job run to completed' do
+    it 'transitions the job run to accessioning_complete' do
       expect { job.perform(job_run) }.to change { job_run.reload.state }.from(state).to('accessioning_complete')
     end
   end
@@ -24,7 +24,7 @@ RSpec.describe JobRunCompleteJob do
     let(:accessions) { [completed_accession, failed_accession] }
     let(:state) { 'preassembly_complete_with_errors' }
 
-    it 'transitions the job run to completed' do
+    it 'transitions the job run to accessioning_complete' do
       expect { job.perform(job_run) }.to change { job_run.reload.state }.from(state).to('accessioning_complete')
     end
   end
@@ -50,6 +50,15 @@ RSpec.describe JobRunCompleteJob do
   context 'when started but preassembly not completed' do
     let(:accessions) { [completed_accession, failed_accession] }
     let(:state) { 'running' }
+
+    it 'does not change the state' do
+      expect { job.perform(job_run) }.not_to(change { job_run.reload.state })
+    end
+  end
+
+  context 'when no accessions exist' do
+    let(:accessions) { [] }
+    let(:state) { 'preassembly_complete' }
 
     it 'does not change the state' do
       expect { job.perform(job_run) }.not_to(change { job_run.reload.state })
