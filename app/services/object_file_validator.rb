@@ -25,15 +25,17 @@ class ObjectFileValidator
     object.object_files.each { |obj_file| counts[:mimetypes][obj_file.mimetype] += 1 } # number of files by mimetype
     empty_files = object.object_files.count { |obj_file| obj_file.filesize == 0 }
     errors[:empty_files] = empty_files if empty_files > 0
+    errors.merge!(registration_check) # needs to come before manifest checks
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
       batch_id = object.druid.id
       if batch_id && file_manifest.manifest[batch_id]
         manifest_files = file_manifest.manifest[batch_id].fetch(:file_sets, []).flat_map { |_seq, val| val[:files] }
         counts[:files_in_manifest] = manifest_files.count
-        relative_paths = object.object_files.map(&:relative_path)
+        relative_paths = object.object_files.map(&:relative_path) # Files found on disk
+        all_paths = (cocina_filenames + relative_paths).uniq
         counts[:files_found] = (manifest_files.pluck(:filename) & relative_paths).count
         errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
-        errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == counts[:files_found]
+        errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == (manifest_files.pluck(:filename) & all_paths).count
       else
         errors[:missing_media_container_name_or_manifest] = true
       end
@@ -42,7 +44,6 @@ class ObjectFileValidator
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
     errors[:dupes] = true unless object_filepaths_unique?
-    errors.merge!(registration_check)
     self
   end
   # rubocop:enable Metrics/AbcSize
@@ -109,5 +110,15 @@ class ObjectFileValidator
   # @return [Boolean]
   def using_file_manifest?
     batch.using_file_manifest
+  end
+
+  def cocina_obj
+    @cocina_obj = object_client.find
+  end
+
+  def cocina_filenames
+    @cocina_filenames ||= cocina_obj.structural.contains.flat_map do |file_set|
+      file_set.structural.contains.map(&:filename)
+    end
   end
 end

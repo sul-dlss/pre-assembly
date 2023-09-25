@@ -1,0 +1,5 @@
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role
+bb000kk0000,page_0000.jpg,page 1,1,no,yes,no,page,
+bb000kk0000,page_0001.jpg,page 1,1,no,yes,no,page,
+bb000kk0000,page_0001.pdf,page 1,1,yes,yes,yes,page,
+bb000kk0000,page_0001.xml,page 1,1,yes,yes,yes,page,transcription

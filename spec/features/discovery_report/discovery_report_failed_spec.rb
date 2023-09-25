@@ -5,10 +5,11 @@ RSpec.describe 'Discovery Report fails' do
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "discovery-report-failed-#{RandomWord.nouns.next}" }
   let(:staging_location) { Rails.root.join('spec/fixtures/file_manifest_no_header') }
+  let(:object_client) { instance_double(Dor::Services::Client::Object, find: build(:dro)) }
 
   before do
     login_as(user, scope: :user)
-    allow(Dor::Services::Client).to receive(:object)
+    allow(Dor::Services::Client).to receive(:object).and_return(object_client)
   end
 
   # have background jobs run synchronously

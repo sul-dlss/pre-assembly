@@ -2,9 +2,9 @@
 
 RSpec.describe ObjectFileValidator do
   let(:batch) { batch_setup(:flat_dir_images) }
-  let(:cocina_model_world_access) { instance_double(Cocina::Models::Access, view: 'world') }
-  let(:item) { instance_double(Cocina::Models::DRO, access: cocina_model_world_access) }
-  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: item) }
+  let(:cocina_obj) { build(:dro).new(structural:) }
+  let(:structural) { { contains: [] } }
+  let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, find: cocina_obj) }
   let(:validator) { described_class.new(object:, batch:) }
 
   before do
@@ -57,13 +57,56 @@ RSpec.describe ObjectFileValidator do
       end
     end
 
-    context 'dor services client does not find itm' do
+    context 'dor services client does not find item' do
       before do
         allow(dor_services_client_object).to receive(:find).and_raise(Dor::Services::Client::NotFoundResponse)
       end
 
       it 'adds item_not_registered error' do
         expect(json).to match a_hash_including(errors: a_hash_including(item_not_registered: true))
+      end
+    end
+
+    context 'when all file manifest files found on disk' do
+      let(:batch) { batch_setup(:book_file_manifest) }
+
+      it 'does not report files_found_mismatch' do
+        expect(json).to match a_hash_including(errors: {})
+      end
+    end
+
+    context 'when all file manifest files not found on disk or cocina file' do
+      let(:batch) { batch_setup(:book_file_manifest_extra_file) }
+
+      it 'reports files_found_mismatch' do
+        expect(json).to match a_hash_including(errors: a_hash_including(files_found_mismatch: true))
+      end
+    end
+
+    context 'when all file manifest files found on disk or cocina file' do
+      let(:batch) { batch_setup(:book_file_manifest_extra_file) }
+
+      let(:structural) do
+        { contains: [
+          {
+            type: 'https://cocina.sul.stanford.edu/models/resources/file',
+            externalIdentifier: 'bc234fg5678_2',
+            label: 'page 0', version: 1,
+            structural: {
+              contains: [
+                { type: 'https://cocina.sul.stanford.edu/models/file', externalIdentifier: 'https://cocina.sul.stanford.edu/file/5', label: 'page 0',
+                  filename: 'page_0000.jpg', version: 1,
+                  hasMessageDigests: [{ type: 'md5', digest: '0e80068efa7b0d749ed5da097f6d1eea' }],
+                  access: { view: 'dark', download: 'none', controlledDigitalLending: false },
+                  administrative: { publish: true, sdrPreserve: true, shelve: false } }
+              ]
+            }
+          }
+        ] }
+      end
+
+      it 'does not report files_found_mismatch' do
+        expect(json).to match a_hash_including(errors: {})
       end
     end
   end
