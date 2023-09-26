@@ -83,3 +83,5 @@ def digital_objects_equivalent?(objects1, objects2)
     end
   end
 end
+
+RSpec::Matchers.define_negated_matcher :not_include, :include
