@@ -14,6 +14,7 @@ class AccessionCompleteJob
   # rubocop:disable Metrics/MethodLength
   def work(msg)
     @msg = JSON.parse(msg)
+    Rails.logger.info "AccessionCompleteJob: #{msg}"
     Honeybadger.context(msg:)
 
     # Without this, the database connection pool gets exhausted
@@ -42,7 +43,10 @@ class AccessionCompleteJob
   attr_reader :msg
 
   def update_accessions(accessions, state)
-    accessions.map { |accession| accession.update!(state:) }
+    accessions.map do |accession|
+      Rails.logger.info("Updating accession #{accession.id} to #{state} for #{druid} (version #{version})")
+      accession.update!(state:)
+    end
   end
 
   def start_job_run_complete_jobs(accessions)

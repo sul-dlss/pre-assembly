@@ -5,7 +5,7 @@ Dear <%= @user.sunet_id %>,
 Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> has successfully accessioned the following SDR objects:
 
   <% @completed_accessions.each do |acc| %>
-    - <%= Settings.argo_url %>/view/<%= acc.druid %>
+    - <%= Settings.argo_url %>view/<%= acc.druid %>
   <% end %>
 <% end %>
 
@@ -13,7 +13,7 @@ Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> has successfully 
 The following SDR items failed accessioning:
 
   <% @failed_accessions.each do |acc| %>
-    - <%= Settings.argo_url %>/view/<%= acc.druid %>
+    - <%= Settings.argo_url %>view/<%= acc.druid %>
   <% end %>
 <% end %>
 
