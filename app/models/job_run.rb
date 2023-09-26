@@ -38,16 +38,13 @@ class JobRun < ApplicationRecord
       transition running: :discovery_report_complete, if: :discovery_report?
       transition running: :preassembly_complete, if: :preassembly?
     end
+    after_transition on: [:completed, :completed_with_errors, :failed], do: :send_preassembly_notification
 
     event :accessioning_completed do
       transition preassembly_complete: :accessioning_complete
       transition preassembly_complete_with_errors: :accessioning_complete
     end
-
-    after_transition do |job_run, transition|
-      job_run.send_notification if transition.from_name == :running && transition.to_name != :preassembly_complete
-      job_run.send_notification if transition.to_name == :accessioning_complete
-    end
+    after_transition on: [:accessioning_completed], do: :send_accessioning_notification
   end
 
   # send to asynchronous processing via correct Job class for job_type
@@ -58,11 +55,6 @@ class JobRun < ApplicationRecord
     "#{job_type.camelize}Job".constantize.perform_later(self)
   end
 
-  # @return [String] Subject line for notification email
-  def mail_subject
-    "[#{batch_context.project_name}] Your #{job_type.humanize} job completed"
-  end
-
   # the states that indicate this job is either not started or is currently running
   def in_progress?
     (waiting? || running?)
@@ -71,12 +63,6 @@ class JobRun < ApplicationRecord
   # indicates if the discovery report job is ready for display and is available (some jobs may fail, leaving no report)
   def report_ready?
     job_type == 'discovery_report' && !in_progress? && output_location && File.exist?(output_location)
-  end
-
-  def send_notification
-    return if in_progress?
-
-    JobMailer.with(job_run: self).completion_email.deliver_later
   end
 
   # @return [DiscoveryReport]
@@ -102,5 +88,13 @@ class JobRun < ApplicationRecord
 
   def default_enums
     self[:job_type] ||= 0
+  end
+
+  def send_preassembly_notification
+    JobMailer.with(job_run: self).completion_email.deliver_later
+  end
+
+  def send_accessioning_notification
+    JobMailer.with(job_run: self).accession_completion_email.deliver_later
   end
 end

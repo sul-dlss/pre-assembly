@@ -1,25 +1,2 @@
-<% if @job_run.job_type == "discovery_report" %>
 Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> finished with status '<%= @job_run.human_state_name.capitalize %>'.
 You can view the job details and log file at: <%= job_run_url(@job_run); %>
-<% else %>
-Dear <%= @job_run.batch_context.user.sunet_id %>,
-
-
-<% unless @completed_accessions.empty? %>
-Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> has successfully accessioned the following SDR objects:
-
-  <% @completed_accessions.each do |acc| %>
-  <a href="<%= Settings.argo_url %>/view/<%= acc.druid %>" alt="Link to <%= acc.druid %>"><%= acc.druid %>
-  <% end %>
-<% end %>
-
-<% unless @failed_accessions.empty? %>
-The following SDR items failed accessioning:
-
-  <% @failed_accessions.each do |acc| %>
-  <a href="<%= Settings.argo_url %>/view/<%= acc.druid %>" alt="Link to <%= acc.druid %>"><%= acc.druid %>
-  <% end %>
-<% end %>
-
-You can view the job details and log file at: <%= job_run_url(@job_run); %>
-<% end %>

@@ -1,0 +1,20 @@
+Dear <%= @user.sunet_id %>,
+
+
+<% unless @completed_accessions.empty? %>
+Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> has successfully accessioned the following SDR objects:
+
+  <% @completed_accessions.each do |acc| %>
+    - <%= Settings.argo_url %>view/<%= acc.druid %>
+  <% end %>
+<% end %>
+
+<% unless @failed_accessions.empty? %>
+The following SDR items failed accessioning:
+
+  <% @failed_accessions.each do |acc| %>
+    - <%= Settings.argo_url %>view/<%= acc.druid %>
+  <% end %>
+<% end %>
+
+You can view the job details and log file at: <%= job_run_url(@job_run) %>
