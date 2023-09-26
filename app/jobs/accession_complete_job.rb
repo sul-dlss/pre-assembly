@@ -55,11 +55,11 @@ class AccessionCompleteJob
   end
 
   def druid
-    @druid ||= msg.fetch('druid').delete_prefix('druid:')
+    msg.fetch('druid').delete_prefix('druid:')
   end
 
   def version
-    @version ||= msg.fetch('version').to_i
+    msg.fetch('version').to_i
   end
 
   def error?
