@@ -52,14 +52,14 @@ RSpec.describe PreAssembly::Batch do
     it 'runs cleanly for new objects' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(false)
       expect { batch.send(:pre_assemble_objects) }.to change(Accession, :count).by(2)
-      expect(batch.objects_had_errors).to be false
+      expect(batch.objects_had_errors?).to be false
     end
 
     it 'runs cleanly for re-accessioned objects that are ready to be versioned' do
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:openable?).and_return(true)
       allow_any_instance_of(PreAssembly::DigitalObject).to receive(:current_object_version).and_return(2)
       expect(batch.send(:pre_assemble_objects)).to be true
-      expect(batch.objects_had_errors).to be false
+      expect(batch.objects_had_errors?).to be false
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
@@ -72,8 +72,9 @@ RSpec.describe PreAssembly::Batch do
 
       it 'indicates errors occured, then logs the error and sets the error message' do
         batch.send(:pre_assemble_objects)
-        expect(batch.objects_had_errors).to be true
+        expect(batch.objects_had_errors?).to be true
         expect(batch.error_message).to eq '2 objects had errors during pre-assembly'
+        expect(batch.objects_with_error).to eq %w[aa111aa1111 bb222bb2222]
         expect(yaml[:status]).to eq 'error'
         expect(yaml[:message]).to eq "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened"
       end
@@ -99,7 +100,7 @@ RSpec.describe PreAssembly::Batch do
 
       it 'indicates errors occured, then logs the error and sets the error message' do
         batch.send(:pre_assemble_objects)
-        expect(batch.objects_had_errors).to be true
+        expect(batch.objects_had_errors?).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
         expect(yaml[0]).to include(status: 'error', message: 'oops', pre_assem_finished: false)
@@ -130,7 +131,7 @@ RSpec.describe PreAssembly::Batch do
       end
 
       it 'rescues the exception and proceeds, logs the error, indicates errors occurred, and sets the error message' do
-        expect(batch.objects_had_errors).to be true
+        expect(batch.objects_had_errors?).to be true
         expect(batch.error_message).to eq '1 objects had errors during pre-assembly'
         # first object logs an error
         expect(yaml[0]).to include(status: 'error', message: 'Read-only file system - Read-only file system @ rb_sysopen - /destination', pre_assem_finished: false)

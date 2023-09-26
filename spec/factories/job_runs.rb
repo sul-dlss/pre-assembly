@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :job_run do
     batch_context factory: %i[batch_context_with_deleted_output_dir]
     state { 'waiting' }
+    objects_with_error { [] }
 
     trait :preassembly do
       job_type { 'preassembly' }

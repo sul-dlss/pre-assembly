@@ -51,7 +51,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv' do
     result_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
     result_file = Dir[result_path].first
     discovery_report_json = JSON.parse(File.read(result_file))
-    expect(discovery_report_json['summary']['objects_with_error']).to eq 0
+    expect(discovery_report_json['summary']['objects_with_error']).to be_empty
     expect(discovery_report_json['rows'].first['druid']).to eq "druid:#{bare_druid}"
     expect(discovery_report_json['summary']['mimetypes']['image/jpeg']).to eq 3
     # verify the timestamps in the summary are for today

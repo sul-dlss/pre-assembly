@@ -7,12 +7,11 @@ module PreAssembly
   class Batch
     include PreAssembly::Logging
 
-    attr_reader :job_run
+    attr_reader :job_run,
+                :objects_with_error
     attr_accessor :error_message,
                   :file_manifest,
-                  :num_failures,
-                  :num_no_file_warnings,
-                  :objects_had_errors
+                  :num_no_file_warnings
 
     delegate :batch_context, to: :job_run
     delegate :staging_location,
@@ -29,7 +28,7 @@ module PreAssembly
     def initialize(job_run, file_manifest: nil)
       @job_run = job_run
       @file_manifest = file_manifest
-      @objects_had_errors = false # will be set to true if we discover any errors when running pre-assembly
+      @objects_with_error = []
     end
 
     # Runs the pre-assembly process
@@ -69,6 +68,10 @@ module PreAssembly
       return enum_for(:un_pre_assembled_objects) { digital_objects.size } unless block_given?
 
       digital_objects.lazy.reject { |dobj| pre_assembled_object_containers&.key?(dobj.container) }.each { |dobj| block.call(dobj) }
+    end
+
+    def objects_had_errors?
+      objects_with_error.any?
     end
 
     private
@@ -117,7 +120,6 @@ module PreAssembly
 
     # ignores objects already pre-assembled as part of re-runnability of preassembly job
     def pre_assemble_objects
-      @num_failures = 0
       @num_no_file_warnings = 0
       log "pre_assemble_objects(#{num_to_pre_assemble} objects)"
       log "#{num_to_pre_assemble} objects to pre-assemble"
@@ -126,9 +128,8 @@ module PreAssembly
       pre_assemble_each_object # ignores objects already pre-assembled
 
       log "**WARNING: #{num_no_file_warnings} objects had no files" if num_no_file_warnings > 0
-      if num_failures > 0
-        @objects_had_errors = true
-        @error_message = "#{num_failures} objects had errors during pre-assembly" # error message that will be saved in the job run
+      if objects_with_error.any?
+        @error_message = "#{objects_with_error.size} objects had errors during pre-assembly" # error message that will be saved in the job run
         log "**WARNING**: #{@error_message}"
       end
       log "#{num_to_pre_assemble} objects pre-assembled"
@@ -150,7 +151,7 @@ module PreAssembly
         progress.merge!(pid: dobj.druid.id, container: dobj.container, timestamp: Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'))
 
         if progress[:status] == 'error'
-          @num_failures += 1
+          objects_with_error << dobj.druid.id
         else
           Accession.find_or_create_by!(druid: dobj.druid.id, version: progress.fetch(:version), job_run:)
         end

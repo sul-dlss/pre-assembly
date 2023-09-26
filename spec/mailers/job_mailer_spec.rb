@@ -5,7 +5,7 @@ RSpec.describe JobMailer do
     let(:job_notification) { described_class.with(job_run:).completion_email }
 
     context 'when a discovery report' do
-      let(:job_run) { create(:job_run, :discovery_report, state: 'discovery_report_complete') }
+      let(:job_run) { create(:job_run, :discovery_report, state: 'discovery_report_complete', objects_with_error: ['bbb111ccc1111']) }
 
       it 'renders the headers' do
         expect(job_notification.subject).to eq('[Test_Project] Your Discovery report job completed')
@@ -15,7 +15,9 @@ RSpec.describe JobMailer do
 
       it 'renders the body' do
         expect(job_notification.body.encoded).to match(/Your Discovery report job #\d+ finished/)
+          .and include('The following 1 object in your')
           .and include("http://localhost:3000/job_runs/#{job_run.id}")
+          .and include('sdr-contact@lists.stanford.edu')
       end
     end
 

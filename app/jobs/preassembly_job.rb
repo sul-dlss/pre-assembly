@@ -7,7 +7,13 @@ class PreassemblyJob < ApplicationJob
     batch = job_run.batch
     # .run_pre_assembly iterates over all objects and runs preassembly on each
     batch.run_pre_assembly
-    job_run.error_message = batch.objects_had_errors ? batch.error_message : nil
+    if batch.objects_had_errors?
+      job_run.error_message = batch.error_message
+      job_run.objects_with_error = batch.objects_with_error
+    else
+      job_run.error_message = nil
+      job_run.objects_with_error = []
+    end
     job_run.completed
     # To avoid a possible race condition (all accessioning complete before job run is marked completed),
     # run JobrunCompleteJob.
