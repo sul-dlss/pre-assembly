@@ -28,17 +28,11 @@ class JobRun < ApplicationRecord
       transition running: :failed
     end
 
-    # signifies the job ran through, but at least one object had an error of some kind (e.g. network blip)
-    event :completed_with_errors do
-      transition running: :discovery_report_complete_with_errors, if: :discovery_report?
-      transition running: :preassembly_complete_with_errors, if: :preassembly?
-    end
-
     event :completed do
       transition running: :discovery_report_complete, if: :discovery_report?
       transition running: :preassembly_complete, if: :preassembly?
     end
-    after_transition on: [:completed, :completed_with_errors, :failed], do: :send_preassembly_notification
+    after_transition on: [:completed, :failed], do: :send_preassembly_notification
 
     event :accessioning_completed do
       transition preassembly_complete: :accessioning_complete
@@ -82,6 +76,17 @@ class JobRun < ApplicationRecord
   def file_manifest
     PreAssembly::FileManifest.new(csv_filename: batch_context.file_manifest_path,
                                   staging_location: batch_context.staging_location)
+  end
+
+  def human_state_name
+    return super unless with_preassembly_errors?
+
+    "#{super} (with preassembly errors)"
+  end
+
+  # @return [Boolean] true if has errors from preassembly or discovery job
+  def with_preassembly_errors?
+    error_message.present?
   end
 
   private

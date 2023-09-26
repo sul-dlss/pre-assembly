@@ -24,6 +24,7 @@ RSpec.describe DiscoveryReportJob do
         expect { job.perform(job_run) }.to change { File.exist?(outfile) }.to(true)
         expect(job_run.reload.output_location).to eq(outfile)
         expect(job_run).to be_discovery_report_complete
+        expect(job_run.with_preassembly_errors?).to be false
       end
     end
 
@@ -37,6 +38,7 @@ RSpec.describe DiscoveryReportJob do
         job.perform(job_run)
         expect(job_run).to be_failed
         expect(job_run.error_message).to eq error_message
+        expect(job_run.with_preassembly_errors?).to be true
       end
     end
 
@@ -49,8 +51,9 @@ RSpec.describe DiscoveryReportJob do
 
       it 'calls to_discovery_report and ends in a completed with error state, and saves error message to the database' do
         job.perform(job_run)
-        expect(job_run).to be_discovery_report_complete_with_errors
+        expect(job_run).to be_discovery_report_complete
         expect(job_run.error_message).to eq error_message
+        expect(job_run.with_preassembly_errors?).to be true
       end
     end
   end

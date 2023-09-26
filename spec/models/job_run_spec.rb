@@ -49,7 +49,8 @@ RSpec.describe JobRun do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
       expect(mock_delivery).to receive(:deliver_later)
-      job_run.completed_with_errors
+      job_run.error_message = 'something went wrong'
+      job_run.completed
     end
   end
 

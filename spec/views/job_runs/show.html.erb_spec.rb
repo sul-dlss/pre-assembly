@@ -27,7 +27,8 @@ RSpec.describe 'job_runs/show.html.erb' do
 
     it 'with a completed with errors job, presents a download link to the report and the log file' do
       job_run.started
-      job_run.completed_with_errors
+      job_run.error_message = 'Oops, that was bad.'
+      job_run.completed
       render template: 'job_runs/show'
       expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_log\">Download</a>")
       expect(rendered).to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")

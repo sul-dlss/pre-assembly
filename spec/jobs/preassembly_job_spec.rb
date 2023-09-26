@@ -29,6 +29,7 @@ RSpec.describe PreassemblyJob do
         job.perform(job_run)
         expect(job_run).to be_preassembly_complete
         expect(job_run.error_message).to be_nil
+        expect(job_run.with_preassembly_errors?).to be false
         expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end
     end
@@ -43,6 +44,7 @@ RSpec.describe PreassemblyJob do
         job.perform(job_run)
         expect(job_run).to be_failed
         expect(job_run.error_message).to eq error_message
+        expect(job_run.with_preassembly_errors?).to be true
       end
     end
 
@@ -56,8 +58,9 @@ RSpec.describe PreassemblyJob do
       it 'calls run_pre_assembly and ends in a completed with error state, and saves error message to the database' do
         expect(batch).to receive(:run_pre_assembly)
         job.perform(job_run)
-        expect(job_run).to be_preassembly_complete_with_errors
+        expect(job_run).to be_preassembly_complete
         expect(job_run.error_message).to eq error_message
+        expect(job_run.with_preassembly_errors?).to be true
         expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end
     end
