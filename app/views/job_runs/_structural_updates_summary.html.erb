@@ -10,14 +10,15 @@
     </thead>
     <tbody>
     <% druids.each do |druid| %>
+        <% next unless druid['file_diffs'] %>
         <% %w[added_files deleted_files updated_files].each do |status| %>
-        <% druid['file_diffs'][status]&.each do |filename| %>
-            <tr>
-            <td><%= druid['druid'] %></td>
-            <td><%= filename %></td>
-            <td><%= status.sub('_files', '').capitalize %></td>
-            </tr>
-        <% end %>
+          <% druid['file_diffs'][status]&.each do |filename| %>
+              <tr>
+              <td><%= druid['druid'] %></td>
+              <td><%= filename %></td>
+              <td><%= status.sub('_files', '').capitalize %></td>
+              </tr>
+          <% end %>
         <% end %>
     <% end %>
     </tbody>
