@@ -12,7 +12,7 @@ class GlobusController < ApplicationController
     @dest = GlobusDestination.create(user: @user)
     create_globus_endpoint
 
-    render status_code: :created, json: {
+    render status: :created, json: {
       url: @dest.url,
       location: @dest.staging_location
     }
@@ -24,8 +24,7 @@ class GlobusController < ApplicationController
     return true if test_mode?
 
     user_id = "#{@user.sunet_id}@stanford.edu"
-    success = GlobusClient.mkdir(path: @dest.destination_path, user_id:)
-    raise "Error creating globus endpoint for destination #{@dest.id} for #{user_id}" unless success
+    GlobusClient.mkdir(path: @dest.destination_path, user_id:)
   end
 
   # simulate globus calls in development if settings indicate we should for testing
