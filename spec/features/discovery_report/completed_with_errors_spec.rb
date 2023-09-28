@@ -62,7 +62,7 @@ RSpec.describe 'Discovery Report completes with errors', :js do
     discovery_report_json = JSON.parse(File.read(report_file))
     expect(discovery_report_json['rows'].first['druid']).to eq "druid:#{bare_druid}"
     expect(discovery_report_json['rows'][1]['errors']).to match({ 'empty_object' => true, 'missing_files' => true })
-    expect(discovery_report_json['summary']['objects_with_error']).to eq 1
+    expect(discovery_report_json['summary']['objects_with_error'].size).to eq 1
     expect(discovery_report_json['summary']['mimetypes']['image/tiff']).to eq 4
 
     # output log file produced

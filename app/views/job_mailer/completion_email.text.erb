@@ -1,2 +1,12 @@
 Your <%= @job_run.job_type.humanize %> job #<%= @job_run.id %> finished with status '<%= @job_run.human_state_name.capitalize %>'.
-You can view the job details and log file at: <%= job_run_url(@job_run); %>
+
+You can view the job details and log file at: <%= job_run_url(@job_run) %>
+
+<% if @job_run.objects_with_error.any? %>
+  The following <%= pluralize(@job_run.objects_with_error.size, 'object') %> in your <%= @job_run.job_type.humanize %> job had errors:
+  <% @job_run.objects_with_error.each do |druid| %>
+    - <%= druid %>
+  <% end %>
+
+  Please see <%= job_run_url(@job_run) %> for details or contact <%= Settings.repository_manager_email %>.
+<% end %>

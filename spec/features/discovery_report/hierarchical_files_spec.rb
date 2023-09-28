@@ -46,7 +46,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
     report_file = Dir[report_path].first
     discovery_report_json = JSON.parse(File.read(report_file))
-    expect(discovery_report_json['summary']['objects_with_error']).to eq 0
+    expect(discovery_report_json['summary']['objects_with_error']).to be_empty
     expect(discovery_report_json['rows'].first['druid']).to eq "druid:#{bare_druid}"
     expect(discovery_report_json['summary']['mimetypes']['text/plain']).to eq 5
     expect(discovery_report_json['summary']['mimetypes']['image/jpeg']).to eq 2
@@ -81,7 +81,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
     report_file = Dir[report_path].first
     discovery_report_json = JSON.parse(File.read(report_file))
-    expect(discovery_report_json['summary']['objects_with_error']).to eq 1 # ensure we get an error
+    expect(discovery_report_json['summary']['objects_with_error'].size).to eq 1 # ensure we get an error
     expect(discovery_report_json['rows'].first['druid']).to eq "druid:#{bare_druid}"
     expect(discovery_report_json['rows'].first['errors']).to eq({ 'wrong_content_structure' => true }) # check the error message
     expect(discovery_report_json['summary']['mimetypes']['text/plain']).to eq 5

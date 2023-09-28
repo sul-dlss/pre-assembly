@@ -46,7 +46,7 @@ RSpec.describe DiscoveryReportJob do
       let(:error_message) { 'something bad happened' }
 
       before do
-        allow(job_run.to_discovery_report).to receive_messages(objects_had_errors: true, error_message:)
+        allow(job_run.to_discovery_report).to receive_messages(objects_had_errors?: true, error_message:)
       end
 
       it 'calls to_discovery_report and ends in a completed with error state, and saves error message to the database' do

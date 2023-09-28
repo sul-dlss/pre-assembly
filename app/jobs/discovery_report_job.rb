@@ -11,7 +11,7 @@ class DiscoveryReportJob < ApplicationJob
     file = File.open(report.output_path, 'w') { |f| f << JSON.pretty_generate(JSON.parse(report.to_builder.target!)) }
     job_run.output_location = file.path
     job_run.save!
-    job_run.error_message = report.objects_had_errors ? report.error_message : nil
+    job_run.error_message = report.objects_had_errors? ? report.error_message : nil
     job_run.completed
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
     job_run.error_message = e.exception

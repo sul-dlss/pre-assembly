@@ -22,7 +22,7 @@
         <tbody>
           <tr>
             <td class="text-center"><%= @discovery_report['rows'].size %></td>
-            <td class="text-center"><%= @discovery_report['summary']['objects_with_error'] %></td>
+            <td class="text-center"><%= @discovery_report['summary']['objects_with_error'].size %></td>
             <td class="text-center"><%= number_to_human_size(@discovery_report['summary']['total_size'], precision: 2) %></td>
             <td class="text-center"><%= @discovery_report['summary']['start_time'].to_time.strftime('%-m/%-d/%y %T') %></td>
             <% if @discovery_report['summary']['end_time'] && @discovery_report['summary']['start_time'] # not all older discovery reports have both times available %>
@@ -37,7 +37,7 @@
 
       <%= render partial: 'structural_updates_summary', locals: { druids: @discovery_report['rows'] } if @structural_has_changed %>
 
-      <% if @discovery_report['summary']['objects_with_error'] > 0 %>
+      <% if @discovery_report['summary']['objects_with_error'].any? %>
         <table class="table">
           <caption>Errors Summary</caption>
           <thead class="table">

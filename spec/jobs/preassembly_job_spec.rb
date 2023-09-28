@@ -22,13 +22,14 @@ RSpec.describe PreassemblyJob do
     end
 
     context 'when success' do
-      before { allow(batch).to receive(:objects_had_errors).and_return(false) }
+      before { allow(batch).to receive(:objects_had_errors?).and_return(false) }
 
       it 'calls run_pre_assembly and ends in an complete state' do
         expect(batch).to receive(:run_pre_assembly)
         job.perform(job_run)
         expect(job_run).to be_preassembly_complete
         expect(job_run.error_message).to be_nil
+        expect(job_run.objects_with_error).to be_empty
         expect(job_run.with_preassembly_errors?).to be false
         expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end
@@ -52,7 +53,7 @@ RSpec.describe PreassemblyJob do
       let(:error_message) { 'something bad happened' }
 
       before do
-        allow(batch).to receive_messages(objects_had_errors: true, error_message:)
+        allow(batch).to receive_messages(objects_had_errors?: true, error_message:, objects_with_error: ['bbb111ccc1111'])
       end
 
       it 'calls run_pre_assembly and ends in a completed with error state, and saves error message to the database' do
@@ -60,6 +61,7 @@ RSpec.describe PreassemblyJob do
         job.perform(job_run)
         expect(job_run).to be_preassembly_complete
         expect(job_run.error_message).to eq error_message
+        expect(job_run.objects_with_error).to eq ['bbb111ccc1111']
         expect(job_run.with_preassembly_errors?).to be true
         expect(JobRunCompleteJob).to have_received(:perform_later).with(job_run)
       end

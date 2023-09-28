@@ -96,6 +96,10 @@ class JobRun < ApplicationRecord
   end
 
   def send_preassembly_notification
+    # Always send if a discovery report.
+    # Only send if preassembly and has errors.
+    return if preassembly? && !with_preassembly_errors?
+
     JobMailer.with(job_run: self).completion_email.deliver_later
   end
 
