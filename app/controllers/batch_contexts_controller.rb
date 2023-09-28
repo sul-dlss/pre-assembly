@@ -2,7 +2,7 @@
 
 class BatchContextsController < ApplicationController
   def index
-    @batch_contexts = BatchContext.order(:created_at).page(params[:page])
+    @batch_contexts = BatchContext.order(created_at: :desc).page(params[:page])
   end
 
   def show
