@@ -10,11 +10,13 @@ RSpec.describe 'job_runs/show.html.erb' do
   let(:actual_file) { Rails.root.join('spec/fixtures/input/mock_progress_log.yaml') } # an existing file we can use for tests
 
   context 'discovery_report job' do
+    let(:header) { "#{job_run.job_type.humanize} ##{job_run.id}" }
+
     before { allow(job_run).to receive(:output_location).and_return(actual_file) }
 
     it 'displays a job_run' do
       render template: 'job_runs/show'
-      expect(rendered).to include("Discovery report ##{job_run.id}")
+      expect(rendered).to include(header)
     end
 
     it 'with a completed job, presents a download link to the report and the log file' do
@@ -41,9 +43,9 @@ RSpec.describe 'job_runs/show.html.erb' do
       expect(rendered).not_to include("<a href=\"/job_runs/#{job_run.id}/download_report\">Download</a>")
     end
 
-    it 'displays user email from batch context' do
+    it 'displays user sunet id from batch context' do
       render template: 'job_runs/show'
-      expect(rendered).to include(job_run.batch_context.user.email)
+      expect(rendered).to include(job_run.batch_context.user.sunet_id)
     end
 
     it 'displays an error message if present' do

@@ -10,6 +10,10 @@
             <td><%= @job_run.job_type %></td>
         </tr>
         <tr>
+            <td>Created by</td>
+            <td><%= @job_run.batch_context.user.sunet_id %></td>
+        </tr>
+        <tr>
             <td>Created at</td>
             <td><%= @job_run.created_at %></td>
         </tr>
