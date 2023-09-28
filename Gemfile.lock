@@ -234,7 +234,7 @@ GEM
     ffi (1.16.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    globus_client (0.12.1)
+    globus_client (0.13.0)
       activesupport (>= 4.2, < 8)
       faraday
       faraday-retry
@@ -522,7 +522,7 @@ DEPENDENCIES
   druid-tools
   equivalent-xml
   factory_bot_rails
-  globus_client (~> 0.12.0)
+  globus_client (~> 0.13.0)
   honeybadger (~> 4.5)
   importmap-rails (~> 1.2)
   jbuilder
