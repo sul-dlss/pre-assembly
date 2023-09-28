@@ -1,4 +1,0 @@
-format,sourceid,filename,label,year,inst_notes,prod_notes,has_more_metadata,description
-"BW film","foo-1.0","image1.tif","Avus 1937","1937","","",""
-"BW film","foo-2.1","image2.tif","Avus 1938","1938-1939","frames 6,7,8 glass slide broken","","X"
-"BW film","foo-2.2","image3.tif","Avus 1938, 1956","1938, 1956","strip 2 is duplicate; don't scan","","","yo, this is a description"

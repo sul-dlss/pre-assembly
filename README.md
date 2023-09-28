@@ -142,13 +142,12 @@ the section below for more details on how this works.
 
 The druid column **must** be called `"druid"`.
 
-See the sample manifest file [`TEMPLATE_manifest.csv`](spec/fixtures/exemplar_templates/manifest_template/TEMPLATE_manifest.csv).
+See an example manifest file [`manifest.csv`](spec/fixtures/multimedia/manifest.csv).
 
-## Descriptive Metadata
-
-If descriptive metadata is already in Symphony, then no action is required during
-pre-assembly other than ensuring your catkeys match the ones in Symphony. Otherwise provide your own
-MODS description in a file named `descMetadata.xml`.
+Note that there is a second (optional) type of file manifest which is used to further describe
+the structure of each individual object, such as the exact files to be included.  This is
+only requried in advanced cases where you need to provide additional metadata about each
+file in the object.  For more information about the file manifest, see https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-images-with-captions-(labels)
 
 ## Accession of Specific Objects
 
@@ -198,7 +197,7 @@ Pre-Assembly has a fairly simple [data model](db/schema.rb) based on three types
 * *User*: a SUL staff person who is able to log in, based on configuration in [Puppet](https://github.com/sul-dlss/puppet/blob/production/hieradata/node/sul-preassembly-prod.stanford.edu.eyaml)
 * *BatchContext*: includes details about a particular type of batch load, including where the data lives, who created it, the type of batch load, etc. This is also known as a "Project" in the user interface.
 * *JobRun*: represents a specific batch load run using information from the BatchContext. These jobs are picked up by an asynchronous Sidekiq job when requested by the user. The job can be a full run, which submits the data to the [dor-services-app](https://github.com/sul-dlss/dor-services-app) API, or simply a "discovery report" which checks that the data and configuration look correct.
-* *GlobusDestination*: represents a user and created_at timestamp for creating a Globus directory that will be associated with a BatchContext. 
+* *GlobusDestination*: represents a user and created_at timestamp for creating a Globus directory that will be associated with a BatchContext.
 
 A *User* can have multiple *BatchContext*s and a *BatchContext* can have multiple *JobRun*s. When a user chooses to run or rerun a job in the user interface a new *JobRun* is created using the same *BatchContext*.
 
