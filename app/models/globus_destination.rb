@@ -6,6 +6,7 @@ DATETIME_FORMAT = '%Y-%m-%d-%H-%M-%S-%L'
 class GlobusDestination < ApplicationRecord
   belongs_to :batch_context, optional: true
   belongs_to :user
+  after_initialize :set_directory
 
   # A helper to look up the GlobusDestination object using a Globus URL
   def self.find_with_globus_url(url)
@@ -16,15 +17,9 @@ class GlobusDestination < ApplicationRecord
     path = params['destination_path'].first
     return unless path
 
-    match = path.match('^/(.+)/(.+)$')
-    return unless match
-
-    sunet_id, created_at = match.captures
-    created_at = DateTime.strptime(created_at, DATETIME_FORMAT)
-    return unless sunet_id && created_at
-
+    _, sunet_id, directory = path.split('/')
     user = User.find_by(sunet_id:)
-    GlobusDestination.find_by(user:, created_at:)
+    GlobusDestination.find_by(user:, directory:)
   end
 
   # creates a URL for globus, including the path to the user's destination directory
@@ -34,11 +29,15 @@ class GlobusDestination < ApplicationRecord
 
   # directory within globus including user directory in the format /sunet/datetime
   def destination_path
-    "/#{user.sunet_id}/#{created_at.strftime(DATETIME_FORMAT)}"
+    "/#{user.sunet_id}/#{directory}" #created_at.strftime(DATETIME_FORMAT)}"
   end
 
   # path on preassembly filesystem to staged files
   def staging_location
     "#{Settings.globus.directory}#{destination_path}"
+  end
+
+  def set_directory
+    self.directory = DateTime.now.strftime(DATETIME_FORMAT)
   end
 end
