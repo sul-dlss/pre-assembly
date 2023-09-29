@@ -1,14 +1,18 @@
-<div class="col-2">
-    <%= form_for(JobRun.new) do |form| %>
-    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
-    <%= form.hidden_field :job_type, value: 'discovery_report' %>
-    <%= form.submit 'New Discovery Report', class: 'btn btn-outline' %>
-    <% end %>
-</div>
-<div class="col-2 text-end">
-    <%= form_for(JobRun.new) do |form| %>
-    <%= form.hidden_field :batch_context_id, value: batch_context.id %>
-    <%= form.hidden_field :job_type, value: 'preassembly' %>
-    <%= form.submit 'Run Preassembly', class: 'btn btn-sul-dlss' %>
-    <% end %>
+<div class="row justify-content-end">
+  <div class="hstack">
+    <div class="col-9 text-end">
+        <%= form_for(JobRun.new) do |form| %>
+        <%= form.hidden_field :batch_context_id, value: batch_context.id %>
+        <%= form.hidden_field :job_type, value: 'discovery_report' %>
+        <%= form.submit 'New Discovery Report', class: 'btn btn-outline' %>
+        <% end %>
+    </div>
+    <div class="col-3 text-end">
+        <%= form_for(JobRun.new) do |form| %>
+        <%= form.hidden_field :batch_context_id, value: batch_context.id %>
+        <%= form.hidden_field :job_type, value: 'preassembly' %>
+        <%= form.submit 'Run Preassembly', class: 'btn btn-sul-dlss' %>
+        <% end %>
+    </div>
+  </div>
 </div>
