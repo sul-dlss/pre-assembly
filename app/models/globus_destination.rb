@@ -35,7 +35,8 @@ class GlobusDestination < ApplicationRecord
     "#{Settings.globus.directory}#{destination_path}"
   end
 
+  # when not explicitly set the directory name is generated from the current time
   def set_directory
-    self.directory = DateTime.now.strftime('%Y-%m-%d-%H-%M-%S-%L')
+    self.directory = DateTime.now.strftime('%Y-%m-%d-%H-%M-%S-%L') unless directory
   end
 end
