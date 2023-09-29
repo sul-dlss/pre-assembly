@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-DATETIME_FORMAT = '%Y-%m-%d-%H-%M-%S-%L'
-
 # Model representing a Globus destination that can be used as a staging location.
 class GlobusDestination < ApplicationRecord
   belongs_to :batch_context, optional: true
@@ -29,7 +27,7 @@ class GlobusDestination < ApplicationRecord
 
   # directory within globus including user directory in the format /sunet/datetime
   def destination_path
-    "/#{user.sunet_id}/#{directory}" #created_at.strftime(DATETIME_FORMAT)}"
+    "/#{user.sunet_id}/#{directory}"
   end
 
   # path on preassembly filesystem to staged files
@@ -38,6 +36,6 @@ class GlobusDestination < ApplicationRecord
   end
 
   def set_directory
-    self.directory = DateTime.now.strftime(DATETIME_FORMAT)
+    self.directory = DateTime.now.strftime('%Y-%m-%d-%H-%M-%S-%L')
   end
 end

@@ -46,7 +46,7 @@ RSpec.describe GlobusDestination do
     end
 
     context 'with correct Globus URL' do
-      let(:url) { globus_destination.url } #'https://app.globus.org/file-manager?&destination_id=some-endpoint-uuid&destination_path=/ima_user/2023-09-21-12-59-59-123' }
+      let(:url) { globus_destination.url }
 
       it 'finds object' do
         expect(found).not_to be_nil
