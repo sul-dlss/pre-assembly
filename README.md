@@ -205,7 +205,7 @@ A *User* can have multiple *BatchContext*s and a *BatchContext* can have multipl
 
 ### Steps
 
-1. Reset the database: `bin/rails -e p db:reset`
+1. [Reset the database](https://github.com/sul-dlss/DeveloperPlaybook/blob/main/best-practices/db_reset.md)
 2. Delete the staging directory: `rm -fr /dor/assembly/*`
 3. Delete the job artifacts output directory: `rm -fr /dor/preassembly/*`
 4. To test, run the `preassembly_*_spec.rb` integration tests.
