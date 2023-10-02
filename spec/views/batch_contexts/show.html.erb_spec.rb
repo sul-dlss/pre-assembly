@@ -7,7 +7,7 @@ RSpec.describe 'batch_contexts/show.html.erb' do
 
   it 'diplays BatchContext info' do
     render template: 'batch_contexts/show'
-    expect(rendered).to include("#{bc.project_name} by #{bc.user.email}")
+    expect(rendered).to include("Project: #{bc.project_name}")
     expect(rendered).to include('no')
   end
 

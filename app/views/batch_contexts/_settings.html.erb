@@ -1,0 +1,25 @@
+ <table class="table table-bordered">
+    <thead>
+        <tr class="table-secondary">
+            <th colspan="2">Settings</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Content Structure</td>
+            <td><%= batch_context.content_structure %></td>
+        </tr>
+        <tr>
+            <td>Staging Location</td>
+            <td><%= batch_context.staging_location %></td>
+        </tr>
+        <tr>
+            <td>Processing configuration</td>
+            <td><%= batch_context.processing_configuration %></td>
+        </tr>
+        <tr>
+            <td>Using File Manifest</td>
+            <td><%= batch_context.using_file_manifest ? 'yes' : 'no' %></td>
+        </tr>
+    </tbody>
+</table>
