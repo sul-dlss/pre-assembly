@@ -35,8 +35,6 @@
         </tbody>
       </table>
 
-      <%= render partial: 'structural_updates_summary', locals: { druids: @discovery_report['rows'] } if @structural_has_changed %>
-
       <% if @discovery_report['summary']['objects_with_error'].any? %>
         <table class="table">
           <caption>Errors Summary</caption>
@@ -69,6 +67,8 @@
         </tbody>
         </table>
       <% end %>
+
+      <%= render partial: 'structural_updates_summary', locals: { druids: @discovery_report['rows'] } if @structural_has_changed %>
     </div>
   </div>
 </turbo-frame>
