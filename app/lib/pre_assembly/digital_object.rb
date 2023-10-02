@@ -176,7 +176,7 @@ module PreAssembly
     end
 
     def object_client
-      @object_client ||= Dor::Services::Client.object(druid.druid)
+      Dor::Services::Client.object(druid.druid)
     end
 
     def version_client
@@ -184,7 +184,7 @@ module PreAssembly
     end
 
     def current_object_version
-      @current_object_version ||= version_client.current.to_i
+      version_client.current.to_i
     end
 
     def workflow_client

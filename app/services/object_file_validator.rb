@@ -104,7 +104,7 @@ class ObjectFileValidator
   end
 
   def object_client
-    @object_client ||= Dor::Services::Client.object(druid.druid)
+    Dor::Services::Client.object(druid.druid)
   end
 
   # @return [Boolean]
