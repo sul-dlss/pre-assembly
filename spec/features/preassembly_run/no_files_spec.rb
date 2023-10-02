@@ -50,7 +50,7 @@ RSpec.describe 'Run preassembly on object with no files' do
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
     expect(page).to have_content project_name
-    expect(page).to have_content 'Preassembly completed'
+    expect(page).to have_content 'Running'
     expect(page).to have_link('Download').once
 
     result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")

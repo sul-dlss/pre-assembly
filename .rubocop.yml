@@ -76,7 +76,7 @@ RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
 RSpec/NestedGroups:
-  Max: 4 # default: 3
+  Enabled: false
 
 Style/NumericPredicate: # "> 0" is not less readable than ".positive?"
   Enabled: false

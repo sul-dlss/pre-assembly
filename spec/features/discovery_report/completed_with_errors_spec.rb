@@ -41,7 +41,7 @@ RSpec.describe 'Discovery Report completes with errors', :js do
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
     expect(page).to have_content project_name
-    expect(page).to have_content 'Discovery report completed (with preassembly errors)'
+    expect(page).to have_content 'Discovery report completed (with errors)'
     expect(page).to have_content 'Errors'
     expect(page).to have_content '1 objects had errors in the discovery report'
     expect(page).to have_link('Download').twice
