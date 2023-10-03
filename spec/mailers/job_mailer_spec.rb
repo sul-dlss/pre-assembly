@@ -25,7 +25,7 @@ RSpec.describe JobMailer do
       let(:job_run) { create(:job_run, :preassembly, state: 'preassembly_complete') }
 
       it 'renders the headers' do
-        expect(job_notification.subject).to eq('[Test_Project] Your Preassembly job completed')
+        expect(job_notification.subject).to eq('[Test_Project] Your Preassembly job encountered an error')
       end
     end
   end
@@ -43,7 +43,7 @@ RSpec.describe JobMailer do
     end
 
     it 'renders the headers' do
-      expect(job_notification.subject).to eq('[Test_Project] Accessioning completed')
+      expect(job_notification.subject).to eq('[Test_Project] Job completed')
       expect(job_notification.to).to eq([job_run.batch_context.user.email])
       expect(job_notification.from).to eq(['no-reply-preassembly-job@stanford.edu'])
     end
