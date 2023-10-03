@@ -37,11 +37,12 @@ en:
           states:
             running: 'Running'
             discovery_report_complete: 'Discovery report completed'
-            preassembly_complete: 'Preassembly completed'
+            # To simplify states for users, a job is considered running until accessioning is complete.
+            # Thus, this intermediate state is not shown to users.
+            preassembly_complete: 'Running'
             failed: 'Failed'
             waiting: 'Queued'
-            discovery_report_complete_with_errors: 'Discovery report completed (with errors)'
-            preassembly_complete_with_errors: 'Preassembly completed (with errors)'
+            accessioning_complete: 'Job completed'
     attributes:
       batch_context:
         all_files_public: "Preserve, Shelve, Publish Settings"

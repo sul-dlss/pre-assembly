@@ -20,15 +20,6 @@ RSpec.describe JobRunCompleteJob do
     end
   end
 
-  context 'when all accessions are completed or failed for preassembly_complete_with_errors' do
-    let(:accessions) { [completed_accession, failed_accession] }
-    let(:state) { 'preassembly_complete_with_errors' }
-
-    it 'transitions the job run to accessioning_complete' do
-      expect { job.perform(job_run) }.to change { job_run.reload.state }.from(state).to('accessioning_complete')
-    end
-  end
-
   context 'when some accessions are in progress' do
     let(:accessions) { [completed_accession, failed_accession, in_progress_accession] }
     let(:state) { 'preassembly_complete' }

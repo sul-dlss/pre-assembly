@@ -36,7 +36,6 @@ class JobRun < ApplicationRecord
 
     event :accessioning_completed do
       transition preassembly_complete: :accessioning_complete
-      transition preassembly_complete_with_errors: :accessioning_complete
     end
     after_transition on: [:accessioning_completed], do: :send_accessioning_notification
   end
@@ -79,17 +78,38 @@ class JobRun < ApplicationRecord
   end
 
   def human_state_name
-    return super unless with_preassembly_errors?
+    return super unless with_preassembly_errors? || with_accessioning_errors?
 
-    "#{super} (with preassembly errors)"
+    name = if preassembly_complete? && accessions.empty?
+             'Job completed'
+           else
+             super
+           end
+
+    "#{name} (with #{error_label})"
   end
 
-  # @return [Boolean] true if has errors from preassembly or discovery job
   def with_preassembly_errors?
     error_message.present?
   end
 
+  def with_accessioning_errors?
+    accessions.exists?(state: 'failed')
+  end
+
   private
+
+  def error_label
+    if discovery_report?
+      'errors'
+    elsif with_accessioning_errors? && with_preassembly_errors?
+      'preassembly and accessioning errors'
+    elsif with_accessioning_errors?
+      'accessioning errors'
+    else
+      'preassembly errors'
+    end
+  end
 
   def default_enums
     self[:job_type] ||= 0

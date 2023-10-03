@@ -101,4 +101,89 @@ RSpec.describe JobRun do
     end
     # rubocop:enable RSpec/IdenticalEqualityAssertion
   end
+
+  describe '#human_state_name' do
+    let(:name) { job_run.human_state_name }
+    let(:state) { 'waiting' }
+
+    context 'when discovery report' do
+      let(:job_run) { build(:job_run, :discovery_report, state: 'discovery_report_complete', error_message:) }
+      let(:error_message) { nil }
+
+      context 'when no errors' do
+        it 'returns name' do
+          expect(name).to eq('Discovery report completed')
+        end
+      end
+
+      context 'when errors' do
+        let(:error_message) { 'Drat' }
+
+        it 'returns name' do
+          expect(name).to eq('Discovery report completed (with errors)')
+        end
+      end
+    end
+
+    context 'when preassembly' do
+      let(:job_run) { create(:job_run, :preassembly, state:, error_message:) }
+      let(:error_message) { nil }
+
+      context 'when accessioning complete' do
+        let(:state) { 'accessioning_complete' }
+
+        before do
+          create(:accession, job_run:)
+        end
+
+        context 'when no errors' do
+          it 'returns name' do
+            expect(name).to eq('Job completed')
+          end
+        end
+
+        context 'when preassembly errors' do
+          let(:error_message) { 'Drat' }
+
+          it 'returns name' do
+            expect(name).to eq('Job completed (with preassembly errors)')
+          end
+        end
+
+        context 'when accession errors' do
+          before do
+            create(:accession, state: 'failed', job_run:)
+          end
+
+          it 'returns name' do
+            expect(name).to eq('Job completed (with accessioning errors)')
+          end
+        end
+
+        context 'when preassembly and accession errors' do
+          let(:error_message) { 'Drat' }
+
+          before do
+            create(:accession, state: 'failed', job_run:)
+          end
+
+          it 'returns name' do
+            expect(name).to eq('Job completed (with preassembly and accessioning errors)')
+          end
+        end
+      end
+
+      context 'when preassembly complete' do
+        let(:state) { 'preassembly_complete' }
+
+        context 'when preassembly errors' do
+          let(:error_message) { 'Drat' }
+
+          it 'returns name' do
+            expect(name).to eq('Job completed (with preassembly errors)')
+          end
+        end
+      end
+    end
+  end
 end
