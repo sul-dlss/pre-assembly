@@ -27,15 +27,11 @@ class ObjectFileValidator
     errors[:empty_files] = empty_files if empty_files > 0
     errors.merge!(registration_check) # needs to come before manifest checks
     if using_file_manifest? # if we are using a file manifest, let's add how many files were found
-      batch_id = object.druid.id
-      if batch_id && file_manifest.manifest[batch_id]
-        manifest_files = file_manifest.manifest[batch_id].fetch(:file_sets, []).flat_map { |_seq, val| val[:files] }
-        counts[:files_in_manifest] = manifest_files.count
-        relative_paths = object.object_files.map(&:relative_path) # Files found on disk
-        all_paths = (cocina_filenames + relative_paths).uniq
-        counts[:files_found] = (manifest_files.pluck(:filename) & relative_paths).count
+      if object.druid.id && file_manifest.manifest[object.druid.id]
+        counts[:files_in_manifest] = manifest_filenames.count
+        counts[:files_found] = (manifest_filenames & on_disk_filenames).count
         errors[:empty_manifest] = true unless counts[:files_in_manifest] > 0
-        errors[:files_found_mismatch] = true unless counts[:files_in_manifest] == (manifest_files.pluck(:filename) & all_paths).count
+        errors[:files_found_mismatch] = true if files_found_mismatch?
       else
         errors[:missing_media_container_name_or_manifest] = true
       end
@@ -120,5 +116,23 @@ class ObjectFileValidator
     @cocina_filenames ||= cocina_obj.structural.contains.flat_map do |file_set|
       file_set.structural.contains.map(&:filename)
     end
+  end
+
+  def manifest_filenames
+    @manifest_filenames ||= file_manifest.manifest[object.druid.id].fetch(:file_sets, []).flat_map { |_seq, val| val[:files] }.pluck(:filename)
+  end
+
+  def on_disk_filenames
+    @on_disk_filenames ||= object.object_files.map(&:relative_path).reject { |filename| ignore_filename?(filename) }
+  end
+
+  def ignore_filename?(filename)
+    filename.start_with?('.') || filename.downcase.ends_with?('.md5')
+  end
+
+  def files_found_mismatch?
+    all_filenames = (cocina_filenames + on_disk_filenames).uniq
+    manifest_filenames.count != (manifest_filenames & all_filenames).count || \
+      (on_disk_filenames - manifest_filenames).any?
   end
 end

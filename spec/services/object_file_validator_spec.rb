@@ -67,11 +67,19 @@ RSpec.describe ObjectFileValidator do
       end
     end
 
-    context 'when all file manifest files found on disk' do
+    context 'when all file manifest files found on disk or ignored' do
       let(:batch) { batch_setup(:book_file_manifest) }
 
       it 'does not report files_found_mismatch' do
         expect(json).to match a_hash_including(errors: {})
+      end
+    end
+
+    context 'when all files on disk not in file manifest' do
+      let(:batch) { batch_setup(:book_file_manifest_extra_file_on_disk) }
+
+      it 'reports files_found_mismatch' do
+        expect(json).to match a_hash_including(errors: a_hash_including(files_found_mismatch: true))
       end
     end
 

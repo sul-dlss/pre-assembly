@@ -60,7 +60,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     expect(yaml[:status]).to eq 'success'
 
     # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 9
+    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 10
 
     expect(PreAssembly::FromFileManifest::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
