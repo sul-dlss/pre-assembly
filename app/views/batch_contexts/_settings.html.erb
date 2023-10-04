@@ -11,7 +11,12 @@
         </tr>
         <tr>
             <td>Staging Location</td>
-            <td><%= batch_context.staging_location %></td>
+            <td>
+                <%= batch_context.staging_location %>
+                <% if batch_context.globus_destination %>
+                    <br /><%= link_to batch_context.globus_destination.url, batch_context.globus_destination.url %>
+                <% end %>
+            </td>
         </tr>
         <tr>
             <td>Processing configuration</td>

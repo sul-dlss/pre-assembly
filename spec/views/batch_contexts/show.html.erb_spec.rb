@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe 'batch_contexts/show.html.erb' do
-  let(:bc) { create(:batch_context_with_deleted_output_dir) }
+  let(:bc) { create(:batch_context_with_deleted_output_dir, :with_globus_destination) }
 
   before { assign(:batch_context, bc) }
 
-  it 'diplays BatchContext info' do
+  it 'displays BatchContext info' do
     render template: 'batch_contexts/show'
     expect(rendered).to include("Project: #{bc.project_name}")
     expect(rendered).to include('no')
+    expect(rendered).to include("https://app.globus.org/file-manager?&amp;destination_id=endpoint_uuid&amp;destination_path=#{bc.globus_destination.destination_path}")
   end
 
   it 'has buttons for new Jobs' do
