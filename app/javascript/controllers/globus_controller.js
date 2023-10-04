@@ -9,13 +9,15 @@ export default class extends Controller {
 
     const response = await fetch('/globus', {method: 'post'})
 
-    if (response.ok) {
+    if (response.status == 201) {
       const dest = await response.json()
       this.setFinishedRequest(dest)
       this.setDestination(dest)
+    } else if (response.status == 400) {
+      const resp = await response.json()
+      this.setRequestError(resp.error)
     } else {
-      console.log('Unable to create Globus Destination:', response)
-      throw new Error('Unable to create Globus Destination')
+      this.setRequestError('Unexpected Globus Error!')
     }
   }
 
@@ -23,7 +25,7 @@ export default class extends Controller {
     // update the Staging location with the Globus URL
     this.stagingLocationTarget.value = dest.url
 
-    // open a new tab witht the Globus Viewer URL in it
+    // open a new tab with the Globus Viewer URL in it
     window.open(dest.url)
   }
 
@@ -38,5 +40,13 @@ export default class extends Controller {
     link.href = dest.url
     link.text = 'Your Globus Link'
     this.requestGlobusLinkTarget.replaceWith(link)
+  }
+
+  setRequestError(msg) {
+    const span = document.createElement('span')
+    span.id = 'globus-error'
+    span.classList.add('text-danger')
+    span.innerText = msg
+    this.requestGlobusLinkTarget.replaceWith(span)
   }
 }

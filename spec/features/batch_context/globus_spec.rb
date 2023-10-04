@@ -41,4 +41,27 @@ RSpec.describe 'Use Globus staging location', :js do
     expect(BatchContext.count).to eq(1)
     expect(BatchContext.all[0].globus_destination).to eq(globus_dest)
   end
+
+  it 'disallows creation when there are >= 99 active GlobusDestinations' do
+    99.times do
+      GlobusDestination.create(user:, deleted_at: nil)
+    end
+
+    # make sure they can't create any more
+    visit '/'
+    click_button 'Request Globus Link'
+    expect(find_by_id('globus-error')).to have_content('You have too many Globus shares. Please contact sdr-contact@lists.stanford.edu for help.')
+    expect(GlobusDestination.count).to eq(99)
+  end
+
+  it 'allows creation when there are >= 99 inactive GlobusDestinations' do
+    101.times do
+      GlobusDestination.create(user:, deleted_at: DateTime.now)
+    end
+
+    # make sure they can still create
+    visit '/'
+    click_button 'Request Globus Link'
+    expect(GlobusDestination.count).to eq(102)
+  end
 end
