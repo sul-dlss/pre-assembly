@@ -9,13 +9,18 @@ class GlobusController < ApplicationController
 
   def create
     @user = current_user
-    @dest = GlobusDestination.create(user: @user)
-    create_globus_endpoint
-
-    render status: :created, json: {
-      url: @dest.url,
-      location: @dest.staging_location
-    }
+    if @user.globus_destinations.where(deleted_at: nil).count >= 99
+      render status: :bad_request, json: {
+        error: 'You have too many Globus shares. Please contact sdr-contact@lists.stanford.edu for help.'
+      }
+    else
+      @dest = GlobusDestination.create(user: @user)
+      create_globus_endpoint
+      render status: :created, json: {
+        url: @dest.url,
+        location: @dest.staging_location
+      }
+    end
   end
 
   private
