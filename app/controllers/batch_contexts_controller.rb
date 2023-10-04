@@ -16,7 +16,16 @@ class BatchContextsController < ApplicationController
   end
 
   def create
-    @batch_context = BatchContext.new(batch_contexts_params)
+    params = batch_contexts_params
+
+    # allow the staging location to be a Globus URL
+    if params[:staging_location].start_with?('https://')
+      globus_dest = GlobusDestination.find_with_globus_url(params[:staging_location])
+      params[:staging_location] = globus_dest.staging_location if globus_dest
+      params[:globus_destination] = globus_dest
+    end
+
+    @batch_context = BatchContext.new(params)
     if @batch_context.save
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs', status: :see_other

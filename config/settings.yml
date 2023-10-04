@@ -32,3 +32,4 @@ globus:
   endpoint_id: endpoint_uuid
   client_id: client_id
   client_secret: client_secret
+  test_mode: false # if test_mode=true, simulates the globus endpoint creation

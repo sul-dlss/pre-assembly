@@ -4,6 +4,21 @@
 class GlobusDestination < ApplicationRecord
   belongs_to :batch_context, optional: true
   belongs_to :user
+  after_initialize :set_directory
+
+  # A helper to look up the GlobusDestination object using a Globus URL
+  def self.find_with_globus_url(url)
+    uri = URI.parse(url)
+    return unless uri.query
+
+    params = CGI.parse(uri.query)
+    path = params['destination_path'].first
+    return unless path
+
+    _, sunet_id, directory = path.split('/')
+    user = User.find_by(sunet_id:)
+    GlobusDestination.find_by(user:, directory:)
+  end
 
   # creates a URL for globus, including the path to the user's destination directory
   def url
@@ -12,7 +27,7 @@ class GlobusDestination < ApplicationRecord
 
   # directory within globus including user directory in the format /sunet/datetime
   def destination_path
-    "/#{user.sunet_id}/#{created_at.strftime('%Y%m%d%H%M%S')}"
+    "/#{user.sunet_id}/#{directory}"
   end
 
   # path on preassembly filesystem to staged files
@@ -20,9 +35,8 @@ class GlobusDestination < ApplicationRecord
     "#{Settings.globus.directory}#{destination_path}"
   end
 
-  # parse the path from a globus URL e.g. https://app.globus.org/file-manager?&destination_id=f3e29605-7ba5-45f5-8900-f1234566&destination_path=/edsu/20230907044801
-  def parse_path(uri)
-    params = CGI.parse(URI.parse(uri).query)
-    params['destination_path'].first
+  # when not explicitly set the directory name is generated from the current time
+  def set_directory
+    self.directory = DateTime.now.strftime('%Y-%m-%d-%H-%M-%S-%L') unless directory
   end
 end
