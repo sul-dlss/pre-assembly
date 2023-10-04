@@ -56,6 +56,7 @@ RSpec/DescribeClass:
   Exclude:
     - 'spec/features/**/*_spec.rb' # Feature specs test more than the class
     - 'spec/views/**/*_spec.rb' # In view tests, the view is named, not the class
+    - 'spec/requests/**/*_spec.rb'
 
 RSpec/ExampleLength:
   Enabled: false
