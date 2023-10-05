@@ -120,10 +120,10 @@ class JobRun < ApplicationRecord
     # Only send if preassembly and has errors.
     return if preassembly? && !with_preassembly_errors?
 
-    JobMailer.with(job_run: self).completion_email.deliver_later
+    JobMailer.with(job_run: self).completion_email.deliver_now
   end
 
   def send_accessioning_notification
-    JobMailer.with(job_run: self).accession_completion_email.deliver_later
+    JobMailer.with(job_run: self).accession_completion_email.deliver_now
   end
 end

@@ -34,21 +34,21 @@ RSpec.describe JobRun do
     it 'sends a notification email when job_run completes' do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
-      expect(mock_delivery).to receive(:deliver_later)
+      expect(mock_delivery).to receive(:deliver_now)
       job_run.completed
     end
 
     it 'sends a notification email when job_run fails' do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
-      expect(mock_delivery).to receive(:deliver_later)
+      expect(mock_delivery).to receive(:deliver_now)
       job_run.failed
     end
 
     it 'sends a notification email when job_run completes with errors' do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:completion_email).and_return(mock_delivery)
-      expect(mock_delivery).to receive(:deliver_later)
+      expect(mock_delivery).to receive(:deliver_now)
       job_run.error_message = 'something went wrong'
       job_run.completed
     end
@@ -62,7 +62,7 @@ RSpec.describe JobRun do
     it 'sends a notification email when accessioning completes' do
       expect(JobMailer).to receive(:with).with(job_run:).and_return(mock_mailer)
       expect(mock_mailer).to receive(:accession_completion_email).and_return(mock_delivery)
-      expect(mock_delivery).to receive(:deliver_later)
+      expect(mock_delivery).to receive(:deliver_now)
       job_run.accessioning_completed
     end
   end
