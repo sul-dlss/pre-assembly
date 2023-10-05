@@ -131,9 +131,33 @@ RSpec.describe BatchContext do
     end
   end
 
-  describe 'output_dir' do
+  describe '#output_dir' do
     it 'returns "Settings.job_output_parent_dir/user_id/project_name"' do
       expect(bc.output_dir).to eq "#{Settings.job_output_parent_dir}/#{bc.user.email}/#{bc.project_name}"
+    end
+  end
+
+  describe '#active_globus_url' do
+    context 'when no globus_destination' do
+      it 'is nil' do
+        expect(bc.active_globus_url).to be_nil
+      end
+    end
+
+    context 'when active globus_destination' do
+      let(:bc) { build(:batch_context_with_deleted_output_dir, :with_globus_destination) }
+
+      it 'returns the url' do
+        expect(bc.active_globus_url).to eq bc.globus_destination.url
+      end
+    end
+
+    context 'when deleted globus_destination' do
+      let(:bc) { build(:batch_context_with_deleted_output_dir, :with_deleted_globus_destination) }
+
+      it 'is nil' do
+        expect(bc.active_globus_url).to be_nil
+      end
     end
   end
 

@@ -97,6 +97,12 @@ class BatchContext < ApplicationRecord
     staging_location_with_path(FILE_MANIFEST_FILE_NAME)
   end
 
+  def active_globus_url
+    return nil unless globus_destination.present? && globus_destination.deleted_at.blank?
+
+    globus_destination.url
+  end
+
   private
 
   def object_manifest_path

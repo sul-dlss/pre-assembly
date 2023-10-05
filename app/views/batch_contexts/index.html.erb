@@ -24,8 +24,8 @@
           <td><%= batch_context.content_structure %></td>
           <td>
             <%= batch_context.staging_location %>
-            <% if batch_context.globus_destination %>
-              <br /><%= link_to 'globus link', batch_context.globus_destination.url %>
+            <% if batch_context.active_globus_url %>
+              <br /><%= link_to 'globus link', batch_context.active_globus_url %>
             <% end %>
           </td>
           <td><%= batch_context.processing_configuration %></td>

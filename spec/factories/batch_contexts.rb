@@ -41,5 +41,9 @@ FactoryBot.define do
     trait :with_globus_destination do
       globus_destination
     end
+
+    trait :with_deleted_globus_destination do
+      globus_destination { association :globus_destination, :deleted }
+    end
   end
 end
