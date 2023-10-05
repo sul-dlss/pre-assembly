@@ -40,9 +40,15 @@ RSpec.describe DiscoveryReport do
     let(:cocina_obj2) { Cocina::RSpec::Factories.build(:dro, id: druid2.druid) }
     let(:cocina_obj3) { Cocina::RSpec::Factories.build(:dro, id: druid3.druid) }
 
-    let(:dig_obj1) { instance_double(PreAssembly::DigitalObject, druid: druid1, build_structural: cocina_obj1.structural, existing_cocina_object: cocina_obj1, staging_location: '') }
-    let(:dig_obj2) { instance_double(PreAssembly::DigitalObject, druid: druid2, build_structural: cocina_obj2.structural, existing_cocina_object: cocina_obj2, staging_location: '') }
-    let(:dig_obj3) { instance_double(PreAssembly::DigitalObject, druid: druid3, build_structural: cocina_obj3.structural, existing_cocina_object: cocina_obj3, staging_location: '') }
+    let(:dig_obj1) do
+      instance_double(PreAssembly::DigitalObject, druid: druid1, build_structural: cocina_obj1.structural, existing_cocina_object: cocina_obj1, staging_location: '', current_object_version: 2)
+    end
+    let(:dig_obj2) do
+      instance_double(PreAssembly::DigitalObject, druid: druid2, build_structural: cocina_obj2.structural, existing_cocina_object: cocina_obj2, staging_location: '', current_object_version: 2)
+    end
+    let(:dig_obj3) do
+      instance_double(PreAssembly::DigitalObject, druid: druid3, build_structural: cocina_obj3.structural, existing_cocina_object: cocina_obj3, staging_location: '', current_object_version: 2)
+    end
     # rubocop:enable RSpec/IndexedLet
 
     it 'returns an Enumerable of Hashes' do
@@ -102,7 +108,8 @@ RSpec.describe DiscoveryReport do
     let(:item) do
       Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' })
     end
-    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true) }
+    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, current: version) }
+    let(:version) { 2 }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 
     before do
@@ -142,6 +149,16 @@ RSpec.describe DiscoveryReport do
         expect(report.objects_had_errors?).to be true
         expect(report.error_message).to eq '2 objects had errors in the discovery report' # hierarchy with non-file type
         expect(report.summary).to include(objects_with_error: %w[jy812bp9403 tz250tk7584], total_size: 382_224)
+      end
+    end
+
+    context 'when first version' do
+      let(:content_structure) { 'simple_image' }
+      let(:version) { 1 }
+
+      it 'to_builder excludes file diff' do
+        report_json = JSON.parse(report.to_builder.target!)
+        expect(report_json['rows'].first.key?('file_diffs')).to be false
       end
     end
 
