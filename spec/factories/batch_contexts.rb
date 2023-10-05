@@ -37,5 +37,13 @@ FactoryBot.define do
     trait :using_file_manifest do
       with_file_manifest { true }
     end
+
+    trait :with_globus_destination do
+      globus_destination
+    end
+
+    trait :with_deleted_globus_destination do
+      globus_destination { association :globus_destination, :deleted }
+    end
   end
 end

@@ -22,7 +22,12 @@
           <td><%= link_to batch_context.project_name, batch_context %></td>
           <td><%= batch_context.user.email %></td>
           <td><%= batch_context.content_structure %></td>
-          <td><%= batch_context.staging_location %></td>
+          <td>
+            <%= batch_context.staging_location %>
+            <% if batch_context.active_globus_url %>
+              <br /><%= link_to 'globus link', batch_context.active_globus_url %>
+            <% end %>
+          </td>
           <td><%= batch_context.processing_configuration %></td>
           <td><%= batch_context.using_file_manifest ? 'yes' : 'no' %></td>
           <td><%= batch_context.job_runs.count %></td>

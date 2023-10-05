@@ -8,5 +8,9 @@ FactoryBot.define do
     trait :with_batch_context do
       batch_context
     end
+
+    trait :deleted do
+      deleted_at { Time.zone.now }
+    end
   end
 end
