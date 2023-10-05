@@ -68,7 +68,7 @@ class DiscoveryReport
     # log the output to a running progress file
     File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
     row_hash = row.to_h
-    row_hash.merge!(file_diffs: process_diffs(dobj)) unless dor_error?(row)
+    row_hash.merge!(file_diffs: process_diffs(dobj)) unless dor_error?(row) || dobj.current_object_version == 1
     row_hash
   end
   # rubocop:enable Metrics/AbcSize

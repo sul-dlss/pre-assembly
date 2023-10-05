@@ -115,6 +115,10 @@ module PreAssembly
       end
     end
 
+    def current_object_version
+      version_client.current.to_i
+    end
+
     private
 
     attr_reader :assembly_directory
@@ -181,10 +185,6 @@ module PreAssembly
 
     def version_client
       object_client.version
-    end
-
-    def current_object_version
-      version_client.current.to_i
     end
 
     def workflow_client
