@@ -26,7 +26,7 @@ gem 'turbo-rails', '~> 1.1'
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
-gem 'dor-services-client', '~> 12.0'
+gem 'dor-services-client', '~> 13.0'
 gem 'dor-workflow-client', '~> 6.0'
 gem 'druid-tools'
 
