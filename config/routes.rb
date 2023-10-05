@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get :download_report
       get :discovery_report_summary
       get :progress_log
+      get :process_log
     end
   end
   resources :globus, only: [:show, :index, :create]

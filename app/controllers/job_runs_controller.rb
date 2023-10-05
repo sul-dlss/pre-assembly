@@ -63,6 +63,12 @@ class JobRunsController < ApplicationController
     end
   end
 
+  def process_log
+    job_run = JobRun.find(params[:id])
+    @accessions = job_run.accessions
+    @objects_with_error = job_run.objects_with_error
+  end
+
   private
 
   def job_run_params

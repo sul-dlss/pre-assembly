@@ -1,0 +1,37 @@
+<turbo-frame id="process-log-frame">
+  <div class="row mt-5">
+    <div class="col-12">
+      <table class="table">
+        <caption>Progress Log</caption>
+        <thead>
+          <tr>
+            <th>DRUID</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @objects_with_error.each do |druid| %>
+              <tr>
+                <td><%= druid %></td>
+                <td>Preassembly error</td>
+              </tr>
+          <% end %>
+          <% @accessions.each do |accession| %>
+              <tr>
+                <td><%= accession.druid %></td>
+                <td>
+                  <% if accession.in_progress? %>
+                    Accessioning in progress
+                  <% elsif accession.failed? %>
+                    Accessioning failed. See <%= link_to('Argo', "#{Settings.argo_url}view/#{accession.druid}") %>
+                  <% else %>
+                    Accessioning success
+                  <% end %>
+                </td>
+              </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</turbo-frame>
