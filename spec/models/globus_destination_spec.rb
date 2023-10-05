@@ -38,6 +38,8 @@ RSpec.describe GlobusDestination do
   end
 
   describe '#find_with_globus_url' do
+    subject(:globus_destination) { build(:globus_destination, user:, directory: '2023-09-21-12-59-59-123') }
+
     let(:found) { described_class.find_with_globus_url(url) }
 
     before do
@@ -45,12 +47,28 @@ RSpec.describe GlobusDestination do
       globus_destination.save
     end
 
-    context 'with correct Globus URL' do
+    context 'with our globus viewer url' do
       let(:url) { globus_destination.url }
 
       it 'finds object' do
         expect(found).not_to be_nil
         expect(found.user.sunet_id).to eq('ima_user')
+      end
+    end
+
+    context 'with the url globus sends in email' do
+      let(:url) { 'https://app.globus.org/file-manager?&origin_id=some-endpoint-uuid&origin_path=/ima_user/2023-09-21-12-59-59-123/&add_identity=d28a330f-9d3c-4832-950c-492fb7771a9e' }
+
+      it 'finds object' do
+        expect(found).not_to be_nil
+      end
+    end
+
+    context 'with a emailed globus url after navigation' do
+      let(:url) { 'https://app.globus.org/file-manager?&origin_id=some-endpoint-uuid&origin_path=/ima_user/2023-09-21-12-59-59-123/&destination_id=my-laptop&destination_path=/my/dir&add_identity=d28a330f-9d3c-4832-950c-492fb7771a9e' }
+
+      it 'finds object' do
+        expect(found).not_to be_nil
       end
     end
 
