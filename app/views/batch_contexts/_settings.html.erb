@@ -11,10 +11,10 @@
         </tr>
         <tr>
             <td>Staging Location</td>
-            <td>
-                <%= batch_context.staging_location %>
+            <td><div class="copy-nowrap"><%= batch_context.staging_location %>
+                <a class="copy-button" data-controller="copy" data-copy-clip-value="<%= batch_context.staging_location %>" data-action="copy#copy" aria-label="Copy staging location" href=""><span class="fas fa-copy"></span></a></div>
                 <% if batch_context.active_globus_url %>
-                    <br /><%= link_to batch_context.active_globus_url, batch_context.active_globus_url %>
+                    <%= link_to 'Globus', batch_context.active_globus_url, target: 'blank' %>
                 <% end %>
             </td>
         </tr>

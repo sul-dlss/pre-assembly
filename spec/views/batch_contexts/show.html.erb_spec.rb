@@ -9,7 +9,7 @@ RSpec.describe 'batch_contexts/show.html.erb' do
     render template: 'batch_contexts/show'
     expect(rendered).to include("Project: #{bc.project_name}")
     expect(rendered).to include('no')
-    expect(rendered).to include("<a href=\"#{bc.globus_destination.url.gsub('&', '&amp;')}\">")
+    expect(rendered).to include('Globus')
   end
 
   it 'has buttons for new Jobs' do
@@ -40,7 +40,7 @@ RSpec.describe 'batch_contexts/show.html.erb' do
 
     it 'does not render globus link' do
       render template: 'batch_contexts/show'
-      expect(rendered).not_to include("<a href=\"#{bc.globus_destination.url.gsub('&', '&amp;')}\">")
+      expect(rendered).not_to include('Globus')
     end
   end
 end
