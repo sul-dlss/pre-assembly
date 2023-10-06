@@ -6,6 +6,14 @@ class GlobusDestination < ApplicationRecord
   belongs_to :user
   after_initialize :set_directory
 
+  scope :active, -> { where(deleted_at: nil) }
+  scope :older_than, ->(time) { where('created_at < ?', time) }
+
+  # A helper method to find Globus Destinations to cleanup
+  def self.find_stale
+    active.older_than(1.week.ago)
+  end
+
   # A helper to look up the GlobusDestination object using a Globus URL.
   # @param url [String] a Globus URL
   # @return [GlobusDestination, nil] the GlobusDestination found or nil
@@ -15,7 +23,7 @@ class GlobusDestination < ApplicationRecord
 
     _, sunet_id, directory = path.split('/')
     user = User.find_by(sunet_id:)
-    GlobusDestination.find_by(user:, directory:)
+    find_by(user:, directory:)
   end
 
   # Extract the path from either destination_path or origin_path depending on

@@ -23,6 +23,7 @@ gem 'sneakers', '~> 2.11' # rabbitMQ background processing
 gem 'state_machines-activerecord'
 gem 'stimulus-rails'
 gem 'turbo-rails', '~> 1.1'
+gem 'whenever', require: false
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
