@@ -1,2 +1,5 @@
 # writable directory where job run artifacts will live
 job_output_parent_dir:  'log/test_jobs'
+
+globus:
+  enabled: true
