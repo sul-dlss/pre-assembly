@@ -9,7 +9,7 @@ class GlobusDestination < ApplicationRecord
   scope :active, -> { where(deleted_at: nil) }
   scope :older_than, ->(time) { where('created_at < ?', time) }
 
-  # A helper method to find Globus Destinations to cleanup
+  # A helper method to find potential Globus Destinations to cleanup (will also depend on accessioning status)
   def self.find_stale
     active.older_than(1.week.ago)
   end

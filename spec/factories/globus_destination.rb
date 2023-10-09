@@ -12,5 +12,10 @@ FactoryBot.define do
     trait :deleted do
       deleted_at { Time.zone.now }
     end
+
+    trait :stale do
+      created_at { 1.month.ago }
+      deleted_at { nil }
+    end
   end
 end

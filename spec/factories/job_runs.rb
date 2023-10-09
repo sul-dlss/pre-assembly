@@ -14,5 +14,9 @@ FactoryBot.define do
       job_type { 'discovery_report' }
       output_location { '/path/to/report' }
     end
+
+    trait :accessioning_complete do
+      state { 'accessioning_complete' }
+    end
   end
 end

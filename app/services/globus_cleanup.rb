@@ -4,7 +4,7 @@
 # Run regularly via cron, scheduled with whenever gem
 class GlobusCleanup
   def self.run
-    GlobusDestination.find_stale do |dest|
+    GlobusDestination.find_stale.each do |dest|
       next unless dest.batch_context.job_runs.any?(&:accessioning_complete?)
 
       cleanup_destination(dest)
@@ -14,10 +14,10 @@ class GlobusCleanup
     end
   end
 
-  # Delete the given globus destination
+  # Delete the given globus destination access rule and mark as deleted locally
   def self.cleanup_destination(dest)
-    GlobusClient.delete_access_rule(path: dest.destination_path, user_id: "#{dest.batch_context.user.sunet_id}@stanford.edu")
+    user_id = "#{dest.user.sunet_id}@stanford.edu"
+    GlobusClient.delete_access_rule(path: dest.destination_path, user_id:)
     dest.update!(deleted_at: Time.zone.now)
   end
-  private_class_method :cleanup_destination
 end

@@ -3,14 +3,14 @@
 namespace :globus do
   desc 'Delete Globus access rules and empty directories'
   task :prune_access, [:sunet_id] => :environment do |_task, args|
-    globus_destinations = GlobusDestination.joins(:user).where('user.sunet_id': args[:sunet_id])
-    puts "No GlobusDestinations found for #{args[:sunet_id]}" if globus_destinations.empty?
+    sunet_id = args[:sunet_id]
+    globus_destinations = GlobusDestination.where(user: User.find_by(sunet_id:))
+    puts "No GlobusDestinations found for #{sunet_id}" if globus_destinations.empty?
     globus_destinations.each do |dest|
       next if dest.deleted_at.present?
 
-      GlobusClient.delete_access_rule(path: dest.destination_path, user_id: "#{args[:sunet_id]}@stanford.edu")
-      puts "Deleted access to globus directory #{dest.destination_path} for #{args[:sunet_id]}"
-      dest.update!(deleted_at: Time.now.utc)
+      GlobusCleanup.cleanup_destination(dest)
+      puts "Deleted access to globus directory #{dest.destination_path} for #{sunet_id}"
       # Delete empty globus staging locations from the filesystem
       if Dir.empty?(dest.staging_location)
         FileUtils.rm_rf(dest.staging_location)
