@@ -28,6 +28,7 @@ rabbitmq:
   password: guest
 
 globus: 
+  enabled: false
   directory: '/globus'
   endpoint_id: endpoint_uuid
   client_id: client_id

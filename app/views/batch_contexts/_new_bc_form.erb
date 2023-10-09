@@ -6,7 +6,9 @@
         <h3>Complete the form below</h3>
     </div>
     <div class="col" style="text-align: right;">
-      <button class="btn btn-sul-dlss" data-globus-target="requestGlobusLink" data-action="click->globus#createDestination">Request Globus Link</button>
+      <% if Settings.globus.enabled %>
+        <button class="btn btn-sul-dlss" data-globus-target="requestGlobusLink" data-action="click->globus#createDestination">Request Globus Link</button>
+      <% end %>
     </div>
 </div>
 
