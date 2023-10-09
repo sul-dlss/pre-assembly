@@ -10,7 +10,7 @@
           </tr>
         </thead>
         <tbody>
-          <% job_runs.each do |job_run|%>
+          <% job_runs.each do |job_run| %>
             <tr>
               <td><%= link_to(job_run.id, job_run) %></td>
               <td><%= job_run.job_type.humanize %></td>
