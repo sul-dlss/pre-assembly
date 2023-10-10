@@ -137,7 +137,7 @@ RSpec.describe PreAssembly::FileManifest do
             }, {
               type: 'https://cocina.sul.stanford.edu/models/resources/file',
               externalIdentifier: 'bc234fg5678_3',
-              label: 'Transcript', version: 1,
+              label: '', version: 1,
               structural: {
                 contains: [
                   { type: 'https://cocina.sul.stanford.edu/models/file',
