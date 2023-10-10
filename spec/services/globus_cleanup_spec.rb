@@ -29,6 +29,20 @@ RSpec.describe GlobusCleanup do
         described_class.run
         expect(described_class).to have_received(:cleanup_destination).once.with(stale_globus_destination)
       end
+
+      context 'when cleanup_destination throws an error' do
+        before do
+          allow(described_class).to receive(:cleanup_destination).and_raise(StandardError)
+          allow(Honeybadger).to receive(:notify)
+        end
+
+        it 'notifies honeybadger' do
+          described_class.run
+          expect(Honeybadger).to have_received(:notify).with(StandardError,
+                                                             context: { message: 'GlobusCleanup failed', globus_destination_id: stale_globus_destination.id,
+                                                                        batch_context_id: stale_globus_destination.batch_context.id })
+        end
+      end
     end
   end
 

@@ -4,7 +4,7 @@ namespace :globus do
   desc 'Delete Globus access rules and empty directories'
   task :prune_access, [:sunet_id] => :environment do |_task, args|
     sunet_id = args[:sunet_id]
-    globus_destinations = GlobusDestination.where(user: User.find_by(sunet_id:))
+    globus_destinations = GlobusDestination.joins(:user).where(user: { sunet_id: args[:sunet_id] })
     puts "No GlobusDestinations found for #{sunet_id}" if globus_destinations.empty?
     globus_destinations.each do |dest|
       next if dest.deleted_at.present?
