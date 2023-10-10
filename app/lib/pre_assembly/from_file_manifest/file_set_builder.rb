@@ -25,7 +25,7 @@ module PreAssembly
 
       def build
         {
-          label: resource[:label],
+          label: resource[:label] || '',
           type: resource_type(resource[:resource_type]),
           externalIdentifier: external_identifier,
           version: cocina_dro.version,
