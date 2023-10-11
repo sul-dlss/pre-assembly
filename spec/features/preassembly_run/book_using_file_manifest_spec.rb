@@ -2,6 +2,8 @@
 
 # this test uses file_manifest.csv approach
 RSpec.describe 'Pre-assemble Book Using File Manifest' do
+  include ActiveJob::TestHelper
+
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "book-file-manifest-#{RandomWord.nouns.next}" }
@@ -27,14 +29,6 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     allow(PreAssembly::FromFileManifest::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
-  # have background jobs run synchronously
-  include ActiveJob::TestHelper
-  around do |example|
-    perform_enqueued_jobs do
-      example.run
-    end
-  end
-
   it 'runs successfully and creates log file' do
     visit '/'
     expect(page).to have_selector('h3', text: 'Complete the form below')
@@ -46,7 +40,9 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'
 
-    click_button 'Submit'
+    perform_enqueued_jobs do
+      click_button 'Submit'
+    end
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     expect(page).to have_content exp_str
 

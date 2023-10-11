@@ -15,6 +15,7 @@ class BatchContextsController < ApplicationController
     )
   end
 
+  # rubocop:disable Metrics/AbcSize
   def create
     params = batch_contexts_params
 
@@ -27,12 +28,14 @@ class BatchContextsController < ApplicationController
 
     @batch_context = BatchContext.new(params)
     if @batch_context.save
+      @batch_context.job_runs.each(&:enqueue!)
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs', status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 
