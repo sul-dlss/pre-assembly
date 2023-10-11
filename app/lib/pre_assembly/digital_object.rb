@@ -101,7 +101,7 @@ module PreAssembly
     # rubocop:enable Metrics/MethodLength
 
     def existing_cocina_object
-      @existing_cocina_object = object_client.find
+      @existing_cocina_object ||= object_client.find
     end
 
     def build_structural

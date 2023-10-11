@@ -68,7 +68,7 @@ class DiscoveryReport
     # log the output to a running progress file
     File.open(batch.batch_context.progress_log_file, 'a') { |f| f.puts log_progress_info(dobj, status).to_yaml }
     row_hash = row.to_h
-    row_hash.merge!(file_diffs: process_diffs(dobj)) unless dor_error?(row) || dobj.current_object_version == 1
+    row_hash.merge!(file_diffs: process_diffs(dobj)) if include_file_diffs?(row, dobj)
     row_hash
   end
   # rubocop:enable Metrics/AbcSize
@@ -100,5 +100,12 @@ class DiscoveryReport
 
   def dor_error?(row)
     row.errors[:item_not_registered] || row.errors[:dor_connection_error]
+  end
+
+  def include_file_diffs?(row, dobj)
+    return false if dor_error?(row)
+    return false if dobj.current_object_version == 1 && dobj.existing_cocina_object.structural.contains.empty?
+
+    true
   end
 end
