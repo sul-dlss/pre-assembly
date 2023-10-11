@@ -18,11 +18,11 @@
 <% if @job_run.preassembly? %>
   <turbo-frame id="process-log-frame" src="<%= process_log_job_run_path(@job_run) %>"></turbo-frame>
 <% end %>
-<div class="row mt-5">
-    <div class="col-8">
-      <p><%= link_to 'Return to homepage', root_path, class: 'nav-link' %></p>
-    </div>
-      <%= render partial: 'batch_contexts/actions', locals: { batch_context: @job_run.batch_context } %>
-    </div>
+<div class="row my-5">
+  <div class="col-6">
+    <%= link_to 'Return to homepage', root_path, class: 'nav-link' %>
+  </div>
+  <div class="col-6 justify-content-end">
+    <%= render partial: 'batch_contexts/actions', locals: { batch_context: @job_run.batch_context } %>
   </div>
 </div>
