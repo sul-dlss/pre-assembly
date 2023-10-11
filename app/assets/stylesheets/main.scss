@@ -83,10 +83,13 @@
   }
 
   .copy-button {
-    margin-left: 10px;
+    margin: 0 10px 0 5px;
   }
 
   .copy-nowrap {
     white-space: nowrap;
-    overflow: hidden;
+  }
+
+  .staging-location {
+    white-space: normal;
   }
