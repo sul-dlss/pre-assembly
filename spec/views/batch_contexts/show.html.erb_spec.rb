@@ -26,21 +26,6 @@ RSpec.describe 'batch_contexts/show.html.erb' do
   context 'when job runs exist' do
     let!(:job_run) { create(:job_run, batch_context: bc) }
 
-    # When a `JobRun` instance is created, it is initially in the `waiting`
-    # state, but an ActiveRecord create callback[^1] is called instantly which
-    # kicks off a job that instantly transitions the job to `running`[^2]. This
-    # means that whether or not the job run is waiting or running is dependent
-    # on how quickly that job runs during the test. To avoid a flappy spec
-    # situation, disable the callback only for this one spec.
-    #
-    # [^1]: https://github.com/sul-dlss/pre-assembly/blob/main/app/models/job_run.rb#L12
-    # [^2]: https://github.com/sul-dlss/pre-assembly/blob/main/app/models/job_run.rb#L48
-    around do |example|
-      JobRun.skip_callback(:commit, :after, :enqueue!)
-      example.run
-      JobRun.set_callback(:commit, :after, :enqueue!)
-    end
-
     it 'displays job summary' do
       render template: 'batch_contexts/show'
       expect(rendered).to include('Jobs summary')

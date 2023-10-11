@@ -2,6 +2,8 @@
 
 # hierarchical files with a file manifest provided
 RSpec.describe 'Pre-assemble Image object' do
+  include ActiveJob::TestHelper
+
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "hierarchical-image-file-manifest-#{RandomWord.nouns.next}" }
@@ -78,14 +80,6 @@ RSpec.describe 'Pre-assemble Image object' do
     allow(PreAssembly::FromFileManifest::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
-  # have background jobs run synchronously
-  include ActiveJob::TestHelper
-  around do |example|
-    perform_enqueued_jobs do
-      example.run
-    end
-  end
-
   context 'with File content structure' do
     it 'runs successfully and creates log file' do
       visit '/'
@@ -97,7 +91,9 @@ RSpec.describe 'Pre-assemble Image object' do
       fill_in 'Staging location', with: staging_location
       check 'batch_context_using_file_manifest'
 
-      click_button 'Submit'
+      perform_enqueued_jobs do
+        click_button 'Submit'
+      end
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       expect(page).to have_content exp_str
 
@@ -146,7 +142,9 @@ RSpec.describe 'Pre-assemble Image object' do
       fill_in 'Staging location', with: staging_location
       check 'batch_context_using_file_manifest'
 
-      click_button 'Submit'
+      perform_enqueued_jobs do
+        click_button 'Submit'
+      end
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       expect(page).to have_content exp_str
 

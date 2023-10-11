@@ -22,14 +22,8 @@ Rails.application.configure do
     "Cache-Control" => "public, max-age=#{1.hour.to_i}"
   }
 
-  # To deal with running tests with SQLite and ActiveJob, which can sometimes cause concurrency locking issues
-  # see https://github.com/rails/rails/issues/30937
-  # see also https://api.rubyonrails.org/classes/ActiveJob/QueueAdapters/AsyncAdapter.html
-  # per the GH issue, "default is :async to help tests catch code that's inadvertently assuming synchronous execution".
-  # switching to :inline slows tests down and loses that benefit, but limiting to exactly 1 thread prevents SQLite
-  # write contention while still testing with async job execution.
-  config.active_job.queue_adapter = ActiveJob::QueueAdapters::AsyncAdapter.new(min_threads: 1, max_threads: 1)
-
+  # Use the test adapter as the queuing backend for ActiveJob
+  config.active_job.queue_adapter = :test
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
@@ -37,7 +31,7 @@ Rails.application.configure do
   config.cache_store = :null_store
 
   # Raise exceptions instead of rendering exception templates.
-  config.action_dispatch.show_exceptions = false
+  config.action_dispatch.show_exceptions = :none
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false

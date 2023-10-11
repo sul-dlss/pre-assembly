@@ -15,7 +15,7 @@ gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem 'pry' # make it possible to use pry for IRB
-gem 'rails', '~> 7.0.8' # TODO: https://github.com/sul-dlss/pre-assembly/issues/1359
+gem 'rails', '~> 7.1.0'
 gem 'rake'
 gem 'sidekiq', '~> 7.0'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
@@ -37,9 +37,9 @@ group :test do
   gem 'rails-controller-testing'
   gem 'random-word'
   gem 'rspec_junit_formatter'
-  gem 'rspec-rails', '~> 5'
+  gem 'rspec-rails'
   gem 'selenium-webdriver'
-  gem 'shoulda-matchers', '~> 4.1'
+  gem 'shoulda-matchers'
   gem 'simplecov'
 end
 
@@ -57,7 +57,7 @@ end
 
 group :development, :test do
   gem 'pry-byebug'
-  gem 'puma', '~> 5.6'
+  gem 'puma'
   gem 'rubocop', '~> 1.25'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'

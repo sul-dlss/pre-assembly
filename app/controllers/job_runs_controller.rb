@@ -15,6 +15,7 @@ class JobRunsController < ApplicationController
 
     @job_run = JobRun.new(job_run_params)
     if @job_run.save
+      @job_run.enqueue!
       flash.now[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
     else
       flash.now[:error] = "Error(s) saving JobRun: #{@job_run.errors}"
