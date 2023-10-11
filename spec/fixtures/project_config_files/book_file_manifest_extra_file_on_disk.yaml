@@ -1,0 +1,13 @@
+# File manifest contains some files which missing files.
+
+project_name: 'Book_File_Manifest_Extra_File'
+
+project_style:
+  content_structure: 'simple_book'
+
+staging_location: 'spec/fixtures/book-file-manifest-extra-file-on-disk'
+
+processing_configuration:
+  style: 'default'
+
+using_file_manifest: true
