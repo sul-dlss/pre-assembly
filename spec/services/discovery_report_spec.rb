@@ -106,8 +106,9 @@ RSpec.describe DiscoveryReport do
     let(:batch) { PreAssembly::Batch.new(job_run) }
     let(:dobj) { report.batch.un_pre_assembled_objects.first }
     let(:item) do
-      Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' })
+      Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' }, structural:)
     end
+    let(:structural) { { contains: [] } }
     let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, current: version) }
     let(:version) { 2 }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
@@ -152,13 +153,40 @@ RSpec.describe DiscoveryReport do
       end
     end
 
-    context 'when first version' do
+    context 'when first version and no files' do
       let(:content_structure) { 'simple_image' }
       let(:version) { 1 }
 
       it 'to_builder excludes file diff' do
         report_json = JSON.parse(report.to_builder.target!)
         expect(report_json['rows'].first.key?('file_diffs')).to be false
+      end
+    end
+
+    context 'when first version and has files' do
+      let(:content_structure) { 'simple_image' }
+      let(:version) { 1 }
+      let(:structural) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Image 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
+          hasMemberOrders: [],
+          isMemberOf: [] }
+      end
+
+      it 'to_builder excludes file diff' do
+        report_json = JSON.parse(report.to_builder.target!)
+        expect(report_json['rows'].first.key?('file_diffs')).to be true
       end
     end
 
