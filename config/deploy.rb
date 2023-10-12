@@ -39,6 +39,8 @@ set :sidekiq_systemd_use_hooks, true
 # Manage sneakers via systemd (from dlss-capistrano gem)
 set :sneakers_systemd_use_hooks, true
 
+set :whenever_identifier, -> { "#{fetch(:application)}_#{fetch(:stage)}" }
+
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 

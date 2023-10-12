@@ -80,4 +80,15 @@ RSpec.describe GlobusDestination do
       end
     end
   end
+
+  describe '.stale' do
+    let(:stale_destinations) { described_class.find_stale }
+    let(:active_globus_destination) { create(:globus_destination, user:, created_at: 1.day.ago) }
+    let(:stale_globus_destination) { create(:globus_destination, :stale, user:) }
+
+    it 'returns only stale globus_desintation' do
+      expect(stale_destinations).to include(stale_globus_destination)
+      expect(stale_destinations).not_to include(active_globus_destination)
+    end
+  end
 end

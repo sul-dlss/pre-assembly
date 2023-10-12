@@ -27,10 +27,15 @@ rabbitmq:
   username: guest
   password: guest
 
-globus: 
+globus:
   enabled: false
   directory: '/globus'
   endpoint_id: endpoint_uuid
   client_id: client_id
   client_secret: client_secret
   test_mode: false # if test_mode=true, simulates the globus endpoint creation
+
+# checkin identifiers for honeybadger (actual identifiers are in shared_configs per environment as needed)
+# see https://app.honeybadger.io/projects/52900/check_ins
+honeybadger_checkins:
+  globus_cleanup: ~
