@@ -26,6 +26,18 @@ class GlobusDestination < ApplicationRecord
     find_by(user:, directory:)
   end
 
+  # A helper to look up the GlobusDestination object using a Globus destination path.
+  # @param url [String] a Globus path
+  # @return [GlobusDestination, nil] the GlobusDestination found or nil
+  def self.find_with_globus_path(path)
+    return unless path.start_with?(Settings.globus.directory)
+
+    # the second delete_prefix is just in case the configured Settings.globus.directory has no trailing slash
+    sunet_id, directory = path.delete_prefix(Settings.globus.directory).delete_prefix('/').split('/')
+    user = User.find_by(sunet_id:)
+    find_by(user:, directory:)
+  end
+
   # Extract the path from either destination_path or origin_path depending on
   # whether origin_id or destination_id has the configured globus-endpoint-id.
   # This allows users to paste in a Globus viewer URL that they may have been

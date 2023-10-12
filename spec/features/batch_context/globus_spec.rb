@@ -8,7 +8,7 @@ RSpec.describe 'Use Globus staging location', :js do
   before do
     globus_dir.rmtree if globus_dir.directory?
     globus_dir.mkpath
-    allow(Settings.globus).to receive(:directory).and_return(globus_dir)
+    allow(Settings.globus).to receive(:directory).and_return(globus_dir.to_s)
 
     allow(GlobusClient).to receive(:mkdir).and_return(true)
     login_as(user, scope: :user)
@@ -30,6 +30,28 @@ RSpec.describe 'Use Globus staging location', :js do
     # click to create a Globus share and get the new GlobusDestination
     click_button 'Request Globus Link'
     globus_dest = GlobusDestination.first
+
+    # simulate Globus moving the data into place
+    Pathname(globus_dest.staging_location).parent.mkdir
+    FileUtils.cp_r(Rails.root.join('spec/fixtures/book-file-manifest/'), globus_dest.staging_location)
+
+    # submit the form to create the BatchContext and link it up with the GlobusDestination
+    click_button 'Submit'
+    expect(page).to have_content('Success! Your job is queued.')
+    expect(BatchContext.count).to eq(1)
+    expect(BatchContext.all[0].globus_destination).to eq(globus_dest)
+  end
+
+  it 'can create BatchContext with Globus destination path' do
+    visit '/'
+    fill_in 'Project name', with: "test-#{Time.now.to_i}"
+
+    # click to create a Globus share and get the new GlobusDestination
+    click_button 'Request Globus Link'
+    globus_dest = GlobusDestination.first
+
+    # put the staging path into the location field
+    fill_in 'Staging location', with: globus_dest.staging_location
 
     # simulate Globus moving the data into place
     Pathname(globus_dest.staging_location).parent.mkdir
