@@ -13,6 +13,7 @@ require 'capistrano/passenger'
 require 'capistrano/rails'
 require 'capistrano/rvm' # need this for ubuntu
 require 'dlss/capistrano'
+require 'whenever/capistrano'
 
 # Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
