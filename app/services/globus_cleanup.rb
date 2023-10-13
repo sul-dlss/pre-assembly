@@ -1,16 +1,34 @@
 # frozen_string_literal: true
 
-# Removes globus access rules for completed accessioning jobs
+# Removes globus access rules for completed accessioning jobs and unused destinations
 # Run regularly via cron, scheduled with whenever gem
 class GlobusCleanup
   def self.run
-    GlobusDestination.find_stale.each do |dest|
-      next unless dest.batch_context.job_runs.any?(&:accessioning_complete?)
+    cleanup_stale_completed
+    cleanup_stale_unused
+  end
+
+  # Removes globus access rules for completed accessioning jobs
+  def self.cleanup_stale_completed
+    GlobusDestination.find_stale(1.week.ago).each do |dest|
+      next unless dest.batch_context&.accessioning_complete?
 
       cleanup_destination(dest)
       Rails.logger.info("GlobusCleanup done for batch_context #{dest.batch_context.id}, globus_destination #{dest.id})")
     rescue StandardError => e # catch any "Access rule not found" errors from Globus
       Honeybadger.notify(e, context: { message: 'GlobusCleanup failed', globus_destination_id: dest.id, batch_context_id: dest.batch_context.id })
+    end
+  end
+
+  # Removes globus access rules for unused destinations that don't have an associated batch context
+  def self.cleanup_stale_unused
+    GlobusDestination.find_stale(1.month.ago).each do |dest|
+      next if dest.batch_context.present?
+
+      cleanup_destination(dest)
+      Rails.logger.info("GlobusCleanup done for globus_destination #{dest.id})")
+    rescue StandardError => e # catch any "Access rule not found" errors from Globus
+      Honeybadger.notify(e, context: { message: 'GlobusCleanup failed', globus_destination_id: dest.id })
     end
   end
 

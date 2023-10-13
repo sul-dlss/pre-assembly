@@ -22,7 +22,16 @@ RSpec.describe GlobusCleanup do
       end
     end
 
-    context 'when one complete accessioning job' do
+    context 'when a destination with no associated batch_context more than 1 month old' do
+      let!(:disconnected_stale_globus_destination) { create(:globus_destination, :stale, user:, batch_context: nil) }
+
+      it 'deletes stale globus destination' do
+        described_class.run
+        expect(described_class).to have_received(:cleanup_destination).once.with(disconnected_stale_globus_destination)
+      end
+    end
+
+    context 'when one complete accessioning job more than 1 week old' do
       let!(:stale_globus_destination) { create(:globus_destination, :stale, user:, batch_context: job_run_complete.batch_context) }
 
       it 'deletes stale globus destination' do
@@ -39,8 +48,8 @@ RSpec.describe GlobusCleanup do
         it 'notifies honeybadger' do
           described_class.run
           expect(Honeybadger).to have_received(:notify).with(StandardError,
-                                                             context: { message: 'GlobusCleanup failed', globus_destination_id: stale_globus_destination.id,
-                                                                        batch_context_id: stale_globus_destination.batch_context.id })
+                                                             context: { message: 'GlobusCleanup failed', batch_context_id: stale_globus_destination.batch_context.id,
+                                                                        globus_destination_id: stale_globus_destination.id })
         end
       end
     end

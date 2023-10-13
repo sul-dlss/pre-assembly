@@ -137,6 +137,33 @@ RSpec.describe BatchContext do
     end
   end
 
+  describe '#accessioning_complete?' do
+    context 'when no associated job_runs' do
+      it 'is false' do
+        expect(bc.job_runs.present?).to be false
+        expect(bc.accessioning_complete?).to be false
+      end
+    end
+
+    context 'when no completed job_runs' do
+      before { create(:job_run, :preassembly, batch_context: bc, state: 'running') }
+
+      it 'is false' do
+        expect(bc.job_runs.present?).to be true
+        expect(bc.accessioning_complete?).to be false
+      end
+    end
+
+    context 'when completed job_runs' do
+      before { create(:job_run, :preassembly, batch_context: bc, state: 'accessioning_complete') }
+
+      it 'is true' do
+        expect(bc.job_runs.present?).to be true
+        expect(bc.accessioning_complete?).to be true
+      end
+    end
+  end
+
   describe '#active_globus_url' do
     context 'when no globus_destination' do
       it 'is nil' do

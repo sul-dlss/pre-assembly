@@ -82,7 +82,7 @@ RSpec.describe GlobusDestination do
   end
 
   describe '.stale' do
-    let(:stale_destinations) { described_class.find_stale }
+    let(:stale_destinations) { described_class.find_stale(1.week.ago) }
     let(:active_globus_destination) { create(:globus_destination, user:, created_at: 1.day.ago) }
     let(:stale_globus_destination) { create(:globus_destination, :stale, user:) }
 
