@@ -103,6 +103,11 @@ class BatchContext < ApplicationRecord
     globus_destination.url
   end
 
+  # helper method to check if any associated job_runs have completed accessioning
+  def accessioning_complete?
+    job_runs.present? && job_runs.any?(&:accessioning_complete?)
+  end
+
   private
 
   def object_manifest_path

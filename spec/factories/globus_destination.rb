@@ -14,7 +14,7 @@ FactoryBot.define do
     end
 
     trait :stale do
-      created_at { 1.month.ago }
+      created_at { 2.months.ago }
       deleted_at { nil }
     end
   end
