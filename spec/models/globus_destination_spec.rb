@@ -51,8 +51,7 @@ RSpec.describe GlobusDestination do
       let(:url) { globus_destination.url }
 
       it 'finds object' do
-        expect(found).not_to be_nil
-        expect(found.user.sunet_id).to eq('ima_user')
+        expect(found).to eq globus_destination
       end
     end
 
@@ -68,12 +67,39 @@ RSpec.describe GlobusDestination do
       let(:url) { 'https://app.globus.org/file-manager?&origin_id=some-endpoint-uuid&origin_path=/ima_user/2023-09-21-12-59-59-123/&destination_id=my-laptop&destination_path=/my/dir&add_identity=d28a330f-9d3c-4832-950c-492fb7771a9e' }
 
       it 'finds object' do
-        expect(found).not_to be_nil
+        expect(found).to eq globus_destination
       end
     end
 
     context 'with invalid Globus URL' do
       let(:url) { 'https://example.com' }
+
+      it 'does not find' do
+        expect(found).to be_nil
+      end
+    end
+  end
+
+  describe '#find_with_globus_path' do
+    subject(:globus_destination) { build(:globus_destination, user:, directory: '2023-09-21-12-59-59-123') }
+
+    let(:found) { described_class.find_with_globus_path(path) }
+
+    before do
+      user.save
+      globus_destination.save
+    end
+
+    context 'with our full globus destination path' do
+      let(:path) { globus_destination.staging_location }
+
+      it 'finds object' do
+        expect(found).to eq globus_destination
+      end
+    end
+
+    context 'with invalid globus destination path' do
+      let(:path) { '/other/path' }
 
       it 'does not find' do
         expect(found).to be_nil

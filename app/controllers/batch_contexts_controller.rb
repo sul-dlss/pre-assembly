@@ -19,9 +19,10 @@ class BatchContextsController < ApplicationController
   def create
     params = batch_contexts_params
 
-    # allow the staging location to be a Globus URL
-    if params[:staging_location].start_with?('https://')
-      globus_dest = GlobusDestination.find_with_globus_url(params[:staging_location])
+    # allow the staging location to be a previously created Globus URL or a Globus destination path
+    # and then it connects it to the BatchContext being created
+    if params[:staging_location].start_with?('https://') || params[:staging_location].start_with?(Settings.globus.directory)
+      globus_dest = GlobusDestination.find_with_globus_url(params[:staging_location]) || GlobusDestination.find_with_globus_path(params[:staging_location])
       params[:staging_location] = globus_dest.staging_location if globus_dest
       params[:globus_destination] = globus_dest
     end
