@@ -39,3 +39,5 @@ globus:
 # see https://app.honeybadger.io/projects/52900/check_ins
 honeybadger_checkins:
   globus_cleanup: ~
+
+google_analytics: false
