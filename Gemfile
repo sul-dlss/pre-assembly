@@ -6,7 +6,7 @@ gem 'cssbundling-rails', '~> 1.2'
 gem 'devise'
 gem 'devise-remote-user'
 gem 'globus_client', '~> 0.13.0'
-gem 'honeybadger', '~> 4.5'
+gem 'honeybadger'
 gem 'importmap-rails', '~> 1.2'
 gem 'jbuilder'
 gem 'kaminari' # pagination
