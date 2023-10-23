@@ -1,3 +1,7 @@
+
+<%# In current reports, objects_with_error is an array; in legacy, it was an integer. %>
+<% objects_with_error = @discovery_report['summary']['objects_with_error'] %>
+<% objects_with_error_size = objects_with_error.is_a?(Array) ? objects_with_error.size : objects_with_error %>
 <div class="row mt-5">
   <div class="col-sm-12">
     <h1><%= link_to @job_run.batch_context.project_name, @job_run.batch_context %> by <%= @job_run.batch_context.user.email %></h1>
@@ -22,7 +26,7 @@
         <tbody>
           <tr>
             <td class="text-center"><%= @discovery_report['rows'].size %></td>
-            <td class="text-center"><%= @discovery_report['summary']['objects_with_error'].size %></td>
+            <td class="text-center"><%= objects_with_error_size %></td>
             <td class="text-center"><%= number_to_human_size(@discovery_report['summary']['total_size'], precision: 2) %></td>
             <td class="text-center"><%= @discovery_report['summary']['start_time'].to_time.strftime('%-m/%-d/%y %T') %></td>
             <% if @discovery_report['summary']['end_time'] && @discovery_report['summary']['start_time'] # not all older discovery reports have both times available %>
@@ -35,7 +39,7 @@
         </tbody>
       </table>
 
-      <% if @discovery_report['summary']['objects_with_error'].any? %>
+      <% if objects_with_error_size.positive? %>
         <table class="table">
           <caption>Errors Summary</caption>
           <thead class="table">
