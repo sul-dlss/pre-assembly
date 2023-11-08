@@ -79,7 +79,8 @@ module PreAssembly
         externalIdentifier: FileIdentifierGenerator.generate,
         filename: row[:filename],
         label: row[:file_label].presence || row[:filename],
-        use: role(row),
+        languageTag: row[:file_language],
+        use: VALID_ROLES.include?(row[:role]) ? row[:role] : nil, # filter out unexpected role values
         administrative: administrative(row),
         hasMessageDigests: md5_digest(row),
         hasMimeType: row[:mimetype].presence,
@@ -103,11 +104,6 @@ module PreAssembly
       raise 'file_manifest has preserve and shelve both being set to no for a single file' if !preserve && !shelve
 
       { sdrPreserve: preserve, publish:, shelve: }
-    end
-
-    # @return [String] the role for the file (if a valid role value, otherwise nil)
-    def role(row)
-      row[:role] if VALID_ROLES.include?(row[:role])
     end
 
     def md5_digest(row)

@@ -26,7 +26,7 @@ module PreAssembly
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
       def build
-        # a counter to use when creating auto-labels for resources, with incremenets for each type
+        # a counter to use when creating auto-labels for resources, with increments for each type
         resource_type_counters = Hash.new(0)
 
         # rubocop:disable Metrics/BlockLength
@@ -47,9 +47,9 @@ module PreAssembly
               hasMessageDigests: message_digests(fileset_file),
               hasMimeType: fileset_file.mimetype,
               administrative: administrative(fileset_file),
-              access: file_access
+              access: file_access,
+              use: fileset_file.file_attributes[:role]
             }
-            file_attributes[:use] = fileset_file.file_attributes[:role] if role?(fileset_file)
 
             Cocina::Models::File.new(file_attributes)
           end
@@ -108,10 +108,6 @@ module PreAssembly
         preserve = file[:preserve] == 'yes'
         shelve   = file[:shelve] == 'yes'
         { sdrPreserve: preserve, publish:, shelve: }
-      end
-
-      def role?(fileset_file)
-        fileset_file.file_attributes.key? :role
       end
 
       def message_digests(fileset_file)
