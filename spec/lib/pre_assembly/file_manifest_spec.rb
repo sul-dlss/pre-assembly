@@ -230,6 +230,21 @@ RSpec.describe PreAssembly::FileManifest do
                     administrative: { publish: true, sdrPreserve: true, shelve: true } }
                 ]
               }
+            }, {
+              type: 'https://cocina.sul.stanford.edu/models/resources/file',
+              externalIdentifier: 'bc234fg5678_4',
+              label: 'Caption file', version: 1,
+              structural: {
+                contains: [
+                  { type: 'https://cocina.sul.stanford.edu/models/file',
+                    externalIdentifier: 'https://cocina.sul.stanford.edu/file/9', label: 'aa111aa1111.vtt', filename: 'aa111aa1111.vtt', version: 1,
+                    hasMessageDigests: [],
+                    hasMimeType: 'text/vtt',
+                    use: 'caption',
+                    access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                    administrative: { publish: true, sdrPreserve: true, shelve: true } }
+                ]
+              }
             }
           ],
           hasMemberOrders: [], isMemberOf: [] }

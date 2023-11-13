@@ -9,7 +9,13 @@ module PreAssembly
     attr_reader :csv_filename, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
-    VALID_ROLES = %w[transcription annotations derivative master].freeze
+    VALID_ROLES = %w[
+      annotations
+      caption
+      derivative
+      master
+      transcription
+    ].freeze
 
     # the required columns that must exist in the file manifest
     REQUIRED_COLUMNS = %w[druid filename resource_label sequence publish shelve preserve resource_type].freeze

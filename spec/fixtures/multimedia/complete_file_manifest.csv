@@ -8,3 +8,4 @@ aa111aa1111,aa111aa1111_001_b_sh.wav,,,no,yes,no,,,,,world,location-based,music
 aa111aa1111,aa111aa1111_001_b_sl.mp3,,,yes,yes,yes,,,,,stanford,location-based,art
 aa111aa1111,aa111aa1111_001_img_2.jpg,,,yes,yes,yes,,,,"Tape 1, Side B image",stanford,stanford
 aa111aa1111,aa111aa1111.pdf,Transcript,3,yes,yes,yes,file,transcription,,,,,,"application/pdf"
+aa111aa1111,aa111aa1111.vtt,Caption file,4,yes,yes,yes,file,caption,,,,,,"text/vtt"
