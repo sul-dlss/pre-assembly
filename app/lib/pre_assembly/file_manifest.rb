@@ -9,7 +9,13 @@ module PreAssembly
     attr_reader :csv_filename, :staging_location
 
     # the valid roles a file can have, if you specify a "role" column and the value is not one of these, it will be ignored
-    VALID_ROLES = %w[transcription annotations derivative master].freeze
+    VALID_ROLES = %w[
+      annotations
+      caption
+      derivative
+      master
+      transcription
+    ].freeze
 
     # the required columns that must exist in the file manifest
     REQUIRED_COLUMNS = %w[druid filename resource_label sequence publish shelve preserve resource_type].freeze
@@ -79,7 +85,8 @@ module PreAssembly
         externalIdentifier: FileIdentifierGenerator.generate,
         filename: row[:filename],
         label: row[:file_label].presence || row[:filename],
-        use: role(row),
+        languageTag: row[:file_language],
+        use: VALID_ROLES.include?(row[:role]) ? row[:role] : nil, # filter out unexpected role values
         administrative: administrative(row),
         hasMessageDigests: md5_digest(row),
         hasMimeType: row[:mimetype].presence,
@@ -103,11 +110,6 @@ module PreAssembly
       raise 'file_manifest has preserve and shelve both being set to no for a single file' if !preserve && !shelve
 
       { sdrPreserve: preserve, publish:, shelve: }
-    end
-
-    # @return [String] the role for the file (if a valid role value, otherwise nil)
-    def role(row)
-      row[:role] if VALID_ROLES.include?(row[:role])
     end
 
     def md5_digest(row)

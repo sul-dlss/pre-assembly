@@ -1,10 +1,10 @@
-druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role
-vd000bj0000,vd000bj0000_video_1.mp4,Video file 1,1,yes,yes,yes,video,,
-vd000bj0000,vd000bj0000_video_1.mpeg,Video file 1,1,no,yes,no,video,,
-vd000bj0000,vd000bj0000_video_1_thumb.jp2,Video file 1,1,yes,yes,yes,image,thumb,
-vd000bj0000,vd000bj0000_video_2.mp4,Video file 2,2,yes,yes,yes,video,,
-vd000bj0000,vd000bj0000_video_2.mpeg,Video file 2,2,no,yes,no,video,,
-vd000bj0000,vd000bj0000_video_2_thumb.jp2,Video file 2,2,yes,yes,yes,image,thumb,
-vd000bj0000,vd000bj0000_video_img_1.tif,Image of media (1 of 2),3,no,yes,no,image,,
-vd000bj0000,vd000bj0000_video_img_2.tif,Image of media (2 of 2),4,no,yes,no,image,bogus_role
-vd000bj0000,vd000bj0000_video_log.txt,Disc log file,5,no,yes,no,file,transcription
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language
+vd000bj0000,vd000bj0000_video_1.mp4,Video file 1,1,yes,yes,yes,video,,,
+vd000bj0000,vd000bj0000_video_1.mpeg,Video file 1,1,no,yes,no,video,,,
+vd000bj0000,vd000bj0000_video_1_thumb.jp2,Video file 1,1,yes,yes,yes,image,thumb,,
+vd000bj0000,vd000bj0000_video_2.mp4,Video file 2,2,yes,yes,yes,video,,,
+vd000bj0000,vd000bj0000_video_2.mpeg,Video file 2,2,no,yes,no,video,,,
+vd000bj0000,vd000bj0000_video_2_thumb.jp2,Video file 2,2,yes,yes,yes,image,thumb,,
+vd000bj0000,vd000bj0000_video_img_1.tif,Image of media (1 of 2),3,no,yes,no,image,,,
+vd000bj0000,vd000bj0000_video_img_2.tif,Image of media (2 of 2),4,no,yes,no,image,bogus_role,
+vd000bj0000,vd000bj0000_video_log.txt,Disc log file,5,no,yes,no,file,transcription,
