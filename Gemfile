@@ -34,6 +34,7 @@ gem 'druid-tools'
 group :test do
   gem 'capybara'
   gem 'equivalent-xml'
+  # NOTE: factory_bot_rails >= 6.3.0 requires env/test.rb to have config.factory_bot.reject_primary_key_attributes = false
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'random-word'
