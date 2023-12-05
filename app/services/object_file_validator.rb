@@ -132,7 +132,7 @@ class ObjectFileValidator
 
   def files_found_mismatch?
     all_filenames = (cocina_filenames + on_disk_filenames).uniq
-    manifest_filenames.count != (manifest_filenames & all_filenames).count || \
+    manifest_filenames.count != (manifest_filenames & all_filenames).count ||
       (on_disk_filenames - manifest_filenames).any?
   end
 end

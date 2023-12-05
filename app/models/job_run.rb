@@ -49,7 +49,7 @@ class JobRun < ApplicationRecord
 
   # the states that indicate this job is either not started or is currently running
   def in_progress?
-    (waiting? || running?)
+    waiting? || running?
   end
 
   # indicates if the discovery report job is ready for display and is available (some jobs may fail, leaving no report)
