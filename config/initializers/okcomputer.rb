@@ -60,10 +60,33 @@ end
 
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
+class RabbitQueueExistsCheck < OkComputer::Check
+  attr_accessor :queue_name, :conn
+
+  def initialize(queue_name)
+    self.queue_name = queue_name
+    self.conn = Bunny.new(hostname: Settings.rabbitmq.hostname,
+                          vhost: Settings.rabbitmq.vhost,
+                          username: Settings.rabbitmq.username,
+                          password: Settings.rabbitmq.password)
+  end
+
+  def check
+    conn.start
+    if conn.queue_exists?(queue_name)
+      mark_message "'#{queue_name}' exists"
+    else
+      mark_message "'#{queue_name}' does not exist"
+      mark_failure
+    end
+  end
+end
+
 if Settings.rabbitmq.enabled
   OkComputer::Registry.register 'rabbit',
                                 OkComputer::RabbitmqCheck.new(hostname: Settings.rabbitmq.hostname,
                                                               vhost: Settings.rabbitmq.vhost,
                                                               username: Settings.rabbitmq.username,
                                                               password: Settings.rabbitmq.password)
+  OkComputer::Registry.register 'rabbit-queue-preassembly.accession_complete', RabbitQueueExistsCheck.new('preassembly.accession_complete')
 end
