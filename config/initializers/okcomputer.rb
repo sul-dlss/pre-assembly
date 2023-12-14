@@ -61,32 +61,31 @@ end
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
 class RabbitQueueExistsCheck < OkComputer::Check
-  attr_accessor :queue_name, :conn
+  attr_reader :queue_names, :conn
 
-  def initialize(queue_name)
-    self.queue_name = queue_name
-    self.conn = Bunny.new(hostname: Settings.rabbitmq.hostname,
-                          vhost: Settings.rabbitmq.vhost,
-                          username: Settings.rabbitmq.username,
-                          password: Settings.rabbitmq.password)
+  def initialize(queue_names)
+    @queue_names = Array(queue_names)
+    @conn = Bunny.new(hostname: Settings.rabbitmq.hostname,
+                      vhost: Settings.rabbitmq.vhost,
+                      username: Settings.rabbitmq.username,
+                      password: Settings.rabbitmq.password)
   end
 
-  def check
+  def check # rubocop:disable Metrics/AbcSize
     conn.start
-    if conn.queue_exists?(queue_name)
-      mark_message "'#{queue_name}' exists"
+    status = conn.status
+    missing_queue_names = queue_names.reject { |queue_name| conn.queue_exists?(queue_name) }
+    if missing_queue_names.empty?
+      mark_message "'#{queue_names.join(', ')}' exists, connection status: #{status}"
     else
-      mark_message "'#{queue_name}' does not exist"
+      mark_message "'#{missing_queue_names.join(', ')}' does not exist"
       mark_failure
     end
+    conn.close
+  rescue StandardError => e
+    mark_message "Error: '#{e}'"
+    mark_failure
   end
 end
 
-if Settings.rabbitmq.enabled
-  OkComputer::Registry.register 'rabbit',
-                                OkComputer::RabbitmqCheck.new(hostname: Settings.rabbitmq.hostname,
-                                                              vhost: Settings.rabbitmq.vhost,
-                                                              username: Settings.rabbitmq.username,
-                                                              password: Settings.rabbitmq.password)
-  OkComputer::Registry.register 'rabbit-queue-preassembly.accession_complete', RabbitQueueExistsCheck.new('preassembly.accession_complete')
-end
+OkComputer::Registry.register 'rabbit-queue-preassembly.accession_complete', RabbitQueueExistsCheck.new('preassembly.accession_complete') if Settings.rabbitmq.enabled
