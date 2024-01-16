@@ -181,7 +181,7 @@ GEM
       faraday (~> 2.0)
       faraday-retry
       zeitwerk (~> 2.1)
-    dor-workflow-client (6.0.0)
+    dor-workflow-client (7.0.0)
       activesupport (>= 3.2.1, < 8)
       deprecation (>= 0.99.0)
       faraday (~> 2.0)
@@ -561,7 +561,7 @@ DEPENDENCIES
   devise-remote-user
   dlss-capistrano
   dor-services-client (~> 13.0)
-  dor-workflow-client (~> 6.0)
+  dor-workflow-client (~> 7.0)
   druid-tools
   equivalent-xml
   factory_bot_rails
