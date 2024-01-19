@@ -2,7 +2,7 @@
 
 RSpec.describe StartAccession do
   describe '.run' do
-    subject(:start_accession) { described_class.run(druid:, user: user.sunet_id) }
+    subject(:start_accession) { described_class.run(druid:, user: user.sunet_id, workflow: 'assemblyWF') }
 
     let(:user) { create(:user) }
     let(:druid) { 'druid:gn330dv6119' }
@@ -19,7 +19,8 @@ RSpec.describe StartAccession do
         expect(object_client.accession).to have_received(:start).with(
           significance: 'major',
           description: 'pre-assembly re-accession',
-          opening_user_name: user.sunet_id
+          opening_user_name: user.sunet_id,
+          workflow: 'assemblyWF'
         )
       end
     end

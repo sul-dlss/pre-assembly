@@ -40,7 +40,7 @@ module PreAssembly
     # set this object's content_md_creation_style
     # @return [Symbol]
     def content_md_creation_style
-      # map the object type to content metadata creation styles supported by the assembly-objectfile gem
+      # map the object type to structural styles supported by the FileSetBuilder class
 
       # special case: content_structure of 'simple_book_rtl' always maps to simple_book
       #  with the reading order set separately when creating content metadata
@@ -53,6 +53,7 @@ module PreAssembly
         Cocina::Models::ObjectType.manuscript => :simple_book,
         Cocina::Models::ObjectType.document => :document,
         Cocina::Models::ObjectType.map => :map,
+        Cocina::Models::ObjectType.geo => :geo,
         Cocina::Models::ObjectType.three_dimensional => :'3d',
         Cocina::Models::ObjectType.webarchive_seed => :'webarchive-seed',
         Cocina::Models::ObjectType.agreement => :file
@@ -89,7 +90,7 @@ module PreAssembly
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container)
       stage_files
       update_structural_metadata
-      StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id)
+      StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id, workflow: default_workflow)
       log "    - pre_assemble(#{druid.id}) finished"
       # Return possibly incremented version.
       { pre_assem_finished: true, status: 'success', version: version_client.current.to_i }
@@ -102,6 +103,14 @@ module PreAssembly
 
     def existing_cocina_object
       @existing_cocina_object ||= object_client.find
+    end
+
+    def default_workflow
+      if content_structure == 'geo'
+        'gisAssemblyWF'
+      else
+        'assemblyWF'
+      end
     end
 
     def build_structural

@@ -488,6 +488,51 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
+    describe 'geo structural metadata' do
+      let(:cocina_type) { Cocina::Models::ObjectType.geo }
+      let(:expected) do
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/preview',
+                       externalIdentifier: 'bc234fg5678_1',
+                       label: 'Preview 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'image1.jp2',
+                                                  filename: 'image1.jp2',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jp2',
+                                                  use: nil,
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/object',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Object 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'image1.zip',
+                                                  filename: 'image1.zip',
+                                                  version: 1,
+                                                  hasMimeType: 'application/zip',
+                                                  use: nil,
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } }],
+          hasMemberOrders: [],
+          isMemberOf: [] }
+      end
+
+      before do
+        add_object_files(extension: 'zip', num: 1)
+        add_object_files(extension: 'jp2', num: 1)
+      end
+
+      it 'generates the expected structural' do
+        expect(object.send(:build_structural).to_h).to eq expected
+      end
+    end
+
     describe 'grouped by filename, simple book structural metadata without file attributes' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
 
