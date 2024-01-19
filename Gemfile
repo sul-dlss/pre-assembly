@@ -27,7 +27,7 @@ gem 'whenever', require: false
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
-gem 'dor-services-client', '~> 13.0'
+gem 'dor-services-client', '~> 14.0'
 gem 'dor-workflow-client', '~> 7.0'
 gem 'druid-tools'
 
