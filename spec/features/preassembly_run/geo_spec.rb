@@ -7,8 +7,8 @@ RSpec.describe 'Pre-assemble geo object' do
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
   let(:project_name) { "pdf-#{RandomWord.nouns.next}" }
   let(:staging_location) { Rails.root.join('spec/fixtures/geo') }
-  let(:bare_druid) { 'pr666rr9999' }
-  let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'pr', '666', 'rr', '9999', bare_druid) }
+  let(:bare_druid) { 'gn330dv6119' }
+  let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'gn', '330', 'dv', '6119', bare_druid) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.geo).new(access: dro_access)

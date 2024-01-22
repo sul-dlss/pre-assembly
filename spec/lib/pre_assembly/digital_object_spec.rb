@@ -170,6 +170,11 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
+    def add_specific_object_file(filename)
+      options = { relative_path: filename, checksum: '1111' }
+      object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{filename}", options)
+    end
+
     describe 'default structural metadata (image)' do
       let(:cocina_type) { Cocina::Models::ObjectType.image }
       let(:expected) do
@@ -489,32 +494,33 @@ RSpec.describe PreAssembly::DigitalObject do
     end
 
     describe 'geo structural metadata' do
+      let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/geo') }
       let(:cocina_type) { Cocina::Models::ObjectType.geo }
       let(:expected) do
-        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/preview',
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/object',
                        externalIdentifier: 'bc234fg5678_1',
-                       label: 'Preview 1',
-                       version: 1,
-                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
-                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
-                                                  label: 'image1.jp2',
-                                                  filename: 'image1.jp2',
-                                                  version: 1,
-                                                  hasMimeType: 'image/jp2',
-                                                  use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
-                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
-                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
-                     { type: 'https://cocina.sul.stanford.edu/models/resources/object',
-                       externalIdentifier: 'bc234fg5678_2',
                        label: 'Object 1',
                        version: 1,
                        structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
-                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
-                                                  label: 'image1.zip',
-                                                  filename: 'image1.zip',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
+                                                  label: 'data.zip',
+                                                  filename: 'data.zip',
                                                   version: 1,
                                                   hasMimeType: 'application/zip',
+                                                  use: nil,
+                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  access: { view: 'world', download: 'none', controlledDigitalLending: false },
+                                                  administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/preview',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Preview 1',
+                       version: 1,
+                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
+                                                  label: 'preview.jpg',
+                                                  filename: 'preview.jpg',
+                                                  version: 1,
+                                                  hasMimeType: 'image/jpeg',
                                                   use: nil,
                                                   hasMessageDigests: [{ type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
@@ -524,8 +530,13 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        add_object_files(extension: 'zip', num: 1)
-        add_object_files(extension: 'jp2', num: 1)
+        allow(bc).to receive(:progress_log_file).and_return(Tempfile.new('geo').path)
+        allow(PreAssembly::FileIdentifierGenerator).to receive(:generate).and_return(
+          'https://cocina.sul.stanford.edu/file/1',
+          'https://cocina.sul.stanford.edu/file/2'
+        )
+        add_specific_object_file('data.zip')
+        add_specific_object_file('preview.jpg')
       end
 
       it 'generates the expected structural' do
