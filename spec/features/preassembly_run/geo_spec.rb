@@ -57,7 +57,7 @@ RSpec.describe 'Pre-assemble geo object' do
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
-            filesets: Array,
+            filesets: [], # a blank array always for Geo
             all_files_public: false,
             reading_order: nil)
     expect(dsc_object).to have_received(:update).with(params: item)

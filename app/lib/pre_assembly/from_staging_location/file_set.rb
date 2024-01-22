@@ -53,8 +53,6 @@ module PreAssembly
           resource_has_non_images ? 'object' : 'page'
         when :document
           'document'
-        when :geo
-          resource_has_non_images ? 'object' : 'preview'
         when :'3d'
           resource_extensions = resource_files.collect(&:ext)
           if resource_extensions.intersect?(VALID_THREE_DIMENSION_EXTENSIONS)
