@@ -14,7 +14,7 @@ RSpec.describe PreAssembly::DigitalObject do
   let(:tmp_area) do
     File.expand_path(Dir.mktmpdir(*tmp_dir_args))
   end
-  let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area, content_type:) }
+  let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area, content_structure:) }
   let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
   let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '3') }
 
@@ -76,7 +76,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe '#stage_files' do
     let(:files) { ['image1.tif', 'image2.tif', 'subfolder/image1.tif'] }
-    let(:content_type) { :simple_image }
+    let(:content_structure) { 'simple_image' }
 
     before do
       allow(object).to receive_messages(staging_location: tmp_area, stageable_items: files.map { |f| File.expand_path("#{tmp_area}/#{f}") }, assembly_directory:)
@@ -173,7 +173,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'default structural metadata (image)' do
       let(:cocina_type) { Cocina::Models::ObjectType.image }
-      let(:content_type) { :simple_image }
+      let(:content_structure) { 'simple_image' }
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
                        externalIdentifier: 'bc234fg5678_1',
@@ -248,7 +248,7 @@ RSpec.describe PreAssembly::DigitalObject do
     describe 'default structural metadata (image) with file hierarchy' do
       let(:pid) { 'druid:jy812bp9403' }
       let(:cocina_type) { Cocina::Models::ObjectType.image }
-      let(:content_type) { :simple_image }
+      let(:content_structure) { 'simple_image' }
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
                        externalIdentifier: 'bc234fg5678_1',
@@ -309,7 +309,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'map structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.map }
-      let(:content_type) { :map }
+      let(:content_structure) { 'map' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -356,7 +356,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'book (ltr) structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
-      let(:content_type) { :simple_book }
+      let(:content_structure) { 'simple_book' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
@@ -403,7 +403,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'book (rtl) structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
-      let(:content_type) { :simple_book }
+      let(:content_structure) { 'simple_book' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
@@ -450,7 +450,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'webarchive-seed structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.webarchive_seed }
-      let(:content_type) { :'webarchive-seed' }
+      let(:content_structure) { 'webarchive-seed' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -498,7 +498,7 @@ RSpec.describe PreAssembly::DigitalObject do
     describe 'geo structural metadata' do
       let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/geo') }
       let(:cocina_type) { Cocina::Models::ObjectType.geo }
-      let(:content_type) { :geo }
+      let(:content_structure) { 'geo' }
 
       let(:expected) { { contains: [], hasMemberOrders: [], isMemberOf: [] } }
 
@@ -513,7 +513,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'grouped by filename, simple book structural metadata without file attributes' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
-      let(:content_type) { :simple_book }
+      let(:content_structure) { 'simple_book' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',

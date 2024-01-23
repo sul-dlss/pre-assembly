@@ -87,7 +87,7 @@ module PreAssembly
                  message: "can't be accessioned -- if object files have hierarchy the content structure must be set to file" }
       end
 
-      @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container, content_type: content_md_creation_style)
+      @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container, content_structure:)
       stage_files
       update_structural_metadata
       StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id, workflow: default_workflow)

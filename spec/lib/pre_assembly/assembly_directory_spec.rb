@@ -2,7 +2,7 @@
 
 RSpec.describe PreAssembly::AssemblyDirectory do
   context 'when something other than a geo object' do
-    subject(:object) { described_class.new(druid_id: 'gn330dv6119', base_path: '/staging_path/', content_type: :simple_image) }
+    subject(:object) { described_class.new(druid_id: 'gn330dv6119', base_path: '/staging_path/', content_structure: 'simple_image') }
 
     describe '#druid_tree_dir' do
       it 'has the correct folders (using the contemporary style)' do
@@ -34,7 +34,7 @@ RSpec.describe PreAssembly::AssemblyDirectory do
   end
 
   context 'when a geo object' do
-    subject(:object) { described_class.new(druid_id: 'gn330dv6119', base_path: '/staging_path/', content_type: :geo) }
+    subject(:object) { described_class.new(druid_id: 'gn330dv6119', base_path: '/staging_path/', content_structure: 'geo') }
 
     describe '#druid_tree_dir' do
       it 'has the correct folders (using the geo style)' do

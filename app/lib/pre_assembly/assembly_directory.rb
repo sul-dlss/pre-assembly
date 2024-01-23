@@ -4,14 +4,14 @@ module PreAssembly
   # Represents the assembly structure on the filesystem,
   # Used by PreAssembly::DigitalObject
   class AssemblyDirectory
-    def self.create(druid_id:, base_path:, content_type:)
-      new(druid_id:, base_path:, content_type:).tap(&:create_object_directories)
+    def self.create(druid_id:, base_path:, content_structure:)
+      new(druid_id:, base_path:, content_structure:).tap(&:create_object_directories)
     end
 
-    def initialize(druid_id:, base_path:, content_type:)
+    def initialize(druid_id:, base_path:, content_structure:)
       @druid_id = druid_id
       @base_path = base_path
-      @content_type = content_type
+      @content_structure = content_structure
     end
 
     # @return [String] the appropriate path for the file ('content' will be last segment)
@@ -24,7 +24,7 @@ module PreAssembly
     # for geo objects, we do not have a full druid tree
     # for all other objects, we do have a full druid tree
     def druid_tree_dir
-      @druid_tree_dir ||= if content_type == :geo # /staging/area/ab123bc4567
+      @druid_tree_dir ||= if content_structure == 'geo' # /staging/area/ab123bc4567
                             File.join(assembly_staging_dir, DruidTools::Druid.new(druid_id, assembly_staging_dir).id)
                           else # /staging/area/ab/123/bc/4567/ab123bc4567
                             DruidTools::Druid.new(druid_id, assembly_staging_dir).path
@@ -39,11 +39,11 @@ module PreAssembly
 
     private
 
-    attr_reader :druid_id, :base_path, :content_type
+    attr_reader :druid_id, :base_path, :content_structure
 
     # geo uses one staging area, all other objects use a different staging area
     def assembly_staging_dir
-      if content_type == :geo
+      if content_structure == 'geo'
         Settings.gis_assembly_staging_dir
       else
         Settings.assembly_staging_dir
