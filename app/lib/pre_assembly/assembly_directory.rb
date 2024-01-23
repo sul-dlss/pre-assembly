@@ -33,7 +33,7 @@ module PreAssembly
 
     def create_object_directories
       FileUtils.mkdir_p druid_tree_dir unless File.directory?(druid_tree_dir)
-      FileUtils.mkdir_p metadata_dir unless File.directory?(metadata_dir)
+      FileUtils.mkdir_p metadata_dir if content_structure != 'geo' && !File.directory?(metadata_dir)
       FileUtils.mkdir_p content_dir unless File.directory?(content_dir)
     end
 
@@ -57,7 +57,11 @@ module PreAssembly
 
     # @return [String] the content subfolder
     def content_dir
-      @content_dir ||= File.join(druid_tree_dir, 'content')
+      @content_dir ||= if content_structure == 'geo'
+                         File.join(druid_tree_dir, 'temp')
+                       else
+                         File.join(druid_tree_dir, 'content')
+                       end
     end
   end
 end

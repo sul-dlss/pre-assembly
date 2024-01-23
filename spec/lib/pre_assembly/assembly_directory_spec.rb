@@ -42,25 +42,13 @@ RSpec.describe PreAssembly::AssemblyDirectory do
       end
     end
 
-    describe '#metadata_dir' do
-      it 'has the correct folder (using the geo style)' do
-        expect(object.send(:metadata_dir)).to eq('tmp/gisassembly/gn330dv6119/metadata')
-      end
-    end
-
-    describe '#content_dir' do
-      it 'has the correct folder (using the geo style)' do
-        expect(object.send(:content_dir)).to eq('tmp/gisassembly/gn330dv6119/content')
-      end
-    end
-
     describe '#path_for' do
       it 'has the correct path for a file in the root of the folder' do
-        expect(object.path_for('/staging_path/file.txt')).to eq('tmp/gisassembly/gn330dv6119/content/file.txt')
+        expect(object.path_for('/staging_path/file.txt')).to eq('tmp/gisassembly/gn330dv6119/temp/file.txt')
       end
 
       it 'has the correct path for a file in a subfolder' do
-        expect(object.path_for('/staging_path/some_folder/file.txt')).to eq('tmp/gisassembly/gn330dv6119/content/some_folder/file.txt')
+        expect(object.path_for('/staging_path/some_folder/file.txt')).to eq('tmp/gisassembly/gn330dv6119/temp/some_folder/file.txt')
       end
     end
   end

@@ -53,7 +53,7 @@ RSpec.describe 'Pre-assemble geo object' do
     expect(yaml[:status]).to eq 'success'
 
     # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 2
+    expect(Dir.children(File.join(object_staging_dir, 'temp')).size).to eq 2
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
