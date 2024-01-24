@@ -7,7 +7,7 @@ module PreAssembly
       VALID_THREE_DIMENSION_EXTENSIONS = ['.obj'].freeze
 
       # @param [Array<Assembly::ObjectFile>] resource_files
-      # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
+      # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, :geo, or :'3d'
       def initialize(resource_files:, style:, processing_configuration:)
         @resource_files = resource_files
         @style = style

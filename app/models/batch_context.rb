@@ -42,7 +42,8 @@ class BatchContext < ApplicationRecord
     'document' => 6,
     'maps' => 7,
     'webarchive_seed' => 8,
-    'simple_book_rtl' => 9
+    'simple_book_rtl' => 9,
+    'geo' => 10
   }
 
   enum processing_configuration: {

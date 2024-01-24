@@ -6,7 +6,7 @@ module PreAssembly
     class FileSetBuilder
       # @param [Symbol] processing_configuration one of: :default or :filename
       # @param [Array<Assembly::ObjectFile>] objects
-      # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, or :'3d'
+      # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, :geo, or :'3d'
       def self.build(processing_configuration:, objects:, style:)
         new(processing_configuration:, objects:, style:).build
       end
@@ -19,6 +19,8 @@ module PreAssembly
 
       # @return [Array<FileSet>] a list of filesets in the object
       def build
+        return [] if style == :geo # geo does not need any files in structural metadata, will be created in geo specific workflows
+
         case processing_configuration
         when :default # one resource per object
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:, processing_configuration:) }

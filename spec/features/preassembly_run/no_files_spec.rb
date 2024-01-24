@@ -24,7 +24,7 @@ RSpec.describe 'Run preassembly on object with no files' do
 
     allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_client)
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
-    allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id)
+    allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id, workflow: 'assemblyWF')
     allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 

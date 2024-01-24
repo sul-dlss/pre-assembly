@@ -1,5 +1,6 @@
-# place where assemblyWF will look for object files
+# place where assemblyWF/gisAssemblyWF will look for object files
 assembly_staging_dir: tmp/assembly
+gis_assembly_staging_dir: tmp/gisassembly
 
 # writable directory where job run artifacts will live
 job_output_parent_dir:  'log/jobs'
