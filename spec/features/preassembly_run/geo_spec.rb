@@ -8,7 +8,7 @@ RSpec.describe 'Pre-assemble geo object' do
   let(:project_name) { "pdf-#{RandomWord.nouns.next}" }
   let(:staging_location) { Rails.root.join('spec/fixtures/geo') }
   let(:bare_druid) { 'gn330dv6119' }
-  let(:object_staging_dir) { Rails.root.join(Settings.gis_assembly_staging_dir, bare_druid) } # no druid tree for geo objects
+  let(:object_staging_dir) { Rails.root.join(DruidTools::Druid.new(bare_druid, Settings.gis_assembly_staging_dir).path) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.geo).new(access: dro_access)
@@ -53,7 +53,7 @@ RSpec.describe 'Pre-assemble geo object' do
     expect(yaml[:status]).to eq 'success'
 
     # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'temp')).size).to eq 2
+    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 2
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,

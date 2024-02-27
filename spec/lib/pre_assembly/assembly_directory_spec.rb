@@ -38,17 +38,17 @@ RSpec.describe PreAssembly::AssemblyDirectory do
 
     describe '#druid_tree_dir' do
       it 'has the correct folders (using the geo style)' do
-        expect(object.druid_tree_dir).to eq('tmp/gisassembly/gn330dv6119')
+        expect(object.druid_tree_dir).to eq('tmp/gisassembly/gn/330/dv/6119/gn330dv6119')
       end
     end
 
     describe '#path_for' do
       it 'has the correct path for a file in the root of the folder' do
-        expect(object.path_for('/staging_path/file.txt')).to eq('tmp/gisassembly/gn330dv6119/temp/file.txt')
+        expect(object.path_for('/staging_path/file.txt')).to eq('tmp/gisassembly/gn/330/dv/6119/gn330dv6119/content/file.txt')
       end
 
       it 'has the correct path for a file in a subfolder' do
-        expect(object.path_for('/staging_path/some_folder/file.txt')).to eq('tmp/gisassembly/gn330dv6119/temp/some_folder/file.txt')
+        expect(object.path_for('/staging_path/some_folder/file.txt')).to eq('tmp/gisassembly/gn/330/dv/6119/gn330dv6119/content/some_folder/file.txt')
       end
     end
   end
