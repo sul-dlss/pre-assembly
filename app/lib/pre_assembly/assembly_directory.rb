@@ -21,14 +21,8 @@ module PreAssembly
     end
 
     # @return [String] the base druid tree folder for this object
-    # for geo objects, we do not have a full druid tree
-    # for all other objects, we do have a full druid tree
     def druid_tree_dir
-      @druid_tree_dir ||= if content_structure == 'geo' # /staging/area/ab123bc4567
-                            File.join(assembly_staging_dir, DruidTools::Druid.new(druid_id, assembly_staging_dir).id)
-                          else # /staging/area/ab/123/bc/4567/ab123bc4567
-                            DruidTools::Druid.new(druid_id, assembly_staging_dir).path
-                          end
+      @druid_tree_dir ||= DruidTools::Druid.new(druid_id, assembly_staging_dir).path
     end
 
     def create_object_directories
@@ -57,11 +51,7 @@ module PreAssembly
 
     # @return [String] the content subfolder
     def content_dir
-      @content_dir ||= if content_structure == 'geo'
-                         File.join(druid_tree_dir, 'temp')
-                       else
-                         File.join(druid_tree_dir, 'content')
-                       end
+      @content_dir ||= File.join(druid_tree_dir, 'content')
     end
   end
 end
