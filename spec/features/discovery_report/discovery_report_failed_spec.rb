@@ -22,7 +22,7 @@ RSpec.describe 'Discovery Report fails' do
 
   it 'has no report and progress log shows status failed' do
     visit '/'
-    expect(page).to have_selector('h3', text: 'Complete the form below')
+    expect(page).to have_css('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'

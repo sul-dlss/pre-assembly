@@ -27,7 +27,7 @@ RSpec.describe 'Discovery Report completes with errors', :js do
 
   it 'shows errors and has report and log files' do
     visit '/'
-    expect(page).to have_selector('h3', text: 'Complete the form below')
+    expect(page).to have_css('h3', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
