@@ -7,7 +7,6 @@ class StartAccession
     object_client = Dor::Services::Client.object(druid)
 
     object_client.accession.start(
-      significance: 'major',
       description: 'pre-assembly re-accession',
       opening_user_name: user,
       workflow:
