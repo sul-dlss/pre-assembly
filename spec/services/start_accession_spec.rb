@@ -17,7 +17,6 @@ RSpec.describe StartAccession do
       it 'starts accession' do
         start_accession
         expect(object_client.accession).to have_received(:start).with(
-          significance: 'major',
           description: 'pre-assembly re-accession',
           opening_user_name: user.sunet_id,
           workflow: 'assemblyWF'
