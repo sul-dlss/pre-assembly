@@ -6,7 +6,8 @@
   .btn-sul-dlss {
     background-color: var(--cardinal-red);
     --bs-btn-color: #fff;
-    --bs-btn-hover-bg: var(--cardinal-red);
+    --bs-btn-bg: var(--cardinal-red);
+    --bs-btn-hover-bg: var(--bs-btn-bg);
     --bs-btn-hover-color: #fff;
   }
 
@@ -43,7 +44,7 @@
 
   .btn-outline {
     color: var(--cardinal-red);
-    background-color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
     border-color: var(--cardinal-red);
   }
   /*
