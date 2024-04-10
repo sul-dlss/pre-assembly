@@ -1,18 +1,17 @@
  .btn {
     --cardinal-red: #8c1515;
     /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
-    --bs-btn-color: #fff;
   }
 
   .btn-sul-dlss {
     background-color: var(--cardinal-red);
-    color: var(--bs-btn-color);
+    --bs-btn-color: #fff;
+    --bs-btn-hover-bg: var(--cardinal-red);
+    --bs-btn-hover-color: #fff;
   }
 
   .btn-sul-dlss:hover {
-    background-color: var(--cardinal-red);
     filter: brightness(85%);
-    color: var(--bs-btn-color);
   }
 
   .brand {
