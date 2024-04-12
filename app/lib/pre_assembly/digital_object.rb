@@ -75,10 +75,14 @@ module PreAssembly
                  message: 'cannot accession when object is already in the process of accessioning' }
       end
 
-      if current_object_version > 1 && !openable?
-        return { pre_assem_finished: false,
-                 status: 'error',
-                 message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
+      unless version_client.status.open?
+        if openable?
+          version_client.open(description: 'PreAssembly run')
+        else
+          return { pre_assem_finished: false,
+                   status: 'error',
+                   message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
+        end
       end
 
       if ObjectFileValidator.new(object: self, batch:).object_has_hierarchy? && content_structure != 'file'
@@ -184,9 +188,7 @@ module PreAssembly
     # Versioning for a re-accession.
     ####
 
-    def openable?
-      version_client.openable?
-    end
+    delegate :openable?, to: :version_client
 
     def object_client
       Dor::Services::Client.object(druid.druid)

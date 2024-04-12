@@ -16,7 +16,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
   let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area, content_structure:) }
   let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
-  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '3') }
+  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: '3', status: version_status) }
+  let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
   after { FileUtils.remove_entry tmp_area }
@@ -51,8 +52,11 @@ RSpec.describe PreAssembly::DigitalObject do
 
     context 'when the object is not openable' do
       before do
-        allow(object).to receive_messages(accessioning?: false, openable?: false, current_object_version: 2)
+        allow(object).to receive_messages(accessioning?: false)
       end
+
+      let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: false, current: 2, status: version_status) }
+      let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false) }
 
       it 'logs an error for existing non-openable objects' do
         expect(object).not_to receive(:stage_files)
