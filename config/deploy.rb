@@ -23,9 +23,8 @@ set :deploy_to, '/opt/app/preassembly/pre-assembly'
 # Default value for :log_level is :debug
 # set :log_level, :debug
 
-# need this for ubuntu and resque-pool
 # Default value for :pty is false
-set :pty, true
+# set :pty, true
 
 # Default value for :linked_files is []
 append :linked_files, 'config/honeybadger.yml', 'config/database.yml'
