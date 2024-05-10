@@ -27,30 +27,17 @@
     <% if Settings.ocr.enabled # if OCR is enabled, the content_structure drop down menu will hide/show ocr menus via stimulus %>
         <%= form.input :content_structure, input_html: { data: { action: "change->ocr#changed", "ocr-target": "contentStructure" } }, collection: content_structure %>
 
-        <div id="ocr-settings-image" data-ocr-target="ocrSettingsImage" hidden>
+        <div id="ocr-settings-image" data-ocr-target="ocrSettings" hidden>
+            <div data-ocr-target="manuallyCorrectedOcr">
             <%= form.input :manually_corrected_ocr,
                 as: :radio_buttons,
-                input_html: { data: { "ocr-target": "manuallyCorrectedOcrImage" } },
-                label: 'Do the image(s) have pre-existing OCR that has been manually reviewed/corrected for accessibility?',
                 collection: [['Yes', true], ['No', false]] %>
+            </div>
+            <div data-ocr-target="runOcr">
             <%= form.input :run_ocr,
                 as: :radio_buttons,
-                input_html: { data: { "ocr-target": "runOcrImage" } },
-                label: 'Would you like to run SDR/ABBYY OCR on your image(s)?',
                 collection: [['Yes. Run ABBYY OCR.', true], ['No. Do not run ABBYY OCR.', false]] %>
-        </div>
-
-        <div id="ocr-settings-document" data-ocr-target="ocrSettingsDocument" hidden>
-            <%= form.input :manually_corrected_ocr,
-                as: :radio_buttons,
-                input_html: { data: { "ocr-target": "manuallyCorrectedOcrDocument" } },
-                label: 'Have you manually reviewed/corrected your document(s) for WCAG/PDFUA compliance?',
-                collection: [['Yes. Document(s) meet a11y requirements. You don’t need to run SDR/ABBYY OCR.', true], ["No/Don't Know. We recommend that you manually review/correct the document in an editor, and then return to Preassembly.", false]] %>
-            <%= form.input :run_ocr,
-                as: :radio_buttons,
-                input_html: { data: { "ocr-target": "runOcrDocument" } },
-                label: 'Would you like to run SDR/ABBYY OCR on your image(s)?',
-                collection: [['Yes. Run ABBYY OCR. Warning: If your document is already WCAG/PDFUA compliant,  ABBYY may create a less accessible version.', true], ['No. Do not run ABBYY OCR.', false]] %>
+            </div>
         </div>
     <% else # if OCR is not enabled, use the regular drop down menu %>
        <%= form.input :content_structure, collection: content_structure %>
