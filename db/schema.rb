@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_09_28_211022) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_10_155525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,6 +36,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_28_211022) do
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "all_files_public", default: false, null: false
     t.boolean "using_file_manifest", default: false, null: false
+    t.boolean "run_ocr", default: false
+    t.boolean "manually_corrected_ocr", default: false
     t.index ["user_id", "project_name"], name: "index_batch_contexts_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_batch_contexts_on_user_id"
   end
