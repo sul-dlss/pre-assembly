@@ -72,11 +72,13 @@ export default class extends Controller {
     if (this.selected_content_structure().value == 'simple_image') {
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelImagesManuallyCorrected()
       this.manuallyCorrectedOcrOptionsTargets[1].labels[0].innerHTML = 'No' // the "No" option label for manually corrected image OCR
+      this.runOcrDocumentNotesTarget.hidden = true
     }
 
     if (this.selected_content_structure().value == 'document') {
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelDocumentsManuallyCorrected()
       this.manuallyCorrectedOcrOptionsTargets[1].labels[0].innerHTML = "No/Don't Know" // the "No" option label for manually corrected document OCR
+      this.run_ocr_changed()
     }
   }
 }
