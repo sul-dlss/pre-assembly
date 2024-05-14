@@ -29,7 +29,7 @@ RSpec.describe 'Pre-assemble Media Video object' do
 
     allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_client)
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
-    allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id, workflow: 'assemblyWF')
+    allow(StartAccession).to receive(:run)
     allow(PreAssembly::FromFileManifest::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
@@ -68,5 +68,6 @@ RSpec.describe 'Pre-assemble Media Video object' do
             reading_order: nil,
             staging_location: staging_location.to_s)
     expect(dsc_object).to have_received(:update).with(params: item)
+    expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
   end
 end

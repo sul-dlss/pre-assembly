@@ -94,7 +94,7 @@ module PreAssembly
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container, content_structure:)
       stage_files
       update_structural_metadata
-      StartAccession.run(druid: druid.druid, user: batch.batch_context.user.sunet_id, workflow: default_workflow)
+      StartAccession.run(druid: druid.druid, batch_context: batch.batch_context, workflow: default_workflow)
       log "    - pre_assemble(#{druid.id}) finished"
       # Return possibly incremented version.
       { pre_assem_finished: true, status: 'success', version: version_client.current.to_i }
