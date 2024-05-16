@@ -7,8 +7,9 @@ class StartAccession
     object_client = Dor::Services::Client.object(druid)
 
     workflow_context = {}
-    workflow_context[:runOCR] = true if batch_context.run_ocr
-    workflow_context[:manuallyCorrectedOCR] = true if batch_context.manually_corrected_ocr
+    workflow_context[:runOCR] = batch_context.run_ocr
+    workflow_context[:manuallyCorrectedOCR] = batch_context.manually_corrected_ocr
+    workflow_context[:ocrLanguages] = batch_context.ocr_languages unless batch_context.ocr_languages.empty?
 
     params = { description: 'pre-assembly re-accession', opening_user_name: batch_context.user.sunet_id, workflow: }
     params[:context] = workflow_context if workflow_context.present?

@@ -8,7 +8,7 @@ RSpec.describe StartAccession do
     let(:druid) { 'druid:gn330dv6119' }
     let(:accession_object) { instance_double(Dor::Services::Client::Accession, start: true) }
     let(:object_client) { instance_double(Dor::Services::Client::Object, accession: accession_object) }
-    let(:batch_context) { instance_double(BatchContext, user:, run_ocr:, manually_corrected_ocr:) }
+    let(:batch_context) { instance_double(BatchContext, user:, run_ocr:, manually_corrected_ocr:, ocr_languages:) }
 
     before do
       allow(Dor::Services::Client).to receive(:object).and_return(object_client)
@@ -18,13 +18,15 @@ RSpec.describe StartAccession do
       context 'when we do not need to set workflow context' do
         let(:run_ocr) { false }
         let(:manually_corrected_ocr) { false }
+        let(:ocr_languages) { [] }
 
         it 'starts accession and leaves off workflow context' do
           start_accession
           expect(object_client.accession).to have_received(:start).with(
             description: 'pre-assembly re-accession',
             opening_user_name: user.sunet_id,
-            workflow: 'assemblyWF'
+            workflow: 'assemblyWF',
+            context: { runOCR: false, manuallyCorrectedOCR: false }
           )
         end
       end
@@ -32,6 +34,7 @@ RSpec.describe StartAccession do
       context 'when we need to set workflow context for running OCR' do
         let(:run_ocr) { true }
         let(:manually_corrected_ocr) { false }
+        let(:ocr_languages) { ['English'] }
 
         it 'starts accession and adds workflow context' do
           start_accession
@@ -39,7 +42,7 @@ RSpec.describe StartAccession do
             description: 'pre-assembly re-accession',
             opening_user_name: user.sunet_id,
             workflow: 'assemblyWF',
-            context: { runOCR: true }
+            context: { manuallyCorrectedOCR: false, runOCR: true, ocrLanguages: ['English'] }
           )
         end
       end
@@ -47,6 +50,7 @@ RSpec.describe StartAccession do
       context 'when we need to set workflow context for manually run OCR' do
         let(:run_ocr) { false }
         let(:manually_corrected_ocr) { true }
+        let(:ocr_languages) { [] }
 
         it 'starts accession and adds workflow context' do
           start_accession
@@ -54,7 +58,7 @@ RSpec.describe StartAccession do
             description: 'pre-assembly re-accession',
             opening_user_name: user.sunet_id,
             workflow: 'assemblyWF',
-            context: { manuallyCorrectedOCR: true }
+            context: { manuallyCorrectedOCR: true, runOCR: false }
           )
         end
       end
@@ -63,6 +67,7 @@ RSpec.describe StartAccession do
     context 'when the api client raises' do
       let(:run_ocr) { false }
       let(:manually_corrected_ocr) { false }
+      let(:ocr_languages) { [] }
 
       before do
         allow(object_client).to receive(:accession).and_raise(StandardError)

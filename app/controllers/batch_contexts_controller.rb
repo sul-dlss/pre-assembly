@@ -15,9 +15,10 @@ class BatchContextsController < ApplicationController
     )
   end
 
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def create
     params = batch_contexts_params
+    params[:ocr_languages] ||= []
 
     # allow the staging location to be a previously created Globus URL or a Globus destination path
     # and then it connects it to the BatchContext being created
@@ -36,7 +37,7 @@ class BatchContextsController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
-  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   private
 
@@ -45,7 +46,7 @@ class BatchContextsController < ApplicationController
           .permit(:project_name, :content_structure, :staging_style_symlink,
                   :processing_configuration, :staging_location, :all_files_public,
                   :run_ocr, :manually_corrected_ocr,
-                  :using_file_manifest, job_runs_attributes: [:job_type])
+                  :using_file_manifest, job_runs_attributes: [:job_type], ocr_languages: [])
           .merge(user: current_user)
   end
 end
