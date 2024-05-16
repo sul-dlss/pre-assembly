@@ -28,6 +28,9 @@ rabbitmq:
   username: guest
   password: guest
 
+ocr:
+  enabled: false
+
 globus:
   enabled: false
   directory: '/globus'

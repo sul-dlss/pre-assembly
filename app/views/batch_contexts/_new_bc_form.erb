@@ -1,5 +1,5 @@
 
-<div data-controller="globus">
+<div data-controller="globus <%= "ocr" if Settings.ocr.enabled%>">
 
 <div class="row">
     <div class="col">
@@ -24,20 +24,31 @@
         %>
     <% end %>
 
-    <%= form.input :content_structure, collection:
-    [
-        ['Image', 'simple_image'],
-        ['Book (ltr)', 'simple_book'],
-        ['Book (rtl)', 'simple_book_rtl'],
-        ['Document', 'document'],
-        ['File', 'file'],
-        ['Geo', 'geo'],
-        ['Media', 'media'],
-        ['3D', '3d'],
-        ['Map', 'maps'],
-        ['Webarchive seed', 'webarchive_seed']
-    ]
-    %>
+    <% if Settings.ocr.enabled # if OCR is enabled, the content_structure drop down menu will hide/show ocr menus via stimulus %>
+        <%= form.input :content_structure, input_html: { data: { action: "change->ocr#content_structure_changed", "ocr-target": "contentStructure" } }, collection: content_structure %>
+
+        <div data-ocr-target="ocrSettings" hidden>
+            <div data-ocr-target="manuallyCorrectedOcr">
+            <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manually_corrected_ocr_changed", "ocr-target": "manuallyCorrectedOcrOptions" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+            </div>
+            <div data-ocr-target="runOcr">
+            <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#run_ocr_changed", "ocr-target": "runOcrOptions" } },
+                as: :radio_buttons,
+                collection: [['Yes. Run ABBYY OCR.', true], ['No. Do not run ABBYY OCR.', false]] %>
+                <div data-ocr-target="runOcrDocumentNotes" hidden>
+                    <p><i>Warning:</i> If your document is already WCAG/PDFUA compliant, ABBYY may create a less accessible version.
+                    Your original document will not be overwritten.</p>
+                    <p><i>Note:</i> Automatic tools can achieve only a minimal level of compliance with accessibility standards (WCAG, PDF/UA).
+                    To be fully compliant, it is encouraged that documents be manually remediated and uploaded.
+                    See <%= link_to 'https://uit.stanford.edu/accessibility/guides/pdf'%></p>
+                </div>
+            </div>
+        </div>
+    <% else # if OCR is not enabled, use the regular drop down menu %>
+       <%= form.input :content_structure, collection: content_structure %>
+    <% end %>
 
     <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 

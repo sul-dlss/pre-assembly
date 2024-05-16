@@ -26,7 +26,7 @@ RSpec.describe 'Pre-assemble Image object' do
 
     allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_client)
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
-    allow(StartAccession).to receive(:run).with(druid: "druid:#{bare_druid}", user: user.sunet_id, workflow: 'assemblyWF')
+    allow(StartAccession).to receive(:run)
     allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
@@ -77,6 +77,7 @@ RSpec.describe 'Pre-assemble Image object' do
               all_files_public: false,
               reading_order: nil)
       expect(dsc_object).to have_received(:update).with(params: item)
+      expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
     end
   end
 
