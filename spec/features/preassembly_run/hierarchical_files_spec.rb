@@ -33,7 +33,7 @@ RSpec.describe 'Pre-assemble Image object' do
   context 'with File content structure' do
     it 'runs successfully and creates log file' do
       visit '/'
-      expect(page).to have_css('h3', text: 'Complete the form below')
+      expect(page).to have_css('h1', text: 'Complete the form below')
 
       fill_in 'Project name', with: project_name
       select 'Pre Assembly Run', from: 'Job type'
@@ -84,7 +84,7 @@ RSpec.describe 'Pre-assemble Image object' do
   context 'with Image content structure' do
     it 'indicates there was an error and does not stage or accession anything' do
       visit '/'
-      expect(page).to have_css('h3', text: 'Complete the form below')
+      expect(page).to have_css('h1', text: 'Complete the form below')
 
       fill_in 'Project name', with: project_name
       select 'Pre Assembly Run', from: 'Job type'

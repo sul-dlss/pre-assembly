@@ -27,7 +27,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
 
   it 'provides successful report and log files when correct content type is selected' do
     visit '/'
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
@@ -62,7 +62,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
 
   it 'provides failed report and log files when wrong content type is selected' do
     visit '/'
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
