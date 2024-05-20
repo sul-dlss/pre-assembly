@@ -33,6 +33,10 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
           # it stores administrative settings corresponding to the access
           expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
 
+          expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+          expect(files.map(&:correctedForAccessibility)).to all be(false) # correctedForAccessibility false
+          expect(files.map(&:use)).to all be_nil # no transcription roles marked
+
           # It retains the collection
           expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
         end
@@ -78,7 +82,33 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         end
       end
 
-      context 'with OCR files included' do
+      context 'with filename processing configuration PDF files included' do
+        let(:processing_configuration) { :filename }
+        let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
+        let(:dro_access) { { view: 'world', download: 'world' } }
+        let(:all_files_public) { false }
+
+        it 'adds all the files' do
+          file_sets = structural.contains
+          expect(file_sets.size).to eq 1
+          files = file_sets.flat_map { |file_set| file_set.structural.contains }
+          expect(files.map(&:filename)).to eq ['document.pdf']
+          expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+          expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+          # it stores administrative settings corresponding to the access
+          expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+          expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+          expect(files.map(&:correctedForAccessibility)).to all be(false) # correctedForAccessibility false
+          expect(files.map(&:use)).to all be_nil # no transcription role marked
+
+          # It retains the collection
+          expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+        end
+      end
+
+      context 'with filename_with_ocr processing configuration PDF files included' do
         let(:processing_configuration) { :filename_with_ocr }
         let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
         let(:dro_access) { { view: 'world', download: 'world' } }
@@ -94,6 +124,48 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
           # it stores administrative settings corresponding to the access
           expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+          expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+          expect(files.map(&:correctedForAccessibility)).to all be(true) # correctedForAccessibility true
+          expect(files.map(&:use)).to all eq('transcription') # role = transcription
+
+          # It retains the collection
+          expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+        end
+      end
+
+      context 'with filename_with_ocr processing configuration XML files included' do
+        let(:base_path) { 'spec/fixtures/book-file-manifest/bb000kk0000/' }
+        let(:processing_configuration) { :filename_with_ocr }
+        let(:objects) do
+          [
+            PreAssembly::ObjectFile.new("#{base_path}page_0001.jpg", { relative_path: 'page_0001.jpg' }),
+            PreAssembly::ObjectFile.new("#{base_path}page_0001.xml", { relative_path: 'page_0001.xml' })
+          ]
+        end
+        let(:dro_access) { { view: 'world', download: 'world' } }
+        let(:all_files_public) { false }
+
+        it 'adds all the files' do
+          file_sets = structural.contains
+          expect(file_sets.size).to eq 1
+          files = file_sets.flat_map { |file_set| file_set.structural.contains }
+          expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+          expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+          # a JPG file
+          expect(files[0].filename).to eq('page_0001.jpg')
+          expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
+          expect(files[0].sdrGeneratedText).to be(false)
+          expect(files[0].correctedForAccessibility).to be(false)
+          expect(files[0].use).to be_nil
+
+          # an OCR file
+          expect(files[1].filename).to eq('page_0001.xml')
+          expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
+          expect(files[1].sdrGeneratedText).to be(false)
+          expect(files[1].correctedForAccessibility).to be(true)
+          expect(files[1].use).to eq('transcription')
 
           # It retains the collection
           expect(structural.isMemberOf).to eq ['druid:bb000kk0000']

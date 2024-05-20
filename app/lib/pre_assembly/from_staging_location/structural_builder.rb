@@ -50,6 +50,7 @@ module PreAssembly
               access: file_access,
               use: fileset_file.file_attributes[:role]
             }
+            file_attributes[:correctedForAccessibility] = fileset_file.file_attributes[:corrected_for_accessibility] if fileset_file.file_attributes[:corrected_for_accessibility]
 
             Cocina::Models::File.new(file_attributes)
           end
