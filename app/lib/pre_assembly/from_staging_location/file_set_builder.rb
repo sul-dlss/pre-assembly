@@ -27,7 +27,7 @@ module PreAssembly
         when :filename, :filename_with_ocr # one resource per distinct filename (excluding extension)
           build_for_filename
         else
-          raise 'Invalid processing_configuration: must be :default or :filename'
+          raise 'Invalid processing_configuration: must be :default, :filename, or :filename_with_ocr'
         end
       end
 

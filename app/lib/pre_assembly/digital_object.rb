@@ -169,7 +169,8 @@ module PreAssembly
       FromStagingLocation::StructuralBuilder.build(cocina_dro: existing_cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,
-                                                   reading_order:)
+                                                   reading_order:,
+                                                   manually_corrected_ocr: batch.batch_context.manually_corrected_ocr)
     end
 
     # The reading order for books is determined by the content structure set, defaulting to 'ltr'
