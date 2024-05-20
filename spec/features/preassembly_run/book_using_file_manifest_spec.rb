@@ -32,7 +32,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
 
   it 'runs successfully and creates log file' do
     visit '/'
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'

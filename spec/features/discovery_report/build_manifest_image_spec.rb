@@ -27,7 +27,7 @@ RSpec.describe 'Discovery Report from (build) manifest' do
 
   it 'provides report and log files' do
     visit '/'
-    expect(page).to have_css('h3', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
