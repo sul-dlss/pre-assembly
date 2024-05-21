@@ -77,7 +77,7 @@ module PreAssembly
 
       unless version_client.status.open?
         if openable?
-          version_client.open(description: 'PreAssembly run')
+          version_client.open(description: 'Accessioned via Preassembly')
         else
           return { pre_assem_finished: false,
                    status: 'error',
