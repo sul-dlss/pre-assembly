@@ -36,6 +36,7 @@ RSpec.describe BatchContext do
             project_name: 'File_manifest_media',
             staging_location: 'spec/fixtures/media_audio_test',
             content_structure: 'media',
+            processing_configuration: 'default',
             using_file_manifest: false
           }
         end
@@ -53,7 +54,78 @@ RSpec.describe BatchContext do
             project_name: 'File_manifest_media',
             staging_location: 'spec/fixtures/media_audio_test',
             content_structure: 'media',
+            processing_configuration: 'default',
             using_file_manifest: true
+          }
+        end
+
+        it 'is valid' do
+          expect(bc.valid?).to be true
+        end
+      end
+    end
+
+    context 'correct processing configuration required' do
+      context 'when image type uses default processing configuration' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: 'simple_image',
+            processing_configuration: 'default',
+            using_file_manifest: false
+          }
+        end
+
+        it 'is not valid' do
+          expect(bc.valid?).to be false
+          expect(bc.errors.size).to eq 1
+          expect(bc.errors.first.attribute).to eq :processing_configuration
+        end
+      end
+
+      context 'when image type uses group by filename processing configuration' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: 'simple_image',
+            processing_configuration: 'filename',
+            using_file_manifest: false
+          }
+        end
+
+        it 'is valid' do
+          expect(bc.valid?).to be true
+        end
+      end
+
+      context 'when 3d type uses group by filename processing configuration' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: '3d',
+            processing_configuration: 'filename',
+            using_file_manifest: false
+          }
+        end
+
+        it 'is not valid' do
+          expect(bc.valid?).to be false
+          expect(bc.errors.size).to eq 1
+          expect(bc.errors.first.attribute).to eq :processing_configuration
+        end
+      end
+
+      context 'when 3d type uses default processing configuration' do
+        let(:attr_hash) do
+          {
+            project_name: 'File_manifest_media',
+            staging_location: 'spec/fixtures/media_audio_test',
+            content_structure: '3d',
+            processing_configuration: 'default',
+            using_file_manifest: false
           }
         end
 

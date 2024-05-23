@@ -30,6 +30,7 @@ class BatchContext < ApplicationRecord
   validate :verify_staging_location
   validate :verify_staging_location_path
   validate :verify_file_manifest_exists, if: :using_file_manifest
+  validate :verify_processing_configuration
   validate :verify_output_dir_no_exists, unless: proc { persisted? }
   validate :verify_processing_configuration_for_ocr, if: proc { Settings.ocr.enabled && manually_corrected_ocr == true }
 
@@ -186,6 +187,22 @@ class BatchContext < ApplicationRecord
     return unless match_flag.nil? || match_flag == staging_location_path
 
     errors.add(:staging_location, 'not a sub directory of allowed parent directories.')
+  end
+
+  def verify_processing_configuration
+    if only_group_by_filename_processing_configuration? && processing_configuration == 'default'
+      errors.add(:processing_configuration, "must be 'Group by filename' for #{content_structure.titleize} content type")
+    end
+
+    errors.add(:processing_configuration, "must be 'Default' for #{content_structure.titleize} content type") if only_default_processing_configuration? && processing_configuration != 'default'
+  end
+
+  def only_default_processing_configuration?
+    %w[document file geo media 3d webarchive_seed].include?(content_structure)
+  end
+
+  def only_group_by_filename_processing_configuration?
+    %w[simple_image simple_book maps].include?(content_structure) && using_file_manifest.blank?
   end
 
   def verify_file_manifest_exists
