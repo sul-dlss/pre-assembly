@@ -431,7 +431,7 @@ RSpec.describe PreAssembly::DigitalObject do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
       let(:content_structure) { 'simple_book' }
       let(:dro) do
-        Cocina::RSpec::Factories.build(:dro, type: cocina_type, reading_order: 'right-to-left').new(access: { view: 'world' })
+        Cocina::RSpec::Factories.build(:dro, type: cocina_type).new(access: { view: 'world' }, structural: { hasMemberOrders: [{ viewingDirection: 'right-to-left' }] })
       end
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',

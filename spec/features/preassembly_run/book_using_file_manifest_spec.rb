@@ -12,7 +12,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'bb', '000', 'kk', '0000', bare_druid) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
-    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.book, reading_order: 'right-to-left').new(access: dro_access)
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.book).new(access: dro_access, structural: { hasMemberOrders: [{ viewingDirection: 'right-to-left' }] })
   end
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: 1, status:) }
   let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
