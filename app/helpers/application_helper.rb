@@ -15,4 +15,8 @@ module ApplicationHelper
       ['Webarchive seed', 'webarchive_seed']
     ]
   end
+
+  def avaliable_ocr_languages
+    ABBYY_LANGUAGES.map { |lang| [lang, lang.gsub(/[ ()]/, '')] }
+  end
 end

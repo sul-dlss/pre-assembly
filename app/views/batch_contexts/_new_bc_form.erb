@@ -45,6 +45,36 @@
                     See <%= link_to 'https://uit.stanford.edu/accessibility/guides/pdf'%></p>
                 </div>
             </div>
+            <div class="ocr-language d-none" data-ocr-target="ocrLanguageWrapper">
+                <div class="dropdown w-100 mb-3 d-inline-block" data-action="click@window->ocr#clickOutside">
+                    <div data-ocr-target="ocrDropdown">
+                        <div>Selected language(s)</div>
+                        <div class="border rounded ocr-search-bar d-flex">
+                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary" data-action="click->ocr#languageDropdown" aria-label="">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <input data-action="input->ocr#search focus->ocr#languageDropdown" aria-label="Search avalaible Abbyy languages" />
+                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary" data-action="click->ocr#languageDropdown" id="caret">
+                                <i class="fa-solid fa-caret-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ocr-languages" data-ocr-target="dropdownContent" class="dropdown-content d-none languages-group border rounded">
+                        <% avaliable_ocr_languages.each do |language| %>
+                            <label class="d-block">
+                                <%= form.check_box 'ocr_languages', { multiple: true, data: { 'ocr-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->ocr#languageUpdate' } }, language[1], nil %>
+                                <%= language[0] %>
+                            </label>
+                        <% end %>
+                    </div>
+                </div>
+                <div data-ocr-target="selectedLanguages">
+                </div>
+                <div class="d-none text-cardinal mb-2" data-ocr-target="languageWarning">
+                    <b>Warning</b>: Selecting more than eight OCR languages may have an adverse effect on the
+                    speed and quality of recognition. Please reduce the number of languages.
+                </div>
+            </div>
         </div>
     <% else # if OCR is not enabled, use the regular drop down menu %>
        <%= form.input :content_structure, collection: content_structure %>
