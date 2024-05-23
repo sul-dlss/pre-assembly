@@ -8,20 +8,23 @@ module PreAssembly
       # @param [Cocina::Models::DRO] cocina_dro
       # @param [String] reading_order
       # @param [Boolean] all_files_public
-      def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil)
+      # @param [Boolean] manually_corrected_ocr set by user when creating the job
+      def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil, manually_corrected_ocr: false)
         new(filesets:,
             cocina_dro:,
             reading_order:,
-            all_files_public:).build
+            all_files_public:,
+            manually_corrected_ocr:).build
       end
 
-      def initialize(filesets:, cocina_dro:, all_files_public:, reading_order: nil)
+      def initialize(filesets:, cocina_dro:, all_files_public:, reading_order:, manually_corrected_ocr:)
         @filesets = filesets
         @cocina_dro = cocina_dro
         @reading_order = reading_order
         @all_files_public = all_files_public
+        @manually_corrected_ocr = manually_corrected_ocr
       end
-      attr_reader :filesets, :cocina_dro, :reading_order, :all_files_public
+      attr_reader :filesets, :cocina_dro, :reading_order, :all_files_public, :manually_corrected_ocr
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength
@@ -50,7 +53,9 @@ module PreAssembly
               access: file_access,
               use: fileset_file.file_attributes[:role]
             }
-
+            if fileset_file.file_attributes[:corrected_for_accessibility] && manually_corrected_ocr
+              file_attributes[:correctedForAccessibility] = fileset_file.file_attributes[:corrected_for_accessibility]
+            end
             Cocina::Models::File.new(file_attributes)
           end
 

@@ -63,7 +63,8 @@ RSpec.describe 'Pre-assemble public object (shelved and published)' do
       .with(cocina_dro: item,
             filesets: Array,
             all_files_public: true,
-            reading_order: nil)
+            reading_order: nil,
+            manually_corrected_ocr: false)
     expect(dsc_object).to have_received(:update).with(params: item)
     expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
   end

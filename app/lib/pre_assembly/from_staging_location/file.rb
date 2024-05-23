@@ -24,16 +24,18 @@ module PreAssembly
         'application/json' => { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       }.freeze
 
+      # if the user tells us they are providing OCR, we will set the transcription role and corrected_for_accessibility to true
+      #  since the user has verified the OCR is correct in the UI
       ATTRIBUTES_FOR_TYPE_WITH_OCR = {
         'image/tif' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/tiff' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/jp2' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/jpeg' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/png' => { preserve: 'yes', shelve: 'no', publish: 'no' },
-        'application/pdf' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
+        'application/pdf' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription', corrected_for_accessibility: true },
         'plain/text' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
         'text/plain' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
-        'application/xml' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription' }
+        'application/xml' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription', corrected_for_accessibility: true }
       }.freeze
 
       # @param [Assembly::ObjectFile] file
