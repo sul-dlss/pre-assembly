@@ -31,7 +31,7 @@ export default class extends Controller {
 
   // list of content structures that are allowed to run OCR
   ocrAllowed() {
-    return ['simple_image', 'simple_book', 'simple_book_rtl', 'document']
+    return ['simple_image', 'simple_book', 'document']
   }
 
   // if the user indicates they are providing OCR and have reviewed it, hide the option to run SDR OCR

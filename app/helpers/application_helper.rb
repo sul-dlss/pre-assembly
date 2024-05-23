@@ -4,8 +4,7 @@ module ApplicationHelper
   def content_structure
     [
       ['Image', 'simple_image'],
-      ['Book (ltr)', 'simple_book'],
-      ['Book (rtl)', 'simple_book_rtl'],
+      ['Book', 'simple_book'],
       ['Document', 'document'],
       ['File', 'file'],
       ['Geo', 'geo'],

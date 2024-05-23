@@ -427,10 +427,12 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'book (rtl) structural metadata' do
+    describe 'book structural metadata, with reading order as right-to-left in cocina' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
       let(:content_structure) { 'simple_book' }
-
+      let(:dro) do
+        Cocina::RSpec::Factories.build(:dro, type: cocina_type).new(access: { view: 'world' }, structural: { hasMemberOrders: [{ viewingDirection: 'right-to-left' }] })
+      end
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/page',
                        externalIdentifier: 'bc234fg5678_1',
@@ -469,7 +471,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book_rtl')
+        allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files(extension: 'jp2')
       end
 

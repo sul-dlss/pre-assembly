@@ -12,7 +12,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
   let(:object_staging_dir) { Rails.root.join(Settings.assembly_staging_dir, 'bb', '000', 'kk', '0000', bare_druid) }
   let(:dro_access) { { view: 'world' } }
   let(:item) do
-    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
+    Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.book).new(access: dro_access, structural: { hasMemberOrders: [{ viewingDirection: 'right-to-left' }] })
   end
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: 1, status:) }
   let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
@@ -36,7 +36,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
 
     fill_in 'Project name', with: project_name
     select 'Pre Assembly Run', from: 'Job type'
-    select 'Book (rtl)', from: 'Content structure'
+    select 'Book', from: 'Content structure'
     fill_in 'Staging location', with: staging_location
     select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'

@@ -41,11 +41,6 @@ module PreAssembly
     # @return [Symbol]
     def content_md_creation_style
       # map the object type to structural styles supported by the FileSetBuilder class
-
-      # special case: content_structure of 'simple_book_rtl' always maps to simple_book
-      #  with the reading order set separately when creating content metadata
-      return :simple_book if content_structure == 'simple_book_rtl'
-
       {
         Cocina::Models::ObjectType.image => :simple_image,
         Cocina::Models::ObjectType.object => :file,
@@ -173,16 +168,13 @@ module PreAssembly
                                                    manually_corrected_ocr: batch.batch_context.manually_corrected_ocr)
     end
 
-    # The reading order for books is determined by the content structure set, defaulting to 'ltr'
+    # The reading order for books is determined by what the user set when registering the object.
     # This is passed to the content metadata creator, which uses it if the content structure is book
+    # Assume left-to-right if missing in the cocina structural (which really shouldn't happen for this content type)
     def reading_order
       return unless content_md_creation_style == :simple_book
 
-      if content_structure == 'simple_book_rtl'
-        'right-to-left'
-      else
-        'left-to-right'
-      end
+      existing_cocina_object.structural&.hasMemberOrders&.first&.viewingDirection || 'left-to-right'
     end
 
     ####
