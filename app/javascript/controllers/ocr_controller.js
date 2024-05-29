@@ -2,10 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
 
-  static targets = ['contentStructure', 'ocrSettings', 'manuallyCorrectedOcrOptions',
-    'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
-  
+  static targets = ['contentStructure', 'ocrSettings', 'manuallyCorrectedOcrOptions', 'ocrAvailable',
+    'ocrAvailableOptions', 'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
+    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
+
   static values = { languages: Array }
 
   connect () {
@@ -13,37 +13,102 @@ export default class extends Controller {
     this.element.querySelector('form').reset();
   }
 
-  selected_content_structure() {
-    return this.contentStructureTarget.options[this.contentStructureTarget.selectedIndex]
-  }
-
-  labelImagesManuallyCorrected() {
-    return `Do your images have pre-existing OCR that has been manually reviewed/corrected for accessibility?`
-  }
-
-  labelDocumentsManuallyCorrected() {
-    return `Have you manually reviewed/corrected your document(s) for WCAG/PDFUA compliance?`
-  }
-
-  labelRunOcr() {
-    return `Would you like to run SDR/ABBYY OCR on your ${this.selected_content_structure().label}(s)?`
-  }
-
   // list of content structures that are allowed to run OCR
   ocrAllowed() {
     return ['simple_image', 'simple_book', 'document']
   }
 
-  // if the user indicates they are providing OCR and have reviewed it, hide the option to run SDR OCR
+  selected_content_structure() {
+    return this.contentStructureTarget.options[this.contentStructureTarget.selectedIndex]
+  }
+
+  is_document() {
+    return this.selected_content_structure().value == 'document'
+  }
+
+  is_image() {
+    return this.selected_content_structure().value == 'simple_image'
+  }
+
+  is_book() {
+    return this.selected_content_structure().value == 'simple_book'
+  }
+
+  labelImagesManuallyCorrected() {
+    return `Have the OCR files been corrected to comply with accessibility standards?  More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.`
+  }
+
+  labelDocumentsManuallyCorrected() {
+    return `Have the PDF documents been corrected to comply with accessibility standards?  More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.`
+  }
+
+  labelRunOcr() {
+    return `Would you like to auto-generate OCR files for the ${this.selected_content_structure().label.toLowerCase()}(s)?`
+  }
+
+  content_structure_changed () {
+    // Hide the OCR settings if the selected content structure is not in the list of allowed content structures
+    if (this.ocrAllowed().indexOf(this.contentStructureTarget.value) < 0) {
+      this.ocrSettingsTarget.hidden = true
+      return
+    }
+
+    // Show the OCR settings if the selected content structure is in the list of allowed content structures
+    this.ocrSettingsTarget.hidden = false
+
+    // Set the OCR settings label
+    this.runOcrTarget.querySelector('legend').innerHTML = this.labelRunOcr()
+
+    // Set specific OCR labels/options based on the content structure
+    if (this.is_document()) { // documents have different labels and show different questions
+      this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelDocumentsManuallyCorrected()
+      this.manuallyCorrectedOcrTarget.hidden = false
+      this.ocrAvailableTarget.hidden = true
+      this.manually_corrected_ocr_changed()
+    } else { // images and books have the same labels and show the same questions (different from documents)
+      this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelImagesManuallyCorrected()
+      this.manuallyCorrectedOcrTarget.hidden = true
+      this.ocrAvailableTarget.hidden = false
+      this.ocr_available_changed()
+    }
+
+  this.run_ocr_changed()
+  }
+
+  // if the user indicates they have ocr available (show/hide the manually corrected and run OCR option (for images/books)
+  ocr_available_changed() {
+    const ocr_available = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value == 'true'
+    this.manuallyCorrectedOcrTarget.hidden = !ocr_available
+    this.runOcrTarget.hidden = ocr_available
+  }
+
+  // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents)
   manually_corrected_ocr_changed() {
-    if (this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true')
+    if (!this.is_document()) return
+
+    this.runOcrTarget.hidden = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true'
+  }
+
+  // if the user indicates they want to run SDR OCR, show any relevant notes/warnings and language selector
+  run_ocr_changed() {
+    // hide any notes to start, we will show as needed if OCR is selected
+    this.runOcrDocumentNotesTarget.hidden = true
+    this.runOcrImageNotesTarget.hidden = true
+
+    const runocr = this.runOcrTarget.querySelector('input[type="radio"]:checked').value == 'true';
+    if (runocr)
     {
-      this.runOcrTarget.hidden = true
+      this.runOcrDocumentNotesTarget.hidden = !this.is_document();
+      this.runOcrImageNotesTarget.hidden = this.is_document();
+      this.ocrLanguageWrapperTarget.classList.remove('d-none');
     }
     else
     {
-      this.runOcrTarget.hidden = false
+      this.ocrLanguageWrapperTarget.classList.add('d-none');
     }
+    Object.values(this.ocrDropdownTarget.children).forEach(child => {
+      child.disabled = !runocr;
+    })
   }
 
   languageDropdown(event) {
@@ -121,60 +186,5 @@ export default class extends Controller {
         </li>
       `;
     }).join('');
-  }
-
-  changed () {
-    if (this.contentStructureTarget && this.ocrAllowed().indexOf(this.contentStructureTarget.value) > -1) {
-      this.ocrSettingsTarget.hidden = false;
-      this.runOcrTarget.querySelector('legend').innerHTML = this.labelRunOcr();
-      this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelManuallyCorrected();
-    } else {
-      this.ocrSettingsTarget.hidden = true;
-    }
-  }
-
-  // if the user indicates they want to runn SDR OCR, show any relevant notes/warnings
-  run_ocr_changed() {
-    const runocr = this.runOcrTarget.querySelector('input[type="radio"]:checked').value == 'true';
-    if (runocr)
-    {
-      const isdocument = this.selected_content_structure().value == 'document';
-      this.runOcrDocumentNotesTarget.hidden = !isdocument;
-      this.ocrLanguageWrapperTarget.classList.remove('d-none');
-    }
-    else
-    {
-      this.runOcrDocumentNotesTarget.hidden = true;
-      this.ocrLanguageWrapperTarget.classList.add('d-none');
-    }
-    Object.values(this.ocrDropdownTarget.children).forEach(child => {
-      child.disabled = !runocr;
-    })
-  }
-
-  content_structure_changed () {
-    // Hide the OCR settings if the selected content structure is not in the list of allowed content structures
-    if (this.ocrAllowed().indexOf(this.contentStructureTarget.value) < 0) {
-      this.ocrSettingsTarget.hidden = true
-      return
-    }
-
-    // Show the OCR settings if the selected content structure is in the list of allowed content structures
-    this.ocrSettingsTarget.hidden = false
-
-    // Set the OCR settings label
-    this.runOcrTarget.querySelector('legend').innerHTML = this.labelRunOcr()
-
-    // Set specific OCR labels/options based on the content structure
-
-    if (this.selected_content_structure().value == 'document') {
-      this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelDocumentsManuallyCorrected()
-      this.manuallyCorrectedOcrOptionsTargets[1].labels[0].innerHTML = "No/Don't Know" // the "No" option label for manually corrected document OCR
-      this.run_ocr_changed()
-    } else {
-      this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelImagesManuallyCorrected()
-      this.manuallyCorrectedOcrOptionsTargets[1].labels[0].innerHTML = 'No' // the "No" option label for manually corrected image OCR
-      this.runOcrDocumentNotesTarget.hidden = true
-    }
   }
 }

@@ -18,7 +18,7 @@
     <%= form.simple_fields_for :job_runs do |jt| %>
         <%= jt.input :job_type, collection:
             [
-                ["Pre Assembly Run", "preassembly"],
+                ["Preassembly Run", "preassembly"],
                 ["Discovery Report", "discovery_report"]
             ]
         %>
@@ -28,21 +28,26 @@
         <%= form.input :content_structure, input_html: { data: { action: "change->ocr#content_structure_changed", "ocr-target": "contentStructure" } }, collection: content_structure %>
 
         <div data-ocr-target="ocrSettings" hidden>
-            <div data-ocr-target="manuallyCorrectedOcr">
-            <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manually_corrected_ocr_changed", "ocr-target": "manuallyCorrectedOcrOptions" } },
-                as: :radio_buttons,
-                collection: [['Yes', true], ['No', false]] %>
+            <div data-ocr-target="ocrAvailable" hidden>
+                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocr_available_changed", "ocr-target": "ocrAvailableOptions" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
             </div>
-            <div data-ocr-target="runOcr">
-            <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#run_ocr_changed", "ocr-target": "runOcrOptions" } },
-                as: :radio_buttons,
-                collection: [['Yes. Run ABBYY OCR.', true], ['No. Do not run ABBYY OCR.', false]] %>
+            <div data-ocr-target="manuallyCorrectedOcr" hidden>
+                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manually_corrected_ocr_changed", "ocr-target": "manuallyCorrectedOcrOptions" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
+            </div>
+            <div data-ocr-target="runOcr" hidden>
+                <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#run_ocr_changed", "ocr-target": "runOcrOptions" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
+                <div data-ocr-target="runOcrImageNotes" hidden>
+                    <p><i>Warning:</i> Avoid auto-generating OCR files for images that do not contain any text, as it may have adverse effects.</p>
+                </div>
                 <div data-ocr-target="runOcrDocumentNotes" hidden>
-                    <p><i>Warning:</i> If your document is already WCAG/PDFUA compliant, ABBYY may create a less accessible version.
-                    Your original document will not be overwritten.</p>
-                    <p><i>Note:</i> Automatic tools can achieve only a minimal level of compliance with accessibility standards (WCAG, PDF/UA).
-                    To be fully compliant, it is encouraged that documents be manually remediated and uploaded.
-                    See <%= link_to 'https://uit.stanford.edu/accessibility/guides/pdf'%></p>
+                    <p><i>Note:</i> Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf'%>.</p>
+                    <p><i>Warning:</i> Avoid auto-generating OCR files for PDF documents that do not contain any text, as it may have adverse effects.</p>
                 </div>
             </div>
             <div class="ocr-language d-none" data-ocr-target="ocrLanguageWrapper">

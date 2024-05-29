@@ -13,6 +13,9 @@ class BatchContext < ApplicationRecord
   # the manifest specifying objects and associated folders on disk: required to run any job
   OBJECT_MANIFEST_FILE_NAME = 'manifest.csv'
 
+  # virtual form attribute, does not need to persist in the database
+  attribute :ocr_available, :boolean, default: false
+
   belongs_to :user
   has_many :job_runs, dependent: :destroy
   has_one :globus_destination, dependent: :destroy

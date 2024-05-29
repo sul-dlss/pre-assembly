@@ -19,7 +19,7 @@ RSpec.describe 'Pre-assemble job fails' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
+    select 'Preassembly Run', from: 'Job type'
     select 'Image', from: 'Content structure'
     select 'Group by filename', from: 'Processing configuration'
     fill_in 'Staging location', with: staging_location
