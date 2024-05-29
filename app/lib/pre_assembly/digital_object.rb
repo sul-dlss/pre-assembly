@@ -11,6 +11,7 @@ module PreAssembly
     delegate :staging_location,
              :processing_configuration,
              :content_structure,
+             :ocr_available,
              :project_name,
              :file_manifest,
              to: :batch
@@ -119,6 +120,7 @@ module PreAssembly
       else
         build_from_staging_location(objects: object_files.sort,
                                     processing_configuration:,
+                                    ocr_available:,
                                     reading_order:)
       end
     end
@@ -159,8 +161,8 @@ module PreAssembly
       object_client.update(params: updated_cocina)
     end
 
-    def build_from_staging_location(objects:, processing_configuration:, reading_order:)
-      filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: content_md_creation_style)
+    def build_from_staging_location(objects:, processing_configuration:, reading_order:, ocr_available:)
+      filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: existing_cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,

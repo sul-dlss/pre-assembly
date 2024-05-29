@@ -9,12 +9,13 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
                             manually_corrected_ocr:)
     end
 
-    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration:, objects:, style: :document) }
+    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, objects:, style: :document) }
     let(:processing_configuration) { :default }
     let(:cocina_dro) do
       Cocina::RSpec::Factories.build(:dro, collection_ids: ['druid:bb000kk0000']).new(access: dro_access)
     end
     let(:manually_corrected_ocr) { false }
+    let(:ocr_available) { false }
 
     context 'with flat file structure' do
       let(:base_path) { 'spec/fixtures/pdf_document/content/' }
@@ -110,8 +111,9 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         end
       end
 
-      context 'with filename_with_ocr processing configuration PDF files included' do
-        let(:processing_configuration) { :filename_with_ocr }
+      context 'with filename processing configuration and OCR provided PDF files included' do
+        let(:processing_configuration) { :filename }
+        let(:ocr_available) { true }
         let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
         let(:dro_access) { { view: 'world', download: 'world' } }
         let(:all_files_public) { false }
@@ -161,9 +163,10 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         end
       end
 
-      context 'with filename_with_ocr processing configuration XML files included' do
+      context 'with filename processing configuration with XML OCR files included' do
         let(:base_path) { 'spec/fixtures/book-file-manifest/bb000kk0000/' }
-        let(:processing_configuration) { :filename_with_ocr }
+        let(:processing_configuration) { :filename }
+        let(:ocr_available) { true }
         let(:objects) do
           [
             PreAssembly::ObjectFile.new("#{base_path}page_0001.jpg", { relative_path: 'page_0001.jpg' }),
@@ -174,7 +177,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         let(:all_files_public) { false }
 
         context 'with non manually corrected OCR' do
-          it 'adds all the OCR file with transcription role but not corrected for accessibility' do
+          it 'adds the OCR file with transcription role but not corrected for accessibility' do
             file_sets = structural.contains
             expect(file_sets.size).to eq 1
             files = file_sets.flat_map { |file_set| file_set.structural.contains }
@@ -202,8 +205,9 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
         context 'with manually corrected OCR' do
           let(:manually_corrected_ocr) { true }
+          let(:ocr_available) { true }
 
-          it 'adds all the OCR file with transcription role but not corrected for accessibility' do
+          it 'adds the OCR file with transcription role and corrected for accessibility' do
             file_sets = structural.contains
             expect(file_sets.size).to eq 1
             files = file_sets.flat_map { |file_set| file_set.structural.contains }

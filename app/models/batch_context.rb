@@ -13,9 +13,6 @@ class BatchContext < ApplicationRecord
   # the manifest specifying objects and associated folders on disk: required to run any job
   OBJECT_MANIFEST_FILE_NAME = 'manifest.csv'
 
-  # virtual form attribute, does not need to persist in the database
-  attribute :ocr_available, :boolean, default: false
-
   belongs_to :user
   has_many :job_runs, dependent: :destroy
   has_one :globus_destination, dependent: :destroy
@@ -34,7 +31,6 @@ class BatchContext < ApplicationRecord
   validate :verify_staging_location_path
   validate :verify_file_manifest_exists, if: :using_file_manifest
   validate :verify_output_dir_no_exists, unless: proc { persisted? }
-  validate :verify_processing_configuration_for_ocr, if: proc { Settings.ocr.enabled && manually_corrected_ocr == true }
 
   enum content_structure: {
     'simple_image' => 0,
@@ -54,7 +50,7 @@ class BatchContext < ApplicationRecord
     'default' => 0,
     'filename' => 1,
     'media_cm_style' => 2, # Deprecated
-    'filename_with_ocr' => 3
+    'filename_with_ocr' => 3 # Deprecated
   }
 
   accepts_nested_attributes_for :job_runs
@@ -193,10 +189,6 @@ class BatchContext < ApplicationRecord
 
   def verify_file_manifest_exists
     errors.add(:staging_location, "missing or empty file manifest: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
-  end
-
-  def verify_processing_configuration_for_ocr
-    errors.add(:processing_configuration, "must be 'Group by filename (with pre-existing OCR)' if you indicate you are providing OCR") unless processing_configuration == 'filename_with_ocr'
   end
 end
 # rubocop:enable Metrics/ClassLength

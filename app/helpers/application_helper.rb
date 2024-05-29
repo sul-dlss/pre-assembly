@@ -18,8 +18,7 @@ module ApplicationHelper
   def processing_configuration
     [
       ['Default', 'default'],
-      ['Group by filename', 'filename'],
-      ['Group by filename (with pre-existing OCR)', 'filename_with_ocr']
+      ['Group by filename', 'filename']
     ]
   end
 

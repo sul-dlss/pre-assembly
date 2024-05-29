@@ -45,7 +45,7 @@ class BatchContextsController < ApplicationController
     params.require(:batch_context)
           .permit(:project_name, :content_structure, :staging_style_symlink,
                   :processing_configuration, :staging_location, :all_files_public,
-                  :run_ocr, :manually_corrected_ocr,
+                  :run_ocr, :manually_corrected_ocr, :ocr_available,
                   :using_file_manifest, job_runs_attributes: [:job_type], ocr_languages: [])
           .merge(user: current_user)
   end
