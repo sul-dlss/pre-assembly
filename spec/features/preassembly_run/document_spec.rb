@@ -35,7 +35,7 @@ RSpec.describe 'Pre-assemble document object' do
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'
-    select 'Document', from: 'Content structure'
+    select 'Document', from: 'Content type'
     fill_in 'Staging location', with: staging_location
 
     perform_enqueued_jobs do

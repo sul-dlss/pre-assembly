@@ -25,21 +25,21 @@
     <% end %>
 
     <% if Settings.ocr.enabled # if OCR is enabled, the content_structure drop down menu will hide/show ocr menus via stimulus %>
-        <%= form.input :content_structure, input_html: { data: { action: "change->ocr#content_structure_changed", "ocr-target": "contentStructure" } }, collection: content_structure %>
+        <%= form.input :content_structure, label: 'Content type', input_html: { data: { action: "change->ocr#contentStructureChanged", "ocr-target": "contentStructure" } }, collection: content_structure %>
 
         <div data-ocr-target="ocrSettings" hidden>
             <div data-ocr-target="ocrAvailable" hidden>
-                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocr_available_changed", "ocr-target": "ocrAvailableOptions" } },
+                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocrAvailableChanged", "ocr-target": "ocrAvailableOptions" } },
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
             </div>
             <div data-ocr-target="manuallyCorrectedOcr" hidden>
-                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manually_corrected_ocr_changed", "ocr-target": "manuallyCorrectedOcrOptions" } },
+                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manuallyCorrectedOcrChanged", "ocr-target": "manuallyCorrectedOcrOptions" } },
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
             </div>
             <div data-ocr-target="runOcr" hidden>
-                <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#run_ocr_changed", "ocr-target": "runOcrOptions" } },
+                <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#runOcrChanged", "ocr-target": "runOcrOptions" } },
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
                 <div data-ocr-target="runOcrImageNotes" hidden>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div id="ocr-languages" data-ocr-target="dropdownContent" class="dropdown-content d-none languages-group border rounded">
-                        <% avaliable_ocr_languages.each do |language| %>
+                        <% avalaible_ocr_languages.each do |language| %>
                             <label class="d-block">
                                 <%= form.check_box 'ocr_languages', { multiple: true, data: { 'ocr-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->ocr#languageUpdate' } }, language[1], nil %>
                                 <%= language[0] %>
@@ -82,20 +82,16 @@
             </div>
         </div>
     <% else # if OCR is not enabled, use the regular drop down menu %>
-       <%= form.input :content_structure, collection: content_structure %>
+       <%= form.input :content_structure, label: 'Content type', collection: content_structure %>
     <% end %>
+    <%= form.input :processing_configuration, input_html: { data: { "ocr-target": "processingConfiguration" } },
+                   collection: processing_configuration
+    %>
 
     <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 
     <%# the 'staging_style_symlink` is hidden, since we do not currently want users to access it (it may cause problems with some accessioning steps)%>
     <%= form.hidden_field :staging_style_symlink, value: false %>
-    <%= form.input :processing_configuration, collection:
-        [
-            ["Default", "default"],
-            ["Group by filename", "filename"],
-            ["Group by filename (with pre-existing OCR)", "filename_with_ocr"]
-        ]
-    %>
 
     <%= form.input :using_file_manifest, as: :boolean, label: 'I have a file manifest'%>
 

@@ -37,8 +37,7 @@ RSpec.describe 'Pre-assemble public object (shelved and published)' do
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'
-    select 'Image', from: 'Content structure'
-    select 'Group by filename', from: 'Processing configuration'
+    select 'Image', from: 'Content type'
     fill_in 'Staging location', with: staging_location
     choose 'Preserve=Yes, Shelve=Yes, Publish=Yes'
 

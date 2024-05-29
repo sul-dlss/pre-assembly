@@ -37,7 +37,7 @@ RSpec.describe 'Pre-assemble object with dark files' do
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'
-    select 'File', from: 'Content structure'
+    select 'File', from: 'Content type'
     fill_in 'Staging location', with: staging_location
 
     perform_enqueued_jobs do

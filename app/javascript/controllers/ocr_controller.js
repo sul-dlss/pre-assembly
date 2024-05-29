@@ -4,12 +4,13 @@ export default class extends Controller {
 
   static targets = ['contentStructure', 'ocrSettings', 'manuallyCorrectedOcrOptions', 'ocrAvailable',
     'ocrAvailableOptions', 'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
+    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper',
+    'processingConfiguration']
 
   static values = { languages: Array }
 
   connect () {
-    this.content_structure_changed();
+    this.contentStructureChanged();
     this.element.querySelector('form').reset();
   }
 
@@ -18,20 +19,17 @@ export default class extends Controller {
     return ['simple_image', 'simple_book', 'document']
   }
 
-  selected_content_structure() {
+  groupByFilenameTypes()
+  {
+    return ['simple_image', 'simple_book', 'maps']
+  }
+
+  selectedContentStructure() {
     return this.contentStructureTarget.options[this.contentStructureTarget.selectedIndex]
   }
 
-  is_document() {
-    return this.selected_content_structure().value == 'document'
-  }
-
-  is_image() {
-    return this.selected_content_structure().value == 'simple_image'
-  }
-
-  is_book() {
-    return this.selected_content_structure().value == 'simple_book'
+  isDocument() {
+    return this.selectedContentStructure().value == 'document'
   }
 
   labelImagesManuallyCorrected() {
@@ -43,10 +41,13 @@ export default class extends Controller {
   }
 
   labelRunOcr() {
-    return `Would you like to auto-generate OCR files for the ${this.selected_content_structure().label.toLowerCase()}(s)?`
+    return `Would you like to auto-generate OCR files for the ${this.selectedContentStructure().label.toLowerCase()}(s)?`
   }
 
-  content_structure_changed () {
+  contentStructureChanged () {
+    // set the processing configuration based on the content structure
+    this.setProcessingConfiguration()
+
     // Hide the OCR settings if the selected content structure is not in the list of allowed content structures
     if (this.ocrAllowed().indexOf(this.contentStructureTarget.value) < 0) {
       this.ocrSettingsTarget.hidden = true
@@ -60,37 +61,38 @@ export default class extends Controller {
     this.runOcrTarget.querySelector('legend').innerHTML = this.labelRunOcr()
 
     // Set specific OCR labels/options based on the content structure
-    if (this.is_document()) { // documents have different labels and show different questions
+    if (this.isDocument()) { // documents have different labels and show different questions
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelDocumentsManuallyCorrected()
       this.manuallyCorrectedOcrTarget.hidden = false
       this.ocrAvailableTarget.hidden = true
-      this.manually_corrected_ocr_changed()
+      this.manuallyCorrectedOcrChanged()
     } else { // images and books have the same labels and show the same questions (different from documents)
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelImagesManuallyCorrected()
       this.manuallyCorrectedOcrTarget.hidden = true
       this.ocrAvailableTarget.hidden = false
-      this.ocr_available_changed()
+      this.ocrAvailableChanged()
     }
 
-  this.run_ocr_changed()
+    // update notes/warnings and language selector based on the run OCR option
+    this.runOcrChanged()
   }
 
   // if the user indicates they have ocr available (show/hide the manually corrected and run OCR option (for images/books)
-  ocr_available_changed() {
+  ocrAvailableChanged() {
     const ocr_available = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value == 'true'
     this.manuallyCorrectedOcrTarget.hidden = !ocr_available
     this.runOcrTarget.hidden = ocr_available
   }
 
   // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents)
-  manually_corrected_ocr_changed() {
-    if (!this.is_document()) return
+  manuallyCorrectedOcrChanged() {
+    if (!this.isDocument()) return
 
     this.runOcrTarget.hidden = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true'
   }
 
   // if the user indicates they want to run SDR OCR, show any relevant notes/warnings and language selector
-  run_ocr_changed() {
+  runOcrChanged() {
     // hide any notes to start, we will show as needed if OCR is selected
     this.runOcrDocumentNotesTarget.hidden = true
     this.runOcrImageNotesTarget.hidden = true
@@ -98,8 +100,8 @@ export default class extends Controller {
     const runocr = this.runOcrTarget.querySelector('input[type="radio"]:checked').value == 'true';
     if (runocr)
     {
-      this.runOcrDocumentNotesTarget.hidden = !this.is_document();
-      this.runOcrImageNotesTarget.hidden = this.is_document();
+      this.runOcrDocumentNotesTarget.hidden = !this.isDocument();
+      this.runOcrImageNotesTarget.hidden = this.isDocument();
       this.ocrLanguageWrapperTarget.classList.remove('d-none');
     }
     else
@@ -109,6 +111,15 @@ export default class extends Controller {
     Object.values(this.ocrDropdownTarget.children).forEach(child => {
       child.disabled = !runocr;
     })
+  }
+
+  // set the default processing configuration based on the content structure
+  setProcessingConfiguration() {
+      if (this.groupByFilenameTypes().indexOf(this.selectedContentStructure().value) >= 0) {
+        this.processingConfigurationTarget.value = 'filename'
+      } else {
+        this.processingConfigurationTarget.value = 'default'
+      }
   }
 
   languageDropdown(event) {

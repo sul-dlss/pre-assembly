@@ -36,7 +36,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'
-    select 'Book', from: 'Content structure'
+    select 'Book', from: 'Content type'
     fill_in 'Staging location', with: staging_location
     select 'Default', from: 'Processing configuration'
     check 'batch_context_using_file_manifest'

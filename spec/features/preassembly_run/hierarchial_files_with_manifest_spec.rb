@@ -88,7 +88,7 @@ RSpec.describe 'Pre-assemble Image object' do
 
       fill_in 'Project name', with: project_name
       select 'Preassembly Run', from: 'Job type'
-      select 'File', from: 'Content structure'
+      select 'File', from: 'Content type'
       fill_in 'Staging location', with: staging_location
       check 'batch_context_using_file_manifest'
 
@@ -139,7 +139,7 @@ RSpec.describe 'Pre-assemble Image object' do
 
       fill_in 'Project name', with: project_name
       select 'Preassembly Run', from: 'Job type'
-      select 'Media', from: 'Content structure'
+      select 'Media', from: 'Content type'
       fill_in 'Staging location', with: staging_location
       check 'batch_context_using_file_manifest'
 
