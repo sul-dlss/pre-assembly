@@ -2,8 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
 
-  static targets = ['contentStructure', 'ocrSettings', 'manuallyCorrectedOcrOptions', 'ocrAvailable',
-    'ocrAvailableOptions', 'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
+  static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable',
+    'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
     'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
 
   static values = { languages: Array }
@@ -72,18 +72,20 @@ export default class extends Controller {
     this.runOcrChanged()
   }
 
-  // if the user indicates they have ocr available (show/hide the manually corrected and run OCR option (for images/books)
+  // if the user indicates they have ocr available, show/hide the manually corrected and run OCR option (for images/books)
   ocrAvailableChanged() {
     const ocr_available = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value == 'true'
     this.manuallyCorrectedOcrTarget.hidden = !ocr_available
     this.runOcrTarget.hidden = ocr_available
   }
 
-  // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents)
+  // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents) and set the OCR available option
   manuallyCorrectedOcrChanged() {
     if (!this.isDocument()) return
 
-    this.runOcrTarget.hidden = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true'
+    const manuallyCorrectedOcr = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true'
+    this.ocrAvailableTarget.querySelector(`input[type=radio][value="${manuallyCorrectedOcr}"]`).checked = true
+    this.runOcrTarget.hidden = manuallyCorrectedOcr
   }
 
   // if the user indicates they want to run SDR OCR, show any relevant notes/warnings and language selector

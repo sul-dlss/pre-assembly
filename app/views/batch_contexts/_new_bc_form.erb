@@ -29,12 +29,12 @@
 
         <div data-ocr-target="ocrSettings" hidden>
             <div data-ocr-target="ocrAvailable" hidden>
-                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocrAvailableChanged", "ocr-target": "ocrAvailableOptions" } },
+                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocrAvailableChanged" } },
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
             </div>
             <div data-ocr-target="manuallyCorrectedOcr" hidden>
-                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manuallyCorrectedOcrChanged", "ocr-target": "manuallyCorrectedOcrOptions" } },
+                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manuallyCorrectedOcrChanged" } },
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
             </div>
