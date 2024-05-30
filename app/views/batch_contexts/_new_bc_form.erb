@@ -81,12 +81,10 @@
                 </div>
             </div>
         </div>
-    <% else # if OCR is not enabled, use the regular drop down menu %>
+    <% else # if OCR is not enabled, use the regular drop down menus %>
        <%= form.input :content_structure, label: 'Content type', collection: content_structure %>
+       <%= form.input :processing_configuration, collection: processing_configuration %>
     <% end %>
-    <%= form.input :processing_configuration, input_html: { data: { "ocr-target": "processingConfiguration" } },
-                   collection: processing_configuration
-    %>
 
     <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 

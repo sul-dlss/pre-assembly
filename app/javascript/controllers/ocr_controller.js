@@ -4,8 +4,7 @@ export default class extends Controller {
 
   static targets = ['contentStructure', 'ocrSettings', 'manuallyCorrectedOcrOptions', 'ocrAvailable',
     'ocrAvailableOptions', 'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper',
-    'processingConfiguration']
+    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
 
   static values = { languages: Array }
 
@@ -17,11 +16,6 @@ export default class extends Controller {
   // list of content structures that are allowed to run OCR
   ocrAllowed() {
     return ['simple_image', 'simple_book', 'document']
-  }
-
-  groupByFilenameTypes()
-  {
-    return ['simple_image', 'simple_book', 'maps']
   }
 
   selectedContentStructure() {
@@ -41,13 +35,14 @@ export default class extends Controller {
   }
 
   labelRunOcr() {
-    return `Would you like to auto-generate OCR files for the ${this.selectedContentStructure().label.toLowerCase()}(s)?`
+    return `Would you like to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
+  }
+
+  ocrFileTypeLabel() {
+    return this.isDocument() ? 'PDF documents' : 'images'
   }
 
   contentStructureChanged () {
-    // set the processing configuration based on the content structure
-    this.setProcessingConfiguration()
-
     // Hide the OCR settings if the selected content structure is not in the list of allowed content structures
     if (this.ocrAllowed().indexOf(this.contentStructureTarget.value) < 0) {
       this.ocrSettingsTarget.hidden = true
@@ -111,15 +106,6 @@ export default class extends Controller {
     Object.values(this.ocrDropdownTarget.children).forEach(child => {
       child.disabled = !runocr;
     })
-  }
-
-  // set the default processing configuration based on the content structure
-  setProcessingConfiguration() {
-      if (this.groupByFilenameTypes().indexOf(this.selectedContentStructure().value) >= 0) {
-        this.processingConfigurationTarget.value = 'filename'
-      } else {
-        this.processingConfigurationTarget.value = 'default'
-      }
   }
 
   languageDropdown(event) {
