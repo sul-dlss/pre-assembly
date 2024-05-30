@@ -5,7 +5,7 @@ module ApplicationHelper
     [
       ['Image', 'simple_image'],
       ['Book', 'simple_book'],
-      ['Document', 'document'],
+      ['Document/PDF', 'document'],
       ['File', 'file'],
       ['Geo', 'geo'],
       ['Media', 'media'],
