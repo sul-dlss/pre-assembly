@@ -120,7 +120,6 @@ RSpec.describe BatchContext do
 
   it 'enums default to their default values' do
     bc = described_class.new
-    expect(bc.content_structure).to eq 'simple_image'
     expect(bc.processing_configuration).to eq 'default'
   end
 

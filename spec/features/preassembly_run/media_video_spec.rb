@@ -41,7 +41,7 @@ RSpec.describe 'Pre-assemble Media Video object' do
     select 'Preassembly Run', from: 'Job type'
     select 'Media', from: 'Content type'
     fill_in 'Staging location', with: staging_location
-    select 'Default', from: 'Processing configuration'
+    select('Default', from: 'Processing configuration') unless Settings.ocr.enabled
     check 'batch_context_using_file_manifest'
 
     perform_enqueued_jobs do

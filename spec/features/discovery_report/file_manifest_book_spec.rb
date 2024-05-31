@@ -37,7 +37,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv' do
     select 'Discovery Report', from: 'Job type'
     fill_in 'Staging location', with: staging_location
     select 'Book', from: 'Content type'
-    select 'Default', from: 'Processing configuration'
+    select('Default', from: 'Processing configuration') unless Settings.ocr.enabled
     check 'batch_context_using_file_manifest'
 
     click_button 'Submit'

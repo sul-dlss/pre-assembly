@@ -27,7 +27,7 @@ RSpec.describe 'Use Globus staging location', :js do
     visit '/'
     fill_in 'Project name', with: "test-#{Time.now.to_i}"
     select 'Image', from: 'Content type'
-    select 'Group by filename', from: 'Processing configuration'
+    select('Group by filename', from: 'Processing configuration') unless Settings.ocr.enabled
 
     # click to create a Globus share and get the new GlobusDestination
     click_button 'Request Globus Link'
@@ -48,7 +48,7 @@ RSpec.describe 'Use Globus staging location', :js do
     visit '/'
     fill_in 'Project name', with: "test-#{Time.now.to_i}"
     select 'Image', from: 'Content type'
-    select 'Group by filename', from: 'Processing configuration'
+    select('Group by filename', from: 'Processing configuration') unless Settings.ocr.enabled
 
     # click to create a Globus share and get the new GlobusDestination
     click_button 'Request Globus Link'
