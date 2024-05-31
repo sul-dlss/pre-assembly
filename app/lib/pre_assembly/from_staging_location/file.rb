@@ -19,7 +19,7 @@ module PreAssembly
         'application/pdf' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
         'plain/text' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
         'text/plain' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
-        'image/png' => { preserve: 'yes', shelve: 'yes', publish: 'no' },
+        'image/png' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'application/zip' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'application/json' => { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       }.freeze
