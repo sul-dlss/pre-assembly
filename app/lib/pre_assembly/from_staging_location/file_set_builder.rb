@@ -25,16 +25,25 @@ module PreAssembly
         case processing_configuration
         when :default # one resource per object
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:, ocr_available:) }
-        when :filename # one resource per distinct filename (excluding extension)
+        when :filename, :filename_with_ocr # one resource per distinct filename (excluding extension)
           build_for_filename
         else
-          raise 'Invalid processing_configuration: must be :default or :filename'
+          raise 'Invalid processing_configuration: must be :default, :filename, or :filename_with_ocr'
         end
       end
 
       private
 
-      attr_reader :processing_configuration, :objects, :style, :ocr_available
+      attr_reader :processing_configuration, :objects, :style
+
+      # until the new OCR settings are available, we have to look in the processing configuration
+      def ocr_available
+        if Settings.ocr.enabled
+          @ocr_available
+        else
+          processing_configuration == :filename_with_ocr
+        end
+      end
 
       def build_for_filename
         # loop over distinct filenames, this determines how many resources we will have and

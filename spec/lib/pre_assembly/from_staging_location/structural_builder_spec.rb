@@ -112,53 +112,122 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       end
 
       context 'with filename processing configuration and OCR provided PDF files included' do
-        let(:processing_configuration) { :filename }
-        let(:ocr_available) { true }
         let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
         let(:dro_access) { { view: 'world', download: 'world' } }
         let(:all_files_public) { false }
 
-        context 'with non manually corrected OCR' do
-          it 'adds the PDF file with transcription role but not corrected for accessibility' do
-            file_sets = structural.contains
-            expect(file_sets.size).to eq 1
-            files = file_sets.flat_map { |file_set| file_set.structural.contains }
-            expect(files.map(&:filename)).to eq ['document.pdf']
-            expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
-            expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+        context 'when OCR workflows enabled' do
+          before { allow(Settings.ocr).to receive(:enabled).and_return(true) }
 
-            # it stores administrative settings corresponding to the access
-            expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+          let(:processing_configuration) { :filename }
+          let(:ocr_available) { true }
 
-            expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
-            expect(files.map(&:correctedForAccessibility)).to all be(false) # correctedForAccessibility false
-            expect(files.map(&:use)).to all eq('transcription') # role = transcription
+          context 'with non manually corrected OCR' do
+            it 'adds the PDF file with transcription role but not corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expect(files.map(&:filename)).to eq ['document.pdf']
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
 
-            # It retains the collection
-            expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+              # it stores administrative settings corresponding to the access
+              expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+              expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+              expect(files.map(&:correctedForAccessibility)).to all be(false) # correctedForAccessibility false
+              expect(files.map(&:use)).to all eq('transcription') # role = transcription
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
+          end
+        end
+
+        context 'when OCR workflows disabled' do
+          before { allow(Settings.ocr).to receive(:enabled).and_return(false) }
+
+          let(:processing_configuration) { :filename_with_ocr }
+          let(:ocr_available) { nil }
+          let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
+          let(:dro_access) { { view: 'world', download: 'world' } }
+          let(:all_files_public) { false }
+
+          context 'with non manually corrected OCR' do
+            it 'adds the PDF file with transcription role but not corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expect(files.map(&:filename)).to eq ['document.pdf']
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+              # it stores administrative settings corresponding to the access
+              expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+              expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+              expect(files.map(&:correctedForAccessibility)).to all be(false) # correctedForAccessibility false
+              expect(files.map(&:use)).to all eq('transcription') # role = transcription
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
           end
         end
 
         context 'with manually corrected OCR' do
           let(:manually_corrected_ocr) { true }
 
-          it 'adds the PDF file with transcription role and corrected for accessibility' do
-            file_sets = structural.contains
-            expect(file_sets.size).to eq 1
-            files = file_sets.flat_map { |file_set| file_set.structural.contains }
-            expect(files.map(&:filename)).to eq ['document.pdf']
-            expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
-            expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+          context 'when OCR workflows enabled' do
+            before { allow(Settings.ocr).to receive(:enabled).and_return(true) }
 
-            # it stores administrative settings corresponding to the access
-            expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+            let(:processing_configuration) { :filename }
+            let(:ocr_available) { true }
 
-            expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
-            expect(files.map(&:correctedForAccessibility)).to all be(true) # correctedForAccessibility false
-            expect(files.map(&:use)).to all eq('transcription') # role = transcription
+            it 'adds the PDF file with transcription role and corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expect(files.map(&:filename)).to eq ['document.pdf']
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
 
-            # It retains the collection
-            expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+              # it stores administrative settings corresponding to the access
+              expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+              expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+              expect(files.map(&:correctedForAccessibility)).to all be(true) # correctedForAccessibility false
+              expect(files.map(&:use)).to all eq('transcription') # role = transcription
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
+          end
+
+          context 'when OCR workflows disabled' do
+            before { allow(Settings.ocr).to receive(:enabled).and_return(false) }
+
+            let(:processing_configuration) { :filename_with_ocr }
+            let(:ocr_available) { nil }
+
+            it 'adds the PDF file with transcription role and corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expect(files.map(&:filename)).to eq ['document.pdf']
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+              # it stores administrative settings corresponding to the access
+              expect(files.map { |file| file.administrative.to_h }).to all(eq({ publish: true, shelve: true, sdrPreserve: true }))
+
+              expect(files.map(&:sdrGeneratedText)).to all be(false) # sdrGenerated false
+              expect(files.map(&:correctedForAccessibility)).to all be(true) # correctedForAccessibility false
+              expect(files.map(&:use)).to all eq('transcription') # role = transcription
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
           end
         end
       end
@@ -176,60 +245,131 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         let(:dro_access) { { view: 'world', download: 'world' } }
         let(:all_files_public) { false }
 
-        context 'with non manually corrected OCR' do
-          it 'adds the OCR file with transcription role but not corrected for accessibility' do
-            file_sets = structural.contains
-            expect(file_sets.size).to eq 1
-            files = file_sets.flat_map { |file_set| file_set.structural.contains }
-            expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
-            expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+        context 'when OCR workflows enabled' do
+          before { allow(Settings.ocr).to receive(:enabled).and_return(true) }
 
-            # a JPG file
-            expect(files[0].filename).to eq('page_0001.jpg')
-            expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
-            expect(files[0].sdrGeneratedText).to be(false)
-            expect(files[0].correctedForAccessibility).to be(false)
-            expect(files[0].use).to be_nil
+          let(:processing_configuration) { :filename }
+          let(:ocr_available) { true }
 
-            # an OCR file
-            expect(files[1].filename).to eq('page_0001.xml')
-            expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
-            expect(files[1].sdrGeneratedText).to be(false)
-            expect(files[1].correctedForAccessibility).to be(false)
-            expect(files[1].use).to eq('transcription')
+          context 'with non manually corrected OCR' do
+            it 'adds the OCR file with transcription role but not corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
 
-            # It retains the collection
-            expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+              # a JPG file
+              expect(files[0].filename).to eq('page_0001.jpg')
+              expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
+              expect(files[0].sdrGeneratedText).to be(false)
+              expect(files[0].correctedForAccessibility).to be(false)
+              expect(files[0].use).to be_nil
+
+              # an OCR file
+              expect(files[1].filename).to eq('page_0001.xml')
+              expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
+              expect(files[1].sdrGeneratedText).to be(false)
+              expect(files[1].correctedForAccessibility).to be(false)
+              expect(files[1].use).to eq('transcription')
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
+          end
+
+          context 'with manually corrected OCR' do
+            let(:manually_corrected_ocr) { true }
+            let(:ocr_available) { true }
+
+            it 'adds the OCR file with transcription role and corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+              # a JPG file
+              expect(files[0].filename).to eq('page_0001.jpg')
+              expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
+              expect(files[0].sdrGeneratedText).to be(false)
+              expect(files[0].correctedForAccessibility).to be(false)
+              expect(files[0].use).to be_nil
+
+              # an OCR file
+              expect(files[1].filename).to eq('page_0001.xml')
+              expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
+              expect(files[1].sdrGeneratedText).to be(false)
+              expect(files[1].correctedForAccessibility).to be(true)
+              expect(files[1].use).to eq('transcription')
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
           end
         end
 
-        context 'with manually corrected OCR' do
-          let(:manually_corrected_ocr) { true }
-          let(:ocr_available) { true }
+        context 'when OCR workflows disabled' do
+          before { allow(Settings.ocr).to receive(:enabled).and_return(false) }
 
-          it 'adds the OCR file with transcription role and corrected for accessibility' do
-            file_sets = structural.contains
-            expect(file_sets.size).to eq 1
-            files = file_sets.flat_map { |file_set| file_set.structural.contains }
-            expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
-            expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+          let(:processing_configuration) { :filename_with_ocr }
+          let(:ocr_available) { nil }
 
-            # a JPG file
-            expect(files[0].filename).to eq('page_0001.jpg')
-            expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
-            expect(files[0].sdrGeneratedText).to be(false)
-            expect(files[0].correctedForAccessibility).to be(false)
-            expect(files[0].use).to be_nil
+          context 'with non manually corrected OCR' do
+            it 'adds the OCR file with transcription role but not corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
 
-            # an OCR file
-            expect(files[1].filename).to eq('page_0001.xml')
-            expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
-            expect(files[1].sdrGeneratedText).to be(false)
-            expect(files[1].correctedForAccessibility).to be(true)
-            expect(files[1].use).to eq('transcription')
+              # a JPG file
+              expect(files[0].filename).to eq('page_0001.jpg')
+              expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
+              expect(files[0].sdrGeneratedText).to be(false)
+              expect(files[0].correctedForAccessibility).to be(false)
+              expect(files[0].use).to be_nil
 
-            # It retains the collection
-            expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+              # an OCR file
+              expect(files[1].filename).to eq('page_0001.xml')
+              expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
+              expect(files[1].sdrGeneratedText).to be(false)
+              expect(files[1].correctedForAccessibility).to be(false)
+              expect(files[1].use).to eq('transcription')
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
+          end
+
+          context 'with manually corrected OCR' do
+            let(:manually_corrected_ocr) { true }
+            let(:ocr_available) { true }
+
+            it 'adds the OCR file with transcription role and corrected for accessibility' do
+              file_sets = structural.contains
+              expect(file_sets.size).to eq 1
+              files = file_sets.flat_map { |file_set| file_set.structural.contains }
+              expected_access = { view: 'world', download: 'world', controlledDigitalLending: false }
+              expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
+
+              # a JPG file
+              expect(files[0].filename).to eq('page_0001.jpg')
+              expect(files[0].administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
+              expect(files[0].sdrGeneratedText).to be(false)
+              expect(files[0].correctedForAccessibility).to be(false)
+              expect(files[0].use).to be_nil
+
+              # an OCR file
+              expect(files[1].filename).to eq('page_0001.xml')
+              expect(files[1].administrative.to_h).to eq({ publish: true, shelve: true, sdrPreserve: true })
+              expect(files[1].sdrGeneratedText).to be(false)
+              expect(files[1].correctedForAccessibility).to be(true)
+              expect(files[1].use).to eq('transcription')
+
+              # It retains the collection
+              expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+            end
           end
         end
       end
