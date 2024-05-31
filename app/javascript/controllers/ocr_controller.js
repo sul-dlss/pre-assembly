@@ -148,7 +148,7 @@ export default class extends Controller {
       this.selectedLanguagesTarget.classList.add('d-none');
     } else {
       this.selectedLanguagesTarget.classList.remove('d-none');
-      this.selectedLanguagesTarget.innerHTML = `<div>Selected Language(s)</div>
+      this.selectedLanguagesTarget.innerHTML = `<div>Selected language(s)</div>
                                                 <ul class="list-unstyled border rounded mb-3 p-1">${this.renderLanguagePills()}</ul>`;
     }
 
