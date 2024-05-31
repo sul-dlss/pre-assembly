@@ -77,6 +77,14 @@ export default class extends Controller {
     const ocr_available = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value == 'true'
     this.manuallyCorrectedOcrTarget.hidden = !ocr_available
     this.runOcrTarget.hidden = ocr_available
+    if (ocr_available)
+      {
+        this.ocrLanguageWrapperTarget.classList.add('d-none')
+      }
+      else
+      {
+        this.runOcrChanged()
+      }
   }
 
   // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents) and set the OCR available option
