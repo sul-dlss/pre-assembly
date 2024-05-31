@@ -7,7 +7,9 @@ RSpec.describe PreAssembly::DigitalObject do
 
   let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
-  let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif') }
+  let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif', content_structure:, processing_configuration:) }
+  let(:processing_configuration) { 'filename' }
+  let(:content_structure) { 'simple_image' }
   let(:job_run) { create(:job_run, :preassembly, batch_context: bc) }
   let(:druid) { object.druid }
   let(:tmp_dir_args) { [nil, 'tmp'] }
@@ -175,7 +177,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'default structural metadata (image)' do
+    describe 'group by filename structural metadata (image)' do
       let(:cocina_type) { Cocina::Models::ObjectType.image }
       let(:content_structure) { 'simple_image' }
       let(:expected) do
@@ -194,12 +196,8 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   use: nil,
                                                   hasMessageDigests: [{ type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
-                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
-                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
-                       externalIdentifier: 'bc234fg5678_2',
-                       label: 'Image 2',
-                       version: 1,
-                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } },
+                                                { type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
                                                   label: 'image1.tif',
                                                   filename: 'image1.tif',
@@ -212,8 +210,8 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/image',
-                       externalIdentifier: 'bc234fg5678_3',
-                       label: 'Image 3',
+                       externalIdentifier: 'bc234fg5678_2',
+                       label: 'Image 2',
                        version: 1,
                        structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
@@ -226,12 +224,8 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   use: nil,
                                                   hasMessageDigests: [{ type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
-                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
-                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
-                       externalIdentifier: 'bc234fg5678_4',
-                       label: 'Image 4',
-                       version: 1,
-                       structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
+                                                  administrative: { publish: true, sdrPreserve: false, shelve: true } },
+                                                { type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/4',
                                                   label: 'image2.tif',
                                                   filename: 'image2.tif',
@@ -257,14 +251,15 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'default structural metadata (image) with file hierarchy' do
+    describe 'default structural metadata (file) with file hierarchy' do
       let(:pid) { 'druid:jy812bp9403' }
-      let(:cocina_type) { Cocina::Models::ObjectType.image }
-      let(:content_structure) { 'simple_image' }
+      let(:cocina_type) { Cocina::Models::ObjectType.object }
+      let(:content_structure) { 'file' }
+      let(:processing_configuration) { 'default' }
       let(:expected) do
-        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
+        { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/file',
                        externalIdentifier: 'bc234fg5678_1',
-                       label: 'Image 1',
+                       label: 'File 1',
                        version: 1,
                        structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/1',
@@ -278,9 +273,9 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   hasMessageDigests: [{ type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
-                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/file',
                        externalIdentifier: 'bc234fg5678_2',
-                       label: 'Image 2',
+                       label: 'File 2',
                        version: 1,
                        structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/2',
@@ -294,9 +289,9 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   hasMessageDigests: [{ type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
-                     { type: 'https://cocina.sul.stanford.edu/models/resources/image',
+                     { type: 'https://cocina.sul.stanford.edu/models/resources/file',
                        externalIdentifier: 'bc234fg5678_3',
-                       label: 'Image 3',
+                       label: 'File 3',
                        version: 1,
                        structural: { contains: [{ type: 'https://cocina.sul.stanford.edu/models/file',
                                                   externalIdentifier: 'https://cocina.sul.stanford.edu/file/3',
@@ -310,7 +305,6 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   hasMessageDigests: [{ type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
-
           hasMemberOrders: [],
           isMemberOf: [] }
       end
@@ -327,7 +321,8 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'map structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.map }
-      let(:content_structure) { 'map' }
+      let(:content_structure) { 'maps' }
+      let(:processing_configuration) { 'filename' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -367,7 +362,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('map')
         add_object_files(extension: 'jp2')
       end
 
@@ -418,7 +412,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files(extension: 'jp2')
       end
 
@@ -471,7 +464,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('simple_book')
         add_object_files(extension: 'jp2')
       end
 
@@ -482,7 +474,8 @@ RSpec.describe PreAssembly::DigitalObject do
 
     describe 'webarchive-seed structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.webarchive_seed }
-      let(:content_structure) { 'webarchive-seed' }
+      let(:content_structure) { 'webarchive_seed' }
+      let(:processing_configuration) { 'default' }
 
       let(:expected) do
         { contains: [{ type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -522,7 +515,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive(:content_structure).and_return('webarchive-seed')
         add_object_files(extension: 'jp2')
       end
 
@@ -613,7 +605,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
 
       before do
-        allow(bc).to receive_messages(content_structure: 'simple_book', processing_configuration: 'filename')
         add_object_files(extension: 'tif')
         add_object_files(extension: 'jp2')
       end

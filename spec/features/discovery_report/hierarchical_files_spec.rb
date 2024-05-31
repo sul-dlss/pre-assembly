@@ -32,6 +32,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
     select 'File', from: 'Content structure'
+    select 'Default', from: 'Processing configuration'
     fill_in 'Staging location', with: staging_location
 
     click_button 'Submit'
@@ -67,6 +68,7 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
     select 'Image', from: 'Content structure' # wrong, needs to be File for an object with hierarchy
+    select 'Group by filename', from: 'Processing configuration'
     fill_in 'Staging location', with: staging_location
 
     click_button 'Submit'

@@ -26,6 +26,7 @@ RSpec.describe 'Discovery Report fails' do
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'
+    select 'Group by filename', from: 'Processing configuration'
     fill_in 'Staging location', with: staging_location
     check 'batch_context_using_file_manifest'
 

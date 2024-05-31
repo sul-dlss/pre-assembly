@@ -7,7 +7,7 @@ RSpec.describe BatchContextsController do
         {
           project_name: 'Multimedia',
           content_structure: 'simple_image',
-          processing_configuration: 'default',
+          processing_configuration: 'filename',
           staging_location: 'spec/fixtures/multimedia',
           job_runs_attributes: { '0' => { job_type: 'preassembly' } }
         }
@@ -63,7 +63,7 @@ RSpec.describe BatchContextsController do
           bc = assigns(:batch_context)
           expect(bc.project_name).to eq 'Multimedia'
           expect(bc.content_structure).to eq 'simple_image'
-          expect(bc.processing_configuration).to eq 'default'
+          expect(bc.processing_configuration).to eq 'filename'
           expect(bc.staging_location).to eq 'spec/fixtures/multimedia'
         end
 

@@ -36,6 +36,7 @@ RSpec.describe BatchContext do
             project_name: 'File_manifest_media',
             staging_location: 'spec/fixtures/media_audio_test',
             content_structure: 'media',
+            processing_configuration: 'default',
             using_file_manifest: false
           }
         end
@@ -53,6 +54,7 @@ RSpec.describe BatchContext do
             project_name: 'File_manifest_media',
             staging_location: 'spec/fixtures/media_audio_test',
             content_structure: 'media',
+            processing_configuration: 'default',
             using_file_manifest: true
           }
         end
