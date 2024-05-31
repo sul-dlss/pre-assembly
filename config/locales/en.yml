@@ -45,6 +45,7 @@ en:
             accessioning_complete: 'Job completed'
     attributes:
       batch_context:
+        content_structure: 'Content type'
         all_files_public: "Preserve, Shelve, Publish settings"
   helpers:
     submit:

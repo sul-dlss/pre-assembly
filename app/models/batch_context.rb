@@ -136,7 +136,6 @@ class BatchContext < ApplicationRecord
   end
 
   def default_enums
-    self[:content_structure] ||= 0
     self[:processing_configuration] ||= 0
   end
 
