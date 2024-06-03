@@ -29,7 +29,7 @@ module PreAssembly
       ATTRIBUTES_FOR_TYPE_WITH_OCR = {
         'image/tif' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/tiff' => { preserve: 'yes', shelve: 'no', publish: 'no' },
-        'image/jp2' => { preserve: 'yes', shelve: 'no', publish: 'no' },
+        'image/jp2' => { preserve: 'yes', shelve: 'yes', publish: 'yes' },
         'image/jpeg' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/png' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'application/pdf' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription', corrected_for_accessibility: true },
