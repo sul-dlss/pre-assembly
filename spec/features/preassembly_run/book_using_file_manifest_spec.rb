@@ -39,7 +39,7 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
     select 'Book', from: 'Content type'
     fill_in 'Staging location', with: staging_location
     select('Default', from: 'Processing configuration') unless Settings.ocr.enabled
-    check 'batch_context_using_file_manifest'
+    choose 'batch_context_using_file_manifest_true'
 
     perform_enqueued_jobs do
       click_button 'Submit'

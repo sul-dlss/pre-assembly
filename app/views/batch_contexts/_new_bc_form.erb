@@ -91,7 +91,10 @@
     <%# the 'staging_style_symlink` is hidden, since we do not currently want users to access it (it may cause problems with some accessioning steps)%>
     <%= form.hidden_field :staging_style_symlink, value: false %>
 
-    <%= form.input :using_file_manifest, as: :boolean, label: 'I have a file manifest'%>
+    <%= form.input :using_file_manifest,
+                   as: :radio_buttons,
+                   collection: [['Yes', true], ['No', false]],
+                   label: 'Do you have a file manifest?' %>
 
     <%= form.input :all_files_public,
                    as: :radio_buttons,

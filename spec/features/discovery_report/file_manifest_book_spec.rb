@@ -38,7 +38,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv' do
     fill_in 'Staging location', with: staging_location
     select 'Book', from: 'Content type'
     select('Default', from: 'Processing configuration') unless Settings.ocr.enabled
-    check 'batch_context_using_file_manifest'
+    choose 'batch_context_using_file_manifest_true'
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'

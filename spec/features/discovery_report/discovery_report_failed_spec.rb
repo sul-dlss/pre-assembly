@@ -29,7 +29,7 @@ RSpec.describe 'Discovery Report fails' do
     select 'Image', from: 'Content type'
     select('Group by filename', from: 'Processing configuration') unless Settings.ocr.enabled
     fill_in 'Staging location', with: staging_location
-    check 'batch_context_using_file_manifest'
+    choose 'batch_context_using_file_manifest_true'
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
