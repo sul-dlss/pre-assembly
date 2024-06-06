@@ -17,10 +17,13 @@ class BatchContext < ApplicationRecord
   has_many :job_runs, dependent: :destroy
   has_one :globus_destination, dependent: :destroy
   after_initialize :normalize_staging_location, :default_enums
+  before_save :set_processing_configuration, if: proc { Settings.ocr.enabled }
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
 
-  validates :staging_location, :processing_configuration, :content_structure, presence: true
+  validates :staging_location, :content_structure, presence: true
+  # we only need this validation when OCR is disabled (once enabled, the processing_configuration is set automatically based on content type)
+  validates :processing_configuration, presence: true, unless: proc { Settings.ocr.enabled }
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
@@ -31,7 +34,6 @@ class BatchContext < ApplicationRecord
   validate :verify_staging_location_path
   validate :verify_file_manifest_exists, if: :using_file_manifest
   validate :verify_output_dir_no_exists, unless: proc { persisted? }
-  validate :verify_processing_configuration_for_ocr, if: proc { Settings.ocr.enabled && manually_corrected_ocr == true }
 
   enum content_structure: {
     'simple_image' => 0,
@@ -51,8 +53,20 @@ class BatchContext < ApplicationRecord
     'default' => 0,
     'filename' => 1,
     'media_cm_style' => 2, # Deprecated
-    'filename_with_ocr' => 3
+    'filename_with_ocr' => 3 # Deprecated
   }
+  # sets required processing_configuration values for a given content structure
+  CONTENT_STRUCTURE_TO_PROCESSING_CONFIGURATION = {
+    'simple_image' => 'filename',
+    'simple_book' => 'filename',
+    'document' => 'default',
+    'file' => 'default',
+    'geo' => 'default',
+    'media' => 'default',
+    '3d' => 'default',
+    'maps' => 'filename',
+    'webarchive_seed' => 'default'
+  }.freeze
 
   accepts_nested_attributes_for :job_runs
 
@@ -112,12 +126,16 @@ class BatchContext < ApplicationRecord
 
   private
 
+  # set the processing configuration based on the content structure
+  def set_processing_configuration
+    self.processing_configuration = CONTENT_STRUCTURE_TO_PROCESSING_CONFIGURATION[content_structure]
+  end
+
   def object_manifest_path
     staging_location_with_path(OBJECT_MANIFEST_FILE_NAME)
   end
 
   def default_enums
-    self[:content_structure] ||= 0
     self[:processing_configuration] ||= 0
   end
 
@@ -190,10 +208,6 @@ class BatchContext < ApplicationRecord
 
   def verify_file_manifest_exists
     errors.add(:staging_location, "missing or empty file manifest: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
-  end
-
-  def verify_processing_configuration_for_ocr
-    errors.add(:processing_configuration, "must be 'Group by filename (with pre-existing OCR)' if you indicate you are providing OCR") unless processing_configuration == 'filename_with_ocr'
   end
 end
 # rubocop:enable Metrics/ClassLength

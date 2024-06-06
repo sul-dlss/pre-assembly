@@ -24,8 +24,7 @@ module PreAssembly
         'application/json' => { preserve: 'yes', shelve: 'yes', publish: 'yes' }
       }.freeze
 
-      # if the user tells us they are providing OCR, we will set the transcription role and corrected_for_accessibility to true
-      #  since the user has verified the OCR is correct in the UI
+      # if the user tells us they are providing OCR, we will set the transcription role and possibly also corrected_for_accessibility
       ATTRIBUTES_FOR_TYPE_WITH_OCR = {
         'image/tif' => { preserve: 'yes', shelve: 'no', publish: 'no' },
         'image/tiff' => { preserve: 'yes', shelve: 'no', publish: 'no' },
@@ -39,9 +38,9 @@ module PreAssembly
       }.freeze
 
       # @param [Assembly::ObjectFile] file
-      def initialize(file:, processing_configuration:)
+      def initialize(file:, ocr_available:)
         @file = file
-        @processing_configuration = processing_configuration
+        @ocr_available = ocr_available
       end
 
       delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, :relative_path, to: :file
@@ -52,10 +51,10 @@ module PreAssembly
 
       private
 
-      attr_reader :file, :processing_configuration
+      attr_reader :file, :ocr_available
 
       def file_attributes_for_mimetype(mimetype)
-        return ATTRIBUTES_FOR_TYPE_WITH_OCR[mimetype] if processing_configuration == :filename_with_ocr && ATTRIBUTES_FOR_TYPE_WITH_OCR.key?(mimetype)
+        return ATTRIBUTES_FOR_TYPE_WITH_OCR[mimetype] if ocr_available && ATTRIBUTES_FOR_TYPE_WITH_OCR.key?(mimetype)
 
         ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
       end

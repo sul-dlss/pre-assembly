@@ -38,11 +38,11 @@ RSpec.describe 'Pre-assemble Media Video object' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Media', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Media', from: 'Content type'
     fill_in 'Staging location', with: staging_location
-    select 'Default', from: 'Processing configuration'
-    check 'batch_context_using_file_manifest'
+    select('Default', from: 'Processing configuration') unless Settings.ocr.enabled
+    choose 'batch_context_using_file_manifest_true'
 
     perform_enqueued_jobs do
       click_button 'Submit'

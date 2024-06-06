@@ -36,9 +36,8 @@ RSpec.describe 'Pre-assemble public object (shelved and published)' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Image', from: 'Content structure'
-    select 'Group by filename', from: 'Processing configuration'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Image', from: 'Content type'
     fill_in 'Staging location', with: staging_location
     choose 'Preserve=Yes, Shelve=Yes, Publish=Yes'
 

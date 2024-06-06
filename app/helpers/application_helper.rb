@@ -5,7 +5,7 @@ module ApplicationHelper
     [
       ['Image', 'simple_image'],
       ['Book', 'simple_book'],
-      ['Document', 'document'],
+      ['Document/PDF', 'document'],
       ['File', 'file'],
       ['Geo', 'geo'],
       ['Media', 'media'],
@@ -15,7 +15,15 @@ module ApplicationHelper
     ]
   end
 
-  def avaliable_ocr_languages
+  def processing_configuration
+    [
+      ['Default', 'default'],
+      ['Group by filename', 'filename'],
+      ['Group by filename (with pre-existing OCR)', 'filename_with_ocr']
+    ]
+  end
+
+  def avalaible_ocr_languages
     ABBYY_LANGUAGES.map { |lang| [lang, lang.gsub(/[ ()]/, '')] }
   end
 end

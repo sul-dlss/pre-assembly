@@ -34,8 +34,8 @@ RSpec.describe 'Pre-assemble document object' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'Document', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'Document', from: 'Content type'
     fill_in 'Staging location', with: staging_location
 
     perform_enqueued_jobs do

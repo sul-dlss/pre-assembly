@@ -36,8 +36,8 @@ RSpec.describe 'Pre-assemble object with dark files' do
     expect(page).to have_css('h1', text: 'Complete the form below')
 
     fill_in 'Project name', with: project_name
-    select 'Pre Assembly Run', from: 'Job type'
-    select 'File', from: 'Content structure'
+    select 'Preassembly Run', from: 'Job type'
+    select 'File', from: 'Content type'
     fill_in 'Staging location', with: staging_location
 
     perform_enqueued_jobs do

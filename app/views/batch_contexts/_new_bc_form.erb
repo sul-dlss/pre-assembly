@@ -18,31 +18,36 @@
     <%= form.simple_fields_for :job_runs do |jt| %>
         <%= jt.input :job_type, collection:
             [
-                ["Pre Assembly Run", "preassembly"],
+                ["Preassembly Run", "preassembly"],
                 ["Discovery Report", "discovery_report"]
             ]
         %>
     <% end %>
 
     <% if Settings.ocr.enabled # if OCR is enabled, the content_structure drop down menu will hide/show ocr menus via stimulus %>
-        <%= form.input :content_structure, input_html: { data: { action: "change->ocr#content_structure_changed", "ocr-target": "contentStructure" } }, collection: content_structure %>
+        <%= form.input :content_structure, label: 'Content type', input_html: { data: { action: "change->ocr#contentStructureChanged", "ocr-target": "contentStructure" } }, collection: content_structure %>
 
         <div data-ocr-target="ocrSettings" hidden>
-            <div data-ocr-target="manuallyCorrectedOcr">
-            <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manually_corrected_ocr_changed", "ocr-target": "manuallyCorrectedOcrOptions" } },
-                as: :radio_buttons,
-                collection: [['Yes', true], ['No', false]] %>
+            <div data-ocr-target="ocrAvailable" hidden>
+                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->ocr#ocrAvailableChanged" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
             </div>
-            <div data-ocr-target="runOcr">
-            <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#run_ocr_changed", "ocr-target": "runOcrOptions" } },
-                as: :radio_buttons,
-                collection: [['Yes. Run ABBYY OCR.', true], ['No. Do not run ABBYY OCR.', false]] %>
+            <div data-ocr-target="manuallyCorrectedOcr" hidden>
+                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->ocr#manuallyCorrectedOcrChanged" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
+            </div>
+            <div data-ocr-target="runOcr" hidden>
+                <%= form.input :run_ocr, input_html: { data: { action: "change->ocr#runOcrChanged", "ocr-target": "runOcrOptions" } },
+                    as: :radio_buttons,
+                    collection: [['Yes', true], ['No', false]] %>
+                <div data-ocr-target="runOcrImageNotes" hidden>
+                    <p><i>Warning:</i> Avoid auto-generating OCR files for images that do not contain any text, as it may have adverse effects.</p>
+                </div>
                 <div data-ocr-target="runOcrDocumentNotes" hidden>
-                    <p><i>Warning:</i> If your document is already WCAG/PDFUA compliant, ABBYY may create a less accessible version.
-                    Your original document will not be overwritten.</p>
-                    <p><i>Note:</i> Automatic tools can achieve only a minimal level of compliance with accessibility standards (WCAG, PDF/UA).
-                    To be fully compliant, it is encouraged that documents be manually remediated and uploaded.
-                    See <%= link_to 'https://uit.stanford.edu/accessibility/guides/pdf'%></p>
+                    <p><i>Note:</i> Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf'%>.</p>
+                    <p><i>Warning:</i> Avoid auto-generating OCR files for PDF documents that do not contain any text, as it may have adverse effects.</p>
                 </div>
             </div>
             <div class="ocr-language d-none" data-ocr-target="ocrLanguageWrapper">
@@ -60,7 +65,7 @@
                         </div>
                     </div>
                     <div id="ocr-languages" data-ocr-target="dropdownContent" class="dropdown-content d-none languages-group border rounded">
-                        <% avaliable_ocr_languages.each do |language| %>
+                        <% avalaible_ocr_languages.each do |language| %>
                             <label class="d-block">
                                 <%= form.check_box 'ocr_languages', { multiple: true, data: { 'ocr-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->ocr#languageUpdate' } }, language[1], nil %>
                                 <%= language[0] %>
@@ -76,23 +81,20 @@
                 </div>
             </div>
         </div>
-    <% else # if OCR is not enabled, use the regular drop down menu %>
-       <%= form.input :content_structure, collection: content_structure %>
+    <% else # if OCR is not enabled, use the regular drop down menus %>
+       <%= form.input :content_structure, label: 'Content type', collection: content_structure %>
+       <%= form.input :processing_configuration, collection: processing_configuration %>
     <% end %>
 
     <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 
     <%# the 'staging_style_symlink` is hidden, since we do not currently want users to access it (it may cause problems with some accessioning steps)%>
     <%= form.hidden_field :staging_style_symlink, value: false %>
-    <%= form.input :processing_configuration, collection:
-        [
-            ["Default", "default"],
-            ["Group by filename", "filename"],
-            ["Group by filename (with pre-existing OCR)", "filename_with_ocr"]
-        ]
-    %>
 
-    <%= form.input :using_file_manifest, as: :boolean, label: 'I have a file manifest'%>
+    <%= form.input :using_file_manifest,
+                   as: :radio_buttons,
+                   collection: [['Yes', true], ['No', false]],
+                   label: 'Do you have a file manifest?' %>
 
     <%= form.input :all_files_public,
                    as: :radio_buttons,

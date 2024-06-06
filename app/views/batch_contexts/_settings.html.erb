@@ -6,8 +6,8 @@
     </thead>
     <tbody>
         <tr>
-            <td>Content Structure</td>
-            <td><%= batch_context.content_structure %></td>
+            <td>Content Type</td>
+            <td><%= content_structure.to_h.key(batch_context.content_structure) %></td>
         </tr>
         <tr>
             <td>Staging Location</td>
@@ -19,7 +19,7 @@
         </tr>
         <tr>
             <td>Processing configuration</td>
-            <td><%= batch_context.processing_configuration %></td>
+            <td><%= processing_configuration.to_h.key(batch_context.processing_configuration) %></td>
         </tr>
         <tr>
             <td>Using File Manifest</td>
