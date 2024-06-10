@@ -35,7 +35,7 @@ RSpec.describe 'Pre-assemble Media Video object' do
 
   it 'works with a video object with a valid role in contentMetadata' do
     visit '/'
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'

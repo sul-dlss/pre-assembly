@@ -31,7 +31,7 @@ RSpec.describe 'Discovery Report from file_manifest.csv' do
 
   it 'provides report and log files' do
     visit '/'
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     fill_in 'Project name', with: project_name
     select 'Discovery Report', from: 'Job type'

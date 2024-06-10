@@ -2,6 +2,10 @@
   color: $link-color;
  }
 
+ body {
+  --bs-body-font-family: "Source Sans 3", "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+ }
+
  .btn {
     --cardinal-red: #8c1515;
     /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
