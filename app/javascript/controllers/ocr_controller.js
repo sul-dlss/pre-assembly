@@ -27,15 +27,15 @@ export default class extends Controller {
   }
 
   labelImagesManuallyCorrected() {
-    return `Have the OCR files been corrected to comply with accessibility standards?  More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.`
+    return `Do the OCR files comply with accessibility standards? More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.`
   }
 
   labelDocumentsManuallyCorrected() {
-    return `Have the PDF documents been corrected to comply with accessibility standards?  More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.`
+    return `Do the PDF documents comply with accessibility standards? More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.`
   }
 
   labelRunOcr() {
-    return `Would you like to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
+    return `Do you want to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
   }
 
   ocrFileTypeLabel() {
