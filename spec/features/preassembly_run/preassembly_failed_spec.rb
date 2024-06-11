@@ -16,7 +16,7 @@ RSpec.describe 'Pre-assemble job fails' do
 
   it 'fails and does not create log file' do
     visit '/'
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'

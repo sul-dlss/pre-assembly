@@ -31,7 +31,7 @@ RSpec.describe 'Run preassembly on object with no files' do
 
   it 'has status "Preassembly completed" and creates log file showing "success"' do
     visit '/'
-    expect(page).to have_css('h1', text: 'Complete the form below')
+    expect(page).to have_css('h1', text: 'Start new job')
 
     fill_in 'Project name', with: project_name
     select 'Preassembly Run', from: 'Job type'
