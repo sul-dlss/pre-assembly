@@ -61,7 +61,7 @@ module PreAssembly
         return {} if file_exists?(filename)
         return {} unless (existing_cocina_file = existing_cocina_files[filename])
 
-        fields = :externalIdentifier, :hasMessageDigests, :size, :presentation
+        fields = :externalIdentifier, :hasMessageDigests, :size, :presentation, :sdrGeneratedText, :correctedForAccessibility
         fields << :hasMimeType unless mimetype_present
 
         existing_cocina_file.to_h.slice(*fields)
