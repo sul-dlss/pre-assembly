@@ -149,7 +149,7 @@ export default class extends Controller {
     } else {
       this.selectedLanguagesTarget.classList.remove('d-none');
       this.selectedLanguagesTarget.innerHTML = `<div>Selected language(s)</div>
-                                                <ul class="list-unstyled border rounded mb-3 p-1">${this.renderLanguagePills()}</ul>`;
+                                                <ul class="list-unstyled border rounded mb-3 p-1 bg-white">${this.renderLanguagePills()}</ul>`;
     }
 
     if (this.languagesValue.length > 8) {
