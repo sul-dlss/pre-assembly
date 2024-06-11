@@ -79,6 +79,7 @@ module PreAssembly
 
     # @param [HashWithIndifferentAccess] row
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
+    # rubocop:disable Metrics/AbcSize
     def file_properties_from_row(row)
       {
         type: Cocina::Models::ObjectType.file,
@@ -90,9 +91,12 @@ module PreAssembly
         administrative: administrative(row),
         hasMessageDigests: md5_digest(row),
         hasMimeType: row[:mimetype].presence,
-        access: access_properties_from_row(row)
+        access: access_properties_from_row(row),
+        sdrGeneratedText: ActiveModel::Type::Boolean.new.cast(row[:sdr_generated_text]) || false,
+        correctedForAccessibility: ActiveModel::Type::Boolean.new.cast(row[:corrected_for_accessibility]) || false
       }.compact
     end
+    # rubocop:enable Metrics/AbcSize
 
     def access_properties_from_row(row)
       {
