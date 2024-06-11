@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'axe-rspec'
+
 RSpec.describe 'Discovery Report completes with errors', :js do
   let(:user) { create(:user) }
   let(:user_id) { "#{user.sunet_id}@stanford.edu" }
@@ -70,5 +72,9 @@ RSpec.describe 'Discovery Report completes with errors', :js do
     log = File.read(log_path)
     expect(log.scan(/status:\s+success/m).length).to eq 2
     expect(log.scan(/status:\s+error/m).length).to eq 1
+
+    expect(page).to be_axe_clean
+    visit '/'
+    expect(page).to be_axe_clean
   end
 end
