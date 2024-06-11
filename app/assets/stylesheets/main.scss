@@ -7,14 +7,13 @@
  }
 
  .btn {
-    --cardinal-red: #8c1515;
-    /* cardinal-red from https://identity.stanford.edu/design-elements/color/primary-colors/ */
+    --digital-blue: #{$stanford-digital-blue};
   }
 
   .btn-sul-dlss {
-    background-color: var(--cardinal-red);
+    background-color: var(--digital-blue);
     --bs-btn-color: #fff;
-    --bs-btn-bg: var(--cardinal-red);
+    --bs-btn-bg: var(--digital-blue);
     --bs-btn-hover-bg: var(--bs-btn-bg);
     --bs-btn-hover-color: #fff;
   }
@@ -48,6 +47,23 @@
 
   .form-group {
     margin-bottom: 1rem;
+    label {
+      margin-bottom: .4rem;
+    }
+  }
+
+  [title="required"] {
+    color: $stanford-digital-red;
+  }
+
+  .form-check-input[type="radio"] {
+    border-radius: 50%;
+    --bs-border-color: #979694;
+  }
+
+  .form-check-input:checked {
+    background-color: $stanford-digital-blue;
+    border-color: $stanford-digital-blue;
   }
 
   .btn-outline {
@@ -65,6 +81,12 @@
   applying the clear to the div wrapping the first following radio button
   or checkbox.
   */
+
+  .simple_form {
+    background-color: $stanford-fog-light;
+    border-radius: 0.25rem;
+  }
+
   legend~div.form-check:first-of-type {
     clear: left;
   }

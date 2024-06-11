@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<%= simple_form_for @batch_context do |form| %>
+<%= simple_form_for @batch_context, :html => {:class => 'p-4'} do |form| %>
     <%= form.input :project_name %>
 
     <%= form.simple_fields_for :job_runs do |jt| %>
@@ -55,16 +55,16 @@
                     <div data-ocr-target="ocrDropdown">
                         <div>Content language</div>
                         <div class="border rounded ocr-search-bar d-flex">
-                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary" data-action="click->ocr#languageDropdown" aria-label="">
+                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary bg-white" data-action="click->ocr#languageDropdown" aria-label="">
                                 <i class="fas fa-search"></i>
                             </button>
                             <input data-action="input->ocr#search focus->ocr#languageDropdown" aria-label="Search avalaible Abbyy languages" />
-                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary" data-action="click->ocr#languageDropdown" id="caret">
+                            <button aria-label="toggle dropdown" aria-hidden="true" class="btn btn-link text-secondary bg-white" data-action="click->ocr#languageDropdown" id="caret">
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>
                         </div>
                     </div>
-                    <div id="ocr-languages" data-ocr-target="dropdownContent" class="dropdown-content d-none languages-group border rounded">
+                    <div id="ocr-languages" data-ocr-target="dropdownContent" class="dropdown-content d-none languages-group border rounded bg-white">
                         <% avalaible_ocr_languages.each do |language| %>
                             <label class="d-block">
                                 <%= form.check_box 'ocr_languages', { multiple: true, data: { 'ocr-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->ocr#languageUpdate' } }, language[1], nil %>
