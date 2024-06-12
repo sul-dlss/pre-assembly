@@ -43,11 +43,11 @@
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
                 <div data-ocr-target="runOcrImageNotes" hidden>
-                    <%= render 'alert', alert_type: 'warning', text: 'ocr_image' %>
+                    <%= render 'alert', alert_type: 'warning', text: :ocr_image %>
                 </div>
                 <div data-ocr-target="runOcrDocumentNotes" hidden>
-                    <%= render 'alert', alert_type: 'info', text: 'ocr_document' %>
-                    <%= render 'alert', alert_type: 'warning', text: 'ocr_document' %>
+                    <%= render 'alert', alert_type: 'info', text: :ocr_accessibility %>
+                    <%= render 'alert', alert_type: 'warning', text: :ocr_document %>
                 </div>
             </div>
             <div class="ocr-language d-none" data-ocr-target="ocrLanguageWrapper">
@@ -76,8 +76,7 @@
                 <div data-ocr-target="selectedLanguages">
                 </div>
                 <div class="d-none mb-2" data-ocr-target="languageWarning">
-                    <%= render 'alert', alert_type: 'warning', text: 'Selecting more than eight OCR languages may have an adverse effect on the
-                    speed and quality of recognition. Please reduce the number of languages.' %>
+                    <%= render 'alert', alert_type: 'warning', text: :languages %>
                 </div>
             </div>
         </div>
