@@ -1,0 +1,22 @@
+<div class="bg-white">
+  <div class="alert alert-<%= alert_type %> d-flex shadow-sm" role="alert">
+    <% icon = alert_type == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill' %>
+    <% title = alert_type == 'warning' ? 'Warning' : 'Note' %>
+    <div class="bi <%= icon %> d-flex justify-content-center display-6 col-1 ms-3 align-self-center text-<%= alert_type %>">
+    </div>
+    <div class="p-3 flex-grow-1">
+      <div class="d-flex align-items-center gap-2">
+        <div>
+          <span class="fw-semibold d-block"><%= title %></span>
+          <% if text == 'ocr_document' && alert_type == 'info' %>
+            Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf'%>.
+          <% elsif text == 'ocr_image' || text == 'ocr_document' %>
+            Avoid auto-generating OCR files for <%= text == 'ocr_image' ? 'images' : 'PDF documents' %> that do not contain any text, as it may have adverse effects.
+          <% else %>
+            <%= text %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

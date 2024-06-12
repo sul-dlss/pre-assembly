@@ -43,11 +43,11 @@
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
                 <div data-ocr-target="runOcrImageNotes" hidden>
-                    <p><i>Warning:</i> Avoid auto-generating OCR files for images that do not contain any text, as it may have adverse effects.</p>
+                    <%= render 'alert', alert_type: 'warning', text: 'ocr_image' %>
                 </div>
                 <div data-ocr-target="runOcrDocumentNotes" hidden>
-                    <p><i>Note:</i> Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf'%>.</p>
-                    <p><i>Warning:</i> Avoid auto-generating OCR files for PDF documents that do not contain any text, as it may have adverse effects.</p>
+                    <%= render 'alert', alert_type: 'info', text: 'ocr_document' %>
+                    <%= render 'alert', alert_type: 'warning', text: 'ocr_document' %>
                 </div>
             </div>
             <div class="ocr-language d-none" data-ocr-target="ocrLanguageWrapper">
@@ -75,9 +75,9 @@
                 </div>
                 <div data-ocr-target="selectedLanguages">
                 </div>
-                <div class="d-none text-cardinal mb-2" data-ocr-target="languageWarning">
-                    <b>Warning</b>: Selecting more than eight OCR languages may have an adverse effect on the
-                    speed and quality of recognition. Please reduce the number of languages.
+                <div class="d-none mb-2" data-ocr-target="languageWarning">
+                    <%= render 'alert', alert_type: 'warning', text: 'Selecting more than eight OCR languages may have an adverse effect on the
+                    speed and quality of recognition. Please reduce the number of languages.' %>
                 </div>
             </div>
         </div>
