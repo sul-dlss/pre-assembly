@@ -79,6 +79,8 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
                       externalIdentifier: 'https://cocina.sul.stanford.edu/file/a6c11765-9a36-4981-b98b-2a59940e97a3',
                       filename: 'vd000bj0000_video_img_2.tif',
                       label: 'vd000bj0000_video_img_2.tif',
+                      sdrGeneratedText: false,
+                      correctedForAccessibility: true, # yes, this makes no sense in the real world, but it's for a test
                       administrative: { sdrPreserve: true, publish: false, shelve: false },
                       hasMessageDigests: [{ type: 'md5', digest: '4fe3ad7bf975326ff1c1271e8f743ceb' }] }] },
                        5 =>
@@ -90,6 +92,8 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
                       filename: 'vd000bj0000_video_log.txt',
                       label: 'vd000bj0000_video_log.txt',
                       use: 'transcription',
+                      sdrGeneratedText: true,
+                      correctedForAccessibility: false,
                       administrative: { sdrPreserve: true, publish: false, shelve: false },
                       hasMessageDigests: [{ type: 'md5', digest: 'b659a852e4f0faa2f1d83973446a4ee9' }] }] } } }
       end
@@ -114,6 +118,12 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
 
         # It retains the collection
         expect(structural.isMemberOf).to eq ['druid:bb000kk0000']
+
+        # It retains any existing sdrGeneratedText settings
+        expect(files.map(&:sdrGeneratedText)).to eq [false, false, false, false, false, false, false, false, true]
+
+        # It retains any existing correctedForAccessibility settings
+        expect(files.map(&:correctedForAccessibility)).to eq [false, false, false, false, false, false, false, true, false]
       end
 
       context 'when file manifest has additions, deletions, and updates' do
