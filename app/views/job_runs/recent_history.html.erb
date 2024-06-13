@@ -1,7 +1,7 @@
 <turbo-frame id="recent-history" class="w-100">
-  <h2 class="h4">Recent jobs</h2>
+  <h2 class="h3">Recent jobs</h2>
   <div class="container p-0">
-    <table class="table">
+    <table class="table d-inline-block">
         <thead>
           <tr class="text-nowrap">
             <th>Job</th>
@@ -11,7 +11,7 @@
             <th>Created on</th>
           </th>
         </thead>
-      <tbody id="job-history-table">
+      <tbody id="job-history-table" class="text-nowrap">
         <%= render 'job_runs', job_prefix: '' %>
        </tbody>
     </table>
