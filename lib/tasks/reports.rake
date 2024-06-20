@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 # rubocop:disable Metrics/BlockLength
 namespace :reports do
   # Output statistics on all discovery reports available on disk

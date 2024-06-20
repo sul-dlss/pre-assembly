@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 class CsvImporter
   # load CSV allowing UTF-8 to pass through, deleting blank columns
   # @param [String] filename

@@ -7,7 +7,7 @@ class GlobusDestination < ApplicationRecord
   after_initialize :set_directory
 
   scope :active, -> { where(deleted_at: nil) }
-  scope :older_than, ->(time) { where('created_at < ?', time) }
+  scope :older_than, ->(time) { where(created_at: ...time) }
 
   # A helper method to find potential Globus Destinations to cleanup
   def self.find_stale(timeframe)
