@@ -166,6 +166,7 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.4.0)
       railties (>= 6.0.0)
+    csv (3.2.8)
     date (3.3.4)
     deep_merge (1.2.2)
     deprecation (1.1.0)
@@ -564,6 +565,7 @@ DEPENDENCIES
   capybara
   config
   cssbundling-rails (~> 1.2)
+  csv
   devise
   devise-remote-user
   dlss-capistrano

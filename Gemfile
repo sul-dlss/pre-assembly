@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'bunny', '~> 2.17' # RabbitMQ library
 gem 'config'
 gem 'cssbundling-rails', '~> 1.2'
+gem 'csv'
 gem 'devise'
 gem 'devise-remote-user'
 gem 'globus_client', '~> 0.13.0'
