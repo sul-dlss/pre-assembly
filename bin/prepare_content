@@ -69,7 +69,6 @@ abort "#{csv_in} not found" unless File.exist?(csv_in)
 
 ### After checking to see that the options look okay, now load the environment (this is slow, ~5s)
 require_relative '../config/environment'
-require 'csv'
 
 unless File.exist?(csv_out) # if we don't already have a log file, write out the header row
   CSV.open(csv_out, 'a') do |f|
