@@ -19,10 +19,10 @@
     <tbody>
     <% @batch_contexts.each do |batch_context| %>
         <tr>
-          <td><%= link_to batch_context.project_name, batch_context %></td>
+          <td class="break-all"><%= link_to batch_context.project_name, batch_context %></td>
           <td><%= batch_context.user.email %></td>
           <td><%= batch_context.content_structure %></td>
-          <td>
+          <td class="break-all">
             <%= batch_context.staging_location %>
             <% if batch_context.active_globus_url %>
               <br /><%= link_to 'globus link', batch_context.active_globus_url %>
