@@ -23,7 +23,7 @@ module ApplicationHelper
     ]
   end
 
-  def avalaible_ocr_languages
+  def available_ocr_languages
     ABBYY_LANGUAGES.map { |lang| [lang, lang.gsub(/[ ()]/, '')] }
   end
 end
