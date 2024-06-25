@@ -58,14 +58,14 @@
                             <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" aria-label="">
                                 <i class="fas fa-search"></i>
                             </button>
-                            <input data-action="input->caption#search focus->caption#languageDropdown" aria-label="Search avalaible Abbyy languages" />
+                            <input data-action="input->caption#search focus->caption#languageDropdown" aria-label="Search available Abbyy languages" />
                             <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" id="caret">
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>
                         </div>
                     </div>
                     <div id="ocr-languages" data-caption-target="dropdownContent" class="dropdown-content d-none languages-group border rounded bg-white">
-                        <% avalaible_ocr_languages.each do |language| %>
+                        <% available_ocr_languages.each do |language| %>
                             <label class="d-block">
                                 <%= form.check_box 'ocr_languages', { multiple: true, data: { 'caption-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->caption#languageUpdate' } }, language[1], nil %>
                                 <%= language[0] %>
