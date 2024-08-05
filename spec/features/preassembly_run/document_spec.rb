@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 RSpec.describe 'Pre-assemble document object' do
   include ActiveJob::TestHelper
 
@@ -29,40 +31,71 @@ RSpec.describe 'Pre-assemble document object' do
     allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
-  it 'runs successfully and creates log file' do
-    visit '/'
-    expect(page).to have_css('h1', text: 'Start new job')
+  context 'when the user submits a preassembly job' do
+    it 'runs successfully and creates log file' do
+      visit '/'
+      expect(page).to have_css('h1', text: 'Start new job')
 
-    fill_in 'Project name', with: project_name
-    select 'Preassembly Run', from: 'Job type'
-    select 'Document', from: 'Content type'
-    fill_in 'Staging location', with: staging_location
+      fill_in 'Project name', with: project_name
+      select 'Preassembly Run', from: 'Job type'
+      select 'Document', from: 'Content type'
+      fill_in 'Staging location', with: staging_location
 
-    perform_enqueued_jobs do
-      click_button 'Submit'
+      perform_enqueued_jobs do
+        click_button 'Submit'
+      end
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
+
+      # go to job details page, wait for preassembly to finish
+      first('td  > a').click
+      expect(page).to have_content project_name
+      expect(page).to have_link('Download').once
+
+      result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
+      yaml = YAML.load_file(result_file)
+      expect(yaml[:status]).to eq 'success'
+
+      # we got all the expected content files
+      expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 1
+
+      expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
+        .with(cocina_dro: item,
+              filesets: Array,
+              all_files_public: false,
+              reading_order: nil,
+              manually_corrected_ocr: false)
+      expect(dsc_object).to have_received(:update).with(params: item)
+      expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
     end
-    exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+  end
 
-    # go to job details page, wait for preassembly to finish
-    first('td  > a').click
-    expect(page).to have_content project_name
-    expect(page).to have_link('Download').once
+  context 'when the user submits a preassembly job with the druid in the file path' do
+    let(:staging_location) { Rails.root.join('spec/fixtures/pdf_document_with_druid') }
 
-    result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
-    yaml = YAML.load_file(result_file)
-    expect(yaml[:status]).to eq 'success'
+    it 'runs successfully but logs an error to the log file' do
+      visit '/'
+      expect(page).to have_css('h1', text: 'Start new job')
 
-    # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 1
+      fill_in 'Project name', with: project_name
+      select 'Preassembly Run', from: 'Job type'
+      select 'File', from: 'Content type'
+      fill_in 'Staging location', with: staging_location
 
-    expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
-      .with(cocina_dro: item,
-            filesets: Array,
-            all_files_public: false,
-            reading_order: nil,
-            manually_corrected_ocr: false)
-    expect(dsc_object).to have_received(:update).with(params: item)
-    expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
+      perform_enqueued_jobs do
+        click_button 'Submit'
+      end
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
+
+      # go to job details page, wait for preassembly to finish
+      first('td  > a').click
+      expect(page).to have_content project_name
+      expect(page).to have_link('Download').once
+
+      result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
+      yaml = YAML.load_file(result_file)
+      expect(yaml[:status]).to eq 'error'
+    end
   end
 end
