@@ -59,7 +59,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'pry-byebug'
+  gem 'debug'
   gem 'puma'
   gem 'rubocop', '~> 1.25'
   gem 'rubocop-capybara'
