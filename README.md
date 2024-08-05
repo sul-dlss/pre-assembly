@@ -95,8 +95,8 @@ its sessions. To override that behavior and specify an alternate user, you can m
 environment variable at startup, like so:
 
 ```bash
-REMOTE_DEBUGGER=byebug REMOTE_USER=ima_user bin/dev # omit REMOTE_DEBUGGER if you don't need a debugger
-bundle exec byebug -R localhost:8989 # run in separate terminal window
+REMOTE_USER=ima_user bin/dev
+rdbg -A # run in separate terminal window if you want a seperate debugger window
 ```
 
 Because the application looks for user info in an environment variable, and because local dev environments don't have
