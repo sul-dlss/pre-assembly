@@ -62,7 +62,7 @@ class ObjectFileValidator
   end
 
   def object_equals_druid?
-    filepaths.map { |filepath| filepath.split('/') }.flatten.any?(druid.druid.delete_prefix('druid:'))
+    filepaths.map { |filepath| filepath.split('/').first }.any?(druid.id)
   end
 
   private

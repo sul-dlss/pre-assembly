@@ -98,4 +98,33 @@ RSpec.describe 'Pre-assemble document object' do
       expect(yaml[:status]).to eq 'error'
     end
   end
+
+  context 'when the user submits a preassembly job with the druid as the file name' do
+    let(:staging_location) { Rails.root.join('spec/fixtures/pdf_document_as_druid') }
+
+    it 'runs successfully but logs an error to the log file' do
+      visit '/'
+      expect(page).to have_css('h1', text: 'Start new job')
+
+      fill_in 'Project name', with: project_name
+      select 'Preassembly Run', from: 'Job type'
+      select 'File', from: 'Content type'
+      fill_in 'Staging location', with: staging_location
+
+      perform_enqueued_jobs do
+        click_button 'Submit'
+      end
+      exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
+      expect(page).to have_content exp_str
+
+      # go to job details page, wait for preassembly to finish
+      first('td  > a').click
+      expect(page).to have_content project_name
+      expect(page).to have_link('Download').once
+
+      result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
+      yaml = YAML.load_file(result_file)
+      expect(yaml[:status]).to eq 'error'
+    end
+  end
 end
