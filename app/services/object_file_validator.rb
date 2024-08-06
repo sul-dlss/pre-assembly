@@ -37,6 +37,7 @@ class ObjectFileValidator
       end
     end
     errors[:wrong_content_structure] = true if object_has_hierarchy? && batch.content_structure != 'file'
+    errors[:wrong_content_structure] = true if object_equals_druid?
     errors[:empty_object] = true unless counts[:total_size] > 0
     errors[:missing_files] = true unless object_files_exist?
     errors[:dupes] = true unless object_filepaths_unique?
@@ -58,6 +59,10 @@ class ObjectFileValidator
   # check to see if files within object has hierarchy (i.e. paths in filenames)
   def object_has_hierarchy?
     filepaths.any?(/\/+/)
+  end
+
+  def object_equals_druid?
+    filepaths.map { |filepath| filepath.split('/').first }.any?(druid.id)
   end
 
   private

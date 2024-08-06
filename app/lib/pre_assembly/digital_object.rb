@@ -81,10 +81,10 @@ module PreAssembly
         end
       end
 
-      if ObjectFileValidator.new(object: self, batch:).object_has_hierarchy? && content_structure != 'file'
+      if (object_validation_message = object_files_valid?)
         return { pre_assem_finished: false,
                  status: 'error',
-                 message: "can't be accessioned -- if object files have hierarchy the content structure must be set to file" }
+                 message: object_validation_message }
       end
 
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container, content_structure:)
@@ -205,6 +205,15 @@ module PreAssembly
       )
 
       false
+    end
+
+    def object_files_valid?
+      object_validator = ObjectFileValidator.new(object: self, batch:)
+      if object_validator.object_has_hierarchy? && content_structure != 'file'
+        "can't be accessioned -- if object files have hierarchy the content structure must be set to file"
+      elsif object_validator.object_equals_druid?
+        "can't be accessioned -- files and/or folder cannot be equal to the druid."
+      end
     end
   end
 end
