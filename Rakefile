@@ -7,8 +7,17 @@ require "sneakers/tasks"
 Rails.application.load_tasks
 
 unless Rails.env.production?
+  require 'rspec/core/rake_task'
+  desc 'Run RSpec'
+  RSpec::Core::RakeTask.new(:spec)
+
   require 'rubocop/rake_task'
+  desc 'Run rubocop'
   RuboCop::RakeTask.new
 end
 
-task default: ['test:prepare', :spec, :rubocop]
+# clear the default task injected by rspec
+task(:default).clear
+
+# and replace it with our own
+task default: [:rubocop, :spec]
