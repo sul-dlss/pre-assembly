@@ -25,13 +25,13 @@
           <td class="break-all">
             <%= batch_context.staging_location %>
             <% if batch_context.active_globus_url %>
-              <br /><%= link_to 'globus link', batch_context.active_globus_url %>
+              <br><%= link_to 'globus link', batch_context.active_globus_url %>
             <% end %>
           </td>
           <td><%= batch_context.processing_configuration %></td>
           <td><%= batch_context.using_file_manifest ? 'yes' : 'no' %></td>
           <td><%= batch_context.job_runs.count %></td>
-          <td><%= batch_context.created_at.in_time_zone('Pacific Time (US & Canada)').to_formatted_s(:long) %></td>
+          <td><%= batch_context.created_at.in_time_zone('Pacific Time (US & Canada)').to_fs(:long) %></td>
         </tr>
     <% end %>
    </tbody>
