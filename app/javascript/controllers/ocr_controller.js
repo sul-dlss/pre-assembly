@@ -1,7 +1,6 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-
   static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable',
     'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
     'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
@@ -9,36 +8,36 @@ export default class extends Controller {
   static values = { languages: Array }
 
   connect () {
-    this.contentStructureChanged();
-    this.element.querySelector('form').reset();
+    this.contentStructureChanged()
+    this.element.querySelector('form').reset()
   }
 
   // list of content structures that are allowed to run OCR
-  ocrAllowed() {
+  ocrAllowed () {
     return ['simple_image', 'simple_book', 'document']
   }
 
-  selectedContentStructure() {
+  selectedContentStructure () {
     return this.contentStructureTarget.options[this.contentStructureTarget.selectedIndex]
   }
 
-  isDocument() {
-    return this.selectedContentStructure().value == 'document'
+  isDocument () {
+    return this.selectedContentStructure().value === 'document'
   }
 
-  labelImagesManuallyCorrected() {
-    return `Do the OCR files comply with accessibility standards? More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.`
+  labelImagesManuallyCorrected () {
+    return 'Do the OCR files comply with accessibility standards? More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.'
   }
 
-  labelDocumentsManuallyCorrected() {
-    return `Do the PDF documents comply with accessibility standards? More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.`
+  labelDocumentsManuallyCorrected () {
+    return 'Do the PDF documents comply with accessibility standards? More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.'
   }
 
-  labelRunOcr() {
+  labelRunOcr () {
     return `Do you want to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
   }
 
-  ocrFileTypeLabel() {
+  ocrFileTypeLabel () {
     return this.isDocument() ? 'PDF documents' : 'images'
   }
 
@@ -73,114 +72,108 @@ export default class extends Controller {
   }
 
   // if the user indicates they have ocr available, show/hide the manually corrected and run OCR option (for images/books)
-  ocrAvailableChanged() {
-    const ocr_available = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value == 'true'
-    this.manuallyCorrectedOcrTarget.hidden = !ocr_available
-    this.runOcrTarget.hidden = ocr_available
-    if (ocr_available)
-      {
-        this.ocrLanguageWrapperTarget.classList.add('d-none')
-      }
-      else
-      {
-        this.runOcrChanged()
-      }
+  ocrAvailableChanged () {
+    const ocrAvailable = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.manuallyCorrectedOcrTarget.hidden = !ocrAvailable
+    this.runOcrTarget.hidden = ocrAvailable
+    if (ocrAvailable) {
+      this.ocrLanguageWrapperTarget.classList.add('d-none')
+    } else {
+      this.runOcrChanged()
+    }
   }
 
   // if the user indicates they are providing OCR and have reviewed it, show/hide the run OCR option (for documents) and set the OCR available option
-  manuallyCorrectedOcrChanged() {
+  manuallyCorrectedOcrChanged () {
     if (!this.isDocument()) return
 
-    const manuallyCorrectedOcr = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value == 'true'
+    const manuallyCorrectedOcr = this.manuallyCorrectedOcrTarget.querySelector('input[type="radio"]:checked').value === 'true'
     this.ocrAvailableTarget.querySelector(`input[type=radio][value="${manuallyCorrectedOcr}"]`).checked = true
     this.runOcrTarget.hidden = manuallyCorrectedOcr
   }
 
   // if the user indicates they want to run SDR OCR, show any relevant notes/warnings and language selector
-  runOcrChanged() {
+  runOcrChanged () {
     // hide any notes to start, we will show as needed if OCR is selected
     this.runOcrDocumentNotesTarget.hidden = true
     this.runOcrImageNotesTarget.hidden = true
 
-    const runocr = this.runOcrTarget.querySelector('input[type="radio"]:checked').value == 'true';
-    if (runocr)
-    {
-      this.runOcrDocumentNotesTarget.hidden = !this.isDocument();
-      this.runOcrImageNotesTarget.hidden = this.isDocument();
-      this.ocrLanguageWrapperTarget.classList.remove('d-none');
-    }
-    else
-    {
-      this.ocrLanguageWrapperTarget.classList.add('d-none');
+    const runocr = this.runOcrTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    if (runocr) {
+      this.runOcrDocumentNotesTarget.hidden = !this.isDocument()
+      this.runOcrImageNotesTarget.hidden = this.isDocument()
+      this.ocrLanguageWrapperTarget.classList.remove('d-none')
+    } else {
+      this.ocrLanguageWrapperTarget.classList.add('d-none')
     }
     Object.values(this.ocrDropdownTarget.children).forEach(child => {
-      child.disabled = !runocr;
+      child.disabled = !runocr
     })
   }
 
-  languageDropdown(event) {
-    const ishidden = Array.from(this.dropdownContentTarget.classList).includes('d-none');
-    this.dropdownContentTarget.classList.toggle('d-none');
+  languageDropdown (event) {
+    const ishidden = Array.from(this.dropdownContentTarget.classList).includes('d-none')
+    this.dropdownContentTarget.classList.toggle('d-none')
     this.ocrDropdownTarget.querySelector('#caret').innerHTML = `<i class="fa-solid fa-caret-${ishidden ? 'up' : 'down'}">`
-    event.preventDefault();
+    event.preventDefault()
   }
 
-  clickOutside(event) {
-    const isshown = !Array.from(this.dropdownContentTarget.classList).includes('d-none');
-    const incontainer = this.ocrLanguageWrapperTarget.contains(event.target);
-    const inselectedlangs = event.target.classList.contains('pill-close');
+  clickOutside (event) {
+    const isshown = !Array.from(this.dropdownContentTarget.classList).includes('d-none')
+    const incontainer = this.ocrLanguageWrapperTarget.contains(event.target)
+    const inselectedlangs = event.target.classList.contains('pill-close')
     if (!incontainer && !inselectedlangs && isshown) {
-      this.languageDropdown(event);
+      this.languageDropdown(event)
     }
   }
 
-  languageUpdate(event) {
-    const target = event.target ? event.target : event;
+  languageUpdate (event) {
+    const target = event.target ? event.target : event
     if (target.checked) {
-      this.languagesValue = this.languagesValue.concat([target.dataset]);
+      this.languagesValue = this.languagesValue.concat([target.dataset])
     } else {
-      this.languagesValue = this.languagesValue.filter(lang => lang.ocrValue != target.value);
+      this.languagesValue = this.languagesValue.filter(lang => lang.ocrValue !== target.value)
     }
   }
 
-  languagesValueChanged() {
-    if (this.languagesValue.length == 0) {
-      this.selectedLanguagesTarget.classList.add('d-none');
+  languagesValueChanged () {
+    if (this.languagesValue.length === 0) {
+      this.selectedLanguagesTarget.classList.add('d-none')
     } else {
-      this.selectedLanguagesTarget.classList.remove('d-none');
+      this.selectedLanguagesTarget.classList.remove('d-none')
       this.selectedLanguagesTarget.innerHTML = `<div>Selected language(s)</div>
-                                                <ul class="list-unstyled border rounded mb-3 p-1 bg-white">${this.renderLanguagePills()}</ul>`;
+                                                <ul class="list-unstyled border rounded mb-3 p-1 bg-white">${this.renderLanguagePills()}</ul>`
     }
 
     if (this.languagesValue.length > 8) {
-      this.languageWarningTarget.classList.remove('d-none');
+      this.languageWarningTarget.classList.remove('d-none')
     } else {
-      this.languageWarningTarget.classList.add('d-none');
+      this.languageWarningTarget.classList.add('d-none')
     }
   }
 
-  search(event){
-    const searchterm = event.target.value.replace(/[^\w\s]/gi, '').toLowerCase();
-    this.dropdownContentTarget.classList.remove('d-none');
+  search (event) {
+    const searchterm = event.target.value.replace(/[^\w\s]/gi, '').toLowerCase()
+    this.dropdownContentTarget.classList.remove('d-none')
     this.ocrLanguagesTargets.forEach(target => {
-      const compareterm = target.dataset.ocrLabel.replace(/[^\w\s]/gi, '').toLowerCase();
+      const compareterm = target.dataset.ocrLabel.replace(/[^\w\s]/gi, '').toLowerCase()
       if (compareterm.includes(searchterm)) {
-        target.parentElement.classList.remove('d-none');
+        target.parentElement.classList.remove('d-none')
       } else {
-        target.parentElement.classList.add('d-none');
+        target.parentElement.classList.add('d-none')
       }
     })
   }
 
-  deselect(event) {
-    event.preventDefault();
+  deselect (event) {
+    event.preventDefault()
 
     const target = this.ocrLanguagesTargets.find((language) => language.dataset.ocrValue === event.target.id)
-    if (target) target.checked = false;
-    this.languageUpdate(target);
+    if (target) target.checked = false
+    this.languageUpdate(target)
   }
 
-  renderLanguagePills() {
+  renderLanguagePills () {
     return this.languagesValue.map((language) => {
       return `
         <li class="d-inline-flex gap-2 align-items-center my-2">
@@ -191,7 +184,7 @@ export default class extends Controller {
             <button data-action="${this.identifier}#deselect" id="${language.ocrValue}" type="button" class="btn-close py-0 pill-close" aria-label="Remove ${language.ocrLabel}"></button>
           </span>
         </li>
-      `;
-    }).join('');
+      `
+    }).join('')
   }
 }
