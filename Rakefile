@@ -2,13 +2,22 @@
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
 require_relative 'config/application'
-require "sneakers/tasks"
+require 'sneakers/tasks'
 
 Rails.application.load_tasks
 
 unless Rails.env.production?
   require 'rubocop/rake_task'
   RuboCop::RakeTask.new
-end
 
-task default: ['test:prepare', :spec, :rubocop]
+  desc 'Run erblint against ERB files'
+  task erblint: :environment do
+    puts 'Running erblint...'
+    system('bundle exec erblint --lint-all --format compact')
+  end
+
+  desc 'Run all configured linters'
+  task lint: %i[rubocop erblint]
+
+  task default: [:lint, 'test:prepare', :spec]
+end
