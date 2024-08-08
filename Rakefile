@@ -16,8 +16,14 @@ unless Rails.env.production?
     system('bundle exec erblint --lint-all --format compact')
   end
 
+  desc 'Run Yarn linter against JS files'
+  task eslint: :environment do
+    puts 'Running JS linters...'
+    system('yarn run lint')
+  end
+
   desc 'Run all configured linters'
-  task lint: %i[rubocop erblint]
+  task lint: %i[rubocop erblint eslint]
 
   task default: [:lint, 'test:prepare', :spec]
 end

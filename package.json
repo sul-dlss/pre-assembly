@@ -2,9 +2,12 @@
   "name": "pre-assembly",
   "private": true,
   "dependencies": {
-    "sass": "^1.66.1"
+    "sass": "^1.66.1",
+    "standard": "^17.1.0"
   },
   "scripts": {
-    "build:css": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules"
+    "build:css": "sass ./app/assets/stylesheets/application.sass.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "lint": "standard app/javascript/**/*.js",
+    "lint_fix": "standard --fix app/javascript/**/*.js"
   }
 }

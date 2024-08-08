@@ -8,6 +8,7 @@ workflows:
       - ruby-rails/lint:
           name: lint
       - ruby-rails/lint-erb
+      - ruby-rails/lint-js
       - ruby-rails/test-rails:
           name: test
           install-firefox: true
