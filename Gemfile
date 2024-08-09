@@ -60,8 +60,9 @@ end
 
 group :development, :test do
   gem 'debug'
+  gem 'erb_lint', require: false
   gem 'puma'
-  gem 'rubocop', '~> 1.25'
+  gem 'rubocop'
   gem 'rubocop-capybara'
   gem 'rubocop-factory_bot'
   gem 'rubocop-rails'
