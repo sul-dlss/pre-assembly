@@ -13,7 +13,7 @@ require 'cocina/rspec'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # auto-require all ruby files in the support directory
-Dir[Rails.root.join('spec/support/*.rb')].each { |f| require f }
+Rails.root.glob('spec/support/*.rb').each { |f| require f }
 
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
