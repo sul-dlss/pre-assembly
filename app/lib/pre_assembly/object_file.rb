@@ -3,9 +3,7 @@
 module PreAssembly
   # an individual file within a digital object; extends class from assembly-objectfile gem
   class ObjectFile < Assembly::ObjectFile
-    include ActiveModel::AttributeMethods
-
-    alias_attribute :checksum, :provider_md5
+    alias checksum provider_md5
 
     # @param [String] path full path
     # @param [Hash<Symbol => Object>] params
