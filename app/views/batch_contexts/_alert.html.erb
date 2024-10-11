@@ -13,6 +13,10 @@
           Avoid auto-generating OCR files for images that do not contain any text, as it may have adverse effects.
         <% when :ocr_accessibility %>
           Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf' %>.
+        <% when :stt_accessibility %>
+          Auto-generating caption/transcript files alone will not fully meet accessibility standards. To fully comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the caption/transcript files for any errors.
+        <% when :stt_media %>
+          Avoid auto-generating caption/transcript files for media that do not contain any speech or lyrics, as it may have adverse effects.
         <% when :languages %>
           Selecting more than eight OCR languages may have an adverse effect on the speed and quality of recognition. Please reduce the number of languages.
         <% end %>

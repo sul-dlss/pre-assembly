@@ -31,6 +31,9 @@ rabbitmq:
 ocr:
   enabled: false
 
+speech_to_text:
+  enabled: false
+
 globus:
   enabled: false
   directory: '/globus'
