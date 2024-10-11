@@ -40,7 +40,7 @@
                 collection: [['Yes', true], ['No', false]] %>
         </div>
         <div data-caption-target="runOcr" hidden>
-            <%= form.input :run_ocr, input_html: { data: { action: "change->caption#runOcrChanged", "ocr-target": "runOcrOptions" } },
+            <%= form.input :run_ocr, input_html: { data: { action: "change->caption#runOcrChanged", "caption-target": "runOcrOptions" } },
                 as: :radio_buttons,
                 collection: [['Yes', true], ['No', false]] %>
             <div data-caption-target="runOcrImageNotes" hidden>
@@ -82,19 +82,24 @@
         </div>
     </div>
 
+    <% unless Settings.ocr.enabled # if OCR is not enabled, keep the processing configuration menu %>
+       <%= form.input :processing_configuration, collection: processing_configuration %>
+    <% end %>
+
     <div data-caption-target="sttSettings" hidden>
-        <div data-caption-target="sttAvailable" hidden>
+        <div data-caption-target="sttAvailable">
             <%= form.input :stt_available, label: 'Do you have caption/transcript files for the media?', input_html: { data: { action: "change->caption#sttAvailableChanged" } },
                 as: :radio_buttons,
                 collection: [['Yes', true], ['No', false]] %>
         </div>
         <div data-caption-target="manuallyCorrectedStt" hidden>
-            <%= form.input :manually_corrected_stt, input_html: { data: { action: "change->caption#manuallyCorrectedSttChanged" } },
+            <%= form.input :manually_corrected_stt,
                 as: :radio_buttons,
                 collection: [['Yes', true], ['No', false]] %>
         </div>
-        <div data-caption-target="runStt" hidden>
-            <%= form.input :run_stt, input_html: { data: { action: "change->caption#runSttChanged", "caption-target": "runSttOptions" } },
+        <div data-caption-target="runStt">
+            <%= form.input :run_stt, label: 'Would you like to auto-generate caption/transcript files for the media?',
+                input_html: { data: { action: "change->caption#runSttChanged" } },
                 as: :radio_buttons,
                 collection: [['Yes', true], ['No', false]] %>
             <div data-caption-target="runSttNotes" hidden>

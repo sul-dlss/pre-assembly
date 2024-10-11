@@ -37,10 +37,17 @@ module PreAssembly
         'application/xml' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription', corrected_for_accessibility: true }
       }.freeze
 
+      # TODO: which files represent the speech to text files when provided and thus need to the transcription role?
+      # if the user tells us they are providing speech to text, we will set the transcription role and possibly also corrected_for_accessibility
+      ATTRIBUTES_FOR_TYPE_WITH_STT = {
+        'application/xml' => { preserve: 'yes', shelve: 'yes', publish: 'yes', role: 'transcription', corrected_for_accessibility: true }
+      }.freeze
+
       # @param [Assembly::ObjectFile] file
-      def initialize(file:, ocr_available:)
+      def initialize(file:, ocr_available:, stt_available:)
         @file = file
         @ocr_available = ocr_available
+        @stt_available = stt_available
       end
 
       delegate :sha1, :md5, :provider_md5, :mimetype, :filesize, :relative_path, to: :file
@@ -51,10 +58,11 @@ module PreAssembly
 
       private
 
-      attr_reader :file, :ocr_available
+      attr_reader :file, :ocr_available, :stt_available
 
       def file_attributes_for_mimetype(mimetype)
         return ATTRIBUTES_FOR_TYPE_WITH_OCR[mimetype] if ocr_available && ATTRIBUTES_FOR_TYPE_WITH_OCR.key?(mimetype)
+        return ATTRIBUTES_FOR_TYPE_WITH_STT[mimetype] if stt_available && ATTRIBUTES_FOR_TYPE_WITH_STT.key?(mimetype)
 
         ATTRIBUTES_FOR_TYPE[mimetype] || ATTRIBUTES_FOR_TYPE['default']
       end

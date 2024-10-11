@@ -1,9 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable', 'sttSettings',
-    'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
+  static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable', 'sttSettings', 'sttAvailable', 'runStt',
+    'manuallyCorrectedOcr', 'manuallyCorrectedStt', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
+    'runOcrImageNotes', 'runSttNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
 
   static values = { languages: Array }
 
@@ -54,6 +54,10 @@ export default class extends Controller {
     return 'Do the PDF documents comply with accessibility standards? More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.'
   }
 
+  labelMediaManuallyCorrected () {
+    return 'Have the caption/transcript files been corrected to comply with accessibility standards? More info: <a target=_blank href="https://www.w3.org/WAI/media/av/captions/">Captions</a> and <a target=_blank href="https://www.w3.org/WAI/media/av/transcripts/">Transcripts</a>.'
+  }
+
   labelRunOcr () {
     return `Do you want to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
   }
@@ -65,6 +69,7 @@ export default class extends Controller {
   contentStructureChanged () {
     // Hide the OCR and speech to text settings by default; we will show them if the content structure allows them to
     this.ocrSettingsTarget.hidden = true
+    this.sttSettingsTarget.hidden = true
 
     if (this.ocrAvailable()) {
       this.showOcrControls()
@@ -102,6 +107,22 @@ export default class extends Controller {
   // Show the Speech to text settings and controls
   showSttControls () {
     this.sttSettingsTarget.hidden = false
+
+    this.manuallyCorrectedSttTarget.querySelector('legend').innerHTML = this.labelMediaManuallyCorrected()
+  }
+
+  // if the user indicates they have speech to text available, show/hide the manually corrected and run stt options (for media)
+  sttAvailableChanged () {
+    const sttAvailable = this.sttAvailableTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.manuallyCorrectedSttTarget.hidden = !sttAvailable
+    this.runSttTarget.hidden = sttAvailable
+    this.runSttChanged()
+  }
+
+  // if the user indicates they want to run SDR speech to text, show any relevant notes/warnings
+  runSttChanged () {
+    const runstt = this.runSttTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.runSttNotesTarget.hidden = !runstt
   }
 
   // if the user indicates they have ocr available, show/hide the manually corrected and run OCR option (for images/books)

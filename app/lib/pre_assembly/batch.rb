@@ -24,6 +24,7 @@ module PreAssembly
              :project_name,
              :staging_style_symlink,
              :ocr_available,
+             :stt_available,
              to: :batch_context
 
     def initialize(job_run, file_manifest: nil)

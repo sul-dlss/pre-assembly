@@ -61,7 +61,8 @@ RSpec.describe 'Pre-assemble geo object' do
             filesets: [], # a blank array for any geo object
             all_files_public: false,
             reading_order: nil,
-            manually_corrected_ocr: false)
+            manually_corrected_ocr: false,
+            manually_corrected_stt: false)
     expect(dsc_object).to have_received(:update).with(params: item)
     expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'gisAssemblyWF')
   end
