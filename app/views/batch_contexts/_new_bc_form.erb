@@ -50,19 +50,27 @@
                 <%= render 'alert', alert_type: 'info', text: :ocr_accessibility %>
                 <%= render 'alert', alert_type: 'warning', text: :ocr_document %>
             </div>
-        </div>
-        <div class="ocr-language d-none" data-caption-target="ocrLanguageWrapper">
-            <div class="dropdown w-100 mb-3 d-inline-block" data-action="click@window->caption#clickOutside">
-                <div data-caption-target="ocrDropdown">
-                    <div>Content language</div>
-                    <div class="border rounded ocr-search-bar d-flex">
-                        <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" aria-label="">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <input data-action="input->caption#search focus->caption#languageDropdown" aria-label="Search available Abbyy languages" />
-                        <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" id="caret">
-                            <i class="fa-solid fa-caret-down"></i>
-                        </button>
+            <div class="ocr-language d-none" data-caption-target="ocrLanguageWrapper">
+                <div class="dropdown w-100 mb-3 d-inline-block" data-action="click@window->caption#clickOutside">
+                    <div data-caption-target="ocrDropdown">
+                        <div>Content language</div>
+                        <div class="border rounded ocr-search-bar d-flex">
+                            <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" aria-label="">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <input data-action="input->caption#search focus->caption#languageDropdown" aria-label="Search available Abbyy languages" />
+                            <button aria-label="toggle dropdown" class="btn btn-link text-secondary bg-white" data-action="click->caption#languageDropdown" id="caret">
+                                <i class="fa-solid fa-caret-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ocr-languages" data-caption-target="dropdownContent" class="dropdown-content d-none languages-group border rounded bg-white">
+                        <% available_ocr_languages.each do |language| %>
+                            <label class="d-block">
+                                <%= form.check_box 'ocr_languages', { multiple: true, data: { 'caption-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->caption#languageUpdate' } }, language[1], nil %>
+                                <%= language[0] %>
+                            </label>
+                        <% end %>
                     </div>
                 </div>
                 <div id="ocr-languages" data-caption-target="dropdownContent" class="dropdown-content d-none languages-group border rounded bg-white">
