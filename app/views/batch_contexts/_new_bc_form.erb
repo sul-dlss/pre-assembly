@@ -1,5 +1,7 @@
 
-<div data-controller="globus <%= "caption" if Settings.ocr.enabled%>">
+<div data-controller="globus caption"
+     data-caption-stt-enabled="<%=Settings.speech_to_text.enabled%>"
+     data-caption-ocr-enabled="<%=Settings.ocr.enabled%>">
 
 <div class="row">
     <div class="col">
@@ -24,31 +26,29 @@
         %>
     <% end %>
 
-    <% if Settings.ocr.enabled # if OCR is enabled, the content_structure drop down menu will hide/show ocr menus via stimulus %>
-        <%= form.input :content_structure, label: 'Content type', input_html: { data: { action: "change->caption#contentStructureChanged", "caption-target": "contentStructure" } }, collection: content_structure %>
+    <%= form.input :content_structure, label: 'Content type', input_html: { data: { action: "change->caption#contentStructureChanged", "caption-target": "contentStructure" } }, collection: content_structure %>
 
-        <div data-caption-target="ocrSettings" hidden>
-            <div data-caption-target="ocrAvailable" hidden>
-                <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->caption#ocrAvailableChanged" } },
-                    as: :radio_buttons,
-                    collection: [['Yes', true], ['No', false]] %>
+    <div data-caption-target="ocrSettings" hidden>
+        <div data-caption-target="ocrAvailable" hidden>
+            <%= form.input :ocr_available, label: 'Do you have OCR files for the images?', input_html: { data: { action: "change->caption#ocrAvailableChanged" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+        </div>
+        <div data-caption-target="manuallyCorrectedOcr" hidden>
+            <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->caption#manuallyCorrectedOcrChanged" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+        </div>
+        <div data-caption-target="runOcr" hidden>
+            <%= form.input :run_ocr, input_html: { data: { action: "change->caption#runOcrChanged", "caption-target": "runOcrOptions" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+            <div data-caption-target="runOcrImageNotes" hidden>
+                <%= render 'alert', alert_type: 'warning', text: :ocr_image %>
             </div>
-            <div data-caption-target="manuallyCorrectedOcr" hidden>
-                <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->caption#manuallyCorrectedOcrChanged" } },
-                    as: :radio_buttons,
-                    collection: [['Yes', true], ['No', false]] %>
-            </div>
-            <div data-caption-target="runOcr" hidden>
-                <%= form.input :run_ocr, input_html: { data: { action: "change->caption#runOcrChanged", "caption-target": "runOcrOptions" } },
-                    as: :radio_buttons,
-                    collection: [['Yes', true], ['No', false]] %>
-                <div data-caption-target="runOcrImageNotes" hidden>
-                    <%= render 'alert', alert_type: 'warning', text: :ocr_image %>
-                </div>
-                <div data-caption-target="runOcrDocumentNotes" hidden>
-                    <%= render 'alert', alert_type: 'info', text: :ocr_accessibility %>
-                    <%= render 'alert', alert_type: 'warning', text: :ocr_document %>
-                </div>
+            <div data-caption-target="runOcrDocumentNotes" hidden>
+                <%= render 'alert', alert_type: 'info', text: :ocr_accessibility %>
+                <%= render 'alert', alert_type: 'warning', text: :ocr_document %>
             </div>
             <div class="ocr-language d-none" data-caption-target="ocrLanguageWrapper">
                 <div class="dropdown w-100 mb-3 d-inline-block" data-action="click@window->caption#clickOutside">
@@ -73,17 +73,47 @@
                         <% end %>
                     </div>
                 </div>
-                <div data-caption-target="selectedLanguages">
-                </div>
-                <div class="d-none mb-2" data-caption-target="languageWarning">
-                    <%= render 'alert', alert_type: 'warning', text: :languages %>
+                <div id="ocr-languages" data-caption-target="dropdownContent" class="dropdown-content d-none languages-group border rounded bg-white">
+                    <% available_ocr_languages.each do |language| %>
+                        <label class="d-block">
+                            <%= form.check_box 'ocr_languages', { multiple: true, data: { 'caption-target': 'ocrLanguages', 'ocr-label': language[0], 'ocr-value': language[1], action: 'change->caption#languageUpdate' } }, language[1], nil %>
+                            <%= language[0] %>
+                        </label>
+                    <% end %>
                 </div>
             </div>
+            <div data-caption-target="selectedLanguages">
+            </div>
+            <div class="d-none mb-2" data-caption-target="languageWarning">
+                <%= render 'alert', alert_type: 'warning', text: :languages %>
+            </div>
         </div>
-    <% else # if OCR is not enabled, use the regular drop down menus %>
-       <%= form.input :content_structure, label: 'Content type', collection: content_structure %>
+    </div>
+
+    <% unless Settings.ocr.enabled # if OCR is not enabled, keep the processing configuration menu %>
        <%= form.input :processing_configuration, collection: processing_configuration %>
     <% end %>
+
+    <div data-caption-target="sttSettings" hidden>
+        <div data-caption-target="sttAvailable">
+            <%= form.input :stt_available, label: 'Do you have caption/transcript files for the media?', input_html: { data: { action: "change->caption#sttAvailableChanged" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+        </div>
+        <div data-caption-target="manuallyCorrectedStt" hidden>
+            <%= render 'alert', alert_type: 'info', text: :stt_corrected %>
+        </div>
+        <div data-caption-target="runStt">
+            <%= form.input :run_stt, label: 'Would you like to auto-generate caption/transcript files for the media?',
+                input_html: { data: { action: "change->caption#runSttChanged" } },
+                as: :radio_buttons,
+                collection: [['Yes', true], ['No', false]] %>
+            <div data-caption-target="runSttNotes" hidden>
+                <%= render 'alert', alert_type: 'info', text: :stt_accessibility %>
+                <%= render 'alert', alert_type: 'warning', text: :stt_media %>
+            </div>
+        </div>
+    </div>
 
     <%= form.input :staging_location, input_html: { data: { "globus-target": "stagingLocation" } } %>
 

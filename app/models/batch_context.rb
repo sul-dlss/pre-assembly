@@ -180,7 +180,7 @@ class BatchContext < ApplicationRecord
   def verify_file_manifest_selected_for_media
     return unless content_structure == 'media' && !using_file_manifest
 
-    errors.add(:content_structure, 'requires a file manifest.  Please select the checkbox and ensure a file manifest is present.')
+    errors.add(:content_structure, 'requires a file manifest.  Please indicate you have a file manifest and ensure a file manifest is present.')
   end
 
   def verify_staging_location

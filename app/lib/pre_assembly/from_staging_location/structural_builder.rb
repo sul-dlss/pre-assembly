@@ -10,6 +10,7 @@ module PreAssembly
       # @param [String] reading_order
       # @param [Boolean] all_files_public
       # @param [Boolean] manually_corrected_ocr set by user when creating the job
+      # @param [Boolean] ocr_available set by user when creating the job
       def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil, manually_corrected_ocr: false, ocr_available: false)
         new(filesets:,
             cocina_dro:,

@@ -1,9 +1,9 @@
 import { Controller } from '@hotwired/stimulus'
 
 export default class extends Controller {
-  static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable',
-    'manuallyCorrectedOcr', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'runOcrImageNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
+  static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable', 'sttSettings', 'sttAvailable', 'runStt',
+    'manuallyCorrectedOcr', 'manuallyCorrectedStt', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
+    'runOcrImageNotes', 'runSttNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
 
   static values = { languages: Array }
 
@@ -12,9 +12,30 @@ export default class extends Controller {
     this.element.querySelector('form').reset()
   }
 
+  ocrAvailable () {
+    return this.ocrContentTypes().indexOf(this.contentStructureTarget.value) >= 0 && this.ocrEnabled()
+  }
+
+  sttAvailable () {
+    return this.sttContentTypes().indexOf(this.contentStructureTarget.value) >= 0 && this.sttEnabled()
+  }
+
   // list of content structures that are allowed to run OCR
-  ocrAllowed () {
+  ocrContentTypes () {
     return ['simple_image', 'simple_book', 'document']
+  }
+
+  // list of content structures that are allowed to run speech to text
+  sttContentTypes () {
+    return ['media']
+  }
+
+  ocrEnabled () {
+    return this.data.get('ocr-enabled') === 'true'
+  }
+
+  sttEnabled () {
+    return this.data.get('stt-enabled') === 'true'
   }
 
   selectedContentStructure () {
@@ -42,13 +63,21 @@ export default class extends Controller {
   }
 
   contentStructureChanged () {
-    // Hide the OCR settings if the selected content structure is not in the list of allowed content structures
-    if (this.ocrAllowed().indexOf(this.contentStructureTarget.value) < 0) {
-      this.ocrSettingsTarget.hidden = true
-      return
+    // Hide the OCR and speech to text settings by default; we will show them if the content structure allows them to
+    this.ocrSettingsTarget.hidden = true
+    this.sttSettingsTarget.hidden = true
+
+    if (this.ocrAvailable()) {
+      this.showOcrControls()
     }
 
-    // Show the OCR settings if the selected content structure is in the list of allowed content structures
+    if (this.sttAvailable()) {
+      this.showSttControls()
+    }
+  }
+
+  // Show the OCR settings and controls
+  showOcrControls () {
     this.ocrSettingsTarget.hidden = false
 
     // Set the OCR settings label
@@ -69,6 +98,25 @@ export default class extends Controller {
 
     // update notes/warnings and language selector based on the run OCR option
     this.runOcrChanged()
+  }
+
+  // Show the Speech to text settings and controls
+  showSttControls () {
+    this.sttSettingsTarget.hidden = false
+  }
+
+  // if the user indicates they have speech to text available, show/hide the manually corrected and run stt options (for media)
+  sttAvailableChanged () {
+    const sttAvailable = this.sttAvailableTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.manuallyCorrectedSttTarget.hidden = !sttAvailable
+    this.runSttTarget.hidden = sttAvailable
+    this.runSttChanged()
+  }
+
+  // if the user indicates they want to run SDR speech to text, show any relevant notes/warnings
+  runSttChanged () {
+    const runstt = this.runSttTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.runSttNotesTarget.hidden = !runstt
   }
 
   // if the user indicates they have ocr available, show/hide the manually corrected and run OCR option (for images/books)
