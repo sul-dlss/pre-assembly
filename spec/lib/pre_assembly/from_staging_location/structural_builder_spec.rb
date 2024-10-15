@@ -6,19 +6,16 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       described_class.build(cocina_dro:,
                             filesets:,
                             all_files_public:,
-                            manually_corrected_ocr:,
-                            manually_corrected_stt:)
+                            manually_corrected_ocr:)
     end
 
-    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, stt_available:, objects:, style: :document) }
+    let(:filesets) { PreAssembly::FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, objects:, style: :document) }
     let(:processing_configuration) { :default }
     let(:cocina_dro) do
       Cocina::RSpec::Factories.build(:dro, collection_ids: ['druid:bb000kk0000']).new(access: dro_access)
     end
     let(:manually_corrected_ocr) { false }
-    let(:manually_corrected_stt) { false }
     let(:ocr_available) { false }
-    let(:stt_available) { false }
 
     context 'with flat file structure' do
       let(:base_path) { 'spec/fixtures/pdf_document/content/' }

@@ -40,8 +40,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_11_190309) do
     t.boolean "manually_corrected_ocr", default: false
     t.jsonb "ocr_languages", default: []
     t.boolean "ocr_available", default: false
-    t.boolean "run_stt", default: false
     t.boolean "manually_corrected_stt", default: false
+    t.boolean "run_stt", default: false
     t.boolean "stt_available", default: false
     t.index ["user_id", "project_name"], name: "index_batch_contexts_on_user_id_and_project_name", unique: true
     t.index ["user_id"], name: "index_batch_contexts_on_user_id"

@@ -10,32 +10,26 @@ module PreAssembly
       # @param [String] reading_order
       # @param [Boolean] all_files_public
       # @param [Boolean] manually_corrected_ocr set by user when creating the job
-      # @param [Boolean] manually_corrected_stt set by user when creating the job
       # @param [Boolean] ocr_available set by user when creating the job
-      # @param [Boolean] stt_available set by user when creating the job
-      def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil, manually_corrected_ocr: false, ocr_available: false, manually_corrected_stt: false, stt_available: false)
+      def self.build(filesets:, cocina_dro:, all_files_public:, reading_order: nil, manually_corrected_ocr: false, ocr_available: false)
         new(filesets:,
             cocina_dro:,
             reading_order:,
             all_files_public:,
             manually_corrected_ocr:,
-            ocr_available:,
-            stt_available:,
-            manually_corrected_stt:).build
+            ocr_available:).build
       end
 
-      def initialize(filesets:, cocina_dro:, all_files_public:, reading_order:, manually_corrected_ocr:, ocr_available:, manually_corrected_stt:, stt_available:)
+      def initialize(filesets:, cocina_dro:, all_files_public:, reading_order:, manually_corrected_ocr:, ocr_available:)
         @filesets = filesets
         @cocina_dro = cocina_dro
         @reading_order = reading_order
         @all_files_public = all_files_public
         @manually_corrected_ocr = manually_corrected_ocr
         @ocr_available = ocr_available
-        @manually_corrected_stt = manually_corrected_stt
-        @stt_available = stt_available
       end
       # rubocop:enable Metrics/ParameterLists
-      attr_reader :filesets, :cocina_dro, :reading_order, :all_files_public, :manually_corrected_ocr, :ocr_available, :manually_corrected_stt, :stt_available
+      attr_reader :filesets, :cocina_dro, :reading_order, :all_files_public, :manually_corrected_ocr, :ocr_available
 
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/MethodLength

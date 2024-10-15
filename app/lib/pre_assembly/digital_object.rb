@@ -12,7 +12,6 @@ module PreAssembly
              :processing_configuration,
              :content_structure,
              :ocr_available,
-             :stt_available,
              :project_name,
              :file_manifest,
              to: :batch
@@ -122,7 +121,6 @@ module PreAssembly
         build_from_staging_location(objects: object_files.sort,
                                     processing_configuration:,
                                     ocr_available:,
-                                    stt_available:,
                                     reading_order:)
       end
     end
@@ -163,14 +161,13 @@ module PreAssembly
       object_client.update(params: updated_cocina)
     end
 
-    def build_from_staging_location(objects:, processing_configuration:, reading_order:, ocr_available:, stt_available:)
-      filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, stt_available:, objects:, style: content_md_creation_style)
+    def build_from_staging_location(objects:, processing_configuration:, reading_order:, ocr_available:)
+      filesets = FromStagingLocation::FileSetBuilder.build(processing_configuration:, ocr_available:, objects:, style: content_md_creation_style)
       FromStagingLocation::StructuralBuilder.build(cocina_dro: existing_cocina_object,
                                                    filesets:,
                                                    all_files_public: batch.batch_context.all_files_public?,
                                                    reading_order:,
-                                                   manually_corrected_ocr: batch.batch_context.manually_corrected_ocr,
-                                                   manually_corrected_stt: batch.batch_context.manually_corrected_stt)
+                                                   manually_corrected_ocr: batch.batch_context.manually_corrected_ocr)
     end
 
     # The reading order for books is determined by what the user set when registering the object.

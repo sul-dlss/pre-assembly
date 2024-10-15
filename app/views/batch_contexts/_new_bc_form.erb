@@ -101,9 +101,7 @@
                 collection: [['Yes', true], ['No', false]] %>
         </div>
         <div data-caption-target="manuallyCorrectedStt" hidden>
-            <%= form.input :manually_corrected_stt,
-                as: :radio_buttons,
-                collection: [['Yes', true], ['No', false]] %>
+            <%= render 'alert', alert_type: 'info', text: :stt_corrected %>
         </div>
         <div data-caption-target="runStt">
             <%= form.input :run_stt, label: 'Would you like to auto-generate caption/transcript files for the media?',

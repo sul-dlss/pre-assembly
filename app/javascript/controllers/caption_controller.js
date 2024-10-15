@@ -54,10 +54,6 @@ export default class extends Controller {
     return 'Do the PDF documents comply with accessibility standards? More info: <a target=_blank href="https://uit.stanford.edu/accessibility/guides/pdf">PDF Accessibility</a>.'
   }
 
-  labelMediaManuallyCorrected () {
-    return 'Have the caption/transcript files been corrected to comply with accessibility standards? More info: <a target=_blank href="https://www.w3.org/WAI/media/av/captions/">Captions</a> and <a target=_blank href="https://www.w3.org/WAI/media/av/transcripts/">Transcripts</a>.'
-  }
-
   labelRunOcr () {
     return `Do you want to auto-generate OCR files for the ${this.ocrFileTypeLabel()}?`
   }
@@ -107,8 +103,6 @@ export default class extends Controller {
   // Show the Speech to text settings and controls
   showSttControls () {
     this.sttSettingsTarget.hidden = false
-
-    this.manuallyCorrectedSttTarget.querySelector('legend').innerHTML = this.labelMediaManuallyCorrected()
   }
 
   // if the user indicates they have speech to text available, show/hide the manually corrected and run stt options (for media)
