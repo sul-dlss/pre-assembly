@@ -11,7 +11,8 @@ RSpec.describe 'Discovery Report completes with errors', :js do
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.book).new(access: { view: 'world' })
   end
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: false, current: 2) }
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, status:, current: 2) }
+  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, openable?: false) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 
   before do

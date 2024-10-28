@@ -12,8 +12,8 @@ RSpec.describe PreAssembly::Batch do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
   end
   let(:object_client) { instance_double(Dor::Services::Client::Object, find: item, update: true, version: version_client) }
-  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: '1', status:) }
-  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
+  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '1', status:) }
+  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true) }
   let(:relative_file_paths) do
     batch.digital_objects.map do |digital_object|
       digital_object.object_files.map(&:relative_path)
@@ -64,8 +64,8 @@ RSpec.describe PreAssembly::Batch do
     end
 
     context 'when there are re-accessioned objects that are not ready to be versioned' do
-      let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: false, current: '2', status:) }
-      let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false) }
+      let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '2', status:) }
+      let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false, openable?: false) }
 
       let(:yaml) { YAML.load_file(batch.progress_log_file) }
 

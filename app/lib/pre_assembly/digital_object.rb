@@ -183,7 +183,9 @@ module PreAssembly
     # Versioning for a re-accession.
     ####
 
-    delegate :openable?, to: :version_client
+    def openable?
+      version_client.status.openable?
+    end
 
     def object_client
       Dor::Services::Client.object(druid.druid)

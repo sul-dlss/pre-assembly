@@ -28,7 +28,7 @@ gem 'whenever', require: false
 
 # Stanford gems
 gem 'assembly-objectfile', '~> 2.1'
-gem 'dor-services-client', '~> 14.0'
+gem 'dor-services-client', '~> 15.1'
 gem 'dor-workflow-client', '~> 7.0'
 gem 'druid-tools'
 
@@ -36,6 +36,7 @@ group :test do
   gem 'capybara'
   gem 'equivalent-xml'
   # NOTE: factory_bot_rails >= 6.3.0 requires env/test.rb to have config.factory_bot.reject_primary_key_attributes = false
+  gem 'axe-core-rspec'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'random-word'
@@ -44,7 +45,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
-  gem 'axe-core-rspec'
 end
 
 group :deployment do
