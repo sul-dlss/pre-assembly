@@ -18,8 +18,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
   let(:assembly_directory) { PreAssembly::AssemblyDirectory.new(druid_id: object.druid.id, base_path: tmp_area, content_structure:) }
   let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client) }
-  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: '3', status: version_status) }
-  let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
+  let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: '3', status: version_status) }
+  let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true) }
 
   before(:all) { FileUtils.remove_dir('log/test_jobs') if File.directory?('log/test_jobs') }
   after { FileUtils.remove_entry tmp_area }
@@ -57,8 +57,8 @@ RSpec.describe PreAssembly::DigitalObject do
         allow(object).to receive_messages(accessioning?: false)
       end
 
-      let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, openable?: false, current: 2, status: version_status) }
-      let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false) }
+      let(:version_client) { instance_double(Dor::Services::Client::ObjectVersion, current: 2, status: version_status) }
+      let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false, openable?: false) }
 
       it 'logs an error for existing non-openable objects' do
         expect(object).not_to receive(:stage_files)
@@ -626,7 +626,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe '#openable?' do
-    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true) }
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, status: version_status) }
+    let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, openable?: true) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
     before do
@@ -635,7 +636,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks if the object is openable' do
       object.send(:openable?)
-      expect(dor_services_client_object_version).to have_received(:openable?)
+      expect(version_status).to have_received(:openable?)
     end
   end
 

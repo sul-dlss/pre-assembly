@@ -13,8 +13,8 @@ RSpec.describe 'Run preassembly on object with no files' do
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.object).new(access: dro_access)
   end
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, openable?: true, current: 1, status:) }
-  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true) }
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, current: 1, status:) }
+  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
   let(:workflow_client) { instance_double(Dor::Workflow::Client, active_lifecycle: nil) }
 
