@@ -12,9 +12,9 @@ class JobRun < ApplicationRecord
 
   delegate :progress_log_file, :progress_log_file_exists?, to: :batch_context
 
-  enum job_type: {
-    'discovery_report' => 0,
-    'preassembly' => 1
+  enum :job_type, {
+    discovery_report: 0,
+    preassembly: 1
   }
 
   state_machine initial: :waiting do
