@@ -35,25 +35,25 @@ class BatchContext < ApplicationRecord
   validate :verify_file_manifest_exists, if: :using_file_manifest
   validate :verify_output_dir_no_exists, unless: proc { persisted? }
 
-  enum content_structure: {
-    'simple_image' => 0,
-    'simple_book' => 1,
-    'book_as_image' => 2, # Deprecated
-    'file' => 3,
-    'media' => 4,
+  enum :content_structure, {
+    simple_image: 0,
+    simple_book: 1,
+    book_as_image: 2, # Deprecated
+    file: 3,
+    media: 4,
     '3d' => 5,
-    'document' => 6,
-    'maps' => 7,
-    'webarchive_seed' => 8,
-    'simple_book_rtl' => 9, # Deprecated
-    'geo' => 10
+    document: 6,
+    maps: 7,
+    webarchive_seed: 8,
+    simple_book_rtl: 9, # Deprecated
+    geo: 10
   }
 
-  enum processing_configuration: {
-    'default' => 0,
-    'filename' => 1,
-    'media_cm_style' => 2, # Deprecated
-    'filename_with_ocr' => 3 # Deprecated
+  enum :processing_configuration, {
+    default: 0,
+    filename: 1,
+    media_cm_style: 2, # Deprecated
+    filename_with_ocr: 3 # Deprecated
   }
   # sets required processing_configuration values for a given content structure
   CONTENT_STRUCTURE_TO_PROCESSING_CONFIGURATION = {
