@@ -1,2 +1,2 @@
-druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language,sdr_generated_text,corrected_for_accessibility
 sn000dd0000,test.csv,Test,1,yes,yes,yes,page,,,

@@ -1,11 +1,11 @@
-druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language,file_label,rights_view,rights_download,rights_location,mimetype
-aa111aa1111,aa111aa1111_001_a_pm.wav,"Tape 1, Side A",1,no,yes,no,media,,,
-aa111aa1111,aa111aa1111_001_a_sh.wav,,,no,yes,no,,,,,world,world
-aa111aa1111,aa111aa1111_001_a_sl.mp3,,,yes,yes,yes,,,,,world,stanford
-aa111aa1111,aa111aa1111_001_img_1.jpg,,,yes,yes,yes,,,,"Tape 1, Side A image",dark,none
-aa111aa1111,aa111aa1111_001_b_pm.wav,"Tape 1, Side B",2,yes,yes,yes,file,,,,location-based,location-based,spec
-aa111aa1111,aa111aa1111_001_b_sh.wav,,,no,yes,no,,,,,world,location-based,music
-aa111aa1111,aa111aa1111_001_b_sl.mp3,,,yes,yes,yes,,,,,stanford,location-based,art
-aa111aa1111,aa111aa1111_001_img_2.jpg,,,yes,yes,yes,,,,"Tape 1, Side B image",stanford,stanford
-aa111aa1111,aa111aa1111.pdf,Transcript,3,yes,yes,yes,file,transcription,,,,,,"application/pdf"
-aa111aa1111,aa111aa1111.vtt,Caption file,4,yes,yes,yes,file,caption,,,,,,"text/vtt"
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language,file_label,rights_view,rights_download,rights_location,mimetype,sdr_generated_text,corrected_for_accessibility
+aa111aa1111,aa111aa1111_001_a_pm.wav,"Tape 1, Side A",1,no,yes,no,media,,,,
+aa111aa1111,aa111aa1111_001_a_sh.wav,,,no,yes,no,,,,,world,world,,,
+aa111aa1111,aa111aa1111_001_a_sl.mp3,,,yes,yes,yes,,,,,world,stanford,,,
+aa111aa1111,aa111aa1111_001_img_1.jpg,,,yes,yes,yes,,,,"Tape 1, Side A image",dark,none,,,
+aa111aa1111,aa111aa1111_001_b_pm.wav,"Tape 1, Side B",2,yes,yes,yes,file,,,,location-based,location-based,spec,,
+aa111aa1111,aa111aa1111_001_b_sh.wav,,,no,yes,no,,,,,world,location-based,music,,
+aa111aa1111,aa111aa1111_001_b_sl.mp3,,,yes,yes,yes,,,,,stanford,location-based,art,,
+aa111aa1111,aa111aa1111_001_img_2.jpg,,,yes,yes,yes,,,,"Tape 1, Side B image",stanford,stanford,,
+aa111aa1111,aa111aa1111.pdf,Transcript,3,yes,yes,yes,file,transcription,,,,,,"application/pdf",false,true
+aa111aa1111,aa111aa1111.vtt,Caption file,4,yes,yes,yes,file,caption,,,,,,"text/vtt",true,false

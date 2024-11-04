@@ -47,7 +47,10 @@ RSpec.describe PreAssembly::FileManifest do
       let(:csv_filename) { "#{staging_location}/file_manifest_missing_columns.csv" }
 
       it 'throws an exception' do
-        expect { described_class.new(staging_location:, csv_filename:).manifest }.to raise_error(RuntimeError, 'file_manifest missing required columns')
+        expect do
+          described_class.new(staging_location:,
+                              csv_filename:).manifest
+        end.to raise_error(RuntimeError, 'file_manifest missing required columns: resource_label, publish, shelve, preserve, sdr_generated_text, corrected_for_accessibility')
       end
     end
   end
@@ -241,7 +244,7 @@ RSpec.describe PreAssembly::FileManifest do
                   { type: 'https://cocina.sul.stanford.edu/models/file',
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/9', label: 'aa111aa1111.pdf', filename: 'aa111aa1111.pdf', version: 1,
                     hasMessageDigests: [],
-                    sdrGeneratedText: false, correctedForAccessibility: false,
+                    sdrGeneratedText: false, correctedForAccessibility: true,
                     hasMimeType: 'application/pdf',
                     use: 'transcription',
                     access: { view: 'world', download: 'none', controlledDigitalLending: false },
@@ -257,7 +260,7 @@ RSpec.describe PreAssembly::FileManifest do
                   { type: 'https://cocina.sul.stanford.edu/models/file',
                     externalIdentifier: 'https://cocina.sul.stanford.edu/file/9', label: 'aa111aa1111.vtt', filename: 'aa111aa1111.vtt', version: 1,
                     hasMessageDigests: [],
-                    sdrGeneratedText: false, correctedForAccessibility: false,
+                    sdrGeneratedText: true, correctedForAccessibility: false,
                     hasMimeType: 'text/vtt',
                     use: 'caption',
                     access: { view: 'world', download: 'none', controlledDigitalLending: false },

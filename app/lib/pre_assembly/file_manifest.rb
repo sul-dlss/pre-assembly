@@ -18,7 +18,7 @@ module PreAssembly
     ].freeze
 
     # the required columns that must exist in the file manifest
-    REQUIRED_COLUMNS = %w[druid filename resource_label sequence publish shelve preserve resource_type].freeze
+    REQUIRED_COLUMNS = %w[druid filename resource_label sequence publish shelve preserve resource_type role sdr_generated_text corrected_for_accessibility].freeze
 
     def initialize(staging_location:, csv_filename:)
       @staging_location = staging_location
@@ -65,7 +65,9 @@ module PreAssembly
 
     def validate_rows(rows)
       raise 'no rows in file_manifest or missing header' if rows.empty?
-      raise 'file_manifest missing required columns' unless (REQUIRED_COLUMNS - rows.first.keys).empty?
+
+      missing_columns = REQUIRED_COLUMNS - rows.first.keys
+      raise "file_manifest missing required columns: #{missing_columns.join(', ')}" unless missing_columns.empty?
     end
 
     def file_set_properties_from_row(row, sequence)

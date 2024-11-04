@@ -1,4 +1,4 @@
-druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language
+druid,filename,resource_label,sequence,publish,preserve,shelve,resource_type,role,file_language,sdr_generated_text,corrected_for_accessibility
 bb000kk0000,page_0000.jpg,page 1,1,no,yes,no,page,,
 bb000kk0000,page_0001.jpg,page 1,1,no,yes,no,page,,
 bb000kk0000,page_0001.pdf,page 1,1,yes,yes,yes,page,,
