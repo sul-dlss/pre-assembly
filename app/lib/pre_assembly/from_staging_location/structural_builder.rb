@@ -58,6 +58,7 @@ module PreAssembly
               access: file_access,
               use: fileset_file.file_attributes[:role]
             }
+            # if the user has indicated they are providing manually corrected OCR for this batch, set correctedForAccessibility attribute
             if fileset_file.file_attributes[:corrected_for_accessibility] && manually_corrected_ocr
               file_attributes[:correctedForAccessibility] = fileset_file.file_attributes[:corrected_for_accessibility]
             end
