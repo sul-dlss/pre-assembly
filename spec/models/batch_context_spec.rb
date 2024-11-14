@@ -29,38 +29,90 @@ RSpec.describe BatchContext do
     it { is_expected.to validate_presence_of(:processing_configuration) }
     it { is_expected.to validate_presence_of(:project_name) }
 
-    context 'file_manifest required for media' do
-      context 'when using_file_manifest is not selected' do
-        let(:attr_hash) do
-          {
-            project_name: 'File_manifest_media',
-            staging_location: 'spec/fixtures/media_audio_test',
-            content_structure: 'media',
-            processing_configuration: 'default',
-            using_file_manifest: false
-          }
+    context 'file_manifest setting' do
+      context 'when media content type selected' do
+        context 'when using_file_manifest is not selected' do
+          let(:attr_hash) do
+            {
+              project_name: 'File_manifest_media',
+              staging_location: 'spec/fixtures/media_audio_test',
+              content_structure: 'media',
+              processing_configuration: 'default',
+              using_file_manifest: false
+            }
+          end
+
+          it 'is valid (will be set to true automatically after submission)' do
+            expect(bc.valid?).to be true
+            expect(bc.using_file_manifest).to be true
+          end
         end
 
-        it 'is not valid' do
-          expect(bc.valid?).to be false
-          expect(bc.errors.size).to eq 1
-          expect(bc.errors.first.attribute).to eq :content_structure
+        context 'when using_file_manifest is selected' do
+          let(:attr_hash) do
+            {
+              project_name: 'File_manifest_media',
+              staging_location: 'spec/fixtures/media_audio_test',
+              content_structure: 'media',
+              processing_configuration: 'default',
+              using_file_manifest: true
+            }
+          end
+
+          it 'is valid' do
+            expect(bc.valid?).to be true
+          end
         end
       end
 
-      context 'when using_file_manifest is selected' do
-        let(:attr_hash) do
-          {
-            project_name: 'File_manifest_media',
-            staging_location: 'spec/fixtures/media_audio_test',
-            content_structure: 'media',
-            processing_configuration: 'default',
-            using_file_manifest: true
-          }
+      context 'when non-media content type selected' do
+        context 'when using_file_manifest is not selected' do
+          let(:attr_hash) do
+            {
+              project_name: 'No_file_manifest_images',
+              staging_location: 'spec/fixtures/flat_dir_images',
+              content_structure: 'simple_image',
+              processing_configuration: 'default',
+              using_file_manifest: false
+            }
+          end
+
+          it 'is valid' do
+            expect(bc.valid?).to be true
+            expect(bc.using_file_manifest).to be false
+          end
         end
 
-        it 'is valid' do
-          expect(bc.valid?).to be true
+        context 'when using_file_manifest is selected and file manifest exists' do
+          let(:attr_hash) do
+            {
+              project_name: 'File_manifest_book',
+              staging_location: 'spec/fixtures/book-file-manifest',
+              content_structure: 'simple_book',
+              processing_configuration: 'default',
+              using_file_manifest: true
+            }
+          end
+
+          it 'is valid' do
+            expect(bc.valid?).to be true
+          end
+        end
+
+        context 'when using_file_manifest is selected and file manifest does not exist' do
+          let(:attr_hash) do
+            {
+              project_name: 'File_manifest_book',
+              staging_location: 'spec/fixtures/flat_dir_images',
+              content_structure: 'simple_image',
+              processing_configuration: 'default',
+              using_file_manifest: true
+            }
+          end
+
+          it 'is not valid' do
+            expect(bc.valid?).to be false
+          end
         end
       end
     end
@@ -354,7 +406,7 @@ RSpec.describe BatchContext do
       context 'when not found' do
         it 'adds error' do
           bc.send(:verify_file_manifest_exists)
-          expect(bc.errors.map(&:type)).to include('missing or empty file manifest: spec/fixtures/images_jp2_tif/file_manifest.csv')
+          expect(bc.errors.map(&:type)).to include(': file manifest missing or empty: spec/fixtures/images_jp2_tif/file_manifest.csv')
         end
       end
 
@@ -368,7 +420,7 @@ RSpec.describe BatchContext do
 
         it 'adds error' do
           bc.send(:verify_file_manifest_exists)
-          expect(bc.errors.map(&:type)).to include('missing or empty file manifest: spec/fixtures/manifest_empty/file_manifest.csv')
+          expect(bc.errors.map(&:type)).to include(': file manifest missing or empty: spec/fixtures/manifest_empty/file_manifest.csv')
         end
       end
 
