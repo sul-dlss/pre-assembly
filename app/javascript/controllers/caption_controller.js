@@ -3,7 +3,8 @@ import { Controller } from '@hotwired/stimulus'
 export default class extends Controller {
   static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable', 'sttSettings', 'sttAvailable', 'runStt',
     'manuallyCorrectedOcr', 'manuallyCorrectedStt', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
-    'runOcrImageNotes', 'runSttNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper']
+    'runOcrImageNotes', 'runSttNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper',
+    'usingFileManifest']
 
   static values = { languages: Array }
 
@@ -66,6 +67,14 @@ export default class extends Controller {
     // Hide the OCR and speech to text settings by default; we will show them if the content structure allows them to
     this.ocrSettingsTarget.hidden = true
     this.sttSettingsTarget.hidden = true
+
+    // if the user selects media as the content structure, file manifest is required, so don't bother showing the control
+    //  we will automatically make it true on the server side
+    if (this.contentStructureTarget.value === 'media') {
+      this.usingFileManifestTarget.hidden = true
+    } else {
+      this.usingFileManifestTarget.hidden = false
+    }
 
     if (this.ocrAvailable()) {
       this.showOcrControls()

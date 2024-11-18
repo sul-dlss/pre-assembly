@@ -17,6 +17,7 @@ class BatchContext < ApplicationRecord
   has_many :job_runs, dependent: :destroy
   has_one :globus_destination, dependent: :destroy
   after_initialize :normalize_staging_location, :default_enums
+  before_validation :set_using_file_manifest
   before_save :set_processing_configuration, if: proc { Settings.ocr.enabled }
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
@@ -27,8 +28,6 @@ class BatchContext < ApplicationRecord
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }
-
-  validate :verify_file_manifest_selected_for_media
 
   validate :verify_staging_location
   validate :verify_staging_location_path
@@ -126,6 +125,11 @@ class BatchContext < ApplicationRecord
 
   private
 
+  # media content structure requires a file manifest, and we don't even ask the user about it in the UI
+  def set_using_file_manifest
+    self.using_file_manifest = true if content_structure == 'media'
+  end
+
   # set the processing configuration based on the content structure
   def set_processing_configuration
     self.processing_configuration = CONTENT_STRUCTURE_TO_PROCESSING_CONFIGURATION[content_structure]
@@ -177,12 +181,6 @@ class BatchContext < ApplicationRecord
     # However, these are validated separately, so OK to ignore here.
   end
 
-  def verify_file_manifest_selected_for_media
-    return unless content_structure == 'media' && !using_file_manifest
-
-    errors.add(:content_structure, 'requires a file manifest.  Please indicate you have a file manifest and ensure a file manifest is present.')
-  end
-
   def verify_staging_location
     return if errors.key?(:staging_location)
     return errors.add(:staging_location, "'#{staging_location}' not found.") unless File.directory?(staging_location)
@@ -207,7 +205,7 @@ class BatchContext < ApplicationRecord
   end
 
   def verify_file_manifest_exists
-    errors.add(:staging_location, "missing or empty file manifest: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
+    errors.add(:staging_location, ": file manifest missing or empty: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
   end
 end
 # rubocop:enable Metrics/ClassLength
