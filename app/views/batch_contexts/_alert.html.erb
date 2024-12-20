@@ -16,7 +16,7 @@
         <% when :stt_accessibility %>
           Auto-generating caption/transcript files alone will not fully meet accessibility standards. To fully comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the caption/transcript files for any errors.
         <% when :stt_media %>
-          Avoid auto-generating caption/transcript files for media that do not contain any speech or lyrics, as it may have adverse effects.
+          Be aware that auto-generating caption/transcript files for media containing minimal speech or lyrics (such as instrumental music) may result in low-quality or incorrect transcription.
         <% when :languages %>
           Selecting more than eight OCR languages may have an adverse effect on the speed and quality of recognition. Please reduce the number of languages.
         <% when :stt_corrected %>
