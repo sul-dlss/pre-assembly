@@ -4,6 +4,12 @@ require 'simplecov'
 SimpleCov.start :rails do
   add_filter '/spec/'
   add_filter '/vendor/'
+
+  if ENV['CI']
+    require 'simplecov_json_formatter'
+
+    formatter SimpleCov::Formatter::JSONFormatter
+  end
 end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration

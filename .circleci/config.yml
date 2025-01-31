@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby-rails: sul-dlss/ruby-rails@4.3.0
+  ruby-rails: sul-dlss/ruby-rails@4.4.0
   node: circleci/node@5.0.0
 workflows:
   build:
@@ -12,6 +12,8 @@ workflows:
       - ruby-rails/test-rails:
           name: test
           install-firefox: true
+          context: dlss
+          use-codecov: true
           before-test:
             - run:
                 name: Install exiftool
