@@ -266,7 +266,7 @@ GEM
     ffi (1.17.1-x86_64-linux-gnu)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    globus_client (0.13.0)
+    globus_client (0.14.0)
       activesupport (>= 4.2, < 8)
       faraday
       faraday-retry
@@ -289,7 +289,7 @@ GEM
     jbuilder (2.13.0)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
-    json (2.9.1)
+    json (2.10.1)
     jsonpath (1.1.5)
       multi_json
     kaminari (1.2.2)
@@ -308,7 +308,7 @@ GEM
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
-    logger (1.6.5)
+    logger (1.6.6)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -576,7 +576,7 @@ GEM
       chronic (>= 0.6.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.7.1)
+    zeitwerk (2.7.2)
 
 PLATFORMS
   arm64-darwin-23
@@ -604,7 +604,7 @@ DEPENDENCIES
   equivalent-xml
   erb_lint
   factory_bot_rails
-  globus_client (~> 0.13.0)
+  globus_client (~> 0.13)
   honeybadger
   importmap-rails (~> 1.2)
   jbuilder
