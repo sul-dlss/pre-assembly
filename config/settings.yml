@@ -16,7 +16,6 @@ repository_manager_email: sdr-contact@lists.stanford.edu
 
 argo_url: http://localhost:3000/
 redis_url: redis://localhost:6379/
-workflow_url: 'http://localhost:3002'
 
 workflow:
   timeout: 60

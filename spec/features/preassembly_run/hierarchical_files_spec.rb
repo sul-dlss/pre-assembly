@@ -15,16 +15,14 @@ RSpec.describe 'Pre-assemble Image object' do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.image).new(access: dro_access)
   end
   let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, current: 1, status:) }
-  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true) }
+  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true, accessioning?: false, version: 1) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
-  let(:workflow_client) { instance_double(Dor::Workflow::Client, active_lifecycle: nil) }
 
   before do
     FileUtils.rm_rf(object_staging_dir)
 
     login_as(user, scope: :user)
 
-    allow(Dor::Workflow::Client).to receive(:new).and_return(workflow_client)
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run)
     allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)

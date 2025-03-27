@@ -641,7 +641,8 @@ RSpec.describe PreAssembly::DigitalObject do
   end
 
   describe '#current_object_version' do
-    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, current: '9') }
+    let(:dor_services_client_object_version) { instance_double(Dor::Services::Client::ObjectVersion, status: version_status) }
+    let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, version: 1) }
     let(:dor_services_client_object) { instance_double(Dor::Services::Client::Object, version: dor_services_client_object_version) }
 
     before do
@@ -650,7 +651,7 @@ RSpec.describe PreAssembly::DigitalObject do
 
     it 'checks the current object version' do
       object.send(:current_object_version)
-      expect(dor_services_client_object_version).to have_received(:current)
+      expect(version_status).to have_received(:version)
     end
   end
 end
