@@ -109,7 +109,8 @@ RSpec.describe DiscoveryReport do
       Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' }, structural:)
     end
     let(:structural) { { contains: [] } }
-    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, current: version) }
+    let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, open: true, status:) }
+    let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, version:) }
     let(:version) { 2 }
     let(:client_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item) }
 

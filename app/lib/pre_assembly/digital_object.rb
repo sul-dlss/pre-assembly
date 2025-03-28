@@ -71,7 +71,7 @@ module PreAssembly
                  message: 'cannot accession when object is already in the process of accessioning' }
       end
 
-      unless version_client.status.open?
+      unless open?
         if openable?
           version_client.open(description: 'Accessioned via Preassembly')
         else
@@ -126,8 +126,10 @@ module PreAssembly
     end
 
     def current_object_version
-      version_client.current.to_i
+      status.version.to_i
     end
+
+    delegate :openable?, :accessioning?, :open?, to: :status
 
     private
 
@@ -183,30 +185,16 @@ module PreAssembly
     # Versioning for a re-accession.
     ####
 
-    def openable?
-      version_client.status.openable?
-    end
-
     def object_client
       Dor::Services::Client.object(druid.druid)
     end
 
+    def status
+      @status ||= object_client.version.status
+    end
+
     def version_client
       object_client.version
-    end
-
-    def workflow_client
-      Dor::Workflow::Client.new(url: Settings.workflow_url, timeout: Settings.workflow.timeout)
-    end
-
-    def accessioning?
-      return true if workflow_client.active_lifecycle(
-        druid: druid.druid,
-        milestone_name: 'submitted',
-        version: current_object_version.to_s
-      )
-
-      false
     end
 
     def object_files_valid?
