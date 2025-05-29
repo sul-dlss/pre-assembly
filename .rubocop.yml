@@ -603,6 +603,8 @@ Capybara/NegationMatcherAfterVisit: # new in 2.22
 Rails/MultipleRoutePaths: # new in 2.29
   Enabled: true
 Rails/StrongParametersExpect: # new in 2.29
-  Enabled: true
+  Enabled: false
 RSpec/IncludeExamples: # new in 3.6
   Enabled: true
+Style/SafeNavigationChainLength: # new in 1.68
+  Enabled: false

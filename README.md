@@ -146,7 +146,7 @@ See an example manifest file [`manifest.csv`](spec/fixtures/multimedia/manifest.
 
 Note that there is a second (optional) type of file manifest which is used to further describe
 the structure of each individual object, such as the exact files to be included.  This is
-only requried in advanced cases where you need to provide additional metadata about each
+only required in advanced cases where you need to provide additional metadata about each
 file in the object.  For more information about the file manifest, see https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-images-with-captions-(labels)
 
 ## Accession of Specific Objects
