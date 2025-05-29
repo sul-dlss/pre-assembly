@@ -73,7 +73,7 @@ class JobRunsController < ApplicationController
   private
 
   def job_run_params
-    params.require(:job_run).permit(:batch_context_id, :job_type)
+    params.expect(job_run: [:batch_context_id, :job_type])
   end
 
   # This method is used to determine if any rows in the discovery report include file changes.
