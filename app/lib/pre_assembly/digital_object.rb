@@ -175,13 +175,11 @@ module PreAssembly
     # The reading order for books is determined by what the user set when registering the object.
     # This is passed to the content metadata creator, which uses it if the content structure is book
     # Assume left-to-right if missing in the cocina structural (which really shouldn't happen for this content type)
-    # rubocop:disable Style/SafeNavigationChainLength
     def reading_order
       return unless content_md_creation_style == :simple_book
 
       existing_cocina_object.structural&.hasMemberOrders&.first&.viewingDirection || 'left-to-right'
     end
-    # rubocop:enable Style/SafeNavigationChainLength
 
     ####
     # Versioning for a re-accession.
