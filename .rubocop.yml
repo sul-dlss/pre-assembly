@@ -606,3 +606,5 @@ Rails/StrongParametersExpect: # new in 2.29
   Enabled: true
 RSpec/IncludeExamples: # new in 3.6
   Enabled: true
+Style/SafeNavigationChainLength: # new in 1.68
+  Enabled: true
