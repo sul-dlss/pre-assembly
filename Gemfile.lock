@@ -197,7 +197,7 @@ GEM
       capistrano-shared_configs
       ed25519
     docile (1.4.1)
-    dor-services-client (15.15.0)
+    dor-services-client (15.15.1)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.104.1)
       deprecation
@@ -249,7 +249,7 @@ GEM
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    faraday (2.13.1)
+    faraday (2.13.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -266,7 +266,7 @@ GEM
       faraday
       faraday-retry
       zeitwerk
-    honeybadger (5.28.0)
+    honeybadger (5.29.1)
       logger
       ostruct
     i18n (1.14.7)
@@ -319,7 +319,7 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0624)
+    mime-types-data (3.2025.0701)
     mini_exiftool (2.14.0)
       ostruct (>= 0.6.0)
       pstore (>= 0.1.3)
@@ -427,7 +427,7 @@ GEM
     rb-inotify (0.11.1)
       ffi (~> 1.0)
     rbtree (0.4.6)
-    rdoc (6.14.1)
+    rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
     redis-client (0.25.0)
@@ -542,8 +542,8 @@ GEM
     state_machines-activemodel (0.31.0)
       activemodel (>= 7.1)
       state_machines (>= 0.31.0)
-    state_machines-activerecord (0.31.0)
-      activerecord (>= 7.1)
+    state_machines-activerecord (0.40.0)
+      activerecord (>= 7.2)
       state_machines-activemodel (>= 0.10.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
