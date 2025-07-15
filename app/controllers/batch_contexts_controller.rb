@@ -15,10 +15,11 @@ class BatchContextsController < ApplicationController
     )
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def create
     params = batch_contexts_params
     params[:ocr_languages] ||= []
+    params[:ocr_languages].uniq! # remove any duplicated languages selected by the user (possible in the UI we have)
 
     # allow the staging location to be a previously created Globus URL or a Globus destination path
     # and then it connects it to the BatchContext being created
@@ -37,7 +38,7 @@ class BatchContextsController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   private
 

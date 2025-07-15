@@ -35,7 +35,7 @@ RSpec.describe StartAccession do
         let(:run_ocr) { true }
         let(:run_stt) { false }
         let(:manually_corrected_ocr) { false }
-        let(:ocr_languages) { ['English'] }
+        let(:ocr_languages) { %w[English Spanish] }
 
         it 'starts accession and adds workflow context' do
           start_accession
@@ -43,7 +43,7 @@ RSpec.describe StartAccession do
             description: 'pre-assembly re-accession',
             opening_user_name: user.sunet_id,
             workflow: 'assemblyWF',
-            context: { runOCR: true, ocrLanguages: ['English'] }
+            context: { runOCR: true, ocrLanguages: %w[English Spanish] }
           )
         end
       end

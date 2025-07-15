@@ -29,5 +29,19 @@
             <td>Publish/shelve/preserve setting</td>
             <td><%= batch_context.all_files_public ? 'all files public' : 'default' %></td>
         </tr>
+        <% if batch_context.run_ocr %>
+            <tr>
+                <td colspan="2">Auto-generated OCR selected</td>
+            </tr>
+            <tr>
+                <td>OCR Languages</td>
+                <td><%= batch_context.ocr_languages.join(', ') %></td>
+            </tr>
+        <% end %>
+        <% if batch_context.run_stt %>
+            <tr>
+                <td colspan="2">Auto-generated speech to text selected</td>
+            </tr>
+        <% end %>
     </tbody>
 </table>
