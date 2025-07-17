@@ -29,5 +29,23 @@
             <td>Publish/shelve/preserve setting</td>
             <td><%= batch_context.all_files_public ? 'all files public' : 'default' %></td>
         </tr>
+        <% if batch_context.run_ocr %>
+            <tr>
+                <td>Text extraction</td>
+                <td>OCR</td>
+            </tr>
+            <% unless batch_context.ocr_languages.empty? %>
+                <tr>
+                    <td>OCR languages</td>
+                    <td><%= batch_context.ocr_languages.join(', ') %></td>
+                </tr>
+            <% end %>
+        <% end %>
+        <% if batch_context.run_stt %>
+            <tr>
+                <td>Text extraction</td>
+                <td>speech-to-text</td>
+            </tr>
+        <% end %>
     </tbody>
 </table>
