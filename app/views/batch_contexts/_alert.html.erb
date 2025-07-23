@@ -1,18 +1,21 @@
 <div class="bg-white">
-  <div class="alert alert-<%= alert_type %> d-flex shadow-sm align-items-center" role="alert">
+  <div class="alert alert-<%= alert_type %> d-flex shadow-sm align-items-top" role="alert">
     <% icon = alert_type == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill' %>
     <% title = alert_type == 'warning' ? 'Warning' : 'Note' %>
-    <div class="bi <%= icon %> fs-3 me-3 align-self-center d-flex justify-content-center text-<%= alert_type %>"></div>
+    <div class="bi <%= icon %> fs-3 me-3 align-self-top d-flex justify-content-center text-<%= alert_type %>"></div>
     <div class="text-body">
       <div class="fw-semibold"><%= title %></div>
       <div>
         <% case text %>
-          <% when :ocr_document %>
-          Avoid auto-generating OCR files for PDF documents that do not contain any text, as it may have adverse effects.
-          <% when :ocr_image %>
-          Avoid auto-generating OCR files for images that do not contain any text, as it may have adverse effects.
+        <% when :ocr_image_format %>
+          OCR files must be in ALTO XML format and enumerated in a file manifest.
+        <% when :ocr_document %>
+          Avoid auto-generating OCR files for PDF documents that do not contain any typed or printed text, or for PDF documents that already contain highlightable text (including most PDFs created using word processing software).
+        <% when :ocr_image %>
+          Avoid auto-generating OCR files for images that do not contain any typed or printed text, as it may have adverse effects.
         <% when :ocr_accessibility %>
-          Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf' %>.
+          <p>Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf' %>.</p>
+          <p>PDF OCR is not currently searchable via the embedded viewer on purl and SearchWorks pages. In order to use the viewer search functionality, the PDF must be converted to images prior to Preassembly and accessioned using the Image or Book content type.</p>
         <% when :stt_accessibility %>
           Auto-generating caption/transcript files alone will not fully meet accessibility standards. To fully comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the caption/transcript files for any errors.
         <% when :stt_media %>
