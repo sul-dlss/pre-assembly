@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ['contentStructure', 'ocrSettings', 'ocrAvailable', 'sttSettings', 'sttAvailable', 'runStt',
     'manuallyCorrectedOcr', 'manuallyCorrectedStt', 'runOcr', 'ocrLanguages', 'ocrDropdown', 'runOcrDocumentNotes',
     'runOcrImageNotes', 'runSttNotes', 'selectedLanguages', 'languageWarning', 'dropdownContent', 'ocrLanguageWrapper',
-    'usingFileManifest']
+    'usingFileManifest', 'ocrAvailableImageFormat']
 
   static values = { languages: Array }
 
@@ -48,7 +48,7 @@ export default class extends Controller {
   }
 
   labelImagesManuallyCorrected () {
-    return 'Do the OCR files comply with accessibility standards? More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.'
+    return 'Have the OCR files been manually corrected in order to comply with accessibility standards? More info: <a target=_blank href="https://blog.adobe.com/en/publish/2016/03/08/correcting-ocr-errors">Correcting OCR</a>.'
   }
 
   labelDocumentsManuallyCorrected () {
@@ -97,6 +97,7 @@ export default class extends Controller {
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelDocumentsManuallyCorrected()
       this.manuallyCorrectedOcrTarget.hidden = false
       this.ocrAvailableTarget.hidden = true
+      this.ocrAvailableImageFormatTarget.hidden = true
       this.manuallyCorrectedOcrChanged()
     } else { // images and books have the same labels and show the same questions (different from documents)
       this.manuallyCorrectedOcrTarget.querySelector('legend').innerHTML = this.labelImagesManuallyCorrected()
@@ -131,6 +132,7 @@ export default class extends Controller {
   // if the user indicates they have ocr available, show/hide the manually corrected and run OCR option (for images/books)
   ocrAvailableChanged () {
     const ocrAvailable = this.ocrAvailableTarget.querySelector('input[type="radio"]:checked').value === 'true'
+    this.ocrAvailableImageFormatTarget.hidden = !ocrAvailable
     this.manuallyCorrectedOcrTarget.hidden = !ocrAvailable
     this.runOcrTarget.hidden = ocrAvailable
     if (ocrAvailable) {

@@ -34,6 +34,9 @@
                     as: :radio_buttons,
                     collection: [['Yes', true], ['No', false]] %>
             </div>
+            <div data-caption-target="ocrAvailableImageFormat" hidden>
+                <%= render 'alert', alert_type: 'info', text: :ocr_image_format %>
+            </div>
             <div data-caption-target="manuallyCorrectedOcr" hidden>
                 <%= form.input :manually_corrected_ocr, input_html: { data: { action: "change->caption#manuallyCorrectedOcrChanged" } },
                     as: :radio_buttons,
