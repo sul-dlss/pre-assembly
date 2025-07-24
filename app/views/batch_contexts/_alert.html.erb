@@ -8,7 +8,7 @@
       <div>
         <% case text %>
         <% when :ocr_image_format %>
-          OCR files must be in ALTO XML format and enumerated in a file manifest.
+          OCR files must be in ALTO XML format.
         <% when :ocr_document %>
           Avoid auto-generating OCR files for PDF documents that do not contain any typed or printed text, or for PDF documents that already contain highlightable text (including most PDFs created using word processing software).
         <% when :ocr_image %>
