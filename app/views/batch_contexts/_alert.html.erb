@@ -15,7 +15,7 @@
           Avoid auto-generating OCR files for images that do not contain any typed or printed text, as it may have adverse effects.
         <% when :ocr_accessibility %>
           <p>Auto-generating OCR files alone will not fully meet accessibility standards. To comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the PDF documents by following the <%= link_to 'PDF accessibility guides', 'https://uit.stanford.edu/accessibility/guides/pdf' %>.</p>
-          <p>PDF OCR is not currently searchable via the embedded viewer on purl and SearchWorks pages. In order to use the viewer search functionality, the PDF must be converted to images prior to Preassembly and accessioned using the Image or Book content type.</p>
+          <p>PDF OCR is not currently searchable via the embedded viewer on purl and SearchWorks pages. In order to use the viewer search functionality, the PDF must be converted to images prior to Preassembly and accessioned using the Image or Book content type.  Otherwise, users will be able to search only by using ctrl+F or by downloading the PDF first.</p>
         <% when :stt_accessibility %>
           Auto-generating caption/transcript files alone will not fully meet accessibility standards. To fully comply with <%= link_to "Stanford's Accessibility policy", 'https://uit.stanford.edu/accessibility/policy' %>, you are encouraged to correct the caption/transcript files for any errors.
         <% when :stt_media %>
