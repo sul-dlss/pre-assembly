@@ -29,6 +29,7 @@ module PreAssembly
 
       def build_file_sets
         resources[:file_sets].keys.sort.map do |seq|
+          # Stub out the file set external identifier. Will be URI-ified by DSA for consistency.
           external_identifier = "#{cocina_dro.externalIdentifier.delete_prefix('druid:')}_#{seq}"
           FromFileManifest::FileSetBuilder.build(resource: resources[:file_sets][seq],
                                                  external_identifier:,
