@@ -197,7 +197,7 @@ GEM
       capistrano-shared_configs
       ed25519
     docile (1.4.1)
-    dor-services-client (15.20.0)
+    dor-services-client (15.22.0)
       activesupport (>= 7.0.0)
       cocina-models (~> 0.106.0)
       deprecation
@@ -328,7 +328,7 @@ GEM
     multi_json (1.17.0)
     net-http (0.6.0)
       uri
-    net-imap (0.5.10)
+    net-imap (0.5.11)
       date
       net-protocol
     net-pop (0.1.2)
@@ -428,9 +428,10 @@ GEM
     rb-inotify (0.11.1)
       ffi (~> 1.0)
     rbtree (0.4.6)
-    rdoc (6.14.2)
+    rdoc (6.15.0)
       erb
       psych (>= 4.0.0)
+      tsort
     redis-client (0.26.1)
       connection_pool
     regexp_parser (2.11.3)
