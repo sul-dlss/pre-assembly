@@ -18,7 +18,7 @@ gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/
 gem 'pry' # make it possible to use pry for IRB
 gem 'rails', '~> 8.0.0'
 gem 'rake'
-gem 'sidekiq', '~> 7.0'
+gem 'sidekiq', '~> 8.0'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
 gem 'sneakers', '~> 2.11' # rabbitMQ background processing
 gem 'state_machines-activerecord'
