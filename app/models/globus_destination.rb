@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'cgi'
-
 # Model representing a Globus destination that can be used as a staging location.
 class GlobusDestination < ApplicationRecord
   belongs_to :batch_context, optional: true
@@ -51,14 +49,14 @@ class GlobusDestination < ApplicationRecord
     uri = URI.parse(url)
     return unless uri.query
 
-    params = CGI.parse(uri.query)
-    endpoint_param = if params['origin_id']&.first == Settings.globus.endpoint_id
+    params = Rack::Utils.parse_query(uri.query)
+    endpoint_param = if params['origin_id'] == Settings.globus.endpoint_id
                        'origin_path'
                      else
                        'destination_path'
                      end
 
-    params[endpoint_param]&.first
+    params[endpoint_param]
   end
 
   # Creates a URL for globus, including the path to the user's destination directory
