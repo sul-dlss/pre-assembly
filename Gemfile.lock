@@ -605,6 +605,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rails
   capybara
+  cocina-models
   config
   cssbundling-rails (~> 1.2)
   csv
