@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'bunny', '~> 2.17' # RabbitMQ library
+gem 'cocina-models'
 gem 'config'
 gem 'cssbundling-rails', '~> 1.2'
 gem 'csv'
