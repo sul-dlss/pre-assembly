@@ -24,6 +24,15 @@ RSpec.describe PreAssembly::FileManifest do
       end
     end
 
+    context 'when shelve=yes, publish=no, preserve=no (file will be deleted from all systems after accessioning)' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_shelve_only.csv" }
+
+      it 'throws an exception' do
+        expect { described_class.new(staging_location:, csv_filename:).manifest }
+          .to raise_error(RuntimeError, 'file_manifest has shelve=yes with publish=no and preserve=no for a single file, which will result in the file being deleted from all systems after accessioning') # rubocop:disable Layout/LineLength
+      end
+    end
+
     context 'when blank rows' do
       let(:csv_filename) { "#{staging_location}/file_manifest_blank_rows.csv" }
 

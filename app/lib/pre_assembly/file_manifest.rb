@@ -112,6 +112,9 @@ module PreAssembly
       shelve   = row[:shelve] == 'yes'
 
       raise 'file_manifest has preserve and shelve both being set to no for a single file' if !preserve && !shelve
+      if shelve && !publish && !preserve
+        raise 'file_manifest has shelve=yes with publish=no and preserve=no for a single file, which will result in the file being deleted from all systems after accessioning'
+      end
 
       { sdrPreserve: preserve, publish:, shelve: }
     end
