@@ -78,6 +78,30 @@ RSpec.describe PreAssembly::DigitalObject do
                              message: 'cannot accession when object is already in the process of accessioning')
       end
     end
+
+    context 'when the file manifest has shelve=yes with publish=no and preserve=no' do
+      let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/media_missing', content_structure: 'media') }
+      let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false, openable?: true, accessioning?: false) }
+      let(:object_client) { instance_double(Dor::Services::Client::Object, version: version_client, find: Cocina::RSpec::Factories.build(:dro)) }
+
+      before do
+        allow(version_client).to receive(:open)
+        allow(job_run.batch).to receive(:file_manifest).and_return(
+          PreAssembly::FileManifest.new(
+            staging_location: 'spec/fixtures/media_missing',
+            csv_filename: 'spec/fixtures/media_missing/file_manifest_shelve_only.csv'
+          )
+        )
+        allow(PreAssembly::AssemblyDirectory).to receive(:create)
+        allow(object).to receive(:stage_files)
+      end
+
+      it 'returns an error without opening a version' do
+        expect(status).to eq(status: 'error', pre_assem_finished: false,
+                             message: 'file_manifest has shelve=yes with publish=no and preserve=no for a single file, which will result in the file being deleted from all systems after accessioning')
+        expect(version_client).not_to have_received(:open)
+      end
+    end
   end
 
   describe '#stage_files' do

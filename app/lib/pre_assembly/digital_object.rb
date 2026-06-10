@@ -71,6 +71,9 @@ module PreAssembly
                  message: 'cannot accession when object is already in the process of accessioning' }
       end
 
+      # trigger manifest validation before opening a version in DSA; memoized so the result is reused later
+      file_manifest&.manifest
+
       unless open?
         if openable?
           version_client.open(description: 'Accessioned via Preassembly')
