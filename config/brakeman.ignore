@@ -1,0 +1,164 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "99c9c6936588b2fae96b2a10c5524fc82df3579dd944865b91a84aa2fbb4c8d7",
+      "check_name": "SendFile",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/job_runs_controller.rb",
+      "line": 29,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "send_file(JobRun.find(params[:id]).progress_log_file)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "JobRunsController",
+        "method": "download_log"
+      },
+      "user_input": "JobRun.find(params[:id]).progress_log_file",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "9affbb67a7219468cdcea1a780c2fc59a41dbfec7553365427b55b38dd40062c",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/job_runs_controller.rb",
+      "line": 60,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.read(JobRun.find(params[:id]).progress_log_file)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "JobRunsController",
+        "method": "progress_log"
+      },
+      "user_input": "JobRun.find(params[:id]).progress_log_file",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "c429c09637abd17a14c42c445c7f5aebd47601fae612a274889df3417221717b",
+      "check_name": "SendFile",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/job_runs_controller.rb",
+      "line": 39,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "send_file(JobRun.find(params[:id]).output_location)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "JobRunsController",
+        "method": "download_report"
+      },
+      "user_input": "JobRun.find(params[:id]).output_location",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "File Access",
+      "warning_code": 16,
+      "fingerprint": "ce59032e87f31ff9f558cf55d6f8f44a1979803df83d07664727978a0383e03d",
+      "check_name": "FileAccess",
+      "message": "Model attribute used in file name",
+      "file": "app/controllers/job_runs_controller.rb",
+      "line": 49,
+      "link": "https://brakemanscanner.org/docs/warning_types/file_access/",
+      "code": "File.read(JobRun.find(params[:id]).output_location)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "JobRunsController",
+        "method": "discovery_report_summary"
+      },
+      "user_input": "JobRun.find(params[:id]).output_location",
+      "confidence": "Medium",
+      "cwe_id": [
+        22
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 4,
+      "fingerprint": "d3a4971c3dfa6c5e36c74ea030168219da278d3dad51bc5b1ff110b94f5be4ed",
+      "check_name": "LinkToHref",
+      "message": "Potentially unsafe model attribute in `link_to` href",
+      "file": "app/views/batch_contexts/_settings.html.erb",
+      "line": 16,
+      "link": "https://brakemanscanner.org/docs/warning_types/link_to_href",
+      "code": "link_to(\"Globus\", BatchContext.find(params[:id]).active_globus_url, :target => \"blank\")",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "BatchContextsController",
+          "method": "show",
+          "line": 10,
+          "file": "app/controllers/batch_contexts_controller.rb",
+          "rendered": {
+            "name": "batch_contexts/show",
+            "file": "app/views/batch_contexts/show.html.erb"
+          }
+        },
+        {
+          "type": "template",
+          "name": "batch_contexts/show",
+          "line": 12,
+          "file": "app/views/batch_contexts/show.html.erb",
+          "rendered": {
+            "name": "batch_contexts/_settings",
+            "file": "app/views/batch_contexts/_settings.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "batch_contexts/_settings"
+      },
+      "user_input": "BatchContext.find(params[:id]).active_globus_url",
+      "confidence": "Weak",
+      "cwe_id": [
+        79
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Remote Code Execution",
+      "warning_code": 25,
+      "fingerprint": "f5845308e5a230a9bb3d4c7f6ec0197ddd8f593af915397cc983aac7e40c0d68",
+      "check_name": "Deserialize",
+      "message": "`YAML.load_stream` called with model attribute",
+      "file": "app/controllers/job_runs_controller.rb",
+      "line": 60,
+      "link": "https://brakemanscanner.org/docs/warning_types/unsafe_deserialization",
+      "code": "YAML.load_stream(File.read(JobRun.find(params[:id]).progress_log_file))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "JobRunsController",
+        "method": "progress_log"
+      },
+      "user_input": "JobRun.find(params[:id]).progress_log_file",
+      "confidence": "Medium",
+      "cwe_id": [
+        502
+      ],
+      "note": ""
+    }
+  ],
+  "brakeman_version": "8.0.5"
+}
