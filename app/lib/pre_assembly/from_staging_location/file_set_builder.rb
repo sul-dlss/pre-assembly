@@ -20,8 +20,6 @@ module PreAssembly
 
       # @return [Array<FileSet>] a list of filesets in the object
       def build
-        return [] if style == :geo # geo does not need any files in structural metadata, will be created in geo specific workflows
-
         case processing_configuration
         when :default # one resource per object
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:, ocr_available:) }

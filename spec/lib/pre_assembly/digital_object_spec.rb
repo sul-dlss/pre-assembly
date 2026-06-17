@@ -547,22 +547,6 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    describe 'geo structural metadata' do
-      let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/geo') }
-      let(:cocina_type) { Cocina::Models::ObjectType.geo }
-      let(:content_structure) { 'geo' }
-
-      let(:expected) { { contains: [], hasMemberOrders: [], isMemberOf: [] } }
-
-      before do
-        add_object_files(extension: 'zip')
-      end
-
-      it 'generates blank structural metadata' do
-        expect(object.send(:build_structural).to_h).to eq expected
-      end
-    end
-
     describe 'grouped by filename, simple book structural metadata without file attributes' do
       let(:cocina_type) { Cocina::Models::ObjectType.book }
       let(:content_structure) { 'simple_book' }
