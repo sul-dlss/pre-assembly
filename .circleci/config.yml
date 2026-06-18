@@ -1,12 +1,14 @@
 version: 2.1
 orbs:
-  ruby-rails: sul-dlss/ruby-rails@4.11.0
+  ruby-rails: sul-dlss/ruby-rails@4.12.0
   node: circleci/node@5.0.0
 workflows:
   build:
     jobs:
       - ruby-rails/lint:
           name: lint
+      - ruby-rails/brakeman:
+          name: brakeman
       - ruby-rails/lint-erb
       - ruby-rails/lint-js
       - ruby-rails/test-rails:
