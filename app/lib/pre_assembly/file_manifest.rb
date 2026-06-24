@@ -2,7 +2,7 @@
 
 module PreAssembly
   # This class generates custom structural metadata from a file manifest (file_manifest.csv), used if the user opts for this when starting a job
-  # Documentation: https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-complex-content
+  # Documentation: https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly/Accessioning-complex-content
 
   # It is used by pre-assembly during the accessioning process to produce custom content metadata if a file manifest is supplied
   class FileManifest
