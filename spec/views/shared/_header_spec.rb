@@ -4,7 +4,7 @@ RSpec.describe 'shared/_header.erb' do
   before { render template: 'shared/_header' }
 
   it 'Usage Instructions' do
-    expect(rendered).to include('<a class="nav-link text-white" href="https://github.com/sul-dlss/pre-assembly/wiki">Usage instructions</a>')
+    expect(rendered).to include('<a class="nav-link text-white" href="https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly">Usage instructions</a>')
   end
 
   it 'All jobs' do

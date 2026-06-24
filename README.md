@@ -9,7 +9,7 @@ assembled and then accessioned into the SUL digital library.
 
 ## Basics
 
-`Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/. There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://github.com/sul-dlss/pre-assembly/wiki.
+`Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/. There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly.
 
 ## Deployment
 
@@ -147,7 +147,7 @@ See an example manifest file [`manifest.csv`](spec/fixtures/multimedia/manifest.
 Note that there is a second (optional) type of file manifest which is used to further describe
 the structure of each individual object, such as the exact files to be included.  This is
 only required in advanced cases where you need to provide additional metadata about each
-file in the object.  For more information about the file manifest, see https://github.com/sul-dlss/pre-assembly/wiki/Accessioning-images-with-captions-(labels)
+file in the object.  For more information about the file manifest, see https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly/Accessioning-images-with-captions-(labels)
 
 ## Accession of Specific Objects
 
