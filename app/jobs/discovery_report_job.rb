@@ -14,6 +14,7 @@ class DiscoveryReportJob < ApplicationJob
     job_run.error_message = report.objects_had_errors? ? report.error_message : nil
     job_run.completed
   rescue StandardError => e # catch any error preventing the whole job from running (e.g. bad header in csv)
+    Rails.logger.error(e.full_message)
     job_run.error_message = e.exception
     job_run.failed
   end

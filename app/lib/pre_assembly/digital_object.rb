@@ -98,7 +98,7 @@ module PreAssembly
       # Return possibly incremented version.
       { pre_assem_finished: true, status: 'success', version: version_client.current.to_i }
     rescue StandardError => e
-      log "    - pre_assemble(#{druid.id}) error occurred: #{e.message}\n#{e.backtrace.join("\n")}"
+      log "    - pre_assemble(#{druid.id}) error occurred: #{e.message}"
       { pre_assem_finished: false, status: 'error', message: e.message }
     end
     # rubocop:enable Metrics/AbcSize
