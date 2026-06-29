@@ -39,25 +39,25 @@ RSpec.describe 'Discovery Report completes with errors', :js do
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+    expect(page).to have_text exp_str
 
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
-    expect(page).to have_content project_name
-    expect(page).to have_content 'Discovery report completed (with errors)'
-    expect(page).to have_content 'Errors'
-    expect(page).to have_content '1 objects had errors in the discovery report'
+    expect(page).to have_text project_name
+    expect(page).to have_text 'Discovery report completed (with errors)'
+    expect(page).to have_text 'Errors'
+    expect(page).to have_text '1 objects had errors in the discovery report'
     expect(page).to have_link('Download').twice
 
     # summary table
-    expect(page).to have_content '250 KB'
-    expect(page).to have_content 'image/tiff : 4'
-    expect(page).to have_content 'less than a minute'
+    expect(page).to have_text '250 KB'
+    expect(page).to have_text 'image/tiff : 4'
+    expect(page).to have_text 'less than a minute'
     # error table
-    expect(page).to have_content 'Errors Summary'
-    expect(page).to have_content 'druid:oo111oo1111'
-    expect(page).to have_content 'empty_object : true'
-    expect(page).to have_content 'missing_files : true'
+    expect(page).to have_text 'Errors Summary'
+    expect(page).to have_text 'druid:oo111oo1111'
+    expect(page).to have_text 'empty_object : true'
+    expect(page).to have_text 'missing_files : true'
 
     # discovery report JSON produced
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')

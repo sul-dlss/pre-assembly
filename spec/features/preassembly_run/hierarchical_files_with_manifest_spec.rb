@@ -101,11 +101,11 @@ RSpec.describe 'Pre-assemble Image object' do
         click_button 'Submit'
       end
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-      expect(page).to have_content exp_str
+      expect(page).to have_text exp_str
 
       # go to job details page, wait for preassembly to finish
       first('td  > a').click
-      expect(page).to have_content project_name
+      expect(page).to have_text project_name
       expect(page).to have_link('Download').once
 
       result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
@@ -152,11 +152,11 @@ RSpec.describe 'Pre-assemble Image object' do
         click_button 'Submit'
       end
       exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-      expect(page).to have_content exp_str
+      expect(page).to have_text exp_str
 
       # go to job details page, wait for preassembly to finish
       first('td  > a').click
-      expect(page).to have_content project_name
+      expect(page).to have_text project_name
       expect(page).to have_link('Download').once
 
       result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")

@@ -37,11 +37,11 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+    expect(page).to have_text exp_str
 
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
-    expect(page).to have_content project_name
+    expect(page).to have_text project_name
     expect(page).to have_link('Download').twice
 
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
@@ -72,11 +72,11 @@ RSpec.describe 'Discovery Report for hierarchical files with build manifest' do
 
     click_button 'Submit'
     exp_str = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
-    expect(page).to have_content exp_str
+    expect(page).to have_text exp_str
 
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
-    expect(page).to have_content project_name
+    expect(page).to have_text project_name
     expect(page).to have_link('Download').twice
 
     report_path = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, 'discovery_report_*.json')
