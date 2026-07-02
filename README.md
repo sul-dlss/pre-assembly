@@ -11,6 +11,8 @@ assembled and then accessioned into the SUL digital library.
 
 `Pre-Assembly` is a Rails web-app at https://sul-preassembly-prod.stanford.edu/. There is a link in the upper right to "Usage Instructions" which goes to the github wiki pages: https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly.
 
+To understand how to create manifests, accession objects, and stage content, see the Usage Instructions. 
+
 ## Deployment
 
 Deploy the Web app version in the usual capistrano manner:
@@ -110,53 +112,6 @@ The Globus client gem needs to be configured for it work in stage/qa during deve
 ## Post Accessioning Reports
 
 Use [Argo](https://argo.stanford.edu/).
-
-## Manifests
-
-Manifests are a way of indicating which objects you will be accessioning. A
-manifest file is a CSV, UTF-8 encoded file and works for projects which have
-one file per object (where container = one file), or projects with many
-files per object (where container = folder).
-
-**WARNING**: if you export from Microsoft Excel, you may not get a properly
-formatted UTF-8 CSV file. You should open any CSV that has been exported from
-Excel in a text editor and re-save it in proper UTF-8 files (e.g. Atom, Sublime,
-or TextMate).
-
-There are a few columns in the manifest, with two required:
-
-- `container`: container name (either filename or folder name) -- **required**
-- `druid`: druid of object -- **required**
-- `sourceid`: source ID
-- `label`: label
-
-The druids should include the "druid:" prefix (e.g. "druid:oo000oo0001" instead of "oo000oo0001").
-
-The first line of the manifest is a header and specifies the column names.
-Column names should not have spaces and it is easiest if they are all lower
-case. These columns are used to indicate which file goes
-with the object. If the container column specifies a filename, it should be
-relative to the manifest file itself. You can have additional columns in your
-manifest which can be used to create descriptive metadata for each object. See
-the section below for more details on how this works.
-
-The druid column **must** be called `"druid"`.
-
-See an example manifest file [`manifest.csv`](spec/fixtures/multimedia/manifest.csv).
-
-Note that there is a second (optional) type of file manifest which is used to further describe
-the structure of each individual object, such as the exact files to be included.  This is
-only required in advanced cases where you need to provide additional metadata about each
-file in the object.  For more information about the file manifest, see https://consul.stanford.edu/spaces/SDR/pages/1812791944/Preassembly/Accessioning-images-with-captions-(labels)
-
-## Accession of Specific Objects
-
-Using a manifest:
-
-1.  Create a new manifest with only the objects you need accessioned.
-2.  Create a new project config YAML file referencing the new manifest and
-    write to a new progress log file.
-3.  Run pre-assembly.
 
 ## Preparing maps content
 
