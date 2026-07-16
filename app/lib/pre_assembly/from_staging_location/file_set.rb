@@ -46,6 +46,8 @@ module PreAssembly
           'image'
         when :file
           'file'
+        when :geo
+          'object'
         when :simple_book # in a simple book project, all resources are pages unless they are *all* non-images -- if so, switch the type to object
           resource_has_non_images && resource_file_types.include?(:image) == false ? 'object' : 'page'
         when :book_as_image # same as simple book, but all resources are images instead of pages, unless we need to switch them to object type
