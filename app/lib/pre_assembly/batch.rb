@@ -54,7 +54,7 @@ module PreAssembly
         yield DigitalObject.new(self,
                                 container:,
                                 stageable_items:,
-                                object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
+                                object_files: stageable_items.map { |item| Assembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],

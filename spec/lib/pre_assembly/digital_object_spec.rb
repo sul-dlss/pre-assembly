@@ -197,7 +197,7 @@ RSpec.describe PreAssembly::DigitalObject do
         f = "#{rel_path}image#{i}.#{extension}"
         options = { relative_path: f, provider_md5: i.to_s * 4 }
 
-        object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
+        object.object_files.push Assembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
       end
     end
 
