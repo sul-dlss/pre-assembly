@@ -61,7 +61,8 @@ RSpec.describe 'Pre-assemble Book Using File Manifest' do
       .with(cocina_dro: item,
             resources: Hash,
             reading_order: 'right-to-left',
-            staging_location: staging_location.to_s)
+            staging_location: staging_location.to_s,
+            checksums: Hash)
     expect(dsc_object).to have_received(:update).with(params: item)
     expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
   end

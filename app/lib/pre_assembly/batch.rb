@@ -54,7 +54,7 @@ module PreAssembly
         yield DigitalObject.new(self,
                                 container:,
                                 stageable_items:,
-                                object_files: stageable_items.map { |item| PreAssembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
+                                object_files: stageable_items.map { |item| Assembly::ObjectFile.new(item, { relative_path: Pathname.new(item).relative_path_from(container).to_s }) },
                                 label: row.fetch('label', ''),
                                 source_id: row['sourceid'],
                                 pid: row[:druid],
@@ -167,11 +167,13 @@ module PreAssembly
       @num_to_pre_assemble ||= un_pre_assembled_objects.size
     end
 
-    # For each of the passed DigitalObject's ObjectFiles, sets the checksum attribute.
+    # For each of the passed DigitalObject's ObjectFiles, sets the provider MD5.
     # @param [PreAssembly::DigitalObject] dobj
     def load_checksums(dobj)
       log '  - load_checksums()'
-      dobj.object_files.each { |file| file.provider_md5 = file.md5 }
+      dobj.object_files.each do |file|
+        file.provider_md5 = file.md5
+      end
     end
 
     def info_for_log

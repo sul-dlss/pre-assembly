@@ -132,7 +132,8 @@ RSpec.describe 'Pre-assemble Image object' do
         .with(cocina_dro: item,
               resources:,
               reading_order: nil,
-              staging_location: staging_location.to_s)
+              staging_location: staging_location.to_s,
+              checksums: Hash)
       expect(dsc_object).to have_received(:update).with(params: item)
     end
   end

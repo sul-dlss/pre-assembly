@@ -19,7 +19,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
     context 'with flat file structure' do
       let(:base_path) { 'spec/fixtures/pdf_document/content/' }
-      let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })] }
+      let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })] }
 
       context 'with all files public' do
         let(:dro_access) { { view: 'world' } }
@@ -87,7 +87,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
       context 'with filename processing configuration PDF files included' do
         let(:processing_configuration) { :filename }
-        let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
+        let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
         let(:dro_access) { { view: 'world', download: 'world' } }
         let(:all_files_public) { false }
 
@@ -112,7 +112,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       end
 
       context 'with filename processing configuration and OCR provided PDF files included' do
-        let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
+        let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
         let(:dro_access) { { view: 'world', download: 'world' } }
         let(:all_files_public) { false }
 
@@ -149,7 +149,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
 
           let(:processing_configuration) { :filename_with_ocr }
           let(:ocr_available) { nil }
-          let(:objects) { [PreAssembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
+          let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }
           let(:dro_access) { { view: 'world', download: 'world' } }
           let(:all_files_public) { false }
 
@@ -238,8 +238,8 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         let(:ocr_available) { true }
         let(:objects) do
           [
-            PreAssembly::ObjectFile.new("#{base_path}page_0001.jpg", { relative_path: 'page_0001.jpg' }),
-            PreAssembly::ObjectFile.new("#{base_path}page_0001.xml", { relative_path: 'page_0001.xml' })
+            Assembly::ObjectFile.new("#{base_path}page_0001.jpg", { relative_path: 'page_0001.jpg' }),
+            Assembly::ObjectFile.new("#{base_path}page_0001.xml", { relative_path: 'page_0001.xml' })
           ]
         end
         let(:dro_access) { { view: 'world', download: 'world' } }
@@ -379,13 +379,13 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
       let(:base_path) { 'spec/fixtures/hierarchical-files/content/' }
       let(:objects) do
         [
-          PreAssembly::ObjectFile.new("#{base_path}test1.txt", { relative_path: 'test1.txt', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/config/test.yml", { relative_path: '/config/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/config/settings/test.yml", { relative_path: '/config/settings/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/config/settings/test1.yml", { relative_path: '/config/settings/test1.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/config/settings/test2.yml", { relative_path: '/config/settings/test2.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/images/image.jpg", { relative_path: '/images/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
-          PreAssembly::ObjectFile.new("#{base_path}/images/subdir/image.jpg", { relative_path: '/images/subdir/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })
+          Assembly::ObjectFile.new("#{base_path}test1.txt", { relative_path: 'test1.txt', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/config/test.yml", { relative_path: '/config/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/config/settings/test.yml", { relative_path: '/config/settings/test.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/config/settings/test1.yml", { relative_path: '/config/settings/test1.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/config/settings/test2.yml", { relative_path: '/config/settings/test2.yml', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/images/image.jpg", { relative_path: '/images/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } }),
+          Assembly::ObjectFile.new("#{base_path}/images/subdir/image.jpg", { relative_path: '/images/subdir/image.jpg', file_attributes: { publish: 'yes', shelve: 'no', preserve: 'yes' } })
         ]
       end
 

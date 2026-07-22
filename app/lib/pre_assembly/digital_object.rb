@@ -20,7 +20,7 @@ module PreAssembly
     # @param [PreAssembly::CopyStager, PreAssembly::LinkStager] stager the implementation of how to stage an object
     # @param [String] container the identifier (non-namespaced); i.e. the full path to the folder containing the object files
     # @param [Array<String>] stageable_items items to stage
-    # @param [Array<ObjectFile>] object_files path to files that are part of the object
+    # @param [Array<Assembly::ObjectFile>] object_files path to files that are part of the object
     # @param [String] label The label for this object
     # @param [String] pid The bare druid identifier for the item
     # @param [String] source_id The source identifier
@@ -119,9 +119,9 @@ module PreAssembly
     def build_structural
       if file_manifest
         file_manifest.generate_structure(cocina_dro: existing_cocina_object, object: File.basename(container),
-                                         reading_order:)
+                                         reading_order:, checksums: object_file_checksums)
       else
-        build_from_staging_location(objects: object_files.sort,
+        build_from_staging_location(objects: object_files.sort_by(&:relative_path),
                                     processing_configuration:,
                                     ocr_available:,
                                     reading_order:)
@@ -137,6 +137,12 @@ module PreAssembly
     private
 
     attr_reader :assembly_directory
+
+    def object_file_checksums
+      object_files.to_h do |file|
+        [file.relative_path, { sha1: file.sha1, md5: file.md5 }]
+      end
+    end
 
     # @return [String] one of the values from Cocina::Models::DRO::TYPES
     def object_type

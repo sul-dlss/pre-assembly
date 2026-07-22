@@ -64,7 +64,8 @@ RSpec.describe 'Pre-assemble Media Audio object' do
       .with(cocina_dro: item,
             resources: Hash,
             reading_order: nil,
-            staging_location: staging_location.to_s)
+            staging_location: staging_location.to_s,
+            checksums: Hash)
     expect(dsc_object).to have_received(:update).with(params: item)
     expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
   end
