@@ -47,7 +47,7 @@ module PreAssembly
 
     # actually generate content metadata for a specific object in the manifest
     # @returns [Cocina::Models::DROStructural] the structural metadata
-    def generate_structure(cocina_dro:, object:, reading_order: nil)
+    def generate_structure(cocina_dro:, object:, reading_order: nil, checksums: {})
       item_structure = manifest[object]
       raise "no structure found in manifest for `#{object}'" unless item_structure
 
@@ -55,7 +55,8 @@ module PreAssembly
       structure = FromFileManifest::StructuralBuilder.build(cocina_dro:,
                                                             resources: item_structure,
                                                             reading_order:,
-                                                            staging_location:)
+                                                            staging_location:,
+                                                            checksums:)
 
       FileUtils.cd(current_directory)
       structure
@@ -121,7 +122,7 @@ module PreAssembly
 
     def md5_digest(row)
       container_path = File.join(staging_location, row[:druid])
-      # look for a checksum file named the same as this file
+      # look for an MD5 file named the same as this file
       md5_files = Dir.glob("#{container_path}/**/#{row[:filename]}.md5")
       # if we find a corresponding md5 file, read it
       return unless md5_files.size == 1

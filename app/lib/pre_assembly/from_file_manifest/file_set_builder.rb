@@ -5,23 +5,25 @@ module PreAssembly
     # Creates a hash representing the Cocina::FileSets from a file manifest
     class FileSetBuilder
       # @param [Cocina::Models::DRO] cocina_dro
-      def self.build(resource:, cocina_dro:, external_identifier:, staging_location:)
+      def self.build(resource:, cocina_dro:, external_identifier:, staging_location:, checksums: {})
         new(
           resource:,
           cocina_dro:,
           external_identifier:,
-          staging_location:
+          staging_location:,
+          checksums:
         ).build
       end
 
-      def initialize(resource:, cocina_dro:, external_identifier:, staging_location:)
+      def initialize(resource:, cocina_dro:, external_identifier:, staging_location:, checksums: {})
         @resource = resource
         @cocina_dro = cocina_dro
         @external_identifier = external_identifier
         @staging_location = staging_location
+        @checksums = checksums
       end
 
-      attr_reader :resource, :cocina_dro, :external_identifier, :staging_location
+      attr_reader :resource, :cocina_dro, :external_identifier, :staging_location, :checksums
 
       def build
         {
@@ -53,8 +55,19 @@ module PreAssembly
       def file_builder(file_attributes:)
         attrs = file_attributes
                 .merge(version: cocina_dro.version, access: file_access(file_attributes))
+                .merge(message_digest_attributes(file_attributes))
                 .merge(existing_cocina_file_attributes(filename: file_attributes[:filename], mimetype_present: file_attributes[:hasMimeType].present?))
         Cocina::Models::File.new(attrs)
+      end
+
+      def message_digest_attributes(file_attributes)
+        file_checksums = checksums[file_attributes[:filename]]
+        return {} if file_checksums.blank?
+
+        digests = %i[sha1 md5].filter_map do |type|
+          { type: type.to_s, digest: file_checksums[type] } if file_checksums[type]
+        end
+        { hasMessageDigests: digests }
       end
 
       def existing_cocina_file_attributes(filename:, mimetype_present:)

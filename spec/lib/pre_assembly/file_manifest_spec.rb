@@ -65,10 +65,11 @@ RSpec.describe PreAssembly::FileManifest do
     let(:staging_location) { Rails.root.join('spec/fixtures/multimedia') }
 
     let(:structural) do
-      file_manifest.generate_structure(cocina_dro: dro, object: 'aa111aa1111')
+      file_manifest.generate_structure(cocina_dro: dro, object: 'aa111aa1111', checksums:)
     end
 
     let(:dro) { Cocina::RSpec::Factories.build(:dro).new(access: { view: 'world' }) }
+    let(:checksums) { {} }
 
     before do
       allow(PreAssembly::FileIdentifierGenerator).to receive(:generate).and_return(
@@ -172,6 +173,29 @@ RSpec.describe PreAssembly::FileManifest do
 
       it 'generates content metadata' do
         expect(structural.to_h).to eq expected_structural
+      end
+
+      context 'with calculated checksums' do
+        let(:checksums) do
+          {
+            'aa111aa1111.pdf' => {
+              sha1: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
+              md5: 'd41d8cd98f00b204e9800998ecf8427e'
+            }
+          }
+        end
+
+        it 'adds the checksums to the Cocina file' do
+          files = structural.contains.flat_map { |file_set| file_set.structural.contains }
+          pdf_file = files.find { |file| file.filename == 'aa111aa1111.pdf' }
+
+          expect(pdf_file.hasMessageDigests.map(&:to_h)).to eq(
+            [
+              { type: 'sha1', digest: 'da39a3ee5e6b4b0d3255bfef95601890afd80709' },
+              { type: 'md5', digest: 'd41d8cd98f00b204e9800998ecf8427e' }
+            ]
+          )
+        end
       end
     end
 

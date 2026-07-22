@@ -195,9 +195,37 @@ RSpec.describe PreAssembly::DigitalObject do
     def add_object_files(extension:, num: 2, rel_path: '')
       (1..num).each do |i|
         f = "#{rel_path}image#{i}.#{extension}"
-        options = { relative_path: f, checksum: i.to_s * 4 }
+        options = { relative_path: f, provider_md5: i.to_s * 4 }
 
         object.object_files.push PreAssembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
+      end
+    end
+
+    context 'when using a file manifest' do
+      subject(:object) do
+        described_class.new(job_run.batch, container: '/staging/gn330dv6119', object_files: [], stager:, pid:)
+      end
+
+      let(:file_manifest) { instance_double(PreAssembly::FileManifest) }
+      let(:cocina_type) { Cocina::Models::ObjectType.object }
+
+      before do
+        allow(job_run.batch).to receive(:file_manifest).and_return(file_manifest)
+        add_object_files(extension: 'tif', num: 1)
+        allow(object.object_files.first).to receive_messages(md5: '1111', sha1: '11111111')
+      end
+
+      it 'provides the calculated checksums for structural metadata' do
+        allow(file_manifest).to receive(:generate_structure)
+
+        object.build_structural
+
+        expect(file_manifest).to have_received(:generate_structure).with(
+          cocina_dro: dro,
+          object: 'gn330dv6119',
+          reading_order: nil,
+          checksums: { 'image1.tif' => { md5: '1111', sha1: '11111111' } }
+        )
       end
     end
 

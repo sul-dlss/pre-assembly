@@ -119,7 +119,7 @@ module PreAssembly
     def build_structural
       if file_manifest
         file_manifest.generate_structure(cocina_dro: existing_cocina_object, object: File.basename(container),
-                                         reading_order:)
+                                         reading_order:, checksums: object_file_checksums)
       else
         build_from_staging_location(objects: object_files.sort,
                                     processing_configuration:,
@@ -137,6 +137,12 @@ module PreAssembly
     private
 
     attr_reader :assembly_directory
+
+    def object_file_checksums
+      object_files.to_h do |file|
+        [file.relative_path, { sha1: file.sha1, md5: file.md5 }]
+      end
+    end
 
     # @return [String] one of the values from Cocina::Models::DRO::TYPES
     def object_type
