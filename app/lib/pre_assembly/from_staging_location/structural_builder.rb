@@ -52,6 +52,7 @@ module PreAssembly
               version:,
               label: file_id,
               filename: file_id,
+              size: fileset_file.filesize,
               hasMessageDigests: message_digests(fileset_file),
               hasMimeType: fileset_file.mimetype,
               administrative: administrative(fileset_file),

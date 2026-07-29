@@ -113,6 +113,9 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
         # The digests are imported from the filesystem if present:
         expect(files.first.hasMessageDigests.first.to_h).to eq({ type: 'md5', digest: 'ee4e90be549c5614ac6282a5b80a506b' })
 
+        # The file sizes are imported from the filesystem.
+        expect(files.first.size).to eq 1493
+
         # it stores administrative settings from the file manifest
         expect(files.last.administrative.to_h).to eq({ publish: false, shelve: false, sdrPreserve: true })
 
@@ -214,7 +217,7 @@ RSpec.describe PreAssembly::FromFileManifest::StructuralBuilder do
 
           updated_file = files[2]
           expect(updated_file.hasMimeType).to be_nil
-          expect(updated_file.size).to be_nil
+          expect(updated_file.size).to eq 212
           expect(updated_file.presentation).to be_nil
           expect(updated_file.hasMessageDigests.first.digest).to eq '4b0e92aec76da9ac98567b8e6848e922'
         end
