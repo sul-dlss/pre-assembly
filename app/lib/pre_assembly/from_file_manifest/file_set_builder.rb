@@ -57,6 +57,7 @@ module PreAssembly
                 .merge(version: cocina_dro.version, access: file_access(file_attributes))
                 .merge(message_digest_attributes(file_attributes))
                 .merge(existing_cocina_file_attributes(filename: file_attributes[:filename], mimetype_present: file_attributes[:hasMimeType].present?))
+                .merge(size_attributes(file_attributes[:filename]))
         Cocina::Models::File.new(attrs)
       end
 
@@ -81,7 +82,17 @@ module PreAssembly
       end
 
       def file_exists?(filename)
-        File.exist?(File.join(staging_location, cocina_dro.externalIdentifier.delete_prefix('druid:'), filename))
+        File.exist?(file_path(filename))
+      end
+
+      def file_path(filename)
+        File.join(staging_location, cocina_dro.externalIdentifier.delete_prefix('druid:'), filename)
+      end
+
+      def size_attributes(filename)
+        return {} unless file_exists?(filename)
+
+        { size: Assembly::ObjectFile.new(file_path(filename)).filesize }
       end
 
       def file_access(file_attributes)

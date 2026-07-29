@@ -30,6 +30,7 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
           expect(file_sets.size).to eq 1
           files = file_sets.flat_map { |file_set| file_set.structural.contains }
           expect(files.map(&:filename)).to eq ['document.pdf']
+          expect(files.first.size).to eq 7182
           expected_access = { view: 'world', download: 'none', controlledDigitalLending: false }
           expect(files.map(&:access).map(&:to_h)).to all(eq(expected_access))
 
