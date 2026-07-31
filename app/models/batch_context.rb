@@ -50,7 +50,8 @@ class BatchContext < ApplicationRecord
     default: 0,
     filename: 1,
     media_cm_style: 2, # Deprecated
-    filename_with_ocr: 3 # Deprecated
+    filename_with_ocr: 3, # Deprecated
+    single: 4
   }
   # sets required processing_configuration values for a given content structure
   CONTENT_STRUCTURE_TO_PROCESSING_CONFIGURATION = {
@@ -58,7 +59,7 @@ class BatchContext < ApplicationRecord
     'simple_book' => 'filename',
     'document' => 'default',
     'file' => 'default',
-    'geo' => 'default',
+    'geo' => 'single',
     'media' => 'default',
     '3d' => 'default',
     'maps' => 'filename',

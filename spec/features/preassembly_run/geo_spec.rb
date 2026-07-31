@@ -56,7 +56,9 @@ RSpec.describe 'Pre-assemble geo object' do
 
     expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
       .with(cocina_dro: item,
-            filesets: Array,
+            filesets: satisfy do |filesets|
+              filesets.one? && filesets.first.files.map(&:relative_path) == ['data.zip', 'preview.jpg']
+            end,
             all_files_public: false,
             reading_order: nil,
             manually_corrected_ocr: false)

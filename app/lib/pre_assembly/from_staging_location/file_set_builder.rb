@@ -4,7 +4,7 @@ module PreAssembly
   module FromStagingLocation
     # Creates a data structure of FileSets from a staging location
     class FileSetBuilder
-      # @param [Symbol] processing_configuration one of: :default or :filename
+      # @param [Symbol] processing_configuration one of: :default, :filename, or :single
       # @param [Array<Assembly::ObjectFile>] objects
       # @param [Symbol] style one of: :simple_image, :file, :simple_book, :book_as_image, :book_with_pdf, :map, :geo, or :'3d'
       def self.build(processing_configuration:, objects:, style:, ocr_available:)
@@ -21,12 +21,14 @@ module PreAssembly
       # @return [Array<FileSet>] a list of filesets in the object
       def build
         case processing_configuration
-        when :default # one resource per object
+        when :default # one resource per file
           objects.collect { |obj| FileSet.new(resource_files: [obj], style:, ocr_available:) }
         when :filename, :filename_with_ocr # one resource per distinct filename (excluding extension)
           build_for_filename
+        when :single # one resource containing every file
+          [FileSet.new(resource_files: objects, style:, ocr_available:)]
         else
-          raise 'Invalid processing_configuration: must be :default, :filename, or :filename_with_ocr'
+          raise 'Invalid processing_configuration: must be :default, :filename, :filename_with_ocr, or :single'
         end
       end
 
