@@ -32,16 +32,7 @@ module PreAssembly
 
       private
 
-      attr_reader :processing_configuration, :objects, :style
-
-      # until the new OCR settings are available, we have to look in the processing configuration
-      def ocr_available
-        if Settings.ocr.enabled
-          @ocr_available
-        else
-          processing_configuration == :filename_with_ocr
-        end
-      end
+      attr_reader :processing_configuration, :objects, :style, :ocr_available
 
       def build_for_filename
         # loop over distinct filenames, this determines how many resources we will have and

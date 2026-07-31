@@ -18,13 +18,11 @@ class BatchContext < ApplicationRecord
   has_one :globus_destination, dependent: :destroy
   after_initialize :normalize_staging_location, :default_enums
   before_validation :set_using_file_manifest
-  before_save :set_processing_configuration, if: proc { Settings.ocr.enabled }
+  before_save :set_processing_configuration
   before_save :output_dir_exists!, if: proc { persisted? }
   before_create :output_dir_no_exists!
 
   validates :staging_location, :content_structure, presence: true
-  # we only need this validation when OCR is disabled (once enabled, the processing_configuration is set automatically based on content type)
-  validates :processing_configuration, presence: true, unless: proc { Settings.ocr.enabled }
   validates :project_name, presence: true, format: { with: /\A[\w-]+\z/,
                                                      message: 'only allows A-Z, a-z, 0-9, hyphen and underscore' }
   validates :staging_style_symlink, :using_file_manifest, inclusion: { in: [true, false] }

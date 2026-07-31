@@ -26,7 +26,6 @@ RSpec.describe BatchContext do
 
     it { is_expected.to validate_presence_of(:content_structure) }
     it { is_expected.to validate_presence_of(:staging_location) }
-    it { is_expected.to validate_presence_of(:processing_configuration) }
     it { is_expected.to validate_presence_of(:project_name) }
 
     context 'file_manifest setting' do

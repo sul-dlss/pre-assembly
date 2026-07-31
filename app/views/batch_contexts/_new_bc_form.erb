@@ -1,7 +1,6 @@
 
 <div data-controller="globus caption"
-     data-caption-stt-enabled="<%=Settings.speech_to_text.enabled%>"
-     data-caption-ocr-enabled="<%=Settings.ocr.enabled%>">
+     data-caption-stt-enabled="<%= Settings.speech_to_text.enabled %>">
 
     <div class="row">
         <div class="col">
@@ -92,10 +91,6 @@
                 </div>
             </div>
         </div>
-
-        <% unless Settings.ocr.enabled # if OCR is not enabled, keep the processing configuration menu %>
-        <%= form.input :processing_configuration, collection: processing_configuration %>
-        <% end %>
 
         <div data-caption-target="sttSettings" hidden>
             <div data-caption-target="sttAvailable">
