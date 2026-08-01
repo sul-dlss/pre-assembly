@@ -26,7 +26,6 @@ RSpec.describe BatchContext do
 
     it { is_expected.to validate_presence_of(:content_structure) }
     it { is_expected.to validate_presence_of(:staging_location) }
-    it { is_expected.to validate_presence_of(:processing_configuration) }
     it { is_expected.to validate_presence_of(:project_name) }
 
     context 'file_manifest setting' do
@@ -164,7 +163,8 @@ RSpec.describe BatchContext do
       'default' => 0,
       'filename' => 1,
       'media_cm_style' => 2,
-      'filename_with_ocr' => 3
+      'filename_with_ocr' => 3,
+      'single' => 4
     )
   end
 
@@ -173,6 +173,13 @@ RSpec.describe BatchContext do
   it 'enums default to their default values' do
     bc = described_class.new
     expect(bc.processing_configuration).to eq 'default'
+  end
+
+  it 'uses the single FileSet processing configuration for geo objects' do
+    bc.content_structure = 'geo'
+    bc.send(:set_processing_configuration)
+
+    expect(bc.processing_configuration).to eq 'single'
   end
 
   it 'staging_location has trailing slash removed' do

@@ -27,9 +27,6 @@ rabbitmq:
   username: guest
   password: guest
 
-ocr:
-  enabled: false
-
 speech_to_text:
   enabled: false
 

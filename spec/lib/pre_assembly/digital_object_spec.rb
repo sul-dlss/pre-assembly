@@ -537,6 +537,26 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
+    describe 'geo structural metadata' do
+      let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/geo', content_structure: 'geo') }
+      let(:cocina_type) { Cocina::Models::ObjectType.geo }
+
+      before do
+        object.object_files.push(
+          Assembly::ObjectFile.new('spec/fixtures/geo/gn330dv6119/data.zip', relative_path: 'data.zip'),
+          Assembly::ObjectFile.new('spec/fixtures/geo/gn330dv6119/preview.jpg', relative_path: 'preview.jpg')
+        )
+      end
+
+      it 'puts all files in a single FileSet' do
+        file_sets = object.send(:build_structural).contains
+
+        expect(bc.processing_configuration).to eq 'single'
+        expect(file_sets.size).to eq 1
+        expect(file_sets.first.structural.contains.map(&:filename)).to eq ['data.zip', 'preview.jpg']
+      end
+    end
+
     describe 'webarchive-seed structural metadata' do
       let(:cocina_type) { Cocina::Models::ObjectType.webarchive_seed }
       let(:content_structure) { 'webarchive_seed' }

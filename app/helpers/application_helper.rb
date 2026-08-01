@@ -19,7 +19,8 @@ module ApplicationHelper
     [
       ['Default', 'default'],
       ['Group by filename', 'filename'],
-      ['Group by filename (with pre-existing OCR)', 'filename_with_ocr']
+      ['Group by filename (with pre-existing OCR)', 'filename_with_ocr'],
+      ['Single FileSet', 'single']
     ]
   end
 

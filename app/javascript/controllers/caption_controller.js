@@ -14,7 +14,7 @@ export default class extends Controller {
   }
 
   ocrAvailable () {
-    return this.ocrContentTypes().indexOf(this.contentStructureTarget.value) >= 0 && this.ocrEnabled()
+    return this.ocrContentTypes().indexOf(this.contentStructureTarget.value) >= 0
   }
 
   sttAvailable () {
@@ -29,10 +29,6 @@ export default class extends Controller {
   // list of content structures that are allowed to run speech to text
   sttContentTypes () {
     return ['media']
-  }
-
-  ocrEnabled () {
-    return this.data.get('ocr-enabled') === 'true'
   }
 
   sttEnabled () {
@@ -76,9 +72,7 @@ export default class extends Controller {
       this.usingFileManifestTarget.hidden = false
     }
 
-    if (this.ocrAvailable()) {
-      this.showOcrControls()
-    }
+    this.showOcrControls()
 
     if (this.sttAvailable()) {
       this.showSttControls()
