@@ -123,7 +123,9 @@ module PreAssembly
       end
 
       def message_digests(fileset_file)
-        fileset_file.provider_md5 ? [{ type: 'md5', digest: fileset_file.provider_md5 }] : []
+        { sha1: fileset_file.sha1, md5: fileset_file.provider_md5 }.filter_map do |type, digest|
+          { type: type.to_s, digest: } if digest
+        end
       end
     end
   end
