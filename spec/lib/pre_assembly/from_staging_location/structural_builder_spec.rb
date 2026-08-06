@@ -86,6 +86,21 @@ RSpec.describe PreAssembly::FromStagingLocation::StructuralBuilder do
         end
       end
 
+      context 'with checksums' do
+        let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf', provider_md5: '8359f55958c7cd74113aabe7eb6d8821' })] }
+        let(:dro_access) { { view: 'world' } }
+        let(:all_files_public) { true }
+
+        it 'includes both sha1 and md5 message digests' do
+          file_sets = structural.contains
+          files = file_sets.flat_map { |file_set| file_set.structural.contains }
+          expect(files.first.hasMessageDigests.map(&:to_h)).to eq [
+            { type: 'sha1', digest: '7b363fafe4bda38b4a78677da837a4eef18825e7' },
+            { type: 'md5', digest: '8359f55958c7cd74113aabe7eb6d8821' }
+          ]
+        end
+      end
+
       context 'with filename processing configuration PDF files included' do
         let(:processing_configuration) { :filename }
         let(:objects) { [Assembly::ObjectFile.new("#{base_path}document.pdf", { relative_path: 'document.pdf' })] }

@@ -192,14 +192,18 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def add_object_files(extension:, num: 2, rel_path: '')
       (1..num).each do |i|
         f = "#{rel_path}image#{i}.#{extension}"
         options = { relative_path: f, provider_md5: i.to_s * 4 }
 
-        object.object_files.push Assembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
+        object_file = Assembly::ObjectFile.new("#{object.staging_location}/#{druid.id}/#{f}", options)
+        allow(object_file).to receive(:sha1).and_return(i.to_s * 8)
+        object.object_files.push object_file
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     context 'when using a file manifest' do
       subject(:object) do
@@ -247,7 +251,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } },
                                                 { type: 'https://cocina.sul.stanford.edu/models/file',
@@ -260,7 +264,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -277,7 +281,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } },
                                                 { type: 'https://cocina.sul.stanford.edu/models/file',
@@ -290,7 +294,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } }],
           hasMemberOrders: [],
@@ -327,7 +331,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/file',
@@ -344,7 +348,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/file',
@@ -361,7 +365,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
           hasMemberOrders: [],
@@ -398,7 +402,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -415,7 +419,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
           hasMemberOrders: [],
@@ -450,7 +454,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/page',
@@ -467,7 +471,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
           hasMemberOrders: [{ members: [], viewingDirection: 'left-to-right' }],
@@ -504,7 +508,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/page',
@@ -521,7 +525,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
           hasMemberOrders: [{ members: [], viewingDirection: 'right-to-left' }],
@@ -577,7 +581,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/image',
@@ -594,7 +598,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } }] } }],
           hasMemberOrders: [],
@@ -629,7 +633,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } },
                                                 { type: 'https://cocina.sul.stanford.edu/models/file',
@@ -642,7 +646,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '1111' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '11111111' }, { type: 'md5', digest: '1111' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } },
                      { type: 'https://cocina.sul.stanford.edu/models/resources/page',
@@ -659,7 +663,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: true, sdrPreserve: false, shelve: true } },
                                                 { type: 'https://cocina.sul.stanford.edu/models/file',
@@ -672,7 +676,7 @@ RSpec.describe PreAssembly::DigitalObject do
                                                   sdrGeneratedText: false,
                                                   correctedForAccessibility: false,
                                                   use: nil,
-                                                  hasMessageDigests: [{ type: 'md5', digest: '2222' }],
+                                                  hasMessageDigests: [{ type: 'sha1', digest: '22222222' }, { type: 'md5', digest: '2222' }],
                                                   access: { view: 'world', download: 'none', controlledDigitalLending: false },
                                                   administrative: { publish: false, sdrPreserve: true, shelve: false } }] } }],
           hasMemberOrders: [{ members: [], viewingDirection: 'left-to-right' }],
