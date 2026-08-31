@@ -30,8 +30,8 @@ RSpec.describe DiscoveryReport do
     let(:druid1) { DruidTools::Druid.new('cb837cp4412') }
     let(:druid2) { DruidTools::Druid.new('cm057cr1745') }
     let(:druid3) { DruidTools::Druid.new('cp898cs9946') }
-    let(:results1) { { errors: {}, counts:  { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
-    let(:results2) { { errors: {}, counts:  { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
+    let(:results1) { { errors: {}, counts: { total_size: 1, mimetypes: { a: 1, b: 2 } } } }
+    let(:results2) { { errors: {}, counts: { total_size: 2, mimetypes: { b: 3, q: 4 } } } }
     let(:results3) { { errors: { foo: true }, counts: { total_size: 3, mimetypes: { q: 9 } } } }
     let(:validator1) { instance_double(ObjectFileValidator, counts: results1[:counts], errors: results1[:errors], to_h: results1) }
     let(:validator2) { instance_double(ObjectFileValidator, counts: results2[:counts], errors: results2[:errors], to_h: results2) }
