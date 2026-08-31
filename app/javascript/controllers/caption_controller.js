@@ -72,7 +72,9 @@ export default class extends Controller {
       this.usingFileManifestTarget.hidden = false
     }
 
-    this.showOcrControls()
+    if (this.ocrAvailable()) {
+      this.showOcrControls()
+    }
 
     if (this.sttAvailable()) {
       this.showSttControls()
