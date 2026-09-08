@@ -19,6 +19,12 @@ Rails.root.glob('spec/support/*.rb').each { |f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+# Rails loads routes lazily, but finalizing them is what configures Warden's
+# per-scope session serializers (Devise.configure_warden!). Without this, the
+# first feature spec's `login_as` stores a raw User in the session before those
+# serializers exist, and the next request fails to deserialize it.
+Rails.application.reload_routes_unless_loaded
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = Array(config.fixture_paths) + [Rails.root.join('/spec/fixtures')]
