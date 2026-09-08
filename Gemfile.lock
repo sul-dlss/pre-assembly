@@ -281,7 +281,7 @@ GEM
     jbuilder (2.15.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (3.0.0)
+    json (2.21.2)
     jsonschema_rs (0.55.0-arm64-darwin)
       bigdecimal (>= 3.1, < 5)
     jsonschema_rs (0.55.0-x86_64-linux)
@@ -611,6 +611,7 @@ DEPENDENCIES
   honeybadger
   importmap-rails (~> 1.2)
   jbuilder
+  json (~> 2.0)
   kaminari
   listen
   nokogiri
