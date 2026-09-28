@@ -611,7 +611,6 @@ DEPENDENCIES
   honeybadger
   importmap-rails (~> 1.2)
   jbuilder
-  json (~> 2.0)
   kaminari
   listen
   nokogiri

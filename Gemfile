@@ -11,7 +11,6 @@ gem 'globus_client', '~> 0.16'
 gem 'honeybadger'
 gem 'importmap-rails', '~> 1.2'
 gem 'jbuilder'
-gem 'json', '~> 2.0' # Pinned until Rails 8.1.4 is released https://github.com/rails/rails/issues/58685
 gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
