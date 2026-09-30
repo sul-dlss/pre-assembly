@@ -2,9 +2,11 @@
 
 RSpec.describe PreAssembly::DigitalObject do
   subject(:object) do
-    described_class.new(job_run.batch, object_files: [], stager:, pid:)
+    described_class.new(job_run.batch, container:, object_files:, stager:, pid:)
   end
 
+  let(:container) { '' }
+  let(:object_files) { [] }
   let(:pid) { 'druid:gn330dv6119' }
   let(:stager) { PreAssembly::CopyStager }
   let(:bc) { create(:batch_context, staging_location: 'spec/fixtures/images_jp2_tif', content_structure:, processing_configuration:) }
@@ -37,6 +39,10 @@ RSpec.describe PreAssembly::DigitalObject do
 
   describe '#pre_assemble' do
     let(:status) { object.pre_assemble }
+    let(:container) { 'spec/fixtures/images_jp2_tif/gn330dv6119' }
+    let(:object_files) do
+      ['image1.jp2', 'image1.tif'].map { |filename| Assembly::ObjectFile.new("#{container}/#{filename}", relative_path: filename) }
+    end
 
     before do
       allow(StartAccession).to receive(:run)
@@ -50,6 +56,39 @@ RSpec.describe PreAssembly::DigitalObject do
                              status: 'success',
                              version: 3 })
       expect(StartAccession).to have_received(:run)
+    end
+
+    context 'when the object folder is missing from the staging location' do
+      let(:container) { 'spec/fixtures/images_jp2_tif/zz999zz9999' }
+      let(:object_files) { [] }
+      let(:version_status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false, openable?: true, accessioning?: false) }
+
+      before do
+        allow(version_client).to receive(:open)
+      end
+
+      it 'returns an error without opening a version' do
+        expect(object).not_to receive(:stage_files)
+        expect(status).to eq(status: 'error', pre_assem_finished: false,
+                             message: "can't be accessioned -- the object folder was not found in the staging location: spec/fixtures/images_jp2_tif/zz999zz9999")
+        expect(version_client).not_to have_received(:open)
+      end
+    end
+
+    context 'when the object folder exists but is empty' do
+      let(:container) { tmp_area } # Dir.mktmpdir, so an existing but empty folder
+      let(:object_files) { [] }
+
+      it 'proceeds with accessioning' do
+        # accessioning should proceed since this is the workflow for decommissioning.
+        allow(object).to receive_messages(accessioning?: false, openable?: false, content_md_creation_style: :simple_image)
+        expect(object).to receive(:stage_files)
+        expect(object).to receive(:update_structural_metadata)
+        expect(status).to eq({ pre_assem_finished: true,
+                               status: 'success',
+                               version: 3 })
+        expect(StartAccession).to have_received(:run)
+      end
     end
 
     context 'when the object is not openable' do
