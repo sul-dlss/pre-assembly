@@ -13,8 +13,8 @@ RSpec.describe 'Run preassembly on object with no files' do
   let(:item) do
     Cocina::RSpec::Factories.build(:dro, type: Cocina::Models::ObjectType.object).new(access: dro_access)
   end
-  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, current: 1, status:) }
-  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: true, openable?: true, accessioning?: false, version: 1) }
+  let(:dsc_object_version) { instance_double(Dor::Services::Client::ObjectVersion, current: 1, open: true, status:) }
+  let(:status) { instance_double(Dor::Services::Client::ObjectVersion::VersionStatus, open?: false, openable?: true, accessioning?: false, version: 1) }
   let(:dsc_object) { instance_double(Dor::Services::Client::Object, version: dsc_object_version, find: item, update: true) }
 
   before do
@@ -24,10 +24,11 @@ RSpec.describe 'Run preassembly on object with no files' do
 
     allow(Dor::Services::Client).to receive(:object).and_return(dsc_object)
     allow(StartAccession).to receive(:run)
-    allow(PreAssembly::FromStagingLocation::StructuralBuilder).to receive(:build).and_return(item.structural)
   end
 
-  it 'has status "Preassembly completed" and creates log file showing "success"' do
+  # the manifest for this fixture references an object folder that is not in the staging location,
+  # so accessioning it would delete the files already in the repository
+  it 'has status "Preassembly completed (with errors)" and does not accession the object' do
     visit '/'
     expect(page).to have_css('h1', text: 'Start new job')
 
@@ -45,23 +46,19 @@ RSpec.describe 'Run preassembly on object with no files' do
     # go to job details page, wait for preassembly to finish
     first('td  > a').click
     expect(page).to have_text project_name
-    expect(page).to have_text 'Running'
+    expect(page).to have_text '1 objects had errors during pre-assembly'
     expect(page).to have_link('Download').once
 
     result_file = Rails.root.join(Settings.job_output_parent_dir, user_id, project_name, "#{project_name}_progress.yml")
     yaml = YAML.load_file(result_file)
-    expect(yaml[:status]).to eq 'success'
+    expect(yaml[:status]).to eq 'error'
+    expect(yaml[:message]).to eq "can't be accessioned -- the object folder was not found in the staging location: " \
+                                 "#{staging_location}/#{bare_druid}"
 
-    # we got all the expected content files
-    expect(Dir.children(File.join(object_staging_dir, 'content')).size).to eq 0
-
-    expect(PreAssembly::FromStagingLocation::StructuralBuilder).to have_received(:build)
-      .with(cocina_dro: item,
-            filesets: [],
-            all_files_public: false,
-            reading_order: nil,
-            manually_corrected_ocr: false)
-    expect(dsc_object).to have_received(:update).with(params: item)
-    expect(StartAccession).to have_received(:run).with(druid: "druid:#{bare_druid}", batch_context: BatchContext.last, workflow: 'assemblyWF')
+    # nothing was staged, no version was opened, and the object was not accessioned
+    expect(Dir.exist?(object_staging_dir)).to be false
+    expect(dsc_object_version).not_to have_received(:open)
+    expect(dsc_object).not_to have_received(:update)
+    expect(StartAccession).not_to have_received(:run)
   end
 end

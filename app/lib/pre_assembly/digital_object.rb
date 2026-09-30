@@ -74,6 +74,14 @@ module PreAssembly
       # trigger manifest validation before opening a version in DSA; memoized so the result is reused later
       file_manifest&.manifest
 
+      # validate the object's files before opening a version in DSA, so that an object with a missing
+      # folder is never accessioned (which would unintentionally delete the files already in the repository)
+      if (object_validation_message = object_files_valid?)
+        return { pre_assem_finished: false,
+                 status: 'error',
+                 message: object_validation_message }
+      end
+
       unless open?
         if openable?
           version_client.open(description: 'Accessioned via Preassembly')
@@ -82,12 +90,6 @@ module PreAssembly
                    status: 'error',
                    message: "can't be opened for a new version; cannot re-accession when version > 1 unless object can be opened" }
         end
-      end
-
-      if (object_validation_message = object_files_valid?)
-        return { pre_assem_finished: false,
-                 status: 'error',
-                 message: object_validation_message }
       end
 
       @assembly_directory = AssemblyDirectory.create(druid_id: druid.id, base_path: container, content_structure:)
@@ -206,9 +208,12 @@ module PreAssembly
       object_client.version
     end
 
+    # @return [String, nil] a message describing why the object cannot be accessioned, nil if it can
     def object_files_valid?
       object_validator = ObjectFileValidator.new(object: self, batch:)
-      if object_validator.object_has_hierarchy? && content_structure != 'file'
+      if !File.directory?(container)
+        "can't be accessioned -- the object folder was not found in the staging location: #{container}"
+      elsif object_validator.object_has_hierarchy? && content_structure != 'file'
         "can't be accessioned -- if object files have hierarchy the content structure must be set to file"
       elsif object_validator.object_equals_druid?
         "can't be accessioned -- files and/or folder cannot be equal to the druid."
