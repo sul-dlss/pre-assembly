@@ -43,6 +43,8 @@ bundle install
 
 ## Development/Test
 
+Use Ruby 4.0.7 for development and testing.
+
 The pre-assembly app requires redis and postgres for local development and testing. In order to run the tests or run the
 webapp locally, you will need to have start these dependencies via `docker compose`:
 
