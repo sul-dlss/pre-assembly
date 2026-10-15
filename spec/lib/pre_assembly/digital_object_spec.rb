@@ -231,7 +231,7 @@ RSpec.describe PreAssembly::DigitalObject do
       end
     end
 
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable-next Metrics/AbcSize
     def add_object_files(extension:, num: 2, rel_path: '')
       (1..num).each do |i|
         f = "#{rel_path}image#{i}.#{extension}"
@@ -242,7 +242,6 @@ RSpec.describe PreAssembly::DigitalObject do
         object.object_files.push object_file
       end
     end
-    # rubocop:enable Metrics/AbcSize
 
     context 'when using a file manifest' do
       subject(:object) do

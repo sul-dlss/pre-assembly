@@ -15,7 +15,7 @@ class BatchContextsController < ApplicationController
     )
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:disable-next Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def create
     params = batch_contexts_params
     params[:ocr_languages] ||= []
@@ -35,10 +35,9 @@ class BatchContextsController < ApplicationController
       flash[:success] = 'Success! Your job is queued. A link to job output will be emailed to you upon completion.'
       redirect_to controller: 'job_runs', status: :see_other
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   private
 

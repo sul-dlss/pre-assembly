@@ -154,7 +154,7 @@ RSpec.describe PreAssembly::Batch do
       expect(info_for_log).to match(/project_name="#{flat_dir_images.project_name}"/)
       expect(info_for_log).to match(/staging_location="#{flat_dir_images.staging_location}"/)
       expect(info_for_log).to match(/assembly_staging_dir="#{Settings.assembly_staging_dir}"/)
-      expect(info_for_log).to match(/environment="test"/)
+      expect(info_for_log).to include('environment="test"')
     end
   end
 

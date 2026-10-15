@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/BlockLength
+# rubocop:disable-next Metrics/BlockLength
 namespace :reports do
   # Output statistics on all discovery reports available on disk
   desc 'Disovery report analytics'
@@ -37,4 +37,3 @@ namespace :reports do
     puts "Total: #{total}.  Reports found: #{num_found}.  Reports not found: #{num_not_found}.  Report written to #{output_file}"
   end
 end
-# rubocop:enable Metrics/BlockLength

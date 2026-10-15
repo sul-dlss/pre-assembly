@@ -3,7 +3,7 @@
 # Starts the accession workflow by calling dor-services-app
 # See https://sul-dlss.github.io/dor-services-app/#operation/objects#accession
 class StartAccession
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def self.run(druid:, batch_context:, workflow: nil)
     object_client = Dor::Services::Client.object(druid)
 
@@ -18,5 +18,4 @@ class StartAccession
 
     object_client.accession.start(params)
   end
-  # rubocop:enable Metrics/AbcSize
 end

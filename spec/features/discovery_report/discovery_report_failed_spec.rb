@@ -14,6 +14,7 @@ RSpec.describe 'Discovery Report fails' do
 
   # have background jobs run synchronously
   include ActiveJob::TestHelper
+
   around do |example|
     perform_enqueued_jobs do
       example.run

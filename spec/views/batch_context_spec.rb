@@ -6,7 +6,7 @@ RSpec.describe 'batch_contexts/new' do
       assign(:batch_context, BatchContext.new)
       # Should render the test page
       render
-      expect(rendered).to match(/Project/)
+      expect(rendered).to include('Project')
     end
   end
 
@@ -15,14 +15,14 @@ RSpec.describe 'batch_contexts/new' do
     bc = build(:batch_context, project_name: nil).tap(&:valid?)
     assign(:batch_context, bc)
     render
-    expect(render).to match(/Project name can&#39;t be blank/)
+    expect(render).to include('Project name can&#39;t be blank')
   end
 
   it 'displays error message when missing staging_location' do
     bc = build(:batch_context, staging_location: nil).tap(&:valid?)
     assign(:batch_context, bc)
     render
-    expect(render).to match(/Staging location can&#39;t be blank/)
+    expect(render).to include('Staging location can&#39;t be blank')
   end
 
   it 'displays error message for non-existent staging location' do

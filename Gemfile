@@ -1,35 +1,34 @@
 source 'https://rubygems.org'
 
-gem 'bunny', '~> 2.17' # RabbitMQ library
+gem 'bunny' # RabbitMQ library
 gem 'cocina-models'
 gem 'config'
-gem 'cssbundling-rails', '~> 1.2'
+gem 'cssbundling-rails'
 gem 'csv'
 gem 'devise'
 gem 'devise-remote-user'
-gem 'globus_client', '~> 0.16'
+gem 'globus_client'
 gem 'honeybadger'
-gem 'importmap-rails', '~> 1.2'
+gem 'importmap-rails'
 gem 'jbuilder'
 gem 'kaminari' # pagination
 gem 'nokogiri'
 gem 'okcomputer'
 gem 'pg' # postgres database
 gem 'propshaft' # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem 'pry' # make it possible to use pry for IRB
 gem 'rails', '~> 8.1.0'
 gem 'rake'
-gem 'sidekiq', '~> 8.0'
+gem 'sidekiq'
 gem 'simple_form' # rails form that handles errors internally and easily integrated w/ Bootstrap
-gem 'sneakers', '~> 2.11' # rabbitMQ background processing
+gem 'sneakers' # rabbitMQ background processing
 gem 'state_machines-activerecord'
 gem 'stimulus-rails'
-gem 'turbo-rails', '~> 1.1'
+gem 'turbo-rails'
 gem 'whenever', require: false
 
 # Stanford gems
-gem 'assembly-objectfile', '~> 2.1'
-gem 'dor-services-client', '~> 15.1'
+gem 'assembly-objectfile'
+gem 'dor-services-client'
 gem 'druid-tools'
 
 group :test do
