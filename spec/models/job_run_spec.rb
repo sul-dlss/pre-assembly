@@ -95,11 +95,10 @@ RSpec.describe JobRun do
       expect(job_run.batch).to be_a(PreAssembly::Batch)
     end
 
-    # rubocop:disable RSpec/IdenticalEqualityAssertion
+    # rubocop:disable-next RSpec/IdenticalEqualityAssertion
     it 'caches the Batch' do
       expect(job_run.batch).to be(job_run.batch) # same instance
     end
-    # rubocop:enable RSpec/IdenticalEqualityAssertion
   end
 
   describe '#human_state_name' do

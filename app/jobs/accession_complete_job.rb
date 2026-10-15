@@ -3,6 +3,7 @@
 # Wait for an accession into SDR.
 class AccessionCompleteJob
   include Sneakers::Worker
+
   # This worker will connect to "preassembly.accession_complete" queue
   # env is set to nil since by default the actual queue name would be
   # "preassembly.accession_complete_development"

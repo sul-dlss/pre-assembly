@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
+# rubocop:disable-next Metrics/ClassLength
 module PreAssembly
   class DigitalObject
     include PreAssembly::Logging
@@ -24,7 +24,7 @@ module PreAssembly
     # @param [String] label The label for this object
     # @param [String] pid The bare druid identifier for the item
     # @param [String] source_id The source identifier
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable-next Metrics/ParameterLists
     def initialize(batch, stager:, container: '', stageable_items: nil, object_files: nil,
                    label: nil, pid: nil, source_id: nil)
       @batch = batch
@@ -36,7 +36,6 @@ module PreAssembly
       @source_id = source_id
       @stager = stager
     end
-    # rubocop:enable Metrics/ParameterLists
 
     # set this object's content_md_creation_style
     # @return [Symbol]
@@ -209,7 +208,7 @@ module PreAssembly
     end
 
     # @return [String, nil] a message describing why the object cannot be accessioned, nil if it can
-    def object_files_valid?
+    def object_files_valid? # rubocop:disable Naming/PredicateMethod
       object_validator = ObjectFileValidator.new(object: self, batch:)
       if !File.directory?(container)
         "can't be accessioned -- the object folder was not found in the staging location: #{container}"
@@ -221,4 +220,3 @@ module PreAssembly
     end
   end
 end
-# rubocop:enable Metrics/ClassLength

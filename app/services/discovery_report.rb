@@ -54,7 +54,7 @@ class DiscoveryReport
     end
   end
 
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def each_dobj(dobj)
     row = process_dobj(dobj)
     summary[:total_size] += row.counts[:total_size]
@@ -71,7 +71,6 @@ class DiscoveryReport
     row_hash.merge!(file_diffs: process_diffs(dobj)) if include_file_diffs?(row, dobj)
     row_hash
   end
-  # rubocop:enable Metrics/AbcSize
 
   # return [Hash] progress info that will be logged as json in a running log file
   def log_progress_info(dobj, status)

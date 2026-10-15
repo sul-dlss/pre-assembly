@@ -37,7 +37,7 @@ module PreAssembly
         # a counter to use when creating auto-labels for resources, with increments for each type
         resource_type_counters = Hash.new(0)
 
-        # rubocop:disable Metrics/BlockLength
+        # rubocop:disable-next Metrics/BlockLength
         cocina_filesets = filesets.map.with_index(1) do |fileset, sequence|
           resource_type_counters[fileset.resource_type_description] += 1 # each resource type description gets its own incrementing counter
           # create a generic resource label if needed
@@ -76,7 +76,6 @@ module PreAssembly
 
           Cocina::Models::FileSet.new(fs_attributes)
         end
-        # rubocop:enable Metrics/BlockLength
 
         attributes = { contains: cocina_filesets }
         attributes[:hasMemberOrders] = [{ viewingDirection: reading_order }] if reading_order

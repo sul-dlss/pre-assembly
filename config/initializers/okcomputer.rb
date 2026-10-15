@@ -33,7 +33,7 @@ end
 OkComputer::Registry.register 'feature-job_output_parent_dir', DirectoryExistsCheck.new(Settings.job_output_parent_dir)
 
 # spot check tables for data loss
-class TablesHaveDataCheck < OkComputer::Check
+class TablesHaveDataCheck < OkComputer::Check # rubocop:disable Style/OneClassPerFile
   def check
     msg = [
       User,
@@ -60,7 +60,7 @@ end
 
 OkComputer::Registry.register 'feature-tables-have-data', TablesHaveDataCheck.new
 
-class RabbitQueueExistsCheck < OkComputer::Check
+class RabbitQueueExistsCheck < OkComputer::Check # rubocop:disable Style/OneClassPerFile
   attr_reader :queue_names, :conn
 
   def initialize(queue_names)

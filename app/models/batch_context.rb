@@ -5,7 +5,7 @@
 #  The user creates a new BatchContext by filling in the main form in the pre-assembly UI, indicating parameters common to both
 #   pre-assembly and discovery report jobs.  They can then run either type of job using these common paramters by clicking a button:
 #   this creates a new JobRun, which belongs_to the associated BatchContext.
-# rubocop:disable Metrics/ClassLength
+# rubocop:disable-next Metrics/ClassLength
 class BatchContext < ApplicationRecord
   # an optional manifest that provides additional detail about the files contained in each object: only used for specific jobs
   FILE_MANIFEST_FILE_NAME = 'file_manifest.csv'
@@ -207,4 +207,3 @@ class BatchContext < ApplicationRecord
     errors.add(:staging_location, ": file manifest missing or empty: #{file_manifest_path}") unless File.exist?(file_manifest_path) && !File.empty?(file_manifest_path)
   end
 end
-# rubocop:enable Metrics/ClassLength

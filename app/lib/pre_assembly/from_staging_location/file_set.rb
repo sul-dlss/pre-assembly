@@ -35,7 +35,7 @@ module PreAssembly
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/MethodLength
-      # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable-next Metrics/PerceivedComplexity
       def resource_type_descriptions
         # grab all of the file types within a resource into an array so we can decide what the resource type should be
         resource_file_types = resource_files.collect(&:object_type)
@@ -65,7 +65,6 @@ module PreAssembly
           end
         end
       end
-      # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/AbcSize

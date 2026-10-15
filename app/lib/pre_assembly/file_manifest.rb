@@ -25,7 +25,7 @@ module PreAssembly
       @csv_filename = csv_filename
     end
 
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable-next Metrics/AbcSize
     def manifest
       @manifest ||= begin
         # load file into @rows and then build up @manifest; rejecting any blank rows
@@ -43,7 +43,6 @@ module PreAssembly
         end
       end
     end
-    # rubocop:enable Metrics/AbcSize
 
     # actually generate content metadata for a specific object in the manifest
     # @returns [Cocina::Models::DROStructural] the structural metadata
@@ -80,7 +79,7 @@ module PreAssembly
 
     # @param [HashWithIndifferentAccess] row
     # @return [Hash<Symbol,String>] The properties necessary to build a file.
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable-next Metrics/AbcSize
     def file_properties_from_row(row)
       {
         type: Cocina::Models::ObjectType.file,
@@ -97,7 +96,6 @@ module PreAssembly
         correctedForAccessibility: ActiveModel::Type::Boolean.new.cast(row[:corrected_for_accessibility]) || false
       }.compact
     end
-    # rubocop:enable Metrics/AbcSize
 
     def access_properties_from_row(row)
       {

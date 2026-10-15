@@ -2,7 +2,7 @@
 
 class DiscoveryReportJob < ApplicationJob
   # @param [JobRun] job_run
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable-next Metrics/AbcSize
   def perform(job_run)
     job_run.started
     report = job_run.to_discovery_report
@@ -18,5 +18,4 @@ class DiscoveryReportJob < ApplicationJob
     job_run.error_message = e.exception
     job_run.failed
   end
-  # rubocop:enable Metrics/AbcSize
 end
