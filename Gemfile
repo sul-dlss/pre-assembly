@@ -48,6 +48,7 @@ end
 
 group :deployment do
   gem 'capistrano-bundler'
+  gem 'capistrano-maintenance'
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'dlss-capistrano', require: false
