@@ -9,6 +9,7 @@ install_plugin Capistrano::SCM::Git
 
 require 'capistrano/bundler'
 require 'capistrano/honeybadger'
+require 'capistrano/maintenance'
 require 'capistrano/passenger'
 require 'capistrano/rails'
 # require 'capistrano/rvm'
