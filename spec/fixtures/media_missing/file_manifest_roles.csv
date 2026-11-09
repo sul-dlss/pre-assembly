@@ -1,0 +1,6 @@
+druid,resource_label,resource_type,sequence,filename,file_label,publish,shelve,preserve,mimetype,role
+aa111aa1111,Image 1,image,1,aa111aa1111_0001.tif,,no,no,yes,image/tiff,master
+aa111aa1111,Image 1,image,1,aa111aa1111_0001.jp2,,yes,yes,no,image/jp2,derivative
+aa111aa1111,Image 1,image,1,aa111aa1111_0001.json,,yes,yes,no,application/json,georeference
+aa111aa1111,Image 1,image,1,aa111aa1111_0001.txt,,yes,yes,no,text/plain,bogus
+aa111aa1111,Image 1,image,1,aa111aa1111_0001.xml,,yes,yes,no,application/xml,

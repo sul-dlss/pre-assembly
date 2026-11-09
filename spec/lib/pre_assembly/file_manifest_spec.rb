@@ -44,6 +44,21 @@ RSpec.describe PreAssembly::FileManifest do
       end
     end
 
+    context 'when files have roles' do
+      let(:csv_filename) { "#{staging_location}/file_manifest_roles.csv" }
+
+      it 'sets use for valid roles and ignores unexpected ones' do
+        files = described_class.new(staging_location:, csv_filename:).manifest.dig('aa111aa1111', :file_sets, 1, :files)
+        expect(files.to_h { |file| [file[:filename], file[:use]] }).to eq(
+          'aa111aa1111_0001.tif' => 'master',
+          'aa111aa1111_0001.jp2' => 'derivative',
+          'aa111aa1111_0001.json' => 'georeference',
+          'aa111aa1111_0001.txt' => nil,
+          'aa111aa1111_0001.xml' => nil
+        )
+      end
+    end
+
     context 'when missing druid column' do
       let(:csv_filename) { "#{staging_location}/file_manifest_missing_druid_column.csv" }
 
