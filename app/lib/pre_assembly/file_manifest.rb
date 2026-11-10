@@ -13,6 +13,7 @@ module PreAssembly
       annotations
       caption
       derivative
+      georeference
       master
       transcription
     ].freeze
